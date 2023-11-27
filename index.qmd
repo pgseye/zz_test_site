@@ -1,5 +1,5 @@
 ---
-title: "MSNI Stats Tips"
+title: "Test Site"
 listing:
   contents: posts/**/*.qmd
   sort: "date desc"

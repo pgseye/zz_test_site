@@ -2,13 +2,12 @@ project:
   type: website
 
 website:
-  title: "MSNI Stats Tips"
+  title: "Test Site"
   navbar:
     right:
       - text: All Posts
         href: index.qmd
-      - icon: github
-        href: https://github.com/
+
 format:
   html:
     page-layout: article
@@ -21,6 +20,7 @@ format:
     toc: true
     toc-depth: 3
     number-sections: true
+    df-print: kable
     fontsize: 1.1em
     fig-height: 9
     fig-width: 12

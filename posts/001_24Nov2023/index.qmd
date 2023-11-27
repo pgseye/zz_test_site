@@ -1,7 +1,7 @@
 ---
 title: "Interactions (effect modifiers) are important - don't ignore them"
 date: 2023-11-24
-categories: [code, analysis, modelling]
+categories: [code, analysis, modelling, logistic]
 image: interact_plot.jpg
 description: "Keep an open mind to interactions in your next model."
 ---
