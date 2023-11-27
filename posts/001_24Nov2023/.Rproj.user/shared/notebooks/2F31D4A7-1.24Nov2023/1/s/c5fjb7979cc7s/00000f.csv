@@ -1,0 +1,4 @@
+"0","#| label: adjusted model confounding"
+"0","mod_confound <- glm(cbind(hospitalised, not_hospitalised) ~ sex + age, data = dat_disagg, family = binomial(link = ""log""))"
+"0","tbl_regression(mod_confound,"
+"0","               exp = T)"

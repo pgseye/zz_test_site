@@ -1,0 +1,6 @@
+"0","#| label: disaggregated data"
+"0","dat_disagg <- data.frame(sex = c(""Male"", ""Female"", ""Male"", ""Female""),"
+"0","                         age = c(""< 40"", ""< 40"", ""≥ 40"", ""≥ 40""),"
+"0","                         hospitalised = as.numeric(c(966, 460, 364, 348)), "
+"0","                         not_hospitalised = as.numeric(c(3146, 3000, 3872, 3400)))"
+"0","dat_disagg"

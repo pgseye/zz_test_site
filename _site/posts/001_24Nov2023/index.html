@@ -1,0 +1,2548 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.433">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="dcterms.date" content="2023-11-24">
+<meta name="description" content="Keep an open mind to interactions in your next model.">
+
+<title>MSNI Stats Tips - Interactions (effect modifiers) are important - don’t ignore them</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<link href="../../site_libs/tabwid-1.1.3/tabwid.css" rel="stylesheet">
+<script src="../../site_libs/tabwid-1.1.3/tabwid.js"></script>
+
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">MSNI Stats Tips</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html" rel="" target="">
+ <span class="menu-text">All Posts</span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/" rel="" target=""><i class="bi bi-github" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+</ul>
+            <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#the-question" id="toc-the-question" class="nav-link active" data-scroll-target="#the-question"><span class="header-section-number">1</span> The Question</a></li>
+  <li><a href="#the-answer" id="toc-the-answer" class="nav-link" data-scroll-target="#the-answer"><span class="header-section-number">2</span> The Answer</a></li>
+  <li><a href="#lets-introduce-age-40-vs-40-as-a-third-variable" id="toc-lets-introduce-age-40-vs-40-as-a-third-variable" class="nav-link" data-scroll-target="#lets-introduce-age-40-vs-40-as-a-third-variable"><span class="header-section-number">3</span> Let’s introduce age (&lt;40 vs ≥ 40) as a third variable</a>
+  <ul class="collapse">
+  <li><a href="#age-as-a-confounder" id="toc-age-as-a-confounder" class="nav-link" data-scroll-target="#age-as-a-confounder"><span class="header-section-number">3.1</span> Age as a confounder</a></li>
+  <li><a href="#age-as-an-effect-modifier" id="toc-age-as-an-effect-modifier" class="nav-link" data-scroll-target="#age-as-an-effect-modifier"><span class="header-section-number">3.2</span> Age as an effect modifier</a></li>
+  </ul></li>
+  <li><a href="#effect-modification-means-more-associations-to-estimate" id="toc-effect-modification-means-more-associations-to-estimate" class="nav-link" data-scroll-target="#effect-modification-means-more-associations-to-estimate"><span class="header-section-number">4</span> Effect modification means more associations to estimate</a></li>
+  <li><a href="#emmeans-should-be-your-new-best-friend" id="toc-emmeans-should-be-your-new-best-friend" class="nav-link" data-scroll-target="#emmeans-should-be-your-new-best-friend"><span class="header-section-number">5</span> Emmeans should be your new best friend</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<div class="quarto-title-block"><div><h1 class="title">Interactions (effect modifiers) are important - don’t ignore them</h1><button type="button" class="btn code-tools-button dropdown-toggle" id="quarto-code-tools-menu" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi"></i> Code</button><ul class="dropdown-menu dropdown-menu-end" aria-labelelledby="quarto-code-tools-menu"><li><a id="quarto-show-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Show All Code</a></li><li><a id="quarto-hide-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Hide All Code</a></li><li><hr class="dropdown-divider"></li><li><a id="quarto-view-source" class="dropdown-item" href="javascript:void(0)" role="button">View Source</a></li></ul></div></div>
+  <div class="quarto-categories">
+    <div class="quarto-category">code</div>
+    <div class="quarto-category">analysis</div>
+    <div class="quarto-category">modelling</div>
+  </div>
+  </div>
+
+<div>
+  <div class="description">
+    Keep an open mind to interactions in your next model.
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">November 24, 2023</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+</header>
+
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">library</span>(knitr)</span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="fu">library</span>(quarto)</span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="fu">library</span>(emmeans)</span>
+<span id="cb1-4"><a href="#cb1-4"></a><span class="fu">library</span>(flextable)</span>
+<span id="cb1-5"><a href="#cb1-5"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb1-6"><a href="#cb1-6"></a><span class="fu">suppressPackageStartupMessages</span>(<span class="fu">library</span>(gtsummary))</span>
+<span id="cb1-7"><a href="#cb1-7"></a>opts_chunk<span class="sc">$</span><span class="fu">set</span>(<span class="at">echo =</span> T,</span>
+<span id="cb1-8"><a href="#cb1-8"></a>               <span class="at">cache =</span> F,</span>
+<span id="cb1-9"><a href="#cb1-9"></a>               <span class="at">prompt =</span> F,</span>
+<span id="cb1-10"><a href="#cb1-10"></a>               <span class="at">tidy =</span> F,</span>
+<span id="cb1-11"><a href="#cb1-11"></a>               <span class="at">message =</span> F,</span>
+<span id="cb1-12"><a href="#cb1-12"></a>               <span class="at">warning =</span> F)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p><br></p>
+<section id="the-question" class="level2" data-number="1">
+<h2 data-number="1" class="anchored" data-anchor-id="the-question"><span class="header-section-number">1</span> The Question</h2>
+<details>
+<p>Recall that the question this week was to choose between:</p>
+<p>A) Age is a confounder in the relationship between sex and hospitalisation from car crash.</p>
+<p>B) Age is an effect modifier in the relationship between sex and hospitalisation from car crash.</p>
+<p>using the data supplied below.</p>
+<p><img src="images/interact.png" class="img-fluid"></p>
+</details>
+</section>
+<section id="the-answer" class="level2" data-number="2">
+<h2 data-number="2" class="anchored" data-anchor-id="the-answer"><span class="header-section-number">2</span> The Answer</h2>
+<ul>
+<li>The answer is <strong>B</strong>. Younger male drivers tend to be more stupid and injure themselves more seriously than their female counterparts. Upon reaching a suitable age of maturity their risk of hospitalisation reduces to about the same (if we assume the 95% CI for the 8% reduction includes 0) as that for females.</li>
+<li>When a third variable plays a role in the association between an exposure and an outcome it may act as a confounder <strong>OR</strong> effect modifier (<strong>AND</strong> sometimes both).</li>
+<li>A simple confounder (e.g.&nbsp;age) will show the <strong>same</strong> exposure -&gt; outcome association across all of its categories (e.g.&nbsp;same risk ratio in &lt; 40 yrs and ≥ 40 yrs)</li>
+<li>An effect modifier will show <strong>different</strong> magnitudes of association across its categories (e.g.&nbsp;the risk ratio will differ in those &lt; 40 yrs and ≥ 40 yrs).</li>
+<li>Stratification is the simplest form of exploring and adjusting for confounding/interaction effects (used before we had all this computing power).</li>
+<li>Subgroups of data are created for each category of confounder/effect modifier and estimates of interest (mean differences, risk ratios, etc) calculated in each.</li>
+<li>These can then be combined in a weighted manner to give an overall (adjusted) estimate if NO effect modification is present.</li>
+<li>This is equivalent to including the third variable as a covariate in our regression model (we now use models rather than stratification methods).</li>
+<li>Simple inclusion in the regression model (using <code>+</code> in <code>R</code>) FORCES the exposure -&gt; outcome association to be the <strong>same</strong> across all categories of the effect modifier even if in reality it’s not.</li>
+<li><code>+</code> assumes confounding <strong>ONLY</strong> and <strong>NO</strong> effect modification.</li>
+<li>A problem arises, however, when the third variable is more an effect modifier, rather than confounder.</li>
+<li>If we suspect effect modification is present, we need to include this third variable in the model as an interaction term (using <code>*</code> in <code>R</code>)</li>
+<li>This will allow the exposure -&gt; outcome association to <strong>differ</strong> across categories of the effect modifier.</li>
+<li><code>*</code> assumes effect modification is present.</li>
+<li>This is a more flexible model specification, than simply ‘adjusting’ for a variable.</li>
+<li>Interpretation is a little more involved (always happy to help with this) but the point is it’s important not to blindly assume a third variable can only ever be a confounder.</li>
+<li>If effect modification is present, you need to know about it.</li>
+<li>It is simple to test for effect modification in <code>R</code>, <code>Stata</code>, etc. Include the interaction term and then drop it if not clinically/statistically significant at some level.</li>
+<li>I have included some <code>R</code> output below showing the equivalence of stratification and modelling approaches to interaction effects.</li>
+</ul>
+<p>Before we get to that - a simple set of guidelines for how to think about crude vs stratified associations:</p>
+<p><img src="images/guidelines.png" class="img-fluid"></p>
+<p>Equivalence of model-derived crude estimate</p>
+<p>Recall that the aggregated data that the crude estimate is calculated from is:</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>dat_agg <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">sex =</span> <span class="fu">c</span>(<span class="st">"Male"</span>, <span class="st">"Female"</span>),</span>
+<span id="cb2-2"><a href="#cb2-2"></a>                      <span class="at">hospitalised =</span> <span class="fu">as.numeric</span>(<span class="fu">c</span>(<span class="dv">1330</span>, <span class="dv">798</span>)), </span>
+<span id="cb2-3"><a href="#cb2-3"></a>                      <span class="at">not_hospitalised =</span> <span class="fu">as.numeric</span>(<span class="fu">c</span>(<span class="dv">7018</span>,<span class="dv">6400</span>)))</span>
+<span id="cb2-4"><a href="#cb2-4"></a>dat_agg</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>     sex hospitalised not_hospitalised
+1   Male         1330             7018
+2 Female          798             6400</code></pre>
+</div>
+</div>
+<p>To estimate this model in <code>R</code> we essentially run a logistic regression but instead of outputting an odds ratio, we calculate a risk ratio by specifying a <code>log</code> rather than the default <code>logit</code> link. We will also use the aggregate model specification, as we don’t have the individual-level data.</p>
+<p>The model-derived crude risk ratio for <code>sex = 1.44 (95% CI 1.32, 1.56; p &lt; 0.001)</code>. This is very close to the estimate that we initially calculated manually from the 2 x 2 table (<code>1.45</code>).</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>mod_crude <span class="ot">&lt;-</span> <span class="fu">glm</span>(<span class="fu">cbind</span>(hospitalised, not_hospitalised) <span class="sc">~</span> sex, <span class="at">data =</span> dat_agg, <span class="at">family =</span> <span class="fu">binomial</span>(<span class="at">link =</span> <span class="st">"log"</span>))</span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="fu">tbl_regression</span>(mod_crude, <span class="at">exp =</span> T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+
+<div id="fdxjcdhkkg" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#fdxjcdhkkg table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#fdxjcdhkkg thead, #fdxjcdhkkg tbody, #fdxjcdhkkg tfoot, #fdxjcdhkkg tr, #fdxjcdhkkg td, #fdxjcdhkkg th {
+  border-style: none;
+}
+
+#fdxjcdhkkg p {
+  margin: 0;
+  padding: 0;
+}
+
+#fdxjcdhkkg .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#fdxjcdhkkg .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#fdxjcdhkkg .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#fdxjcdhkkg .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#fdxjcdhkkg .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#fdxjcdhkkg .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#fdxjcdhkkg .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#fdxjcdhkkg .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#fdxjcdhkkg .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#fdxjcdhkkg .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#fdxjcdhkkg .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#fdxjcdhkkg .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#fdxjcdhkkg .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#fdxjcdhkkg .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#fdxjcdhkkg .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#fdxjcdhkkg .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#fdxjcdhkkg .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#fdxjcdhkkg .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#fdxjcdhkkg .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#fdxjcdhkkg .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#fdxjcdhkkg .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#fdxjcdhkkg .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#fdxjcdhkkg .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#fdxjcdhkkg .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#fdxjcdhkkg .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#fdxjcdhkkg .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#fdxjcdhkkg .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#fdxjcdhkkg .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#fdxjcdhkkg .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#fdxjcdhkkg .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#fdxjcdhkkg .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#fdxjcdhkkg .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#fdxjcdhkkg .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#fdxjcdhkkg .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#fdxjcdhkkg .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#fdxjcdhkkg .gt_left {
+  text-align: left;
+}
+
+#fdxjcdhkkg .gt_center {
+  text-align: center;
+}
+
+#fdxjcdhkkg .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#fdxjcdhkkg .gt_font_normal {
+  font-weight: normal;
+}
+
+#fdxjcdhkkg .gt_font_bold {
+  font-weight: bold;
+}
+
+#fdxjcdhkkg .gt_font_italic {
+  font-style: italic;
+}
+
+#fdxjcdhkkg .gt_super {
+  font-size: 65%;
+}
+
+#fdxjcdhkkg .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#fdxjcdhkkg .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#fdxjcdhkkg .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#fdxjcdhkkg .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#fdxjcdhkkg .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#fdxjcdhkkg .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#fdxjcdhkkg .gt_indent_5 {
+  text-indent: 25px;
+}
+</style>
+<table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+  <thead>
+    
+    <tr class="gt_col_headings">
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="<strong>Characteristic</strong>"><strong>Characteristic</strong></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="<strong>RR</strong><span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;&quot;><sup>1</sup></span>"><strong>RR</strong><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>1</sup></span></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="<strong>95% CI</strong><span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;&quot;><sup>1</sup></span>"><strong>95% CI</strong><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>1</sup></span></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="<strong>p-value</strong>"><strong>p-value</strong></th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr><td headers="label" class="gt_row gt_left">sex</td>
+<td headers="estimate" class="gt_row gt_center"><br></td>
+<td headers="ci" class="gt_row gt_center"><br></td>
+<td headers="p.value" class="gt_row gt_center"><br></td></tr>
+    <tr><td headers="label" class="gt_row gt_left">&nbsp;&nbsp;&nbsp;&nbsp;Female</td>
+<td headers="estimate" class="gt_row gt_center">—</td>
+<td headers="ci" class="gt_row gt_center">—</td>
+<td headers="p.value" class="gt_row gt_center"><br></td></tr>
+    <tr><td headers="label" class="gt_row gt_left">&nbsp;&nbsp;&nbsp;&nbsp;Male</td>
+<td headers="estimate" class="gt_row gt_center">1.44</td>
+<td headers="ci" class="gt_row gt_center">1.32, 1.56</td>
+<td headers="p.value" class="gt_row gt_center">&lt;0.001</td></tr>
+  </tbody>
+  
+  <tfoot class="gt_footnotes">
+    <tr>
+      <td class="gt_footnote" colspan="4"><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>1</sup></span> RR = Relative Risk, CI = Confidence Interval</td>
+    </tr>
+  </tfoot>
+</table>
+</div>
+</div>
+</div>
+</section>
+<section id="lets-introduce-age-40-vs-40-as-a-third-variable" class="level2" data-number="3">
+<h2 data-number="3" class="anchored" data-anchor-id="lets-introduce-age-40-vs-40-as-a-third-variable"><span class="header-section-number">3</span> Let’s introduce age (&lt;40 vs ≥ 40) as a third variable</h2>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>dat_disagg <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">sex =</span> <span class="fu">c</span>(<span class="st">"Male"</span>, <span class="st">"Female"</span>, <span class="st">"Male"</span>, <span class="st">"Female"</span>),</span>
+<span id="cb5-2"><a href="#cb5-2"></a>                         <span class="at">age =</span> <span class="fu">c</span>(<span class="st">"&lt; 40"</span>, <span class="st">"&lt; 40"</span>, <span class="st">"≥ 40"</span>, <span class="st">"≥ 40"</span>),</span>
+<span id="cb5-3"><a href="#cb5-3"></a>                         <span class="at">hospitalised =</span> <span class="fu">as.numeric</span>(<span class="fu">c</span>(<span class="dv">966</span>, <span class="dv">460</span>, <span class="dv">364</span>, <span class="dv">348</span>)), </span>
+<span id="cb5-4"><a href="#cb5-4"></a>                         <span class="at">not_hospitalised =</span> <span class="fu">as.numeric</span>(<span class="fu">c</span>(<span class="dv">3146</span>, <span class="dv">3000</span>, <span class="dv">3872</span>, <span class="dv">3400</span>)))</span>
+<span id="cb5-5"><a href="#cb5-5"></a>dat_disagg</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>     sex  age hospitalised not_hospitalised
+1   Male &lt; 40          966             3146
+2 Female &lt; 40          460             3000
+3   Male ≥ 40          364             3872
+4 Female ≥ 40          348             3400</code></pre>
+</div>
+</div>
+<section id="age-as-a-confounder" class="level3" data-number="3.1">
+<h3 data-number="3.1" class="anchored" data-anchor-id="age-as-a-confounder"><span class="header-section-number">3.1</span> Age as a confounder</h3>
+<p>For now, let’s just assume age is a confounder in the association between sex and hospitalisation risk. The model formulation in <code>R</code> is then:</p>
+<p><code>mod_adj &lt;- glm(cbind(hospitalised, not_hospitalised) ~ sex + age, data = dat_agg, family = binomial(link = "log"))</code></p>
+<p>and the risk ratios we get are:</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>mod_confound <span class="ot">&lt;-</span> <span class="fu">glm</span>(<span class="fu">cbind</span>(hospitalised, not_hospitalised) <span class="sc">~</span> sex <span class="sc">+</span> age, <span class="at">data =</span> dat_disagg, <span class="at">family =</span> <span class="fu">binomial</span>(<span class="at">link =</span> <span class="st">"log"</span>))</span>
+<span id="cb7-2"><a href="#cb7-2"></a><span class="fu">tbl_regression</span>(mod_confound, <span class="at">exp =</span> T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+
+<div id="ufiujpbgkp" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#ufiujpbgkp table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#ufiujpbgkp thead, #ufiujpbgkp tbody, #ufiujpbgkp tfoot, #ufiujpbgkp tr, #ufiujpbgkp td, #ufiujpbgkp th {
+  border-style: none;
+}
+
+#ufiujpbgkp p {
+  margin: 0;
+  padding: 0;
+}
+
+#ufiujpbgkp .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#ufiujpbgkp .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#ufiujpbgkp .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#ufiujpbgkp .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#ufiujpbgkp .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#ufiujpbgkp .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#ufiujpbgkp .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#ufiujpbgkp .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#ufiujpbgkp .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#ufiujpbgkp .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#ufiujpbgkp .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#ufiujpbgkp .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#ufiujpbgkp .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#ufiujpbgkp .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#ufiujpbgkp .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#ufiujpbgkp .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#ufiujpbgkp .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#ufiujpbgkp .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#ufiujpbgkp .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#ufiujpbgkp .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#ufiujpbgkp .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#ufiujpbgkp .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#ufiujpbgkp .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#ufiujpbgkp .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#ufiujpbgkp .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#ufiujpbgkp .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#ufiujpbgkp .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#ufiujpbgkp .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#ufiujpbgkp .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#ufiujpbgkp .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#ufiujpbgkp .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#ufiujpbgkp .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#ufiujpbgkp .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#ufiujpbgkp .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#ufiujpbgkp .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#ufiujpbgkp .gt_left {
+  text-align: left;
+}
+
+#ufiujpbgkp .gt_center {
+  text-align: center;
+}
+
+#ufiujpbgkp .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#ufiujpbgkp .gt_font_normal {
+  font-weight: normal;
+}
+
+#ufiujpbgkp .gt_font_bold {
+  font-weight: bold;
+}
+
+#ufiujpbgkp .gt_font_italic {
+  font-style: italic;
+}
+
+#ufiujpbgkp .gt_super {
+  font-size: 65%;
+}
+
+#ufiujpbgkp .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#ufiujpbgkp .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#ufiujpbgkp .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#ufiujpbgkp .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#ufiujpbgkp .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#ufiujpbgkp .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#ufiujpbgkp .gt_indent_5 {
+  text-indent: 25px;
+}
+</style>
+<table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+  <thead>
+    
+    <tr class="gt_col_headings">
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="<strong>Characteristic</strong>"><strong>Characteristic</strong></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="<strong>RR</strong><span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;&quot;><sup>1</sup></span>"><strong>RR</strong><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>1</sup></span></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="<strong>95% CI</strong><span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;&quot;><sup>1</sup></span>"><strong>95% CI</strong><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>1</sup></span></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="<strong>p-value</strong>"><strong>p-value</strong></th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr><td headers="label" class="gt_row gt_left">sex</td>
+<td headers="estimate" class="gt_row gt_center"><br></td>
+<td headers="ci" class="gt_row gt_center"><br></td>
+<td headers="p.value" class="gt_row gt_center"><br></td></tr>
+    <tr><td headers="label" class="gt_row gt_left">&nbsp;&nbsp;&nbsp;&nbsp;Female</td>
+<td headers="estimate" class="gt_row gt_center">—</td>
+<td headers="ci" class="gt_row gt_center">—</td>
+<td headers="p.value" class="gt_row gt_center"><br></td></tr>
+    <tr><td headers="label" class="gt_row gt_left">&nbsp;&nbsp;&nbsp;&nbsp;Male</td>
+<td headers="estimate" class="gt_row gt_center">1.43</td>
+<td headers="ci" class="gt_row gt_center">1.32, 1.55</td>
+<td headers="p.value" class="gt_row gt_center">&lt;0.001</td></tr>
+    <tr><td headers="label" class="gt_row gt_left">age</td>
+<td headers="estimate" class="gt_row gt_center"><br></td>
+<td headers="ci" class="gt_row gt_center"><br></td>
+<td headers="p.value" class="gt_row gt_center"><br></td></tr>
+    <tr><td headers="label" class="gt_row gt_left">&nbsp;&nbsp;&nbsp;&nbsp;&lt; 40</td>
+<td headers="estimate" class="gt_row gt_center">—</td>
+<td headers="ci" class="gt_row gt_center">—</td>
+<td headers="p.value" class="gt_row gt_center"><br></td></tr>
+    <tr><td headers="label" class="gt_row gt_left">&nbsp;&nbsp;&nbsp;&nbsp;≥ 40</td>
+<td headers="estimate" class="gt_row gt_center">0.47</td>
+<td headers="ci" class="gt_row gt_center">0.43, 0.51</td>
+<td headers="p.value" class="gt_row gt_center">&lt;0.001</td></tr>
+  </tbody>
+  
+  <tfoot class="gt_footnotes">
+    <tr>
+      <td class="gt_footnote" colspan="4"><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>1</sup></span> RR = Relative Risk, CI = Confidence Interval</td>
+    </tr>
+  </tfoot>
+</table>
+</div>
+</div>
+</div>
+<p>So, what we are seeing here is that the magnitude of association between sex and hospitalisation risk is averaged (in a weighted way) over both categories of age to produce one effect estimate <code>sex = 1.43 (95% CI 1.32, 1.55; p &lt; 0.001)</code>. This just so happens to be almost the same as the crude estimate when you ignore age altogether.</p>
+<p>The effect for age in this model is such that whatever your sex, there is about a <code>53%</code> reduction in the risk of hospitalisation if you are over 40 vs under 40. Note that in the stratification approach, you aren’t able to calculate an effect for age because you are stratifying by it (essentially treating it as a nuisance variable).</p>
+</section>
+<section id="age-as-an-effect-modifier" class="level3" data-number="3.2">
+<h3 data-number="3.2" class="anchored" data-anchor-id="age-as-an-effect-modifier"><span class="header-section-number">3.2</span> Age as an effect modifier</h3>
+<p>Now, let’s correctly model age as an effect modifier in the association between sex and hospitalisation risk. The model formulation in <code>R</code> is then (note the <code>*</code> operator):</p>
+<p><code>mod_adj &lt;- glm(cbind(hospitalised, not_hospitalised) ~ sex * age, data = dat_agg, family = binomial(link = "log"))</code></p>
+<p>and the risk ratios we get are:</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a>mod_interact <span class="ot">&lt;-</span> <span class="fu">glm</span>(<span class="fu">cbind</span>(hospitalised, not_hospitalised) <span class="sc">~</span> sex <span class="sc">*</span> age, <span class="at">data =</span> dat_disagg, <span class="at">family =</span> <span class="fu">binomial</span>(<span class="at">link =</span> <span class="st">"log"</span>))</span>
+<span id="cb8-2"><a href="#cb8-2"></a><span class="fu">tbl_regression</span>(mod_interact, <span class="at">exp =</span> T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+
+<div id="xgjyojnsfq" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#xgjyojnsfq table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#xgjyojnsfq thead, #xgjyojnsfq tbody, #xgjyojnsfq tfoot, #xgjyojnsfq tr, #xgjyojnsfq td, #xgjyojnsfq th {
+  border-style: none;
+}
+
+#xgjyojnsfq p {
+  margin: 0;
+  padding: 0;
+}
+
+#xgjyojnsfq .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#xgjyojnsfq .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#xgjyojnsfq .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#xgjyojnsfq .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#xgjyojnsfq .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#xgjyojnsfq .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#xgjyojnsfq .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#xgjyojnsfq .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#xgjyojnsfq .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#xgjyojnsfq .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#xgjyojnsfq .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#xgjyojnsfq .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#xgjyojnsfq .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#xgjyojnsfq .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#xgjyojnsfq .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#xgjyojnsfq .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#xgjyojnsfq .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#xgjyojnsfq .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#xgjyojnsfq .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#xgjyojnsfq .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#xgjyojnsfq .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#xgjyojnsfq .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#xgjyojnsfq .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#xgjyojnsfq .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#xgjyojnsfq .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#xgjyojnsfq .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#xgjyojnsfq .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#xgjyojnsfq .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#xgjyojnsfq .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#xgjyojnsfq .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#xgjyojnsfq .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#xgjyojnsfq .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#xgjyojnsfq .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#xgjyojnsfq .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#xgjyojnsfq .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#xgjyojnsfq .gt_left {
+  text-align: left;
+}
+
+#xgjyojnsfq .gt_center {
+  text-align: center;
+}
+
+#xgjyojnsfq .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#xgjyojnsfq .gt_font_normal {
+  font-weight: normal;
+}
+
+#xgjyojnsfq .gt_font_bold {
+  font-weight: bold;
+}
+
+#xgjyojnsfq .gt_font_italic {
+  font-style: italic;
+}
+
+#xgjyojnsfq .gt_super {
+  font-size: 65%;
+}
+
+#xgjyojnsfq .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#xgjyojnsfq .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#xgjyojnsfq .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#xgjyojnsfq .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#xgjyojnsfq .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#xgjyojnsfq .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#xgjyojnsfq .gt_indent_5 {
+  text-indent: 25px;
+}
+</style>
+<table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+  <thead>
+    
+    <tr class="gt_col_headings">
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="<strong>Characteristic</strong>"><strong>Characteristic</strong></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="<strong>RR</strong><span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;&quot;><sup>1</sup></span>"><strong>RR</strong><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>1</sup></span></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="<strong>95% CI</strong><span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;&quot;><sup>1</sup></span>"><strong>95% CI</strong><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>1</sup></span></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="<strong>p-value</strong>"><strong>p-value</strong></th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr><td headers="label" class="gt_row gt_left">sex</td>
+<td headers="estimate" class="gt_row gt_center"><br></td>
+<td headers="ci" class="gt_row gt_center"><br></td>
+<td headers="p.value" class="gt_row gt_center"><br></td></tr>
+    <tr><td headers="label" class="gt_row gt_left">&nbsp;&nbsp;&nbsp;&nbsp;Female</td>
+<td headers="estimate" class="gt_row gt_center">—</td>
+<td headers="ci" class="gt_row gt_center">—</td>
+<td headers="p.value" class="gt_row gt_center"><br></td></tr>
+    <tr><td headers="label" class="gt_row gt_left">&nbsp;&nbsp;&nbsp;&nbsp;Male</td>
+<td headers="estimate" class="gt_row gt_center">1.77</td>
+<td headers="ci" class="gt_row gt_center">1.60, 1.96</td>
+<td headers="p.value" class="gt_row gt_center">&lt;0.001</td></tr>
+    <tr><td headers="label" class="gt_row gt_left">age</td>
+<td headers="estimate" class="gt_row gt_center"><br></td>
+<td headers="ci" class="gt_row gt_center"><br></td>
+<td headers="p.value" class="gt_row gt_center"><br></td></tr>
+    <tr><td headers="label" class="gt_row gt_left">&nbsp;&nbsp;&nbsp;&nbsp;&lt; 40</td>
+<td headers="estimate" class="gt_row gt_center">—</td>
+<td headers="ci" class="gt_row gt_center">—</td>
+<td headers="p.value" class="gt_row gt_center"><br></td></tr>
+    <tr><td headers="label" class="gt_row gt_left">&nbsp;&nbsp;&nbsp;&nbsp;≥ 40</td>
+<td headers="estimate" class="gt_row gt_center">0.70</td>
+<td headers="ci" class="gt_row gt_center">0.61, 0.80</td>
+<td headers="p.value" class="gt_row gt_center">&lt;0.001</td></tr>
+    <tr><td headers="label" class="gt_row gt_left">sex * age</td>
+<td headers="estimate" class="gt_row gt_center"><br></td>
+<td headers="ci" class="gt_row gt_center"><br></td>
+<td headers="p.value" class="gt_row gt_center"><br></td></tr>
+    <tr><td headers="label" class="gt_row gt_left">&nbsp;&nbsp;&nbsp;&nbsp;Male * ≥ 40</td>
+<td headers="estimate" class="gt_row gt_center">0.52</td>
+<td headers="ci" class="gt_row gt_center">0.44, 0.62</td>
+<td headers="p.value" class="gt_row gt_center">&lt;0.001</td></tr>
+  </tbody>
+  
+  <tfoot class="gt_footnotes">
+    <tr>
+      <td class="gt_footnote" colspan="4"><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>1</sup></span> RR = Relative Risk, CI = Confidence Interval</td>
+    </tr>
+  </tfoot>
+</table>
+</div>
+</div>
+</div>
+<p>Note how the p value for the interaction term is very low - this would be a good indicator that the model fits the data better with the interaction term present than without it (i.e.&nbsp;assuming age as a confounder only).</p>
+<p>As I mentioned earlier, the model interpretation with an interaction present does become a little more complicated, but let’s break this down (note that I use “effect” in a non-causal way):</p>
+<ul>
+<li><p>The coefficient for <code>sex = 1.77 (95% CI 1.60, 1.96; p &lt; 0.001)</code>. The represents the <strong>“effect”</strong> of sex (being male relative to female) on hospitalisation risk at the <strong>reference level</strong> of age, which in this case is the under 40 yrs group. So, for those under 40, there is about a <code>77%</code> increased risk for males relative to females.</p></li>
+<li><p>The coefficient for <code>age = 0.70 (95% CI 0.61, 0.80; p &lt; 0.001)</code>. This represents the <strong>“effect”</strong> of age (being older than 40 yrs relative to younger than 40 yrs) on hospitalisation risk at the <strong>reference level</strong> of sex, which in this case is female. So, for females, there is about a <code>30%</code> risk reduction in the need for hospitalisation for older relative to younger drivers.</p></li>
+<li><p>The coefficient for the interaction term: <code>sex * age = 0.52 (95% CI 0.44, 0.62; p &lt; 0.001)</code>. This represents the <strong>multiplicative</strong> increase in the magnitude of association for males over 40 yrs.</p></li>
+</ul>
+</section>
+</section>
+<section id="effect-modification-means-more-associations-to-estimate" class="level2" data-number="4">
+<h2 data-number="4" class="anchored" data-anchor-id="effect-modification-means-more-associations-to-estimate"><span class="header-section-number">4</span> Effect modification means more associations to estimate</h2>
+<p>In this specific case, when you treat age as a confounder, the model produces two risk ratios - one for <code>sex</code> and one for <code>age</code>. However, when you treat <code>age</code> as an effect modifier, there are now four possible risk ratios to estimate (if you care about age more than it being a “nuisance” variable to control for). These are:</p>
+<ol type="1">
+<li>The effect of being male in younger individuals.</li>
+<li>The effect of being male in older individuals.</li>
+<li>The effect of being older in females.</li>
+<li>The effect of being older in males.</li>
+</ol>
+<p>You can easily enough work these out manually by multiplying the respective reference coefficients with the interaction coefficient. The risk ratios for each of the above would then be:</p>
+<ol type="1">
+<li><code>1.77</code> (we can just read this one straight off the model output)</li>
+<li><code>1.77 x 0.52 = 0.92</code></li>
+<li><code>0.70</code> (again we can just read this one straight off)</li>
+<li><code>0.70 x 0.52 = 0.36</code></li>
+</ol>
+<p>Note that the effects for 1. and 2. are very similar to what we calculated straight from the 2 x 2 tables (<code>1.84</code> and <code>0.92</code>, respectively - as previously mentioned, the effects for 3. and 4. aren’t able to be calculated for the stratifying variable).</p>
+</section>
+<section id="emmeans-should-be-your-new-best-friend" class="level2" data-number="5">
+<h2 data-number="5" class="anchored" data-anchor-id="emmeans-should-be-your-new-best-friend"><span class="header-section-number">5</span> Emmeans should be your new best friend</h2>
+<p>Perhaps I am preaching to the converted, but if you don’t know what the <code>emmeans</code> package and specific function in <code>R</code> does, then you should learn about it (the equivalent function in <code>Stata</code> is <code>margins</code>).</p>
+<p><a href="https://cran.r-project.org/web/packages/emmeans/index.html" class="uri">https://cran.r-project.org/web/packages/emmeans/index.html</a></p>
+<p><a href="https://aosmith.rbind.io/2019/03/25/getting-started-with-emmeans/" class="uri">https://aosmith.rbind.io/2019/03/25/getting-started-with-emmeans/</a></p>
+<p><code>emmeans</code> does a lot of things, but perhaps its workhorse function is to allow you to take a model and calculate adjusted predictions (either at set values of covariates, or by ‘averaging’ over them). In this case, we can very easily use <code>emmeans</code> to reproduce the manual calculations we just did.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a><span class="fu">emmeans</span>(mod_interact, <span class="sc">~</span> sex <span class="sc">+</span> age, <span class="at">type =</span> <span class="st">"response"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb9-2"><a href="#cb9-2"></a>  <span class="fu">data.frame</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb9-3"><a href="#cb9-3"></a>  <span class="fu">flextable</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb9-4"><a href="#cb9-4"></a>  <span class="fu">colformat_double</span>(<span class="at">digits =</span> <span class="dv">3</span>, <span class="at">na_str =</span> <span class="st">"N/A"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb9-5"><a href="#cb9-5"></a>  <span class="fu">set_table_properties</span>(<span class="at">layout =</span> <span class="st">"autofit"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb9-6"><a href="#cb9-6"></a>  <span class="fu">height</span>(<span class="at">height =</span> <span class="dv">1</span>, <span class="at">unit =</span> <span class="st">"cm"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb9-7"><a href="#cb9-7"></a>  <span class="fu">hrule</span>(<span class="at">rule =</span> <span class="st">"atleast"</span>, <span class="at">part =</span> <span class="st">"header"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb9-8"><a href="#cb9-8"></a>  <span class="fu">align</span>(<span class="at">align =</span> <span class="st">"center"</span>, <span class="at">part =</span> <span class="st">"body"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb9-9"><a href="#cb9-9"></a>  <span class="fu">bg</span>(<span class="at">bg =</span> <span class="st">"white"</span>, <span class="at">part =</span> <span class="st">"all"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb9-10"><a href="#cb9-10"></a>  flextable<span class="sc">::</span><span class="fu">font</span>(<span class="at">fontname =</span> <span class="st">"Consolas"</span>, <span class="at">part =</span> <span class="st">"all"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb9-11"><a href="#cb9-11"></a>  <span class="fu">theme_vanilla</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+
+<div class="tabwid"><style>.cl-5af3e262{table-layout:auto;}.cl-5aeb539a{font-family:'Consolas';font-size:11pt;font-weight:bold;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-5aeb53cc{font-family:'Consolas';font-size:11pt;font-weight:normal;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-5aeef4fa{margin:0;text-align:left;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-5aeef504{margin:0;text-align:right;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-5aef0dfa{height:0.25in;background-color:rgba(255, 255, 255, 1.00);vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-5aef0e04{height:0.25in;background-color:rgba(255, 255, 255, 1.00);vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-5aef0e05{background-color:rgba(255, 255, 255, 1.00);vertical-align: middle;border-bottom: 0.75pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-5aef0e0e{background-color:rgba(255, 255, 255, 1.00);vertical-align: middle;border-bottom: 0.75pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-5aef0e0f{background-color:rgba(255, 255, 255, 1.00);vertical-align: middle;border-bottom: 0.75pt solid rgba(102, 102, 102, 1.00);border-top: 0.75pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-5aef0e10{background-color:rgba(255, 255, 255, 1.00);vertical-align: middle;border-bottom: 0.75pt solid rgba(102, 102, 102, 1.00);border-top: 0.75pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-5aef0e18{background-color:rgba(255, 255, 255, 1.00);vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0.75pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-5aef0e19{background-color:rgba(255, 255, 255, 1.00);vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0.75pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}</style><table data-quarto-disable-processing="true" class="cl-5af3e262"><caption><p>Predicted Probabilities of Hospitalisation</p></caption><thead><tr style="overflow-wrap:break-word;"><th class="cl-5aef0dfa"><p class="cl-5aeef4fa"><span class="cl-5aeb539a">sex</span></p></th><th class="cl-5aef0dfa"><p class="cl-5aeef4fa"><span class="cl-5aeb539a">age</span></p></th><th class="cl-5aef0e04"><p class="cl-5aeef504"><span class="cl-5aeb539a">prob</span></p></th><th class="cl-5aef0e04"><p class="cl-5aeef504"><span class="cl-5aeb539a">SE</span></p></th><th class="cl-5aef0e04"><p class="cl-5aeef504"><span class="cl-5aeb539a">df</span></p></th><th class="cl-5aef0e04"><p class="cl-5aeef504"><span class="cl-5aeb539a">asymp.LCL</span></p></th><th class="cl-5aef0e04"><p class="cl-5aeef504"><span class="cl-5aeb539a">asymp.UCL</span></p></th></tr></thead><tbody><tr style="overflow-wrap:break-word;"><td class="cl-5aef0e05"><p class="cl-5aeef4fa"><span class="cl-5aeb53cc">Female</span></p></td><td class="cl-5aef0e05"><p class="cl-5aeef4fa"><span class="cl-5aeb53cc">&lt; 40</span></p></td><td class="cl-5aef0e0e"><p class="cl-5aeef504"><span class="cl-5aeb53cc">0.133</span></p></td><td class="cl-5aef0e0e"><p class="cl-5aeef504"><span class="cl-5aeb53cc">0.006</span></p></td><td class="cl-5aef0e0e"><p class="cl-5aeef504"><span class="cl-5aeb53cc"> Inf</span></p></td><td class="cl-5aef0e0e"><p class="cl-5aeef504"><span class="cl-5aeb53cc">0.122</span></p></td><td class="cl-5aef0e0e"><p class="cl-5aeef504"><span class="cl-5aeb53cc">0.145</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-5aef0e0f"><p class="cl-5aeef4fa"><span class="cl-5aeb53cc">Male</span></p></td><td class="cl-5aef0e0f"><p class="cl-5aeef4fa"><span class="cl-5aeb53cc">&lt; 40</span></p></td><td class="cl-5aef0e10"><p class="cl-5aeef504"><span class="cl-5aeb53cc">0.235</span></p></td><td class="cl-5aef0e10"><p class="cl-5aeef504"><span class="cl-5aeb53cc">0.007</span></p></td><td class="cl-5aef0e10"><p class="cl-5aeef504"><span class="cl-5aeb53cc"> Inf</span></p></td><td class="cl-5aef0e10"><p class="cl-5aeef504"><span class="cl-5aeb53cc">0.222</span></p></td><td class="cl-5aef0e10"><p class="cl-5aeef504"><span class="cl-5aeb53cc">0.248</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-5aef0e0f"><p class="cl-5aeef4fa"><span class="cl-5aeb53cc">Female</span></p></td><td class="cl-5aef0e0f"><p class="cl-5aeef4fa"><span class="cl-5aeb53cc">≥ 40</span></p></td><td class="cl-5aef0e10"><p class="cl-5aeef504"><span class="cl-5aeb53cc">0.093</span></p></td><td class="cl-5aef0e10"><p class="cl-5aeef504"><span class="cl-5aeb53cc">0.005</span></p></td><td class="cl-5aef0e10"><p class="cl-5aeef504"><span class="cl-5aeb53cc"> Inf</span></p></td><td class="cl-5aef0e10"><p class="cl-5aeef504"><span class="cl-5aeb53cc">0.084</span></p></td><td class="cl-5aef0e10"><p class="cl-5aeef504"><span class="cl-5aeb53cc">0.103</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-5aef0e18"><p class="cl-5aeef4fa"><span class="cl-5aeb53cc">Male</span></p></td><td class="cl-5aef0e18"><p class="cl-5aeef4fa"><span class="cl-5aeb53cc">≥ 40</span></p></td><td class="cl-5aef0e19"><p class="cl-5aeef504"><span class="cl-5aeb53cc">0.086</span></p></td><td class="cl-5aef0e19"><p class="cl-5aeef504"><span class="cl-5aeb53cc">0.004</span></p></td><td class="cl-5aef0e19"><p class="cl-5aeef504"><span class="cl-5aeb53cc"> Inf</span></p></td><td class="cl-5aef0e19"><p class="cl-5aeef504"><span class="cl-5aeb53cc">0.078</span></p></td><td class="cl-5aef0e19"><p class="cl-5aeef504"><span class="cl-5aeb53cc">0.095</span></p></td></tr></tbody></table></div>
+</div>
+</div>
+<p>Specifying <code>type = "response"</code> in the <code>emmeans</code> call indicates that we want to calculate the outcome on the probability (i.e.&nbsp;risk) scale. It is simple enough to plot these predicted probabilities using the <code>emmip</code> function in <code>emmeans</code>.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a><span class="fu">emmip</span>(mod_interact, age <span class="sc">~</span> sex, <span class="at">type =</span> <span class="st">"response"</span>) <span class="sc">+</span> </span>
+<span id="cb10-2"><a href="#cb10-2"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">18</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/plot_risk_ratios-1.png" class="img-fluid" width="1152"></p>
+</div>
+</div>
+<p>To get the risk ratios we have been working with until now, we simply add the <code>pairs(rev = T)</code> function to the call:</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a><span class="fu">emmeans</span>(mod_interact, <span class="sc">~</span> sex <span class="sc">+</span> age, <span class="at">type =</span> <span class="st">"response"</span>) <span class="sc">|&gt;</span> <span class="fu">pairs</span>(<span class="at">rev =</span> T) <span class="sc">|&gt;</span> </span>
+<span id="cb11-2"><a href="#cb11-2"></a>  <span class="fu">data.frame</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb11-3"><a href="#cb11-3"></a>  <span class="fu">flextable</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb11-4"><a href="#cb11-4"></a>  <span class="fu">colformat_double</span>(<span class="at">digits =</span> <span class="dv">3</span>, <span class="at">na_str =</span> <span class="st">"N/A"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb11-5"><a href="#cb11-5"></a>  <span class="fu">set_table_properties</span>(<span class="at">layout =</span> <span class="st">"autofit"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb11-6"><a href="#cb11-6"></a>  <span class="fu">height</span>(<span class="at">height =</span> <span class="dv">1</span>, <span class="at">unit =</span> <span class="st">"cm"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb11-7"><a href="#cb11-7"></a>  <span class="fu">hrule</span>(<span class="at">rule =</span> <span class="st">"atleast"</span>, <span class="at">part =</span> <span class="st">"header"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb11-8"><a href="#cb11-8"></a>  <span class="fu">align</span>(<span class="at">align =</span> <span class="st">"center"</span>, <span class="at">part =</span> <span class="st">"body"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb11-9"><a href="#cb11-9"></a>  <span class="fu">bg</span>(<span class="at">bg =</span> <span class="st">"white"</span>, <span class="at">part =</span> <span class="st">"all"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb11-10"><a href="#cb11-10"></a>  flextable<span class="sc">::</span><span class="fu">font</span>(<span class="at">fontname =</span> <span class="st">"Consolas"</span>, <span class="at">part =</span> <span class="st">"all"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb11-11"><a href="#cb11-11"></a>  <span class="fu">theme_vanilla</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+
+<div class="tabwid"><style>.cl-5b7f1cec{table-layout:auto;}.cl-5b77da86{font-family:'Consolas';font-size:11pt;font-weight:bold;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-5b77da90{font-family:'Consolas';font-size:11pt;font-weight:normal;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-5b7b068e{margin:0;text-align:left;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-5b7b06a2{margin:0;text-align:right;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-5b7b1962{height:0.25in;background-color:rgba(255, 255, 255, 1.00);vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-5b7b196c{height:0.25in;background-color:rgba(255, 255, 255, 1.00);vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-5b7b196d{background-color:rgba(255, 255, 255, 1.00);vertical-align: middle;border-bottom: 0.75pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-5b7b1976{background-color:rgba(255, 255, 255, 1.00);vertical-align: middle;border-bottom: 0.75pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-5b7b1977{background-color:rgba(255, 255, 255, 1.00);vertical-align: middle;border-bottom: 0.75pt solid rgba(102, 102, 102, 1.00);border-top: 0.75pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-5b7b1980{background-color:rgba(255, 255, 255, 1.00);vertical-align: middle;border-bottom: 0.75pt solid rgba(102, 102, 102, 1.00);border-top: 0.75pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-5b7b1981{background-color:rgba(255, 255, 255, 1.00);vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0.75pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-5b7b1982{background-color:rgba(255, 255, 255, 1.00);vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0.75pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}</style><table data-quarto-disable-processing="true" class="cl-5b7f1cec"><caption><p>All Pairwise Risk Ratios</p></caption><thead><tr style="overflow-wrap:break-word;"><th class="cl-5b7b1962"><p class="cl-5b7b068e"><span class="cl-5b77da86">contrast</span></p></th><th class="cl-5b7b196c"><p class="cl-5b7b06a2"><span class="cl-5b77da86">ratio</span></p></th><th class="cl-5b7b196c"><p class="cl-5b7b06a2"><span class="cl-5b77da86">SE</span></p></th><th class="cl-5b7b196c"><p class="cl-5b7b06a2"><span class="cl-5b77da86">df</span></p></th><th class="cl-5b7b196c"><p class="cl-5b7b06a2"><span class="cl-5b77da86">null</span></p></th><th class="cl-5b7b196c"><p class="cl-5b7b06a2"><span class="cl-5b77da86">z.ratio</span></p></th><th class="cl-5b7b196c"><p class="cl-5b7b06a2"><span class="cl-5b77da86">p.value</span></p></th></tr></thead><tbody><tr style="overflow-wrap:break-word;"><td class="cl-5b7b196d"><p class="cl-5b7b068e"><span class="cl-5b77da90">Male &lt; 40 / Female &lt; 40</span></p></td><td class="cl-5b7b1976"><p class="cl-5b7b06a2"><span class="cl-5b77da90">1.767</span></p></td><td class="cl-5b7b1976"><p class="cl-5b7b06a2"><span class="cl-5b77da90">0.091</span></p></td><td class="cl-5b7b1976"><p class="cl-5b7b06a2"><span class="cl-5b77da90"> Inf</span></p></td><td class="cl-5b7b1976"><p class="cl-5b7b06a2"><span class="cl-5b77da90">1.000</span></p></td><td class="cl-5b7b1976"><p class="cl-5b7b06a2"><span class="cl-5b77da90">11.003</span></p></td><td class="cl-5b7b1976"><p class="cl-5b7b06a2"><span class="cl-5b77da90">0.000</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-5b7b1977"><p class="cl-5b7b068e"><span class="cl-5b77da90">Female ≥ 40 / Female &lt; 40</span></p></td><td class="cl-5b7b1980"><p class="cl-5b7b06a2"><span class="cl-5b77da90">0.698</span></p></td><td class="cl-5b7b1980"><p class="cl-5b7b06a2"><span class="cl-5b77da90">0.047</span></p></td><td class="cl-5b7b1980"><p class="cl-5b7b06a2"><span class="cl-5b77da90"> Inf</span></p></td><td class="cl-5b7b1980"><p class="cl-5b7b06a2"><span class="cl-5b77da90">1.000</span></p></td><td class="cl-5b7b1980"><p class="cl-5b7b06a2"><span class="cl-5b77da90">-5.356</span></p></td><td class="cl-5b7b1980"><p class="cl-5b7b06a2"><span class="cl-5b77da90">0.000</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-5b7b1977"><p class="cl-5b7b068e"><span class="cl-5b77da90">Female ≥ 40 / Male &lt; 40</span></p></td><td class="cl-5b7b1980"><p class="cl-5b7b06a2"><span class="cl-5b77da90">0.395</span></p></td><td class="cl-5b7b1980"><p class="cl-5b7b06a2"><span class="cl-5b77da90">0.023</span></p></td><td class="cl-5b7b1980"><p class="cl-5b7b06a2"><span class="cl-5b77da90"> Inf</span></p></td><td class="cl-5b7b1980"><p class="cl-5b7b06a2"><span class="cl-5b77da90">1.000</span></p></td><td class="cl-5b7b1980"><p class="cl-5b7b06a2"><span class="cl-5b77da90">-15.923</span></p></td><td class="cl-5b7b1980"><p class="cl-5b7b06a2"><span class="cl-5b77da90">0.000</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-5b7b1977"><p class="cl-5b7b068e"><span class="cl-5b77da90">Male ≥ 40 / Female &lt; 40</span></p></td><td class="cl-5b7b1980"><p class="cl-5b7b06a2"><span class="cl-5b77da90">0.646</span></p></td><td class="cl-5b7b1980"><p class="cl-5b7b06a2"><span class="cl-5b77da90">0.043</span></p></td><td class="cl-5b7b1980"><p class="cl-5b7b06a2"><span class="cl-5b77da90"> Inf</span></p></td><td class="cl-5b7b1980"><p class="cl-5b7b06a2"><span class="cl-5b77da90">1.000</span></p></td><td class="cl-5b7b1980"><p class="cl-5b7b06a2"><span class="cl-5b77da90">-6.582</span></p></td><td class="cl-5b7b1980"><p class="cl-5b7b06a2"><span class="cl-5b77da90">0.000</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-5b7b1977"><p class="cl-5b7b068e"><span class="cl-5b77da90">Male ≥ 40 / Male &lt; 40</span></p></td><td class="cl-5b7b1980"><p class="cl-5b7b06a2"><span class="cl-5b77da90">0.366</span></p></td><td class="cl-5b7b1980"><p class="cl-5b7b06a2"><span class="cl-5b77da90">0.021</span></p></td><td class="cl-5b7b1980"><p class="cl-5b7b06a2"><span class="cl-5b77da90"> Inf</span></p></td><td class="cl-5b7b1980"><p class="cl-5b7b06a2"><span class="cl-5b77da90">1.000</span></p></td><td class="cl-5b7b1980"><p class="cl-5b7b06a2"><span class="cl-5b77da90">-17.499</span></p></td><td class="cl-5b7b1980"><p class="cl-5b7b06a2"><span class="cl-5b77da90">0.000</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-5b7b1981"><p class="cl-5b7b068e"><span class="cl-5b77da90">Male ≥ 40 / Female ≥ 40</span></p></td><td class="cl-5b7b1982"><p class="cl-5b7b06a2"><span class="cl-5b77da90">0.925</span></p></td><td class="cl-5b7b1982"><p class="cl-5b7b06a2"><span class="cl-5b77da90">0.066</span></p></td><td class="cl-5b7b1982"><p class="cl-5b7b06a2"><span class="cl-5b77da90"> Inf</span></p></td><td class="cl-5b7b1982"><p class="cl-5b7b06a2"><span class="cl-5b77da90">1.000</span></p></td><td class="cl-5b7b1982"><p class="cl-5b7b06a2"><span class="cl-5b77da90">-1.083</span></p></td><td class="cl-5b7b1982"><p class="cl-5b7b06a2"><span class="cl-5b77da90">0.700</span></p></td></tr></tbody></table></div>
+</div>
+</div>
+<p>Note that this gives us two extra comparisons we might not really want (the 3rd and 4th lines of the output) as it estimates every single pairwise comparison. We can get a bit fancier and customise the <code>emmeans</code> output to give us only what we want:</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a>emm <span class="ot">&lt;-</span> <span class="fu">emmeans</span>(mod_interact, <span class="sc">~</span> sex <span class="sc">+</span> age, <span class="at">type =</span> <span class="st">"response"</span>) <span class="co"># save the estimated risks</span></span>
+<span id="cb12-2"><a href="#cb12-2"></a>custom <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="st">`</span><span class="at">The effect of being male in younger individuals</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">0</span>),</span>
+<span id="cb12-3"><a href="#cb12-3"></a>               <span class="st">`</span><span class="at">The effect of being male in older individuals</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="sc">-</span><span class="dv">1</span>,<span class="dv">1</span>),</span>
+<span id="cb12-4"><a href="#cb12-4"></a>               <span class="st">`</span><span class="at">The effect of being older in females</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">0</span>),</span>
+<span id="cb12-5"><a href="#cb12-5"></a>               <span class="st">`</span><span class="at">The effect of being older in males</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="sc">-</span><span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">1</span>)) <span class="co"># create custom grid of RR's to estimate</span></span>
+<span id="cb12-6"><a href="#cb12-6"></a><span class="fu">contrast</span>(emm, custom) <span class="sc">|&gt;</span> </span>
+<span id="cb12-7"><a href="#cb12-7"></a>  <span class="fu">summary</span>(<span class="at">infer =</span> T) <span class="sc">|&gt;</span> </span>
+<span id="cb12-8"><a href="#cb12-8"></a>  <span class="fu">data.frame</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb12-9"><a href="#cb12-9"></a>  <span class="fu">flextable</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb12-10"><a href="#cb12-10"></a>  <span class="fu">colformat_double</span>(<span class="at">digits =</span> <span class="dv">3</span>, <span class="at">na_str =</span> <span class="st">"N/A"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb12-11"><a href="#cb12-11"></a>  <span class="fu">set_table_properties</span>(<span class="at">layout =</span> <span class="st">"autofit"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb12-12"><a href="#cb12-12"></a>  <span class="fu">height</span>(<span class="at">height =</span> <span class="dv">1</span>, <span class="at">unit =</span> <span class="st">"cm"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb12-13"><a href="#cb12-13"></a>  <span class="fu">hrule</span>(<span class="at">rule =</span> <span class="st">"atleast"</span>, <span class="at">part =</span> <span class="st">"header"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb12-14"><a href="#cb12-14"></a>  <span class="fu">align</span>(<span class="at">align =</span> <span class="st">"center"</span>, <span class="at">part =</span> <span class="st">"body"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb12-15"><a href="#cb12-15"></a>  <span class="fu">bg</span>(<span class="at">bg =</span> <span class="st">"white"</span>, <span class="at">part =</span> <span class="st">"all"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb12-16"><a href="#cb12-16"></a>  flextable<span class="sc">::</span><span class="fu">font</span>(<span class="at">fontname =</span> <span class="st">"Consolas"</span>, <span class="at">part =</span> <span class="st">"all"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb12-17"><a href="#cb12-17"></a>  <span class="fu">theme_vanilla</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+
+<div class="tabwid"><style>.cl-5ba76990{table-layout:auto;}.cl-5ba035da{font-family:'Consolas';font-size:11pt;font-weight:bold;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-5ba035e4{font-family:'Consolas';font-size:11pt;font-weight:normal;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-5ba332c6{margin:0;text-align:left;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-5ba332da{margin:0;text-align:right;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-5ba34680{height:0.25in;background-color:rgba(255, 255, 255, 1.00);vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-5ba3468a{height:0.25in;background-color:rgba(255, 255, 255, 1.00);vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-5ba34694{background-color:rgba(255, 255, 255, 1.00);vertical-align: middle;border-bottom: 0.75pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-5ba34695{background-color:rgba(255, 255, 255, 1.00);vertical-align: middle;border-bottom: 0.75pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-5ba3469e{background-color:rgba(255, 255, 255, 1.00);vertical-align: middle;border-bottom: 0.75pt solid rgba(102, 102, 102, 1.00);border-top: 0.75pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-5ba3469f{background-color:rgba(255, 255, 255, 1.00);vertical-align: middle;border-bottom: 0.75pt solid rgba(102, 102, 102, 1.00);border-top: 0.75pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-5ba346a0{background-color:rgba(255, 255, 255, 1.00);vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0.75pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-5ba346a8{background-color:rgba(255, 255, 255, 1.00);vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0.75pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}</style><table data-quarto-disable-processing="true" class="cl-5ba76990"><caption><p>Custom Pairwise Risk Ratios</p></caption><thead><tr style="overflow-wrap:break-word;"><th class="cl-5ba34680"><p class="cl-5ba332c6"><span class="cl-5ba035da">contrast</span></p></th><th class="cl-5ba3468a"><p class="cl-5ba332da"><span class="cl-5ba035da">ratio</span></p></th><th class="cl-5ba3468a"><p class="cl-5ba332da"><span class="cl-5ba035da">SE</span></p></th><th class="cl-5ba3468a"><p class="cl-5ba332da"><span class="cl-5ba035da">df</span></p></th><th class="cl-5ba3468a"><p class="cl-5ba332da"><span class="cl-5ba035da">asymp.LCL</span></p></th><th class="cl-5ba3468a"><p class="cl-5ba332da"><span class="cl-5ba035da">asymp.UCL</span></p></th><th class="cl-5ba3468a"><p class="cl-5ba332da"><span class="cl-5ba035da">null</span></p></th><th class="cl-5ba3468a"><p class="cl-5ba332da"><span class="cl-5ba035da">z.ratio</span></p></th><th class="cl-5ba3468a"><p class="cl-5ba332da"><span class="cl-5ba035da">p.value</span></p></th></tr></thead><tbody><tr style="overflow-wrap:break-word;"><td class="cl-5ba34694"><p class="cl-5ba332c6"><span class="cl-5ba035e4">The effect of being male in younger individuals</span></p></td><td class="cl-5ba34695"><p class="cl-5ba332da"><span class="cl-5ba035e4">1.767</span></p></td><td class="cl-5ba34695"><p class="cl-5ba332da"><span class="cl-5ba035e4">0.091</span></p></td><td class="cl-5ba34695"><p class="cl-5ba332da"><span class="cl-5ba035e4"> Inf</span></p></td><td class="cl-5ba34695"><p class="cl-5ba332da"><span class="cl-5ba035e4">1.597</span></p></td><td class="cl-5ba34695"><p class="cl-5ba332da"><span class="cl-5ba035e4">1.956</span></p></td><td class="cl-5ba34695"><p class="cl-5ba332da"><span class="cl-5ba035e4">1.000</span></p></td><td class="cl-5ba34695"><p class="cl-5ba332da"><span class="cl-5ba035e4">11.003</span></p></td><td class="cl-5ba34695"><p class="cl-5ba332da"><span class="cl-5ba035e4">0.000</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-5ba3469e"><p class="cl-5ba332c6"><span class="cl-5ba035e4">The effect of being male in older individuals</span></p></td><td class="cl-5ba3469f"><p class="cl-5ba332da"><span class="cl-5ba035e4">0.925</span></p></td><td class="cl-5ba3469f"><p class="cl-5ba332da"><span class="cl-5ba035e4">0.066</span></p></td><td class="cl-5ba3469f"><p class="cl-5ba332da"><span class="cl-5ba035e4"> Inf</span></p></td><td class="cl-5ba3469f"><p class="cl-5ba332da"><span class="cl-5ba035e4">0.804</span></p></td><td class="cl-5ba3469f"><p class="cl-5ba332da"><span class="cl-5ba035e4">1.065</span></p></td><td class="cl-5ba3469f"><p class="cl-5ba332da"><span class="cl-5ba035e4">1.000</span></p></td><td class="cl-5ba3469f"><p class="cl-5ba332da"><span class="cl-5ba035e4">-1.083</span></p></td><td class="cl-5ba3469f"><p class="cl-5ba332da"><span class="cl-5ba035e4">0.279</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-5ba3469e"><p class="cl-5ba332c6"><span class="cl-5ba035e4">The effect of being older in females</span></p></td><td class="cl-5ba3469f"><p class="cl-5ba332da"><span class="cl-5ba035e4">0.698</span></p></td><td class="cl-5ba3469f"><p class="cl-5ba332da"><span class="cl-5ba035e4">0.047</span></p></td><td class="cl-5ba3469f"><p class="cl-5ba332da"><span class="cl-5ba035e4"> Inf</span></p></td><td class="cl-5ba3469f"><p class="cl-5ba332da"><span class="cl-5ba035e4">0.612</span></p></td><td class="cl-5ba3469f"><p class="cl-5ba332da"><span class="cl-5ba035e4">0.796</span></p></td><td class="cl-5ba3469f"><p class="cl-5ba332da"><span class="cl-5ba035e4">1.000</span></p></td><td class="cl-5ba3469f"><p class="cl-5ba332da"><span class="cl-5ba035e4">-5.356</span></p></td><td class="cl-5ba3469f"><p class="cl-5ba332da"><span class="cl-5ba035e4">0.000</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-5ba346a0"><p class="cl-5ba332c6"><span class="cl-5ba035e4">The effect of being older in males</span></p></td><td class="cl-5ba346a8"><p class="cl-5ba332da"><span class="cl-5ba035e4">0.366</span></p></td><td class="cl-5ba346a8"><p class="cl-5ba332da"><span class="cl-5ba035e4">0.021</span></p></td><td class="cl-5ba346a8"><p class="cl-5ba332da"><span class="cl-5ba035e4"> Inf</span></p></td><td class="cl-5ba346a8"><p class="cl-5ba332da"><span class="cl-5ba035e4">0.327</span></p></td><td class="cl-5ba346a8"><p class="cl-5ba332da"><span class="cl-5ba035e4">0.409</span></p></td><td class="cl-5ba346a8"><p class="cl-5ba332da"><span class="cl-5ba035e4">1.000</span></p></td><td class="cl-5ba346a8"><p class="cl-5ba332da"><span class="cl-5ba035e4">-17.499</span></p></td><td class="cl-5ba346a8"><p class="cl-5ba332da"><span class="cl-5ba035e4">0.000</span></p></td></tr></tbody></table></div>
+</div>
+</div>
+<p>Note, that these match the manual calculations pretty well.</p>
+<p>Please take some time to learn about <code>emmeans</code> (or <code>margins</code> in <code>Stata</code>). It will make your life so much easier if you plan to have a career in research (and don’t always have access to a statistician).</p>
+
+
+<!-- -->
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  let localAlternateSentinel = 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  const viewSource = window.document.getElementById('quarto-view-source') ||
+                     window.document.getElementById('quarto-code-tools-source');
+  if (viewSource) {
+    const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+    viewSource.addEventListener("click", function(e) {
+      if (sourceUrl) {
+        // rstudio viewer pane
+        if (/\bcapabilities=\b/.test(window.location)) {
+          window.open(sourceUrl);
+        } else {
+          window.location.href = sourceUrl;
+        }
+      } else {
+        const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+        modal.show();
+      }
+      return false;
+    });
+  }
+  function toggleCodeHandler(show) {
+    return function(e) {
+      const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
+      for (let i=0; i<detailsSrc.length; i++) {
+        const details = detailsSrc[i].parentElement;
+        if (show) {
+          details.open = true;
+        } else {
+          details.removeAttribute("open");
+        }
+      }
+      const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
+      const fromCls = show ? "hidden" : "unhidden";
+      const toCls = show ? "unhidden" : "hidden";
+      for (let i=0; i<cellCodeDivs.length; i++) {
+        const codeDiv = cellCodeDivs[i];
+        if (codeDiv.classList.contains(fromCls)) {
+          codeDiv.classList.remove(fromCls);
+          codeDiv.classList.add(toCls);
+        } 
+      }
+      return false;
+    }
+  }
+  const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+  if (hideAllCode) {
+    hideAllCode.addEventListener("click", toggleCodeHandler(false));
+  }
+  const showAllCode = window.document.getElementById("quarto-show-all-code");
+  if (showAllCode) {
+    showAllCode.addEventListener("click", toggleCodeHandler(true));
+  }
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<script src="https://giscus.app/client.js" data-repo="pgseye/Weekly_Stats_Tips" data-repo-id="R_kgDOKvfOfQ" data-category="General" data-category-id="DIC_kwDOKvfOfc4CbFWq" data-mapping="title" data-reactions-enabled="1" data-emit-metadata="0" data-input-position="top" data-theme="light" data-lang="en" crossorigin="anonymous" async="">
+</script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="sourceCode" id="cb13" data-shortcodes="false"><pre class="sourceCode numberSource markdown number-lines code-with-copy"><code class="sourceCode markdown"><span id="cb13-1"><a href="#cb13-1"></a><span class="co">---</span></span>
+<span id="cb13-2"><a href="#cb13-2"></a><span class="an">title:</span><span class="co"> "Interactions (effect modifiers) are important - don't ignore them"</span></span>
+<span id="cb13-3"><a href="#cb13-3"></a><span class="an">date:</span><span class="co"> 2023-11-24</span></span>
+<span id="cb13-4"><a href="#cb13-4"></a><span class="an">categories:</span><span class="co"> [code, analysis, modelling]</span></span>
+<span id="cb13-5"><a href="#cb13-5"></a><span class="an">image:</span><span class="co"> interact_plot.jpg</span></span>
+<span id="cb13-6"><a href="#cb13-6"></a><span class="an">description:</span><span class="co"> "Keep an open mind to interactions in your next model."</span></span>
+<span id="cb13-7"><a href="#cb13-7"></a><span class="co">---</span></span>
+<span id="cb13-8"><a href="#cb13-8"></a></span>
+<span id="cb13-11"><a href="#cb13-11"></a><span class="in">```{r}</span></span>
+<span id="cb13-12"><a href="#cb13-12"></a><span class="co">#| label: setup</span></span>
+<span id="cb13-13"><a href="#cb13-13"></a><span class="fu">library</span>(knitr)</span>
+<span id="cb13-14"><a href="#cb13-14"></a><span class="fu">library</span>(quarto)</span>
+<span id="cb13-15"><a href="#cb13-15"></a><span class="fu">library</span>(emmeans)</span>
+<span id="cb13-16"><a href="#cb13-16"></a><span class="fu">library</span>(flextable)</span>
+<span id="cb13-17"><a href="#cb13-17"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb13-18"><a href="#cb13-18"></a><span class="fu">suppressPackageStartupMessages</span>(<span class="fu">library</span>(gtsummary))</span>
+<span id="cb13-19"><a href="#cb13-19"></a>opts_chunk<span class="sc">$</span><span class="fu">set</span>(<span class="at">echo =</span> T,</span>
+<span id="cb13-20"><a href="#cb13-20"></a>               <span class="at">cache =</span> F,</span>
+<span id="cb13-21"><a href="#cb13-21"></a>               <span class="at">prompt =</span> F,</span>
+<span id="cb13-22"><a href="#cb13-22"></a>               <span class="at">tidy =</span> F,</span>
+<span id="cb13-23"><a href="#cb13-23"></a>               <span class="at">message =</span> F,</span>
+<span id="cb13-24"><a href="#cb13-24"></a>               <span class="at">warning =</span> F)</span>
+<span id="cb13-25"><a href="#cb13-25"></a><span class="in">```</span></span>
+<span id="cb13-26"><a href="#cb13-26"></a></span>
+<span id="cb13-27"><a href="#cb13-27"></a><span class="kw">&lt;br&gt;</span></span>
+<span id="cb13-28"><a href="#cb13-28"></a></span>
+<span id="cb13-29"><a href="#cb13-29"></a><span class="fu">## The Question</span></span>
+<span id="cb13-30"><a href="#cb13-30"></a></span>
+<span id="cb13-31"><a href="#cb13-31"></a><span class="kw">&lt;details&gt;</span></span>
+<span id="cb13-32"><a href="#cb13-32"></a></span>
+<span id="cb13-33"><a href="#cb13-33"></a>Recall that the question this week was to choose between:</span>
+<span id="cb13-34"><a href="#cb13-34"></a></span>
+<span id="cb13-35"><a href="#cb13-35"></a>A<span class="sc">\)</span> Age is a confounder in the relationship between sex and hospitalisation from car crash.</span>
+<span id="cb13-36"><a href="#cb13-36"></a></span>
+<span id="cb13-37"><a href="#cb13-37"></a>B<span class="sc">\)</span> Age is an effect modifier in the relationship between sex and hospitalisation from car crash.</span>
+<span id="cb13-38"><a href="#cb13-38"></a></span>
+<span id="cb13-39"><a href="#cb13-39"></a>using the data supplied below.</span>
+<span id="cb13-40"><a href="#cb13-40"></a></span>
+<span id="cb13-41"><a href="#cb13-41"></a><span class="al">![](images/interact.png)</span></span>
+<span id="cb13-42"><a href="#cb13-42"></a></span>
+<span id="cb13-43"><a href="#cb13-43"></a><span class="kw">&lt;/details&gt;</span></span>
+<span id="cb13-44"><a href="#cb13-44"></a></span>
+<span id="cb13-45"><a href="#cb13-45"></a><span class="fu">## The Answer</span></span>
+<span id="cb13-46"><a href="#cb13-46"></a></span>
+<span id="cb13-47"><a href="#cb13-47"></a><span class="ss">-   </span>The answer is **B**. Younger male drivers tend to be more stupid and injure themselves more seriously than their female counterparts. Upon reaching a suitable age of maturity their risk of hospitalisation reduces to about the same (if we assume the 95% CI for the 8% reduction includes 0) as that for females.</span>
+<span id="cb13-48"><a href="#cb13-48"></a><span class="ss">-   </span>When a third variable plays a role in the association between an exposure and an outcome it may act as a confounder **OR** effect modifier (**AND** sometimes both).</span>
+<span id="cb13-49"><a href="#cb13-49"></a><span class="ss">-   </span>A simple confounder (e.g. age) will show the **same** exposure -<span class="sc">\&gt;</span> outcome association across all of its categories (e.g. same risk ratio in <span class="sc">\&lt;</span> 40 yrs and ≥ 40 yrs)</span>
+<span id="cb13-50"><a href="#cb13-50"></a><span class="ss">-   </span>An effect modifier will show **different** magnitudes of association across its categories (e.g. the risk ratio will differ in those <span class="sc">\&lt;</span> 40 yrs and ≥ 40 yrs).</span>
+<span id="cb13-51"><a href="#cb13-51"></a><span class="ss">-   </span>Stratification is the simplest form of exploring and adjusting for confounding/interaction effects (used before we had all this computing power).</span>
+<span id="cb13-52"><a href="#cb13-52"></a><span class="ss">-   </span>Subgroups of data are created for each category of confounder/effect modifier and estimates of interest (mean differences, risk ratios, etc) calculated in each.</span>
+<span id="cb13-53"><a href="#cb13-53"></a><span class="ss">-   </span>These can then be combined in a weighted manner to give an overall (adjusted) estimate if NO effect modification is present.</span>
+<span id="cb13-54"><a href="#cb13-54"></a><span class="ss">-   </span>This is equivalent to including the third variable as a covariate in our regression model (we now use models rather than stratification methods).</span>
+<span id="cb13-55"><a href="#cb13-55"></a><span class="ss">-   </span>Simple inclusion in the regression model (using <span class="in">`+`</span> in <span class="in">`R`</span>) FORCES the exposure -<span class="sc">\&gt;</span> outcome association to be the **same** across all categories of the effect modifier even if in reality it's not.</span>
+<span id="cb13-56"><a href="#cb13-56"></a><span class="ss">-   </span><span class="in">`+`</span> assumes confounding **ONLY** and **NO** effect modification.</span>
+<span id="cb13-57"><a href="#cb13-57"></a><span class="ss">-   </span>A problem arises, however, when the third variable is more an effect modifier, rather than confounder.</span>
+<span id="cb13-58"><a href="#cb13-58"></a><span class="ss">-   </span>If we suspect effect modification is present, we need to include this third variable in the model as an interaction term (using <span class="in">`*`</span> in <span class="in">`R`</span>)</span>
+<span id="cb13-59"><a href="#cb13-59"></a><span class="ss">-   </span>This will allow the exposure -<span class="sc">\&gt;</span> outcome association to **differ** across categories of the effect modifier.</span>
+<span id="cb13-60"><a href="#cb13-60"></a><span class="ss">-   </span><span class="in">`*`</span> assumes effect modification is present.</span>
+<span id="cb13-61"><a href="#cb13-61"></a><span class="ss">-   </span>This is a more flexible model specification, than simply 'adjusting' for a variable.</span>
+<span id="cb13-62"><a href="#cb13-62"></a><span class="ss">-   </span>Interpretation is a little more involved (always happy to help with this) but the point is it's important not to blindly assume a third variable can only ever be a confounder.</span>
+<span id="cb13-63"><a href="#cb13-63"></a><span class="ss">-   </span>If effect modification is present, you need to know about it.</span>
+<span id="cb13-64"><a href="#cb13-64"></a><span class="ss">-   </span>It is simple to test for effect modification in <span class="in">`R`</span>, <span class="in">`Stata`</span>, etc. Include the interaction term and then drop it if not clinically/statistically significant at some level.</span>
+<span id="cb13-65"><a href="#cb13-65"></a><span class="ss">-   </span>I have included some <span class="in">`R`</span> output below showing the equivalence of stratification and modelling approaches to interaction effects.</span>
+<span id="cb13-66"><a href="#cb13-66"></a></span>
+<span id="cb13-67"><a href="#cb13-67"></a>Before we get to that - a simple set of guidelines for how to think about crude vs stratified associations:</span>
+<span id="cb13-68"><a href="#cb13-68"></a></span>
+<span id="cb13-69"><a href="#cb13-69"></a><span class="al">![](images/guidelines.png)</span></span>
+<span id="cb13-70"><a href="#cb13-70"></a></span>
+<span id="cb13-71"><a href="#cb13-71"></a>Equivalence of model-derived crude estimate</span>
+<span id="cb13-72"><a href="#cb13-72"></a></span>
+<span id="cb13-73"><a href="#cb13-73"></a>Recall that the aggregated data that the crude estimate is calculated from is:</span>
+<span id="cb13-74"><a href="#cb13-74"></a></span>
+<span id="cb13-77"><a href="#cb13-77"></a><span class="in">```{r}</span></span>
+<span id="cb13-78"><a href="#cb13-78"></a><span class="co">#| label: aggregated_data</span></span>
+<span id="cb13-79"><a href="#cb13-79"></a>dat_agg <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">sex =</span> <span class="fu">c</span>(<span class="st">"Male"</span>, <span class="st">"Female"</span>),</span>
+<span id="cb13-80"><a href="#cb13-80"></a>                      <span class="at">hospitalised =</span> <span class="fu">as.numeric</span>(<span class="fu">c</span>(<span class="dv">1330</span>, <span class="dv">798</span>)), </span>
+<span id="cb13-81"><a href="#cb13-81"></a>                      <span class="at">not_hospitalised =</span> <span class="fu">as.numeric</span>(<span class="fu">c</span>(<span class="dv">7018</span>,<span class="dv">6400</span>)))</span>
+<span id="cb13-82"><a href="#cb13-82"></a>dat_agg</span>
+<span id="cb13-83"><a href="#cb13-83"></a><span class="in">```</span></span>
+<span id="cb13-84"><a href="#cb13-84"></a></span>
+<span id="cb13-85"><a href="#cb13-85"></a>To estimate this model in <span class="in">`R`</span> we essentially run a logistic regression but instead of outputting an odds ratio, we calculate a risk ratio by specifying a <span class="in">`log`</span> rather than the default <span class="in">`logit`</span> link. We will also use the aggregate model specification, as we don't have the individual-level data.</span>
+<span id="cb13-86"><a href="#cb13-86"></a></span>
+<span id="cb13-87"><a href="#cb13-87"></a>The model-derived crude risk ratio for <span class="in">`sex = 1.44 (95% CI 1.32, 1.56; p &lt; 0.001)`</span>. This is very close to the estimate that we initially calculated manually from the 2 x 2 table (<span class="in">`1.45`</span>).</span>
+<span id="cb13-88"><a href="#cb13-88"></a></span>
+<span id="cb13-91"><a href="#cb13-91"></a><span class="in">```{r}</span></span>
+<span id="cb13-92"><a href="#cb13-92"></a><span class="co">#| label: crude model</span></span>
+<span id="cb13-93"><a href="#cb13-93"></a>mod_crude <span class="ot">&lt;-</span> <span class="fu">glm</span>(<span class="fu">cbind</span>(hospitalised, not_hospitalised) <span class="sc">~</span> sex, <span class="at">data =</span> dat_agg, <span class="at">family =</span> <span class="fu">binomial</span>(<span class="at">link =</span> <span class="st">"log"</span>))</span>
+<span id="cb13-94"><a href="#cb13-94"></a><span class="fu">tbl_regression</span>(mod_crude, <span class="at">exp =</span> T)</span>
+<span id="cb13-95"><a href="#cb13-95"></a><span class="in">```</span></span>
+<span id="cb13-96"><a href="#cb13-96"></a></span>
+<span id="cb13-97"><a href="#cb13-97"></a><span class="fu">## Let's introduce age (\&lt;40 vs ≥ 40) as a third variable</span></span>
+<span id="cb13-98"><a href="#cb13-98"></a></span>
+<span id="cb13-101"><a href="#cb13-101"></a><span class="in">```{r}</span></span>
+<span id="cb13-102"><a href="#cb13-102"></a><span class="co">#| label: disaggregated_data</span></span>
+<span id="cb13-103"><a href="#cb13-103"></a>dat_disagg <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">sex =</span> <span class="fu">c</span>(<span class="st">"Male"</span>, <span class="st">"Female"</span>, <span class="st">"Male"</span>, <span class="st">"Female"</span>),</span>
+<span id="cb13-104"><a href="#cb13-104"></a>                         <span class="at">age =</span> <span class="fu">c</span>(<span class="st">"&lt; 40"</span>, <span class="st">"&lt; 40"</span>, <span class="st">"≥ 40"</span>, <span class="st">"≥ 40"</span>),</span>
+<span id="cb13-105"><a href="#cb13-105"></a>                         <span class="at">hospitalised =</span> <span class="fu">as.numeric</span>(<span class="fu">c</span>(<span class="dv">966</span>, <span class="dv">460</span>, <span class="dv">364</span>, <span class="dv">348</span>)), </span>
+<span id="cb13-106"><a href="#cb13-106"></a>                         <span class="at">not_hospitalised =</span> <span class="fu">as.numeric</span>(<span class="fu">c</span>(<span class="dv">3146</span>, <span class="dv">3000</span>, <span class="dv">3872</span>, <span class="dv">3400</span>)))</span>
+<span id="cb13-107"><a href="#cb13-107"></a>dat_disagg</span>
+<span id="cb13-108"><a href="#cb13-108"></a><span class="in">```</span></span>
+<span id="cb13-109"><a href="#cb13-109"></a></span>
+<span id="cb13-110"><a href="#cb13-110"></a><span class="fu">### Age as a confounder</span></span>
+<span id="cb13-111"><a href="#cb13-111"></a></span>
+<span id="cb13-112"><a href="#cb13-112"></a>For now, let's just assume age is a confounder in the association between sex and hospitalisation risk. The model formulation in <span class="in">`R`</span> is then:</span>
+<span id="cb13-113"><a href="#cb13-113"></a></span>
+<span id="cb13-114"><a href="#cb13-114"></a><span class="in">`mod_adj &lt;- glm(cbind(hospitalised, not_hospitalised) ~ sex + age, data = dat_agg, family = binomial(link = "log"))`</span></span>
+<span id="cb13-115"><a href="#cb13-115"></a></span>
+<span id="cb13-116"><a href="#cb13-116"></a>and the risk ratios we get are:</span>
+<span id="cb13-117"><a href="#cb13-117"></a></span>
+<span id="cb13-120"><a href="#cb13-120"></a><span class="in">```{r}</span></span>
+<span id="cb13-121"><a href="#cb13-121"></a><span class="co">#| label: adjusted model confounding</span></span>
+<span id="cb13-122"><a href="#cb13-122"></a>mod_confound <span class="ot">&lt;-</span> <span class="fu">glm</span>(<span class="fu">cbind</span>(hospitalised, not_hospitalised) <span class="sc">~</span> sex <span class="sc">+</span> age, <span class="at">data =</span> dat_disagg, <span class="at">family =</span> <span class="fu">binomial</span>(<span class="at">link =</span> <span class="st">"log"</span>))</span>
+<span id="cb13-123"><a href="#cb13-123"></a><span class="fu">tbl_regression</span>(mod_confound, <span class="at">exp =</span> T)</span>
+<span id="cb13-124"><a href="#cb13-124"></a><span class="in">```</span></span>
+<span id="cb13-125"><a href="#cb13-125"></a></span>
+<span id="cb13-126"><a href="#cb13-126"></a>So, what we are seeing here is that the magnitude of association between sex and hospitalisation risk is averaged (in a weighted way) over both categories of age to produce one effect estimate <span class="in">`sex = 1.43 (95% CI 1.32, 1.55; p &lt; 0.001)`</span>. This just so happens to be almost the same as the crude estimate when you ignore age altogether.</span>
+<span id="cb13-127"><a href="#cb13-127"></a></span>
+<span id="cb13-128"><a href="#cb13-128"></a>The effect for age in this model is such that whatever your sex, there is about a <span class="in">`53%`</span> reduction in the risk of hospitalisation if you are over 40 vs under 40. Note that in the stratification approach, you aren't able to calculate an effect for age because you are stratifying by it (essentially treating it as a nuisance variable).</span>
+<span id="cb13-129"><a href="#cb13-129"></a></span>
+<span id="cb13-130"><a href="#cb13-130"></a><span class="fu">### Age as an effect modifier</span></span>
+<span id="cb13-131"><a href="#cb13-131"></a></span>
+<span id="cb13-132"><a href="#cb13-132"></a>Now, let's correctly model age as an effect modifier in the association between sex and hospitalisation risk. The model formulation in <span class="in">`R`</span> is then (note the <span class="in">`*`</span> operator):</span>
+<span id="cb13-133"><a href="#cb13-133"></a></span>
+<span id="cb13-134"><a href="#cb13-134"></a><span class="in">`mod_adj &lt;- glm(cbind(hospitalised, not_hospitalised) ~ sex * age, data = dat_agg, family = binomial(link = "log"))`</span></span>
+<span id="cb13-135"><a href="#cb13-135"></a></span>
+<span id="cb13-136"><a href="#cb13-136"></a>and the risk ratios we get are:</span>
+<span id="cb13-137"><a href="#cb13-137"></a></span>
+<span id="cb13-140"><a href="#cb13-140"></a><span class="in">```{r}</span></span>
+<span id="cb13-141"><a href="#cb13-141"></a><span class="co">#| label: adjusted_model_effect_modification</span></span>
+<span id="cb13-142"><a href="#cb13-142"></a>mod_interact <span class="ot">&lt;-</span> <span class="fu">glm</span>(<span class="fu">cbind</span>(hospitalised, not_hospitalised) <span class="sc">~</span> sex <span class="sc">*</span> age, <span class="at">data =</span> dat_disagg, <span class="at">family =</span> <span class="fu">binomial</span>(<span class="at">link =</span> <span class="st">"log"</span>))</span>
+<span id="cb13-143"><a href="#cb13-143"></a><span class="fu">tbl_regression</span>(mod_interact, <span class="at">exp =</span> T)</span>
+<span id="cb13-144"><a href="#cb13-144"></a><span class="in">```</span></span>
+<span id="cb13-145"><a href="#cb13-145"></a></span>
+<span id="cb13-146"><a href="#cb13-146"></a>Note how the p value for the interaction term is very low - this would be a good indicator that the model fits the data better with the interaction term present than without it (i.e. assuming age as a confounder only).</span>
+<span id="cb13-147"><a href="#cb13-147"></a></span>
+<span id="cb13-148"><a href="#cb13-148"></a>As I mentioned earlier, the model interpretation with an interaction present does become a little more complicated, but let's break this down (note that I use "effect" in a non-causal way):</span>
+<span id="cb13-149"><a href="#cb13-149"></a></span>
+<span id="cb13-150"><a href="#cb13-150"></a><span class="ss">-   </span>The coefficient for <span class="in">`sex = 1.77 (95% CI 1.60, 1.96; p &lt; 0.001)`</span>. The represents the **"effect"** of sex (being male relative to female) on hospitalisation risk at the **reference level** of age, which in this case is the under 40 yrs group. So, for those under 40, there is about a <span class="in">`77%`</span> increased risk for males relative to females.</span>
+<span id="cb13-151"><a href="#cb13-151"></a></span>
+<span id="cb13-152"><a href="#cb13-152"></a><span class="ss">-   </span>The coefficient for <span class="in">`age = 0.70 (95% CI 0.61, 0.80; p &lt; 0.001)`</span>. This represents the **"effect"** of age (being older than 40 yrs relative to younger than 40 yrs) on hospitalisation risk at the **reference level** of sex, which in this case is female. So, for females, there is about a <span class="in">`30%`</span> risk reduction in the need for hospitalisation for older relative to younger drivers.</span>
+<span id="cb13-153"><a href="#cb13-153"></a></span>
+<span id="cb13-154"><a href="#cb13-154"></a><span class="ss">-   </span>The coefficient for the interaction term: <span class="in">`sex * age = 0.52 (95% CI 0.44, 0.62; p &lt; 0.001)`</span>. This represents the **multiplicative** increase in the magnitude of association for males over 40 yrs.</span>
+<span id="cb13-155"><a href="#cb13-155"></a></span>
+<span id="cb13-156"><a href="#cb13-156"></a><span class="fu">## Effect modification means more associations to estimate</span></span>
+<span id="cb13-157"><a href="#cb13-157"></a></span>
+<span id="cb13-158"><a href="#cb13-158"></a>In this specific case, when you treat age as a confounder, the model produces two risk ratios - one for <span class="in">`sex`</span> and one for <span class="in">`age`</span>. However, when you treat <span class="in">`age`</span> as an effect modifier, there are now four possible risk ratios to estimate (if you care about age more than it being a "nuisance" variable to control for). These are:</span>
+<span id="cb13-159"><a href="#cb13-159"></a></span>
+<span id="cb13-160"><a href="#cb13-160"></a><span class="ss">1.  </span>The effect of being male in younger individuals.</span>
+<span id="cb13-161"><a href="#cb13-161"></a><span class="ss">2.  </span>The effect of being male in older individuals.</span>
+<span id="cb13-162"><a href="#cb13-162"></a><span class="ss">3.  </span>The effect of being older in females.</span>
+<span id="cb13-163"><a href="#cb13-163"></a><span class="ss">4.  </span>The effect of being older in males.</span>
+<span id="cb13-164"><a href="#cb13-164"></a></span>
+<span id="cb13-165"><a href="#cb13-165"></a>You can easily enough work these out manually by multiplying the respective reference coefficients with the interaction coefficient. The risk ratios for each of the above would then be:</span>
+<span id="cb13-166"><a href="#cb13-166"></a></span>
+<span id="cb13-167"><a href="#cb13-167"></a><span class="ss">1.  </span><span class="in">`1.77`</span> (we can just read this one straight off the model output)</span>
+<span id="cb13-168"><a href="#cb13-168"></a><span class="ss">2.  </span><span class="in">`1.77 x 0.52 = 0.92`</span></span>
+<span id="cb13-169"><a href="#cb13-169"></a><span class="ss">3.  </span><span class="in">`0.70`</span> (again we can just read this one straight off)</span>
+<span id="cb13-170"><a href="#cb13-170"></a><span class="ss">4.  </span><span class="in">`0.70 x 0.52 = 0.36`</span></span>
+<span id="cb13-171"><a href="#cb13-171"></a></span>
+<span id="cb13-172"><a href="#cb13-172"></a>Note that the effects for 1. and 2. are very similar to what we calculated straight from the 2 x 2 tables (<span class="in">`1.84`</span> and <span class="in">`0.92`</span>, respectively - as previously mentioned, the effects for 3. and 4. aren't able to be calculated for the stratifying variable).</span>
+<span id="cb13-173"><a href="#cb13-173"></a></span>
+<span id="cb13-174"><a href="#cb13-174"></a><span class="fu">## Emmeans should be your new best friend</span></span>
+<span id="cb13-175"><a href="#cb13-175"></a></span>
+<span id="cb13-176"><a href="#cb13-176"></a>Perhaps I am preaching to the converted, but if you don't know what the <span class="in">`emmeans`</span> package and specific function in <span class="in">`R`</span> does, then you should learn about it (the equivalent function in <span class="in">`Stata`</span> is <span class="in">`margins`</span>).</span>
+<span id="cb13-177"><a href="#cb13-177"></a></span>
+<span id="cb13-178"><a href="#cb13-178"></a><span class="ot">&lt;https://cran.r-project.org/web/packages/emmeans/index.html&gt;</span></span>
+<span id="cb13-179"><a href="#cb13-179"></a></span>
+<span id="cb13-180"><a href="#cb13-180"></a><span class="ot">&lt;https://aosmith.rbind.io/2019/03/25/getting-started-with-emmeans/&gt;</span></span>
+<span id="cb13-181"><a href="#cb13-181"></a></span>
+<span id="cb13-182"><a href="#cb13-182"></a><span class="in">`emmeans`</span> does a lot of things, but perhaps its workhorse function is to allow you to take a model and calculate adjusted predictions (either at set values of covariates, or by 'averaging' over them). In this case, we can very easily use <span class="in">`emmeans`</span> to reproduce the manual calculations we just did.</span>
+<span id="cb13-183"><a href="#cb13-183"></a></span>
+<span id="cb13-186"><a href="#cb13-186"></a><span class="in">```{r}</span></span>
+<span id="cb13-187"><a href="#cb13-187"></a><span class="co">#| label: emmeans</span></span>
+<span id="cb13-188"><a href="#cb13-188"></a><span class="co">#| tbl-cap: Predicted Probabilities of Hospitalisation</span></span>
+<span id="cb13-189"><a href="#cb13-189"></a><span class="fu">emmeans</span>(mod_interact, <span class="sc">~</span> sex <span class="sc">+</span> age, <span class="at">type =</span> <span class="st">"response"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb13-190"><a href="#cb13-190"></a>  <span class="fu">data.frame</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb13-191"><a href="#cb13-191"></a>  <span class="fu">flextable</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb13-192"><a href="#cb13-192"></a>  <span class="fu">colformat_double</span>(<span class="at">digits =</span> <span class="dv">3</span>, <span class="at">na_str =</span> <span class="st">"N/A"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb13-193"><a href="#cb13-193"></a>  <span class="fu">set_table_properties</span>(<span class="at">layout =</span> <span class="st">"autofit"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb13-194"><a href="#cb13-194"></a>  <span class="fu">height</span>(<span class="at">height =</span> <span class="dv">1</span>, <span class="at">unit =</span> <span class="st">"cm"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb13-195"><a href="#cb13-195"></a>  <span class="fu">hrule</span>(<span class="at">rule =</span> <span class="st">"atleast"</span>, <span class="at">part =</span> <span class="st">"header"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb13-196"><a href="#cb13-196"></a>  <span class="fu">align</span>(<span class="at">align =</span> <span class="st">"center"</span>, <span class="at">part =</span> <span class="st">"body"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb13-197"><a href="#cb13-197"></a>  <span class="fu">bg</span>(<span class="at">bg =</span> <span class="st">"white"</span>, <span class="at">part =</span> <span class="st">"all"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb13-198"><a href="#cb13-198"></a>  flextable<span class="sc">::</span><span class="fu">font</span>(<span class="at">fontname =</span> <span class="st">"Consolas"</span>, <span class="at">part =</span> <span class="st">"all"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb13-199"><a href="#cb13-199"></a>  <span class="fu">theme_vanilla</span>()</span>
+<span id="cb13-200"><a href="#cb13-200"></a><span class="in">```</span></span>
+<span id="cb13-201"><a href="#cb13-201"></a></span>
+<span id="cb13-202"><a href="#cb13-202"></a>Specifying <span class="in">`type = "response"`</span> in the <span class="in">`emmeans`</span> call indicates that we want to calculate the outcome on the probability (i.e. risk) scale. It is simple enough to plot these predicted probabilities using the <span class="in">`emmip`</span> function in <span class="in">`emmeans`</span>.</span>
+<span id="cb13-203"><a href="#cb13-203"></a></span>
+<span id="cb13-206"><a href="#cb13-206"></a><span class="in">```{r}</span></span>
+<span id="cb13-207"><a href="#cb13-207"></a><span class="co">#| label: plot_risk_ratios</span></span>
+<span id="cb13-208"><a href="#cb13-208"></a><span class="fu">emmip</span>(mod_interact, age <span class="sc">~</span> sex, <span class="at">type =</span> <span class="st">"response"</span>) <span class="sc">+</span> </span>
+<span id="cb13-209"><a href="#cb13-209"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">18</span>)</span>
+<span id="cb13-210"><a href="#cb13-210"></a><span class="in">```</span></span>
+<span id="cb13-211"><a href="#cb13-211"></a></span>
+<span id="cb13-212"><a href="#cb13-212"></a>To get the risk ratios we have been working with until now, we simply add the <span class="in">`pairs(rev = T)`</span> function to the call:</span>
+<span id="cb13-213"><a href="#cb13-213"></a></span>
+<span id="cb13-216"><a href="#cb13-216"></a><span class="in">```{r}</span></span>
+<span id="cb13-217"><a href="#cb13-217"></a><span class="co">#| label: risk_ratios</span></span>
+<span id="cb13-218"><a href="#cb13-218"></a><span class="co">#| tbl-cap: All Pairwise Risk Ratios</span></span>
+<span id="cb13-219"><a href="#cb13-219"></a><span class="fu">emmeans</span>(mod_interact, <span class="sc">~</span> sex <span class="sc">+</span> age, <span class="at">type =</span> <span class="st">"response"</span>) <span class="sc">|&gt;</span> <span class="fu">pairs</span>(<span class="at">rev =</span> T) <span class="sc">|&gt;</span> </span>
+<span id="cb13-220"><a href="#cb13-220"></a>  <span class="fu">data.frame</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb13-221"><a href="#cb13-221"></a>  <span class="fu">flextable</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb13-222"><a href="#cb13-222"></a>  <span class="fu">colformat_double</span>(<span class="at">digits =</span> <span class="dv">3</span>, <span class="at">na_str =</span> <span class="st">"N/A"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb13-223"><a href="#cb13-223"></a>  <span class="fu">set_table_properties</span>(<span class="at">layout =</span> <span class="st">"autofit"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb13-224"><a href="#cb13-224"></a>  <span class="fu">height</span>(<span class="at">height =</span> <span class="dv">1</span>, <span class="at">unit =</span> <span class="st">"cm"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb13-225"><a href="#cb13-225"></a>  <span class="fu">hrule</span>(<span class="at">rule =</span> <span class="st">"atleast"</span>, <span class="at">part =</span> <span class="st">"header"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb13-226"><a href="#cb13-226"></a>  <span class="fu">align</span>(<span class="at">align =</span> <span class="st">"center"</span>, <span class="at">part =</span> <span class="st">"body"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb13-227"><a href="#cb13-227"></a>  <span class="fu">bg</span>(<span class="at">bg =</span> <span class="st">"white"</span>, <span class="at">part =</span> <span class="st">"all"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb13-228"><a href="#cb13-228"></a>  flextable<span class="sc">::</span><span class="fu">font</span>(<span class="at">fontname =</span> <span class="st">"Consolas"</span>, <span class="at">part =</span> <span class="st">"all"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb13-229"><a href="#cb13-229"></a>  <span class="fu">theme_vanilla</span>()</span>
+<span id="cb13-230"><a href="#cb13-230"></a><span class="in">```</span></span>
+<span id="cb13-231"><a href="#cb13-231"></a></span>
+<span id="cb13-232"><a href="#cb13-232"></a>Note that this gives us two extra comparisons we might not really want (the 3rd and 4th lines of the output) as it estimates every single pairwise comparison. We can get a bit fancier and customise the <span class="in">`emmeans`</span> output to give us only what we want:</span>
+<span id="cb13-233"><a href="#cb13-233"></a></span>
+<span id="cb13-236"><a href="#cb13-236"></a><span class="in">```{r}</span></span>
+<span id="cb13-237"><a href="#cb13-237"></a><span class="co">#| label: risk_ratios_custom</span></span>
+<span id="cb13-238"><a href="#cb13-238"></a><span class="co">#| tbl-cap: Custom Pairwise Risk Ratios</span></span>
+<span id="cb13-239"><a href="#cb13-239"></a>emm <span class="ot">&lt;-</span> <span class="fu">emmeans</span>(mod_interact, <span class="sc">~</span> sex <span class="sc">+</span> age, <span class="at">type =</span> <span class="st">"response"</span>) <span class="co"># save the estimated risks</span></span>
+<span id="cb13-240"><a href="#cb13-240"></a>custom <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="st">`</span><span class="at">The effect of being male in younger individuals</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">0</span>),</span>
+<span id="cb13-241"><a href="#cb13-241"></a>               <span class="st">`</span><span class="at">The effect of being male in older individuals</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="sc">-</span><span class="dv">1</span>,<span class="dv">1</span>),</span>
+<span id="cb13-242"><a href="#cb13-242"></a>               <span class="st">`</span><span class="at">The effect of being older in females</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">0</span>),</span>
+<span id="cb13-243"><a href="#cb13-243"></a>               <span class="st">`</span><span class="at">The effect of being older in males</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="sc">-</span><span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">1</span>)) <span class="co"># create custom grid of RR's to estimate</span></span>
+<span id="cb13-244"><a href="#cb13-244"></a><span class="fu">contrast</span>(emm, custom) <span class="sc">|&gt;</span> </span>
+<span id="cb13-245"><a href="#cb13-245"></a>  <span class="fu">summary</span>(<span class="at">infer =</span> T) <span class="sc">|&gt;</span> </span>
+<span id="cb13-246"><a href="#cb13-246"></a>  <span class="fu">data.frame</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb13-247"><a href="#cb13-247"></a>  <span class="fu">flextable</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb13-248"><a href="#cb13-248"></a>  <span class="fu">colformat_double</span>(<span class="at">digits =</span> <span class="dv">3</span>, <span class="at">na_str =</span> <span class="st">"N/A"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb13-249"><a href="#cb13-249"></a>  <span class="fu">set_table_properties</span>(<span class="at">layout =</span> <span class="st">"autofit"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb13-250"><a href="#cb13-250"></a>  <span class="fu">height</span>(<span class="at">height =</span> <span class="dv">1</span>, <span class="at">unit =</span> <span class="st">"cm"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb13-251"><a href="#cb13-251"></a>  <span class="fu">hrule</span>(<span class="at">rule =</span> <span class="st">"atleast"</span>, <span class="at">part =</span> <span class="st">"header"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb13-252"><a href="#cb13-252"></a>  <span class="fu">align</span>(<span class="at">align =</span> <span class="st">"center"</span>, <span class="at">part =</span> <span class="st">"body"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb13-253"><a href="#cb13-253"></a>  <span class="fu">bg</span>(<span class="at">bg =</span> <span class="st">"white"</span>, <span class="at">part =</span> <span class="st">"all"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb13-254"><a href="#cb13-254"></a>  flextable<span class="sc">::</span><span class="fu">font</span>(<span class="at">fontname =</span> <span class="st">"Consolas"</span>, <span class="at">part =</span> <span class="st">"all"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb13-255"><a href="#cb13-255"></a>  <span class="fu">theme_vanilla</span>()</span>
+<span id="cb13-256"><a href="#cb13-256"></a><span class="in">```</span></span>
+<span id="cb13-257"><a href="#cb13-257"></a></span>
+<span id="cb13-258"><a href="#cb13-258"></a>Note, that these match the manual calculations pretty well.</span>
+<span id="cb13-259"><a href="#cb13-259"></a></span>
+<span id="cb13-260"><a href="#cb13-260"></a>Please take some time to learn about <span class="in">`emmeans`</span> (or <span class="in">`margins`</span> in <span class="in">`Stata`</span>). It will make your life so much easier if you plan to have a career in research (and don't always have access to a statistician).</span>
+</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div></div></div></div></div>
+</div> <!-- /content -->
+
+
+
+</body></html>

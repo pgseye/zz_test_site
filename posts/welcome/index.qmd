@@ -1,0 +1,17 @@
+---
+title: "Stats Tips - Welcome"
+date: 2023-11-22
+categories: [news]
+image: hello_world.jpg
+description: "Welcome to what I hope can become a useful stats resource."
+---
+
+Hi Everyone,
+
+I'm not sure how much everyone's getting out of the stats tips that I put on WhatsApp on Fridays, but maybe some of it is helpful. For those of you who are interested, I thought that if I was going to do this on a semi-regular basis, I might as well turn it into a resource. So I am having a go at a blog-style format for posting these tips. It also means I can more easily illustrate concepts where needed with code, etc. And it also helps to not overload your WhatsApp with a bunch of text. Some posts will be short and some will be longer and I may not be able to put something up every week, depending on workload, but will do my best. I hope it's something people find useful.
+
+Some general housekeeping:
+
+-   You can view and copy the code as blocks just before each set of output (there will be a `Copy to Clipboard` button at the top right of each code block); or by clicking the `</> Code` button at the top right of the page, then `View Source` and copying the entire block.
+-   There is a light/dark mode toggle on the top right of the page, depending on how you like to view your internet.
+-   Feel free to add any comments/questions to a post and/or provide general feedback.

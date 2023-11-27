@@ -1,0 +1,5 @@
+"0","#| label: aggregated data"
+"0","dat_agg <- data.frame(sex = c(""Male"", ""Female""),"
+"0","                      hospitalised = as.numeric(c(1330, 798)), "
+"0","                      not_hospitalised = as.numeric(c(7018,6400)))"
+"0","dat_agg"

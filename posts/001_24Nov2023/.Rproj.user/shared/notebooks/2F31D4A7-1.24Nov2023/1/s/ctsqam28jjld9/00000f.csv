@@ -1,0 +1,4 @@
+"0","#| label: adjusted model effect modification"
+"0","mod_interact <- glm(cbind(hospitalised, not_hospitalised) ~ sex * age, data = dat_disagg, family = binomial(link = ""log""))"
+"0","tbl_regression(mod_interact,"
+"0","               exp = T)"

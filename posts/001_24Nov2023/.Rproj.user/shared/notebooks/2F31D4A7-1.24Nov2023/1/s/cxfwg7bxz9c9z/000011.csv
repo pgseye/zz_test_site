@@ -1,0 +1,4 @@
+"0","#| label: crude model"
+"0","mod_crude <- glm(cbind(hospitalised, not_hospitalised) ~ sex, data = dat_agg, family = binomial(link = ""log""))"
+"0","tbl_regression(mod_crude,"
+"0","               exp = T)"

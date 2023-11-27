@@ -1,0 +1,18 @@
+"0","#| label: setup"
+"0","library(knitr)"
+"0","library(quarto)"
+"2","Registered S3 methods overwritten by 'htmltools':
+  method               from         
+  print.html           tools:rstudio
+  print.shiny.tag      tools:rstudio
+  print.shiny.tag.list tools:rstudio
+"
+"0","library(emmeans)"
+"0","library(gtsummary)"
+"0","opts_chunk$set(echo = T,"
+"0","               cache = F,"
+"0","               prompt = F,"
+"0","               tidy = F,"
+"0","               comment = NA,"
+"0","               message = F,"
+"0","               warning = F)"

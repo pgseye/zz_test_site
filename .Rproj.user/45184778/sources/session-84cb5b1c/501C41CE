@@ -1,0 +1,29 @@
+{
+    "id": "501C41CE",
+    "path": "~/Dropbox/Alfred Neuroscience/zz_test_site/posts/002_01Dec_2023/index.qmd",
+    "project_path": "posts/002_01Dec_2023/index.qmd",
+    "type": "quarto_markdown",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1701079878693.0,
+    "source_on_save": false,
+    "relative_order": 5,
+    "properties": {
+        "rmdVisualMode": "true",
+        "rmdVisualWrapConfigured": "true",
+        "source_window_id": "",
+        "Source": "Source",
+        "docOutlineVisible": "1",
+        "rmdVisualCollapsedChunks": "",
+        "rmdVisualModeLocation": "2:0"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1700988258,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1700988258,
+    "read_only": false,
+    "read_only_alternatives": []
+}
