@@ -1,0 +1,14 @@
+---
+title: "Immortal time bias - \"The fallacy that never dies\" (Part 1)"
+date: 2024-02-09
+categories: [concept, survival]
+#image: 
+description: "Learn why this misattribution of time in a survival analysis can seriously bias your results."
+---
+
+```{r}
+dat <- read.csv("https://raw.githubusercontent.com/pgseye/data/main/heart.csv", header = T)
+
+#data(heart, package="survival")
+head(dat)
+```

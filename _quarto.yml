@@ -4,6 +4,7 @@ project:
 website:
   title: "Test Site"
   navbar:
+    search: true
     right:
       - text: All Posts
         href: index.qmd
