@@ -49,6 +49,14 @@ If you choose the incorrect door to start with (for which there is a 66.7% chanc
 
 What I think is cool about this problem is that while the result might seem counterintuitive to how we naturally process chance, using Bayesian reasoning provides a formulaic way to get at the right answer. This again uses conditional probabilities as I introduced them a few weeks ago. Bayesian thinking is about utilising prior knowledge in conjunction with new data to improve or update our knowledge (whereas the Frequentist approach to statistics doesn't care so much about prior knowledge and instead just uses the data at hand).
 
+::: {.callout-important appearance="simple"}
+
+## Important Concept
+
+Bayesian reasoning enables the analysis of data under the light of prior knowledge.
+
+:::
+
 Bayes Theorem can be written as:
 
 $$
@@ -59,7 +67,7 @@ where $\theta$ could be a particular parameter or hypothesis.
 
 Here:
 
-$Pr(data | \theta)$ is the likelihood function (the **evidence**, or what we measure)
+$Pr(data | \theta)$ is the likelihood function (the **data**, or what we measure)
 
 $Pr(\theta)$ is the **prior probability of our hypothesis** (prior knowledge before we the measurement)
 
@@ -107,7 +115,7 @@ $Pr(\text{Monty opens door 3} | \text{car behind door 3}) = 0\%$
 
 Monty won't reveal the car as part of his playing rules.
 
-These are the likelihoods or the **evidence**.
+These are the likelihoods or the **data**.
 
 The $Pr(\text{Monty opens door 3})$ is a little trickier to calculate. Here we don't need to worry about the car being behind any specific door, only that Monty won't reveal it. Intuitively, this would be $50\%$ as he only has two doors to choose from. But you can also work this out by summing the product of each of the prior probabilities and the evidence:
 
