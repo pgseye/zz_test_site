@@ -88,7 +88,7 @@
     "href": "posts/004_09Feb_2024/index.html",
     "title": "Immortal time bias - “The fallacy that never dies” (Part 1)",
     "section": "",
-    "text": "Code\ndat &lt;- read.csv(\"https://raw.githubusercontent.com/pgseye/data/main/heart.csv\", header = T)\n\n#data(heart, package=\"survival\")\nhead(dat)\n\n\n\n\n\n\nstart\nstop\nevent\nage\nyear\nsurgery\ntransplant\nid\n\n\n\n\n0\n50\n1\n-17.155373\n0.1232033\n0\n0\n1\n\n\n0\n6\n1\n3.835729\n0.2546201\n0\n0\n2\n\n\n0\n1\n0\n6.297057\n0.2655715\n0\n0\n3\n\n\n1\n16\n1\n6.297057\n0.2655715\n0\n1\n3\n\n\n0\n36\n0\n-7.737166\n0.4900753\n0\n0\n4\n\n\n36\n39\n1\n-7.737166\n0.4900753\n0\n1\n4"
+    "text": "In 2001, a paper was published in the Annals of Internal Medicine\n\n\nCode\ndat &lt;- read.csv(\"https://raw.githubusercontent.com/pgseye/data/main/heart.csv\", header = T)\n\n#data(heart, package=\"survival\")\nhead(dat)\n\n\n\n\n\n\nstart\nstop\nevent\nage\nyear\nsurgery\ntransplant\nid\n\n\n\n\n0\n50\n1\n-17.155373\n0.1232033\n0\n0\n1\n\n\n0\n6\n1\n3.835729\n0.2546201\n0\n0\n2\n\n\n0\n1\n0\n6.297057\n0.2655715\n0\n0\n3\n\n\n1\n16\n1\n6.297057\n0.2655715\n0\n1\n3\n\n\n0\n36\n0\n-7.737166\n0.4900753\n0\n0\n4\n\n\n36\n39\n1\n-7.737166\n0.4900753\n0\n1\n4"
   },
   {
     "objectID": "posts/003_08Dec_2023/index.html",

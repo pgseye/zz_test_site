@@ -6,6 +6,8 @@ categories: [concept, survival]
 description: "Learn why this misattribution of time in a survival analysis can seriously bias your results."
 ---
 
+In 2001, a [paper](https://pubmed.ncbi.nlm.nih.gov/11352696/ "https://pubmed.ncbi.nlm.nih.gov/11352696/"){style="color: #1a0dab"} was published in the *Annals of Internal Medicine*
+
 ```{r}
 dat <- read.csv("https://raw.githubusercontent.com/pgseye/data/main/heart.csv", header = T)
 
