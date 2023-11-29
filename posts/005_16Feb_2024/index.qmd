@@ -1,0 +1,12 @@
+---
+title: "Immortal time bias - \"The fallacy that never dies\" (Part 2)"
+date: 2024-02-16
+categories: [code, analysis, modelling, survival, visualisation]
+#image: 
+description: "Let's investigate immortal time bias with a coded example."
+---
+
+```{r}
+data(heart, package="survival")
+head(jasa)
+```

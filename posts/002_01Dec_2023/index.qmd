@@ -50,11 +50,9 @@ If you choose the incorrect door to start with (for which there is a 66.7% chanc
 What I think is cool about this problem is that while the result might seem counterintuitive to how we naturally process chance, using Bayesian reasoning provides a formulaic way to get at the right answer. This again uses conditional probabilities as I introduced them a few weeks ago. Bayesian thinking is about utilising prior knowledge in conjunction with new data to improve or update our knowledge (whereas the Frequentist approach to statistics doesn't care so much about prior knowledge and instead just uses the data at hand).
 
 ::: {.callout-important appearance="simple"}
-
 ## Important Concept
 
 Bayesian reasoning enables the analysis of data under the light of prior knowledge.
-
 :::
 
 Bayes Theorem can be written as:
