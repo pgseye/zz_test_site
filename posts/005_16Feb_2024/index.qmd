@@ -6,12 +6,16 @@ categories: [code, analysis, modelling, survival, visualisation]
 description: "Let's investigate immortal time bias with a coded example."
 ---
 
+Last week I introduced the concept of immortal time bias and how it can distort associations in your survival analysis, if you naively misclassify unexposed/untreated observation time as exposed/treated. This week I am going to illustrate the concept with some data and `R` code. It would have been good to analyse the Oscar Winner's data but as I could not locate that, instead we are going to look at [one of the first studies](https://www.jstor.org/stable/2286902 "https://www.jstor.org/stable/2286902"){style="color: #1f7de6"} in which immortal time bias was subsequently recognised to be a problem.
+
+he design or analysis will lead to immortal time bias. The first recorded instance of bias from immortal time in epidemiology was in the early 1970s in the context of two cohort studies from Texas and Stanford University (Palo Alto, California) of the benefit of heart transplantation (15, 16). In the Texas Heart Institute study, the survival time of 15 patients who received a heart transplant (mean 111 days, including the waiting time from acceptance for a trans- plant until transplantation) was found to be longer than the survival of 42 potential recipients who were accepted for a transplant but did not receive one (mean 74 days) (15). In the Stanford Heart Transplant study, the survival of 20 pa- tients who received a heart transplant (mean 200 days after transplantation) was found to be longer than the survival of 14 potential recipients who did not receive a transplant (mean 34 days) (16). Gail (17) identified a source of bias in these two studies stemming from a relevant portion of follow-up time--- namely, the waiting time of all patients who survived to make it to the transplant---that was not properly accounted for in the data analysis. Indeed, because this portion of the follow-up time was classified as exposed to transplantation instead of unexposed, it offered a guaranteed survival time to the transplanted group. As a result, by not being correctly classified, this immortal time produced an artificial increase in the mortality rate of the reference group, thus suggesting a benefit of heart transplant surgery. In a reanalysis of the Stanford Heart Transplant data, Mantel and Byar (18) found that the apparent major survival advantage of the trans- planted group disappears when the immortal time is prop- erly accounted for by a time-dependent analysis (hazard ratio (HR) 1⁄4 0.93, p 1⁄4 0.9).
+
 ```{r}
 #| message: false
 #| warning: false
 library(survival)
 library(survminer)
-data(heart, package="survival")
+data(heart, package = "survival")
 head(jasa)
 ```
 
@@ -38,7 +42,6 @@ temp |> # Use this to sort 2 groups in plot
   theme(axis.text.y = element_text(size = 15))
 ```
 
-
 ```{r}
 fit <- survfit(Surv(futime, fustat) ~ transplant, data = jasa)
 ggsurvplot(fit,
@@ -55,4 +58,3 @@ ggsurvplot(fit,
 mod <- coxph(Surv(futime, fustat) ~ transplant, data = jasa)
 summary(mod)
 ```
-

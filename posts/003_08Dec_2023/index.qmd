@@ -6,7 +6,7 @@ categories: [fun, code, visualisation]
 description: "Ho, Ho, Ho"
 ---
 
-This figure was made using `ggplot2` and while I can't take credit for coming up with the idea ([source](https://t-redactyl.io/blog/2016/12/a-very-ggplot2-christmas.html "https://t-redactyl.io/blog/2016/12/a-very-ggplot2-christmas.html"){style="color: #1a0dab"}), I have added a couple of flourishes including the animated lights.
+This figure was made using `ggplot2` and while I can't take credit for coming up with the idea ([source](https://t-redactyl.io/blog/2016/12/a-very-ggplot2-christmas.html "https://t-redactyl.io/blog/2016/12/a-very-ggplot2-christmas.html"){style="color: #1f7de6"}), I have added a couple of flourishes including the animated lights.
 
 I hope everyone has a safe, happy and enjoyable holiday period.
 
