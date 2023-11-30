@@ -12,6 +12,8 @@ The work came out of Stanford University in the early 1970s and assessed the sur
 
 The immortal time bias here involves the waiting time of those patients who survived to make it to the transplant. Because this portion of the observation time was classified as exposed to transplantation instead of unexposed, it offered a guaranteed survival time to the transplanted group. The result of this misclassification was to produce an artificial increase in the mortality rate of the reference group, thus suggesting a benefit of heart transplant surgery. In a later reanalysis of the data, the apparent survival benefit of the transplanted group disappeared when the immortal time was properly accounted for by a time-dependent analysis.
 
+## Load data
+
 As this study is considered a canonical example of immortal time bias, the data comes built into `R`'s `survival` package. We can load the data as below.
 
 ```{r}
@@ -34,7 +36,9 @@ The variables that we're going to use are:
 
 -   `transplant` - the 'treatment/exposure' variable; 0 = did not receive heart, 1 = received heart.
 
-We can now plot the individual survival trajectories for the 103 patients in the study. Note that I have stratified observation time by transplant status.
+## Visualise individual survival trajectories
+
+We can now plot the individual observation times for the 103 patients in the study. Note that I have stratified observation time by transplant status.
 
 ```{r}
 #| label: survival trajectories
@@ -60,6 +64,10 @@ temp |>
   theme_bw(base_size = 15) +
   theme(axis.text.y = element_text(size = 15))
 ```
+
+## Naive analysis assuming treatment status is time-fixed
+
+### Visualise survival curves
 
 ```{r}
 fit <- survfit(Surv(futime, fustat) ~ transplant, data = jasa)
