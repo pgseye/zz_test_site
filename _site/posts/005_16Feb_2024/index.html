@@ -145,6 +145,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#naive-analysis-assuming-treatment-status-is-time-fixed" id="toc-naive-analysis-assuming-treatment-status-is-time-fixed" class="nav-link" data-scroll-target="#naive-analysis-assuming-treatment-status-is-time-fixed"><span class="header-section-number">3</span> Naive analysis assuming treatment status is time-fixed</a>
   <ul class="collapse">
   <li><a href="#visualise-survival-curves" id="toc-visualise-survival-curves" class="nav-link" data-scroll-target="#visualise-survival-curves"><span class="header-section-number">3.1</span> Visualise survival curves</a></li>
+  <li><a href="#cox-model" id="toc-cox-model" class="nav-link" data-scroll-target="#cox-model"><span class="header-section-number">3.2</span> Cox model</a></li>
+  </ul></li>
+  <li><a href="#correct-analysis-assuming-treatment-status-is-time-varying" id="toc-correct-analysis-assuming-treatment-status-is-time-varying" class="nav-link" data-scroll-target="#correct-analysis-assuming-treatment-status-is-time-varying"><span class="header-section-number">4</span> Correct analysis assuming treatment status is time-varying</a>
+  <ul class="collapse">
+  <li><a href="#visualise-survival-curves-1" id="toc-visualise-survival-curves-1" class="nav-link" data-scroll-target="#visualise-survival-curves-1"><span class="header-section-number">4.1</span> Visualise survival curves</a></li>
+  <li><a href="#cox-model-1" id="toc-cox-model-1" class="nav-link" data-scroll-target="#cox-model-1"><span class="header-section-number">4.2</span> Cox model</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -192,14 +198,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>The immortal time bias here involves the waiting time of those patients who survived to make it to the transplant. Because this portion of the observation time was classified as exposed to transplantation instead of unexposed, it offered a guaranteed survival time to the transplanted group. The result of this misclassification was to produce an artificial increase in the mortality rate of the reference group, thus suggesting a benefit of heart transplant surgery. In a later reanalysis of the data, the apparent survival benefit of the transplanted group disappeared when the immortal time was properly accounted for by a time-dependent analysis.</p>
 <section id="load-data" class="level2" data-number="1">
 <h2 data-number="1" class="anchored" data-anchor-id="load-data"><span class="header-section-number">1</span> Load data</h2>
-<p>As this study is considered a canonical example of immortal time bias, the data comes built into <code>R</code>’s <code>survival</code> package. We can load the data as below.</p>
+<p>As this study is considered a canonical example of immortal time bias, the data comes built into <code>R</code>’s <code>survival</code> package. We can load the data and inspect the relevant <code>jasa</code> dataframe as below.</p>
 <div class="cell">
 <details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">library</span>(survival)</span>
 <span id="cb1-2"><a href="#cb1-2"></a><span class="fu">library</span>(survminer)</span>
-<span id="cb1-3"><a href="#cb1-3"></a><span class="fu">data</span>(heart, <span class="at">package =</span> <span class="st">"survival"</span>)</span>
-<span id="cb1-4"><a href="#cb1-4"></a><span class="fu">head</span>(jasa)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="fu">library</span>(gtsummary)</span>
+<span id="cb1-4"><a href="#cb1-4"></a><span class="fu">data</span>(heart, <span class="at">package =</span> <span class="st">"survival"</span>)</span>
+<span id="cb1-5"><a href="#cb1-5"></a><span class="fu">head</span>(jasa)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div class="kable-table">
@@ -350,7 +357,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="visualise-individual-survival-trajectories" class="level2" data-number="2">
 <h2 data-number="2" class="anchored" data-anchor-id="visualise-individual-survival-trajectories"><span class="header-section-number">2</span> Visualise individual survival trajectories</h2>
-<p>We can now plot the individual observation times for the 103 patients in the study. Note that I have stratified observation time by transplant status.</p>
+<p>Using a bit of <code>ggplot2</code> magic, we can now plot the individual observation times for the 103 patients in the study. Note that I have stratified observation time by transplant status (<font color="#E7B800">orange</font> for the period a patient remains untransplanted and <font color="#2E9FDF">blue</font> for the period following a transplant).</p>
 <div class="cell">
 <details>
 <summary>Code</summary>
@@ -373,7 +380,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-17"><a href="#cb2-17"></a>  <span class="fu">ylab</span>(<span class="st">"Time (days)"</span>) <span class="sc">+</span></span>
 <span id="cb2-18"><a href="#cb2-18"></a>  <span class="fu">xlab</span>(<span class="st">"Patient Number"</span>) <span class="sc">+</span> </span>
 <span id="cb2-19"><a href="#cb2-19"></a>  <span class="fu">coord_flip</span>() <span class="sc">+</span> </span>
-<span id="cb2-20"><a href="#cb2-20"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">15</span>) <span class="sc">+</span></span>
+<span id="cb2-20"><a href="#cb2-20"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">20</span>) <span class="sc">+</span></span>
 <span id="cb2-21"><a href="#cb2-21"></a>  <span class="fu">theme</span>(<span class="at">axis.text.y =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">15</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
@@ -385,47 +392,1003 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 data-number="3" class="anchored" data-anchor-id="naive-analysis-assuming-treatment-status-is-time-fixed"><span class="header-section-number">3</span> Naive analysis assuming treatment status is time-fixed</h2>
 <section id="visualise-survival-curves" class="level3" data-number="3.1">
 <h3 data-number="3.1" class="anchored" data-anchor-id="visualise-survival-curves"><span class="header-section-number">3.1</span> Visualise survival curves</h3>
+<p>Plotting the <strong>Kaplan-Meier</strong> survival curves are easy by first saving the <code>survfit</code> object:</p>
+<p><code>fit &lt;- survfit(Surv(futime, fustat) ~ transplant, data = jasa)</code></p>
+<p>and then passing this <code>ggsurvplot</code> which does a nicer job of plotting survival data then using <code>R</code>’s <code>base</code> functions. Note that we ignore <code>wait.time</code> and only specify <code>futime</code> in our fit function. This is because we are assuming if a patient was transplanted, the entire duration of their observation period was considered as such.</p>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">survfit</span>(<span class="fu">Surv</span>(futime, fustat) <span class="sc">~</span> transplant, <span class="at">data =</span> jasa)</span>
-<span id="cb3-2"><a href="#cb3-2"></a><span class="fu">ggsurvplot</span>(fit,</span>
-<span id="cb3-3"><a href="#cb3-3"></a>          <span class="at">pval =</span> <span class="cn">TRUE</span>, <span class="at">conf.int =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb3-4"><a href="#cb3-4"></a>          <span class="at">risk.table =</span> <span class="cn">TRUE</span>, <span class="co"># Add risk table</span></span>
-<span id="cb3-5"><a href="#cb3-5"></a>          <span class="at">risk.table.col =</span> <span class="st">"strata"</span>, <span class="co"># Change risk table color by groups</span></span>
-<span id="cb3-6"><a href="#cb3-6"></a>          <span class="at">linetype =</span> <span class="st">"strata"</span>, <span class="co"># Change line type by groups</span></span>
-<span id="cb3-7"><a href="#cb3-7"></a>          <span class="at">surv.median.line =</span> <span class="st">"hv"</span>, <span class="co"># Specify median survival</span></span>
-<span id="cb3-8"><a href="#cb3-8"></a>          <span class="at">ggtheme =</span> <span class="fu">theme_bw</span>(), <span class="co"># Change ggplot2 theme</span></span>
-<span id="cb3-9"><a href="#cb3-9"></a>          <span class="at">palette =</span> <span class="fu">c</span>(<span class="st">"#E7B800"</span>, <span class="st">"#2E9FDF"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>fit_naive <span class="ot">&lt;-</span> <span class="fu">survfit</span>(<span class="fu">Surv</span>(futime, fustat) <span class="sc">~</span> transplant, <span class="at">data =</span> jasa)</span>
+<span id="cb3-2"><a href="#cb3-2"></a><span class="fu">ggsurvplot</span>(fit_naive,</span>
+<span id="cb3-3"><a href="#cb3-3"></a>          <span class="at">risk.table =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb3-4"><a href="#cb3-4"></a>          <span class="at">risk.table.col =</span> <span class="st">"strata"</span>,</span>
+<span id="cb3-5"><a href="#cb3-5"></a>          <span class="at">linetype =</span> <span class="st">"strata"</span>,</span>
+<span id="cb3-6"><a href="#cb3-6"></a>          <span class="at">surv.median.line =</span> <span class="st">"hv"</span>,</span>
+<span id="cb3-7"><a href="#cb3-7"></a>          <span class="at">ggtheme =</span> <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">20</span>),</span>
+<span id="cb3-8"><a href="#cb3-8"></a>          <span class="at">palette =</span> <span class="fu">c</span>(<span class="st">"#E7B800"</span>, <span class="st">"#2E9FDF"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid" width="1152"></p>
+<p><img src="index_files/figure-html/naive KM curve-1.png" class="img-fluid" width="1152"></p>
 </div>
 </div>
+</section>
+<section id="cox-model" class="level3" data-number="3.2">
+<h3 data-number="3.2" class="anchored" data-anchor-id="cox-model"><span class="header-section-number">3.2</span> Cox model</h3>
+<p>Fitting a Cox model is also simple with:</p>
+<p><code>mod_naive &lt;- coxph(Surv(futime, fustat) ~ transplant, data = jasa)</code></p>
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>mod <span class="ot">&lt;-</span> <span class="fu">coxph</span>(<span class="fu">Surv</span>(futime, fustat) <span class="sc">~</span> transplant, <span class="at">data =</span> jasa)</span>
-<span id="cb4-2"><a href="#cb4-2"></a><span class="fu">summary</span>(mod)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>mod_naive <span class="ot">&lt;-</span> <span class="fu">coxph</span>(<span class="fu">Surv</span>(futime, fustat) <span class="sc">~</span> transplant, <span class="at">data =</span> jasa)</span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="fu">tbl_regression</span>(mod_naive, <span class="at">exp =</span> T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-stdout">
-<pre><code>Call:
-coxph(formula = Surv(futime, fustat) ~ transplant, data = jasa)
+<div class="cell-output-display">
 
-  n= 103, number of events= 75 
+<div id="bgaqumhqly" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#bgaqumhqly table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
 
-              coef exp(coef) se(coef)      z Pr(&gt;|z|)    
-transplant -1.3234    0.2662   0.2438 -5.428 5.69e-08 ***
----
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+#bgaqumhqly thead, #bgaqumhqly tbody, #bgaqumhqly tfoot, #bgaqumhqly tr, #bgaqumhqly td, #bgaqumhqly th {
+  border-style: none;
+}
 
-           exp(coef) exp(-coef) lower .95 upper .95
-transplant    0.2662      3.756    0.1651    0.4293
+#bgaqumhqly p {
+  margin: 0;
+  padding: 0;
+}
 
-Concordance= 0.668  (se = 0.025 )
-Likelihood ratio test= 25.95  on 1 df,   p=4e-07
-Wald test            = 29.47  on 1 df,   p=6e-08
-Score (logrank) test = 33.38  on 1 df,   p=8e-09</code></pre>
+#bgaqumhqly .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#bgaqumhqly .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#bgaqumhqly .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#bgaqumhqly .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#bgaqumhqly .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#bgaqumhqly .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#bgaqumhqly .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#bgaqumhqly .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#bgaqumhqly .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#bgaqumhqly .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#bgaqumhqly .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#bgaqumhqly .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#bgaqumhqly .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#bgaqumhqly .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#bgaqumhqly .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#bgaqumhqly .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#bgaqumhqly .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#bgaqumhqly .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#bgaqumhqly .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#bgaqumhqly .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#bgaqumhqly .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#bgaqumhqly .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#bgaqumhqly .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#bgaqumhqly .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#bgaqumhqly .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#bgaqumhqly .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#bgaqumhqly .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#bgaqumhqly .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#bgaqumhqly .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#bgaqumhqly .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#bgaqumhqly .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#bgaqumhqly .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#bgaqumhqly .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#bgaqumhqly .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#bgaqumhqly .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#bgaqumhqly .gt_left {
+  text-align: left;
+}
+
+#bgaqumhqly .gt_center {
+  text-align: center;
+}
+
+#bgaqumhqly .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#bgaqumhqly .gt_font_normal {
+  font-weight: normal;
+}
+
+#bgaqumhqly .gt_font_bold {
+  font-weight: bold;
+}
+
+#bgaqumhqly .gt_font_italic {
+  font-style: italic;
+}
+
+#bgaqumhqly .gt_super {
+  font-size: 65%;
+}
+
+#bgaqumhqly .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#bgaqumhqly .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#bgaqumhqly .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#bgaqumhqly .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#bgaqumhqly .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#bgaqumhqly .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#bgaqumhqly .gt_indent_5 {
+  text-indent: 25px;
+}
+</style>
+<table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+  <thead>
+    
+    <tr class="gt_col_headings">
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="<strong>Characteristic</strong>"><strong>Characteristic</strong></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="<strong>HR</strong><span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;&quot;><sup>1</sup></span>"><strong>HR</strong><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>1</sup></span></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="<strong>95% CI</strong><span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;&quot;><sup>1</sup></span>"><strong>95% CI</strong><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>1</sup></span></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="<strong>p-value</strong>"><strong>p-value</strong></th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr><td headers="label" class="gt_row gt_left">transplant</td>
+<td headers="estimate" class="gt_row gt_center">0.27</td>
+<td headers="ci" class="gt_row gt_center">0.17, 0.43</td>
+<td headers="p.value" class="gt_row gt_center">&lt;0.001</td></tr>
+  </tbody>
+  
+  <tfoot class="gt_footnotes">
+    <tr>
+      <td class="gt_footnote" colspan="4"><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>1</sup></span> HR = Hazard Ratio, CI = Confidence Interval</td>
+    </tr>
+  </tfoot>
+</table>
+</div>
+</div>
+</div>
+<p>This gives a <code>HR = 0.27 (95% CI 0.17, 0.43; p &lt; 0.001)</code> indicating that there is about a 73% reduction in the risk of death with transplantation. Pretty effective, right?</p>
+</section>
+</section>
+<section id="correct-analysis-assuming-treatment-status-is-time-varying" class="level2" data-number="4">
+<h2 data-number="4" class="anchored" data-anchor-id="correct-analysis-assuming-treatment-status-is-time-varying"><span class="header-section-number">4</span> Correct analysis assuming treatment status is time-varying</h2>
+<p>Up until now we have just used the data as it’s been presented to us. Each patient has a single observation with all information about them contained in that row of data. However, to perform the correct time-dependent analysis we first need to construct a time-varying version of the treatment (i.e.&nbsp;transplant) variable. This data format is known as <strong>‘counting process’</strong> and in the general case involves creating potentially multiple rows of data for each patient with each row corresponding to a different exposure/treatment period of that patients observation time. In this specific example, we will create an additional row of data for transplanted patients splitting time at the point of transplant, so that the first row contains the time from acceptance into the transplant program to the point of transplant, and the second row contains the time from transplant to either death or censoring. We specify this in <strong>‘start, stop’</strong> format rather than the duration of the interval itself. We use the <code>tmerge</code> <a href="https://www.rdocumentation.org/packages/survival/versions/3.5-7/topics/tmerge" style="color: #1f7de6">function</a> to do this.</p>
+<section id="visualise-survival-curves-1" class="level3" data-number="4.1">
+<h3 data-number="4.1" class="anchored" data-anchor-id="visualise-survival-curves-1"><span class="header-section-number">4.1</span> Visualise survival curves</h3>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>fit_correct <span class="ot">&lt;-</span> <span class="fu">survfit</span>(<span class="fu">Surv</span>(start, stop, event) <span class="sc">~</span> transplant, <span class="at">data =</span> jasa1)</span>
+<span id="cb5-2"><a href="#cb5-2"></a><span class="fu">ggsurvplot</span>(fit_correct,</span>
+<span id="cb5-3"><a href="#cb5-3"></a>          <span class="at">risk.table =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb5-4"><a href="#cb5-4"></a>          <span class="at">risk.table.col =</span> <span class="st">"strata"</span>,</span>
+<span id="cb5-5"><a href="#cb5-5"></a>          <span class="at">linetype =</span> <span class="st">"strata"</span>,</span>
+<span id="cb5-6"><a href="#cb5-6"></a>          <span class="at">surv.median.line =</span> <span class="st">"hv"</span>,</span>
+<span id="cb5-7"><a href="#cb5-7"></a>          <span class="at">ggtheme =</span> <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">20</span>),</span>
+<span id="cb5-8"><a href="#cb5-8"></a>          <span class="at">palette =</span> <span class="fu">c</span>(<span class="st">"#E7B800"</span>, <span class="st">"#2E9FDF"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/correct KM curve-1.png" class="img-fluid" width="1152"></p>
+</div>
+</div>
+</section>
+<section id="cox-model-1" class="level3" data-number="4.2">
+<h3 data-number="4.2" class="anchored" data-anchor-id="cox-model-1"><span class="header-section-number">4.2</span> Cox model</h3>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a>mod_correct <span class="ot">&lt;-</span> <span class="fu">coxph</span>(<span class="fu">Surv</span>(start, stop, event) <span class="sc">~</span> transplant, <span class="at">data =</span> jasa1)</span>
+<span id="cb6-2"><a href="#cb6-2"></a><span class="fu">tbl_regression</span>(mod_correct, <span class="at">exp =</span> T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+
+<div id="hgaihtxwwl" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#hgaihtxwwl table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#hgaihtxwwl thead, #hgaihtxwwl tbody, #hgaihtxwwl tfoot, #hgaihtxwwl tr, #hgaihtxwwl td, #hgaihtxwwl th {
+  border-style: none;
+}
+
+#hgaihtxwwl p {
+  margin: 0;
+  padding: 0;
+}
+
+#hgaihtxwwl .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#hgaihtxwwl .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#hgaihtxwwl .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#hgaihtxwwl .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#hgaihtxwwl .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#hgaihtxwwl .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#hgaihtxwwl .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#hgaihtxwwl .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#hgaihtxwwl .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#hgaihtxwwl .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#hgaihtxwwl .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#hgaihtxwwl .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#hgaihtxwwl .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#hgaihtxwwl .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#hgaihtxwwl .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#hgaihtxwwl .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#hgaihtxwwl .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#hgaihtxwwl .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#hgaihtxwwl .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#hgaihtxwwl .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#hgaihtxwwl .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#hgaihtxwwl .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#hgaihtxwwl .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#hgaihtxwwl .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#hgaihtxwwl .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#hgaihtxwwl .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#hgaihtxwwl .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#hgaihtxwwl .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#hgaihtxwwl .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#hgaihtxwwl .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#hgaihtxwwl .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#hgaihtxwwl .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#hgaihtxwwl .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#hgaihtxwwl .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#hgaihtxwwl .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#hgaihtxwwl .gt_left {
+  text-align: left;
+}
+
+#hgaihtxwwl .gt_center {
+  text-align: center;
+}
+
+#hgaihtxwwl .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#hgaihtxwwl .gt_font_normal {
+  font-weight: normal;
+}
+
+#hgaihtxwwl .gt_font_bold {
+  font-weight: bold;
+}
+
+#hgaihtxwwl .gt_font_italic {
+  font-style: italic;
+}
+
+#hgaihtxwwl .gt_super {
+  font-size: 65%;
+}
+
+#hgaihtxwwl .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#hgaihtxwwl .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#hgaihtxwwl .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#hgaihtxwwl .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#hgaihtxwwl .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#hgaihtxwwl .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#hgaihtxwwl .gt_indent_5 {
+  text-indent: 25px;
+}
+</style>
+<table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+  <thead>
+    
+    <tr class="gt_col_headings">
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="<strong>Characteristic</strong>"><strong>Characteristic</strong></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="<strong>HR</strong><span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;&quot;><sup>1</sup></span>"><strong>HR</strong><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>1</sup></span></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="<strong>95% CI</strong><span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;&quot;><sup>1</sup></span>"><strong>95% CI</strong><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>1</sup></span></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="<strong>p-value</strong>"><strong>p-value</strong></th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr><td headers="label" class="gt_row gt_left">transplant</td>
+<td headers="estimate" class="gt_row gt_center">1.13</td>
+<td headers="ci" class="gt_row gt_center">0.63, 2.04</td>
+<td headers="p.value" class="gt_row gt_center">0.7</td></tr>
+  </tbody>
+  
+  <tfoot class="gt_footnotes">
+    <tr>
+      <td class="gt_footnote" colspan="4"><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>1</sup></span> HR = Hazard Ratio, CI = Confidence Interval</td>
+    </tr>
+  </tfoot>
+</table>
+</div>
 </div>
 </div>
 
@@ -837,93 +1800,135 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <script src="https://giscus.app/client.js" data-repo="pgseye/Weekly_Stats_Tips" data-repo-id="R_kgDOKvfOfQ" data-category="General" data-category-id="DIC_kwDOKvfOfc4CbFWq" data-mapping="title" data-reactions-enabled="1" data-emit-metadata="0" data-input-position="top" data-theme="light" data-lang="en" crossorigin="anonymous" async="">
 </script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
-<div class="sourceCode" id="cb6" data-shortcodes="false"><pre class="sourceCode numberSource markdown number-lines code-with-copy"><code class="sourceCode markdown"><span id="cb6-1"><a href="#cb6-1"></a><span class="co">---</span></span>
-<span id="cb6-2"><a href="#cb6-2"></a><span class="an">title:</span><span class="co"> "Immortal time bias - \"The fallacy that never dies\" (Part 2)"</span></span>
-<span id="cb6-3"><a href="#cb6-3"></a><span class="an">date:</span><span class="co"> 2024-02-16</span></span>
-<span id="cb6-4"><a href="#cb6-4"></a><span class="an">categories:</span><span class="co"> [code, analysis, modelling, survival, visualisation]</span></span>
-<span id="cb6-5"><a href="#cb6-5"></a><span class="co">#image: </span></span>
-<span id="cb6-6"><a href="#cb6-6"></a><span class="an">description:</span><span class="co"> "Let's investigate immortal time bias with a coded example."</span></span>
-<span id="cb6-7"><a href="#cb6-7"></a><span class="co">---</span></span>
-<span id="cb6-8"><a href="#cb6-8"></a></span>
-<span id="cb6-9"><a href="#cb6-9"></a>Last week I introduced the concept of immortal time bias and how it can distort associations in your survival analysis, if you naively misclassify unexposed/untreated observation time as exposed/treated. This week I am going to illustrate the concept with some data and <span class="in">`R`</span> code. It would have been good to analyse the Oscar Winner's data but as I could not locate that anywhere online, we are instead going to look at <span class="co">[</span><span class="ot">one of the first studies</span><span class="co">](https://www.jstor.org/stable/2286902 "https://www.jstor.org/stable/2286902")</span>{style="color: #1f7de6"} in which immortal time bias was subsequently recognised to be a problem.</span>
-<span id="cb6-10"><a href="#cb6-10"></a></span>
-<span id="cb6-11"><a href="#cb6-11"></a>The work came out of Stanford University in the early 1970s and assessed the survival benefit of potential heart transplant recipients. In the analysis, the event of interest was death and the primary treatment was heart transplantation - so survival amongst transplant recipients was compared to that amongst accepted patients into the program that did not end up receiving a transplant. Treatment was initially considered **time-fixed** and the patients divided into two groups - '*ever transplanted*' vs '*never transplanted*'. Survival time amongst recipients was found to be longer than those who didn't receive transplantation.</span>
-<span id="cb6-12"><a href="#cb6-12"></a></span>
-<span id="cb6-13"><a href="#cb6-13"></a>The immortal time bias here involves the waiting time of those patients who survived to make it to the transplant. Because this portion of the observation time was classified as exposed to transplantation instead of unexposed, it offered a guaranteed survival time to the transplanted group. The result of this misclassification was to produce an artificial increase in the mortality rate of the reference group, thus suggesting a benefit of heart transplant surgery. In a later reanalysis of the data, the apparent survival benefit of the transplanted group disappeared when the immortal time was properly accounted for by a time-dependent analysis.</span>
-<span id="cb6-14"><a href="#cb6-14"></a></span>
-<span id="cb6-15"><a href="#cb6-15"></a><span class="fu">## Load data</span></span>
-<span id="cb6-16"><a href="#cb6-16"></a></span>
-<span id="cb6-17"><a href="#cb6-17"></a>As this study is considered a canonical example of immortal time bias, the data comes built into <span class="in">`R`</span>'s <span class="in">`survival`</span> package. We can load the data as below.</span>
-<span id="cb6-18"><a href="#cb6-18"></a></span>
-<span id="cb6-21"><a href="#cb6-21"></a><span class="in">```{r}</span></span>
-<span id="cb6-22"><a href="#cb6-22"></a><span class="co">#| label: load data</span></span>
-<span id="cb6-23"><a href="#cb6-23"></a><span class="co">#| message: false</span></span>
-<span id="cb6-24"><a href="#cb6-24"></a><span class="co">#| warning: false</span></span>
-<span id="cb6-25"><a href="#cb6-25"></a><span class="fu">library</span>(survival)</span>
-<span id="cb6-26"><a href="#cb6-26"></a><span class="fu">library</span>(survminer)</span>
-<span id="cb6-27"><a href="#cb6-27"></a><span class="fu">data</span>(heart, <span class="at">package =</span> <span class="st">"survival"</span>)</span>
-<span id="cb6-28"><a href="#cb6-28"></a><span class="fu">head</span>(jasa)</span>
-<span id="cb6-29"><a href="#cb6-29"></a><span class="in">```</span></span>
-<span id="cb6-30"><a href="#cb6-30"></a></span>
-<span id="cb6-31"><a href="#cb6-31"></a>The variables that we're going to use are:</span>
-<span id="cb6-32"><a href="#cb6-32"></a></span>
-<span id="cb6-33"><a href="#cb6-33"></a><span class="ss">-   </span><span class="in">`fustat`</span> - the 'event' variable; 0 = alive, 1 = dead at the end of follow-up.</span>
-<span id="cb6-34"><a href="#cb6-34"></a></span>
-<span id="cb6-35"><a href="#cb6-35"></a><span class="ss">-   </span><span class="in">`futime`</span> - the primary 'time' variable; time (days) from acceptance into the transplant program until death or censoring.</span>
-<span id="cb6-36"><a href="#cb6-36"></a></span>
-<span id="cb6-37"><a href="#cb6-37"></a><span class="ss">-   </span><span class="in">`wait.time`</span> - the secondary 'time' variable; time (days) from acceptance into the transplant program until receiving a heart if transplanted (<span class="in">`NA`</span> for those who never underwent transplant surgery).</span>
-<span id="cb6-38"><a href="#cb6-38"></a></span>
-<span id="cb6-39"><a href="#cb6-39"></a><span class="ss">-   </span><span class="in">`transplant`</span> - the 'treatment/exposure' variable; 0 = did not receive heart, 1 = received heart.</span>
-<span id="cb6-40"><a href="#cb6-40"></a></span>
-<span id="cb6-41"><a href="#cb6-41"></a><span class="fu">## Visualise individual survival trajectories</span></span>
-<span id="cb6-42"><a href="#cb6-42"></a></span>
-<span id="cb6-43"><a href="#cb6-43"></a>We can now plot the individual observation times for the 103 patients in the study. Note that I have stratified observation time by transplant status.</span>
-<span id="cb6-44"><a href="#cb6-44"></a></span>
-<span id="cb6-47"><a href="#cb6-47"></a><span class="in">```{r}</span></span>
-<span id="cb6-48"><a href="#cb6-48"></a><span class="co">#| label: survival trajectories</span></span>
-<span id="cb6-49"><a href="#cb6-49"></a><span class="co"># Create 'id' variable</span></span>
-<span id="cb6-50"><a href="#cb6-50"></a>jasa<span class="sc">$</span>id <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">dim</span>(jasa)[<span class="dv">1</span>])</span>
-<span id="cb6-51"><a href="#cb6-51"></a><span class="co"># Copy to temp df</span></span>
-<span id="cb6-52"><a href="#cb6-52"></a>temp <span class="ot">&lt;-</span> jasa</span>
-<span id="cb6-53"><a href="#cb6-53"></a><span class="co"># Replace wait.time with futime if didn't undergo transplant</span></span>
-<span id="cb6-54"><a href="#cb6-54"></a>temp<span class="sc">$</span>wait.time[<span class="fu">is.na</span>(temp<span class="sc">$</span>wait.time)] <span class="ot">&lt;-</span> temp<span class="sc">$</span>futime[<span class="fu">is.na</span>(temp<span class="sc">$</span>wait.time)]</span>
-<span id="cb6-55"><a href="#cb6-55"></a><span class="co"># Plot</span></span>
-<span id="cb6-56"><a href="#cb6-56"></a>temp <span class="sc">|&gt;</span></span>
-<span id="cb6-57"><a href="#cb6-57"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> id, <span class="at">y =</span> futime)) <span class="sc">+</span></span>
-<span id="cb6-58"><a href="#cb6-58"></a>  <span class="fu">geom_linerange</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> <span class="dv">0</span>, <span class="at">ymax =</span> wait.time), <span class="at">color =</span> <span class="st">"#E7B800"</span>, <span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
-<span id="cb6-59"><a href="#cb6-59"></a>  <span class="fu">geom_linerange</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> wait.time, <span class="at">ymax =</span> futime), <span class="at">color =</span> <span class="st">"#2E9FDF"</span>, <span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
-<span id="cb6-60"><a href="#cb6-60"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">shape =</span> <span class="fu">factor</span>(fustat)), <span class="at">stroke =</span> <span class="dv">1</span>, <span class="at">cex =</span> <span class="dv">1</span>, <span class="at">color =</span> <span class="st">"black"</span>) <span class="sc">+</span></span>
-<span id="cb6-61"><a href="#cb6-61"></a>  <span class="fu">scale_shape_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">3</span>), <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Censored"</span>, <span class="st">"Died"</span>), <span class="at">name =</span> <span class="st">"Outcome"</span>) <span class="sc">+</span></span>
-<span id="cb6-62"><a href="#cb6-62"></a>  <span class="fu">annotate</span>(<span class="st">"text"</span>, <span class="at">x =</span> <span class="dv">95</span>, <span class="at">y =</span> <span class="dv">1400</span>, <span class="at">label =</span> <span class="st">"Observation time = yellow - untransplanted"</span>, <span class="at">size =</span> <span class="dv">5</span>, <span class="at">color =</span> <span class="st">"#E7B800"</span>) <span class="sc">+</span></span>
-<span id="cb6-63"><a href="#cb6-63"></a>  <span class="fu">annotate</span>(<span class="st">"text"</span>, <span class="at">x =</span> <span class="dv">92</span>, <span class="at">y =</span> <span class="dv">1380</span>, <span class="at">label =</span> <span class="st">"Observation time = blue - post-transplant"</span>, <span class="at">size =</span> <span class="dv">5</span>, <span class="at">color =</span> <span class="st">"#2E9FDF"</span>) <span class="sc">+</span></span>
-<span id="cb6-64"><a href="#cb6-64"></a>  <span class="fu">ggtitle</span>(<span class="st">"Survival Trajectories for Heart Transplant Patients"</span>) <span class="sc">+</span>   </span>
-<span id="cb6-65"><a href="#cb6-65"></a>  <span class="fu">ylab</span>(<span class="st">"Time (days)"</span>) <span class="sc">+</span></span>
-<span id="cb6-66"><a href="#cb6-66"></a>  <span class="fu">xlab</span>(<span class="st">"Patient Number"</span>) <span class="sc">+</span> </span>
-<span id="cb6-67"><a href="#cb6-67"></a>  <span class="fu">coord_flip</span>() <span class="sc">+</span> </span>
-<span id="cb6-68"><a href="#cb6-68"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">15</span>) <span class="sc">+</span></span>
-<span id="cb6-69"><a href="#cb6-69"></a>  <span class="fu">theme</span>(<span class="at">axis.text.y =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">15</span>))</span>
-<span id="cb6-70"><a href="#cb6-70"></a><span class="in">```</span></span>
-<span id="cb6-71"><a href="#cb6-71"></a></span>
-<span id="cb6-72"><a href="#cb6-72"></a><span class="fu">## Naive analysis assuming treatment status is time-fixed</span></span>
-<span id="cb6-73"><a href="#cb6-73"></a></span>
-<span id="cb6-74"><a href="#cb6-74"></a><span class="fu">### Visualise survival curves</span></span>
-<span id="cb6-75"><a href="#cb6-75"></a></span>
-<span id="cb6-78"><a href="#cb6-78"></a><span class="in">```{r}</span></span>
-<span id="cb6-79"><a href="#cb6-79"></a>fit <span class="ot">&lt;-</span> <span class="fu">survfit</span>(<span class="fu">Surv</span>(futime, fustat) <span class="sc">~</span> transplant, <span class="at">data =</span> jasa)</span>
-<span id="cb6-80"><a href="#cb6-80"></a><span class="fu">ggsurvplot</span>(fit,</span>
-<span id="cb6-81"><a href="#cb6-81"></a>          <span class="at">pval =</span> <span class="cn">TRUE</span>, <span class="at">conf.int =</span> <span class="cn">TRUE</span>,</span>
-<span id="cb6-82"><a href="#cb6-82"></a>          <span class="at">risk.table =</span> <span class="cn">TRUE</span>, <span class="co"># Add risk table</span></span>
-<span id="cb6-83"><a href="#cb6-83"></a>          <span class="at">risk.table.col =</span> <span class="st">"strata"</span>, <span class="co"># Change risk table color by groups</span></span>
-<span id="cb6-84"><a href="#cb6-84"></a>          <span class="at">linetype =</span> <span class="st">"strata"</span>, <span class="co"># Change line type by groups</span></span>
-<span id="cb6-85"><a href="#cb6-85"></a>          <span class="at">surv.median.line =</span> <span class="st">"hv"</span>, <span class="co"># Specify median survival</span></span>
-<span id="cb6-86"><a href="#cb6-86"></a>          <span class="at">ggtheme =</span> <span class="fu">theme_bw</span>(), <span class="co"># Change ggplot2 theme</span></span>
-<span id="cb6-87"><a href="#cb6-87"></a>          <span class="at">palette =</span> <span class="fu">c</span>(<span class="st">"#E7B800"</span>, <span class="st">"#2E9FDF"</span>))</span>
-<span id="cb6-88"><a href="#cb6-88"></a><span class="in">```</span></span>
-<span id="cb6-89"><a href="#cb6-89"></a></span>
-<span id="cb6-92"><a href="#cb6-92"></a><span class="in">```{r}</span></span>
-<span id="cb6-93"><a href="#cb6-93"></a>mod <span class="ot">&lt;-</span> <span class="fu">coxph</span>(<span class="fu">Surv</span>(futime, fustat) <span class="sc">~</span> transplant, <span class="at">data =</span> jasa)</span>
-<span id="cb6-94"><a href="#cb6-94"></a><span class="fu">summary</span>(mod)</span>
-<span id="cb6-95"><a href="#cb6-95"></a><span class="in">```</span></span>
+<div class="sourceCode" id="cb7" data-shortcodes="false"><pre class="sourceCode numberSource markdown number-lines code-with-copy"><code class="sourceCode markdown"><span id="cb7-1"><a href="#cb7-1"></a><span class="co">---</span></span>
+<span id="cb7-2"><a href="#cb7-2"></a><span class="an">title:</span><span class="co"> "Immortal time bias - \"The fallacy that never dies\" (Part 2)"</span></span>
+<span id="cb7-3"><a href="#cb7-3"></a><span class="an">date:</span><span class="co"> 2024-02-16</span></span>
+<span id="cb7-4"><a href="#cb7-4"></a><span class="an">categories:</span><span class="co"> [code, analysis, modelling, survival, visualisation]</span></span>
+<span id="cb7-5"><a href="#cb7-5"></a><span class="co">#image: </span></span>
+<span id="cb7-6"><a href="#cb7-6"></a><span class="an">description:</span><span class="co"> "Let's investigate immortal time bias with a coded example."</span></span>
+<span id="cb7-7"><a href="#cb7-7"></a><span class="co">---</span></span>
+<span id="cb7-8"><a href="#cb7-8"></a></span>
+<span id="cb7-9"><a href="#cb7-9"></a>Last week I introduced the concept of immortal time bias and how it can distort associations in your survival analysis, if you naively misclassify unexposed/untreated observation time as exposed/treated. This week I am going to illustrate the concept with some data and <span class="in">`R`</span> code. It would have been good to analyse the Oscar Winner's data but as I could not locate that anywhere online, we are instead going to look at <span class="co">[</span><span class="ot">one of the first studies</span><span class="co">](https://www.jstor.org/stable/2286902 "https://www.jstor.org/stable/2286902")</span>{style="color: #1f7de6"} in which immortal time bias was subsequently recognised to be a problem.</span>
+<span id="cb7-10"><a href="#cb7-10"></a></span>
+<span id="cb7-11"><a href="#cb7-11"></a>The work came out of Stanford University in the early 1970s and assessed the survival benefit of potential heart transplant recipients. In the analysis, the event of interest was death and the primary treatment was heart transplantation - so survival amongst transplant recipients was compared to that amongst accepted patients into the program that did not end up receiving a transplant. Treatment was initially considered **time-fixed** and the patients divided into two groups - '*ever transplanted*' vs '*never transplanted*'. Survival time amongst recipients was found to be longer than those who didn't receive transplantation.</span>
+<span id="cb7-12"><a href="#cb7-12"></a></span>
+<span id="cb7-13"><a href="#cb7-13"></a>The immortal time bias here involves the waiting time of those patients who survived to make it to the transplant. Because this portion of the observation time was classified as exposed to transplantation instead of unexposed, it offered a guaranteed survival time to the transplanted group. The result of this misclassification was to produce an artificial increase in the mortality rate of the reference group, thus suggesting a benefit of heart transplant surgery. In a later reanalysis of the data, the apparent survival benefit of the transplanted group disappeared when the immortal time was properly accounted for by a time-dependent analysis.</span>
+<span id="cb7-14"><a href="#cb7-14"></a></span>
+<span id="cb7-15"><a href="#cb7-15"></a><span class="fu">## Load data</span></span>
+<span id="cb7-16"><a href="#cb7-16"></a></span>
+<span id="cb7-17"><a href="#cb7-17"></a>As this study is considered a canonical example of immortal time bias, the data comes built into <span class="in">`R`</span>'s <span class="in">`survival`</span> package. We can load the data and inspect the relevant <span class="in">`jasa`</span> dataframe as below.</span>
+<span id="cb7-18"><a href="#cb7-18"></a></span>
+<span id="cb7-21"><a href="#cb7-21"></a><span class="in">```{r}</span></span>
+<span id="cb7-22"><a href="#cb7-22"></a><span class="co">#| label: load data</span></span>
+<span id="cb7-23"><a href="#cb7-23"></a><span class="co">#| message: false</span></span>
+<span id="cb7-24"><a href="#cb7-24"></a><span class="co">#| warning: false</span></span>
+<span id="cb7-25"><a href="#cb7-25"></a><span class="fu">library</span>(survival)</span>
+<span id="cb7-26"><a href="#cb7-26"></a><span class="fu">library</span>(survminer)</span>
+<span id="cb7-27"><a href="#cb7-27"></a><span class="fu">library</span>(gtsummary)</span>
+<span id="cb7-28"><a href="#cb7-28"></a><span class="fu">data</span>(heart, <span class="at">package =</span> <span class="st">"survival"</span>)</span>
+<span id="cb7-29"><a href="#cb7-29"></a><span class="fu">head</span>(jasa)</span>
+<span id="cb7-30"><a href="#cb7-30"></a><span class="in">```</span></span>
+<span id="cb7-31"><a href="#cb7-31"></a></span>
+<span id="cb7-32"><a href="#cb7-32"></a>The variables that we're going to use are:</span>
+<span id="cb7-33"><a href="#cb7-33"></a></span>
+<span id="cb7-34"><a href="#cb7-34"></a><span class="ss">-   </span><span class="in">`fustat`</span> - the 'event' variable; 0 = alive, 1 = dead at the end of follow-up.</span>
+<span id="cb7-35"><a href="#cb7-35"></a></span>
+<span id="cb7-36"><a href="#cb7-36"></a><span class="ss">-   </span><span class="in">`futime`</span> - the primary 'time' variable; time (days) from acceptance into the transplant program until death or censoring.</span>
+<span id="cb7-37"><a href="#cb7-37"></a></span>
+<span id="cb7-38"><a href="#cb7-38"></a><span class="ss">-   </span><span class="in">`wait.time`</span> - the secondary 'time' variable; time (days) from acceptance into the transplant program until receiving a heart if transplanted (<span class="in">`NA`</span> for those who never underwent transplant surgery).</span>
+<span id="cb7-39"><a href="#cb7-39"></a></span>
+<span id="cb7-40"><a href="#cb7-40"></a><span class="ss">-   </span><span class="in">`transplant`</span> - the 'treatment/exposure' variable; 0 = did not receive heart, 1 = received heart.</span>
+<span id="cb7-41"><a href="#cb7-41"></a></span>
+<span id="cb7-42"><a href="#cb7-42"></a><span class="fu">## Visualise individual survival trajectories</span></span>
+<span id="cb7-43"><a href="#cb7-43"></a></span>
+<span id="cb7-44"><a href="#cb7-44"></a>Using a bit of <span class="in">`ggplot2`</span> magic, we can now plot the individual observation times for the 103 patients in the study. Note that I have stratified observation time by transplant status (<span class="kw">&lt;FONT</span> <span class="er">COLOR</span> <span class="ot">=</span> <span class="st">"#E7B800"</span><span class="kw">&gt;</span>orange<span class="kw">&lt;/FONT&gt;</span> for the period a patient remains untransplanted and <span class="kw">&lt;FONT</span> <span class="er">COLOR</span> <span class="ot">=</span> <span class="st">"#2E9FDF"</span><span class="kw">&gt;</span>blue<span class="kw">&lt;/FONT&gt;</span> for the period following a transplant).</span>
+<span id="cb7-45"><a href="#cb7-45"></a></span>
+<span id="cb7-48"><a href="#cb7-48"></a><span class="in">```{r}</span></span>
+<span id="cb7-49"><a href="#cb7-49"></a><span class="co">#| label: survival trajectories</span></span>
+<span id="cb7-50"><a href="#cb7-50"></a><span class="co"># Create 'id' variable</span></span>
+<span id="cb7-51"><a href="#cb7-51"></a>jasa<span class="sc">$</span>id <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">dim</span>(jasa)[<span class="dv">1</span>])</span>
+<span id="cb7-52"><a href="#cb7-52"></a><span class="co"># Copy to temp df</span></span>
+<span id="cb7-53"><a href="#cb7-53"></a>temp <span class="ot">&lt;-</span> jasa</span>
+<span id="cb7-54"><a href="#cb7-54"></a><span class="co"># Replace wait.time with futime if didn't undergo transplant</span></span>
+<span id="cb7-55"><a href="#cb7-55"></a>temp<span class="sc">$</span>wait.time[<span class="fu">is.na</span>(temp<span class="sc">$</span>wait.time)] <span class="ot">&lt;-</span> temp<span class="sc">$</span>futime[<span class="fu">is.na</span>(temp<span class="sc">$</span>wait.time)]</span>
+<span id="cb7-56"><a href="#cb7-56"></a><span class="co"># Plot</span></span>
+<span id="cb7-57"><a href="#cb7-57"></a>temp <span class="sc">|&gt;</span></span>
+<span id="cb7-58"><a href="#cb7-58"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> id, <span class="at">y =</span> futime)) <span class="sc">+</span></span>
+<span id="cb7-59"><a href="#cb7-59"></a>  <span class="fu">geom_linerange</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> <span class="dv">0</span>, <span class="at">ymax =</span> wait.time), <span class="at">color =</span> <span class="st">"#E7B800"</span>, <span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb7-60"><a href="#cb7-60"></a>  <span class="fu">geom_linerange</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> wait.time, <span class="at">ymax =</span> futime), <span class="at">color =</span> <span class="st">"#2E9FDF"</span>, <span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb7-61"><a href="#cb7-61"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">shape =</span> <span class="fu">factor</span>(fustat)), <span class="at">stroke =</span> <span class="dv">1</span>, <span class="at">cex =</span> <span class="dv">1</span>, <span class="at">color =</span> <span class="st">"black"</span>) <span class="sc">+</span></span>
+<span id="cb7-62"><a href="#cb7-62"></a>  <span class="fu">scale_shape_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">3</span>), <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Censored"</span>, <span class="st">"Died"</span>), <span class="at">name =</span> <span class="st">"Outcome"</span>) <span class="sc">+</span></span>
+<span id="cb7-63"><a href="#cb7-63"></a>  <span class="fu">annotate</span>(<span class="st">"text"</span>, <span class="at">x =</span> <span class="dv">95</span>, <span class="at">y =</span> <span class="dv">1400</span>, <span class="at">label =</span> <span class="st">"Observation time = yellow - untransplanted"</span>, <span class="at">size =</span> <span class="dv">5</span>, <span class="at">color =</span> <span class="st">"#E7B800"</span>) <span class="sc">+</span></span>
+<span id="cb7-64"><a href="#cb7-64"></a>  <span class="fu">annotate</span>(<span class="st">"text"</span>, <span class="at">x =</span> <span class="dv">92</span>, <span class="at">y =</span> <span class="dv">1380</span>, <span class="at">label =</span> <span class="st">"Observation time = blue - post-transplant"</span>, <span class="at">size =</span> <span class="dv">5</span>, <span class="at">color =</span> <span class="st">"#2E9FDF"</span>) <span class="sc">+</span></span>
+<span id="cb7-65"><a href="#cb7-65"></a>  <span class="fu">ggtitle</span>(<span class="st">"Survival Trajectories for Heart Transplant Patients"</span>) <span class="sc">+</span>   </span>
+<span id="cb7-66"><a href="#cb7-66"></a>  <span class="fu">ylab</span>(<span class="st">"Time (days)"</span>) <span class="sc">+</span></span>
+<span id="cb7-67"><a href="#cb7-67"></a>  <span class="fu">xlab</span>(<span class="st">"Patient Number"</span>) <span class="sc">+</span> </span>
+<span id="cb7-68"><a href="#cb7-68"></a>  <span class="fu">coord_flip</span>() <span class="sc">+</span> </span>
+<span id="cb7-69"><a href="#cb7-69"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">20</span>) <span class="sc">+</span></span>
+<span id="cb7-70"><a href="#cb7-70"></a>  <span class="fu">theme</span>(<span class="at">axis.text.y =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">15</span>))</span>
+<span id="cb7-71"><a href="#cb7-71"></a><span class="in">```</span></span>
+<span id="cb7-72"><a href="#cb7-72"></a></span>
+<span id="cb7-73"><a href="#cb7-73"></a><span class="fu">## Naive analysis assuming treatment status is time-fixed</span></span>
+<span id="cb7-74"><a href="#cb7-74"></a></span>
+<span id="cb7-75"><a href="#cb7-75"></a><span class="fu">### Visualise survival curves</span></span>
+<span id="cb7-76"><a href="#cb7-76"></a></span>
+<span id="cb7-77"><a href="#cb7-77"></a>Plotting the **Kaplan-Meier** survival curves are easy by first saving the <span class="in">`survfit`</span> object:</span>
+<span id="cb7-78"><a href="#cb7-78"></a></span>
+<span id="cb7-79"><a href="#cb7-79"></a><span class="in">`fit &lt;- survfit(Surv(futime, fustat) ~ transplant, data = jasa)`</span></span>
+<span id="cb7-80"><a href="#cb7-80"></a></span>
+<span id="cb7-81"><a href="#cb7-81"></a>and then passing this <span class="in">`ggsurvplot`</span> which does a nicer job of plotting survival data then using <span class="in">`R`</span>'s <span class="in">`base`</span> functions. Note that we ignore <span class="in">`wait.time`</span> and only specify <span class="in">`futime`</span> in our fit function. This is because we are assuming if a patient was transplanted, the entire duration of their observation period was considered as such.</span>
+<span id="cb7-82"><a href="#cb7-82"></a></span>
+<span id="cb7-85"><a href="#cb7-85"></a><span class="in">```{r}</span></span>
+<span id="cb7-86"><a href="#cb7-86"></a><span class="co">#| label: naive KM curve</span></span>
+<span id="cb7-87"><a href="#cb7-87"></a>fit_naive <span class="ot">&lt;-</span> <span class="fu">survfit</span>(<span class="fu">Surv</span>(futime, fustat) <span class="sc">~</span> transplant, <span class="at">data =</span> jasa)</span>
+<span id="cb7-88"><a href="#cb7-88"></a><span class="fu">ggsurvplot</span>(fit_naive,</span>
+<span id="cb7-89"><a href="#cb7-89"></a>          <span class="at">risk.table =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb7-90"><a href="#cb7-90"></a>          <span class="at">risk.table.col =</span> <span class="st">"strata"</span>,</span>
+<span id="cb7-91"><a href="#cb7-91"></a>          <span class="at">linetype =</span> <span class="st">"strata"</span>,</span>
+<span id="cb7-92"><a href="#cb7-92"></a>          <span class="at">surv.median.line =</span> <span class="st">"hv"</span>,</span>
+<span id="cb7-93"><a href="#cb7-93"></a>          <span class="at">ggtheme =</span> <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">20</span>),</span>
+<span id="cb7-94"><a href="#cb7-94"></a>          <span class="at">palette =</span> <span class="fu">c</span>(<span class="st">"#E7B800"</span>, <span class="st">"#2E9FDF"</span>))</span>
+<span id="cb7-95"><a href="#cb7-95"></a><span class="in">```</span></span>
+<span id="cb7-96"><a href="#cb7-96"></a></span>
+<span id="cb7-97"><a href="#cb7-97"></a><span class="fu">### Cox model</span></span>
+<span id="cb7-98"><a href="#cb7-98"></a></span>
+<span id="cb7-99"><a href="#cb7-99"></a>Fitting a Cox model is also simple with:</span>
+<span id="cb7-100"><a href="#cb7-100"></a></span>
+<span id="cb7-101"><a href="#cb7-101"></a><span class="in">`mod_naive &lt;- coxph(Surv(futime, fustat) ~ transplant, data = jasa)`</span></span>
+<span id="cb7-102"><a href="#cb7-102"></a></span>
+<span id="cb7-105"><a href="#cb7-105"></a><span class="in">```{r}</span></span>
+<span id="cb7-106"><a href="#cb7-106"></a><span class="co">#| label: naive Cox</span></span>
+<span id="cb7-107"><a href="#cb7-107"></a>mod_naive <span class="ot">&lt;-</span> <span class="fu">coxph</span>(<span class="fu">Surv</span>(futime, fustat) <span class="sc">~</span> transplant, <span class="at">data =</span> jasa)</span>
+<span id="cb7-108"><a href="#cb7-108"></a><span class="fu">tbl_regression</span>(mod_naive, <span class="at">exp =</span> T)</span>
+<span id="cb7-109"><a href="#cb7-109"></a><span class="in">```</span></span>
+<span id="cb7-110"><a href="#cb7-110"></a></span>
+<span id="cb7-111"><a href="#cb7-111"></a>This gives a <span class="in">`HR = 0.27 (95% CI 0.17, 0.43; p &lt; 0.001)`</span> indicating that there is about a 73% reduction in the risk of death with transplantation. Pretty effective, right?</span>
+<span id="cb7-112"><a href="#cb7-112"></a></span>
+<span id="cb7-113"><a href="#cb7-113"></a><span class="fu">## Correct analysis assuming treatment status is time-varying</span></span>
+<span id="cb7-114"><a href="#cb7-114"></a></span>
+<span id="cb7-115"><a href="#cb7-115"></a>Up until now we have just used the data as it's been presented to us. Each patient has a single observation with all information about them contained in that row of data. However, to perform the correct time-dependent analysis we first need to construct a time-varying version of the treatment (i.e. transplant) variable. This data format is known as **'counting process'** and in the general case involves creating potentially multiple rows of data for each patient with each row corresponding to a different exposure/treatment period of that patients observation time. In this specific example, we will create an additional row of data for transplanted patients splitting time at the point of transplant, so that the first row contains the time from acceptance into the transplant program to the point of transplant, and the second row contains the time from transplant to either death or censoring. We specify this in **'start, stop'** format rather than the duration of the interval itself. We use the <span class="in">`tmerge`</span> <span class="co">[</span><span class="ot">function</span><span class="co">](https://www.rdocumentation.org/packages/survival/versions/3.5-7/topics/tmerge)</span>{style="color: #1f7de6"} to do this.</span>
+<span id="cb7-116"><a href="#cb7-116"></a></span>
+<span id="cb7-117"><a href="#cb7-117"></a><span class="fu">### Visualise survival curves</span></span>
+<span id="cb7-118"><a href="#cb7-118"></a></span>
+<span id="cb7-121"><a href="#cb7-121"></a><span class="in">```{r}</span></span>
+<span id="cb7-122"><a href="#cb7-122"></a><span class="co">#| label: correct KM curve</span></span>
+<span id="cb7-123"><a href="#cb7-123"></a>fit_correct <span class="ot">&lt;-</span> <span class="fu">survfit</span>(<span class="fu">Surv</span>(start, stop, event) <span class="sc">~</span> transplant, <span class="at">data =</span> jasa1)</span>
+<span id="cb7-124"><a href="#cb7-124"></a><span class="fu">ggsurvplot</span>(fit_correct,</span>
+<span id="cb7-125"><a href="#cb7-125"></a>          <span class="at">risk.table =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb7-126"><a href="#cb7-126"></a>          <span class="at">risk.table.col =</span> <span class="st">"strata"</span>,</span>
+<span id="cb7-127"><a href="#cb7-127"></a>          <span class="at">linetype =</span> <span class="st">"strata"</span>,</span>
+<span id="cb7-128"><a href="#cb7-128"></a>          <span class="at">surv.median.line =</span> <span class="st">"hv"</span>,</span>
+<span id="cb7-129"><a href="#cb7-129"></a>          <span class="at">ggtheme =</span> <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">20</span>),</span>
+<span id="cb7-130"><a href="#cb7-130"></a>          <span class="at">palette =</span> <span class="fu">c</span>(<span class="st">"#E7B800"</span>, <span class="st">"#2E9FDF"</span>))</span>
+<span id="cb7-131"><a href="#cb7-131"></a><span class="in">```</span></span>
+<span id="cb7-132"><a href="#cb7-132"></a></span>
+<span id="cb7-133"><a href="#cb7-133"></a><span class="fu">### Cox model</span></span>
+<span id="cb7-134"><a href="#cb7-134"></a></span>
+<span id="cb7-137"><a href="#cb7-137"></a><span class="in">```{r}</span></span>
+<span id="cb7-138"><a href="#cb7-138"></a><span class="co">#| label: correct Cox</span></span>
+<span id="cb7-139"><a href="#cb7-139"></a>mod_correct <span class="ot">&lt;-</span> <span class="fu">coxph</span>(<span class="fu">Surv</span>(start, stop, event) <span class="sc">~</span> transplant, <span class="at">data =</span> jasa1)</span>
+<span id="cb7-140"><a href="#cb7-140"></a><span class="fu">tbl_regression</span>(mod_correct, <span class="at">exp =</span> T)</span>
+<span id="cb7-141"><a href="#cb7-141"></a><span class="in">```</span></span>
 </code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->

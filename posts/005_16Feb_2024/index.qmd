@@ -14,7 +14,7 @@ The immortal time bias here involves the waiting time of those patients who surv
 
 ## Load data
 
-As this study is considered a canonical example of immortal time bias, the data comes built into `R`'s `survival` package. We can load the data as below.
+As this study is considered a canonical example of immortal time bias, the data comes built into `R`'s `survival` package. We can load the data and inspect the relevant `jasa` dataframe as below.
 
 ```{r}
 #| label: load data
@@ -22,6 +22,7 @@ As this study is considered a canonical example of immortal time bias, the data 
 #| warning: false
 library(survival)
 library(survminer)
+library(gtsummary)
 data(heart, package = "survival")
 head(jasa)
 ```
@@ -38,7 +39,7 @@ The variables that we're going to use are:
 
 ## Visualise individual survival trajectories
 
-We can now plot the individual observation times for the 103 patients in the study. Note that I have stratified observation time by transplant status.
+Using a bit of `ggplot2` magic, we can now plot the individual observation times for the 103 patients in the study. Note that I have stratified observation time by transplant status (<FONT COLOR = "#E7B800">orange</FONT> for the period a patient remains untransplanted and <FONT COLOR = "#2E9FDF">blue</FONT> for the period following a transplant).
 
 ```{r}
 #| label: survival trajectories
@@ -61,7 +62,7 @@ temp |>
   ylab("Time (days)") +
   xlab("Patient Number") + 
   coord_flip() + 
-  theme_bw(base_size = 15) +
+  theme_bw(base_size = 20) +
   theme(axis.text.y = element_text(size = 15))
 ```
 
@@ -69,19 +70,60 @@ temp |>
 
 ### Visualise survival curves
 
+Plotting the **Kaplan-Meier** survival curves are easy by first saving the `survfit` object:
+
+`fit <- survfit(Surv(futime, fustat) ~ transplant, data = jasa)`
+
+and then passing this `ggsurvplot` which does a nicer job of plotting survival data then using `R`'s `base` functions. Note that we ignore `wait.time` and only specify `futime` in our fit function. This is because we are assuming if a patient was transplanted, the entire duration of their observation period was considered as such.
+
 ```{r}
-fit <- survfit(Surv(futime, fustat) ~ transplant, data = jasa)
-ggsurvplot(fit,
-          pval = TRUE, conf.int = TRUE,
-          risk.table = TRUE, # Add risk table
-          risk.table.col = "strata", # Change risk table color by groups
-          linetype = "strata", # Change line type by groups
-          surv.median.line = "hv", # Specify median survival
-          ggtheme = theme_bw(), # Change ggplot2 theme
+#| label: naive KM curve
+fit_naive <- survfit(Surv(futime, fustat) ~ transplant, data = jasa)
+ggsurvplot(fit_naive,
+          risk.table = TRUE,
+          risk.table.col = "strata",
+          linetype = "strata",
+          surv.median.line = "hv",
+          ggtheme = theme_bw(base_size = 20),
           palette = c("#E7B800", "#2E9FDF"))
 ```
 
+### Cox model
+
+Fitting a Cox model is also simple with:
+
+`mod_naive <- coxph(Surv(futime, fustat) ~ transplant, data = jasa)`
+
 ```{r}
-mod <- coxph(Surv(futime, fustat) ~ transplant, data = jasa)
-summary(mod)
+#| label: naive Cox
+mod_naive <- coxph(Surv(futime, fustat) ~ transplant, data = jasa)
+tbl_regression(mod_naive, exp = T)
+```
+
+This gives a `HR = 0.27 (95% CI 0.17, 0.43; p < 0.001)` indicating that there is about a 73% reduction in the risk of death with transplantation. Pretty effective, right?
+
+## Correct analysis assuming treatment status is time-varying
+
+Up until now we have just used the data as it's been presented to us. Each patient has a single observation with all information about them contained in that row of data. However, to perform the correct time-dependent analysis we first need to construct a time-varying version of the treatment (i.e. transplant) variable. This data format is known as **'counting process'** and in the general case involves creating potentially multiple rows of data for each patient with each row corresponding to a different exposure/treatment period of that patients observation time. In this specific example, we will create an additional row of data for transplanted patients splitting time at the point of transplant, so that the first row contains the time from acceptance into the transplant program to the point of transplant, and the second row contains the time from transplant to either death or censoring. We specify this in **'start, stop'** format rather than the duration of the interval itself. We use the `tmerge` [function](https://www.rdocumentation.org/packages/survival/versions/3.5-7/topics/tmerge){style="color: #1f7de6"} to do this.
+
+### Visualise survival curves
+
+```{r}
+#| label: correct KM curve
+fit_correct <- survfit(Surv(start, stop, event) ~ transplant, data = jasa1)
+ggsurvplot(fit_correct,
+          risk.table = TRUE,
+          risk.table.col = "strata",
+          linetype = "strata",
+          surv.median.line = "hv",
+          ggtheme = theme_bw(base_size = 20),
+          palette = c("#E7B800", "#2E9FDF"))
+```
+
+### Cox model
+
+```{r}
+#| label: correct Cox
+mod_correct <- coxph(Surv(start, stop, event) ~ transplant, data = jasa1)
+tbl_regression(mod_correct, exp = T)
 ```
