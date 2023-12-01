@@ -108,6 +108,9 @@ Up until now we have just used the data as it's been presented to us. Each patie
 ```{r}
 #| label: tmerge
 # Create subset of data selecting relevant variables
+
+# finish annotating
+
 jasa_subset <- jasa |> 
   select(id, transplant, wait.time, futime, fustat)
 
@@ -120,10 +123,16 @@ jasa_cp <- tmerge(data1 = jasa_subset |> select(id, futime, fustat),
                   transplant = tdc(wait.time)) |> 
             select(-c(futime, fustat))
 
+```
+
+we will now look at the dfs
+
+```{r}
+#| label: view dfs
 head(jasa_subset)
 head(jasa_cp, 10)
-
 ```
+
 
 ### Visualise survival curves
 
