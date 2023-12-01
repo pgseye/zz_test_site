@@ -125,14 +125,14 @@ Remember that the original data looked like:
 
 ```{r}
 #| label: view original
-head(jasa_subset)
+head(jasa_subset, 7)
 ```
 
 And the newly created dataframe in counting process format:
 
 ```{r}
 #| label: view cp
-head(jasa_cp, 8)
+head(jasa_cp, 9)
 ```
 
 Note the new 'start, stop' time variables. We have also renamed `fustat` to `death` for a more intuitive name.
