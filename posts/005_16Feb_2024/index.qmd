@@ -103,7 +103,7 @@ This gives a `HR = 0.27 (95% CI 0.17, 0.43; p < 0.001)` indicating that there is
 
 ## Correct analysis assuming treatment status is time-varying
 
-Up until now we have just used the data as it's been presented to us. Each patient has a single observation with all information about them contained in that row of data. However, to perform the correct time-dependent analysis we first need to construct a time-varying version of the treatment (i.e. transplant) variable. This data format is known as **'counting process'** and in the general case involves creating potentially multiple rows of data for each patient with each row corresponding to a different exposure/treatment period of that patients observation time. In this specific example, we will create an additional row of data for transplanted patients splitting time at the point of transplant, so that the first row contains the time from acceptance into the transplant program to the point of transplant, and the second row contains the time from transplant to either death or censoring. We specify this in **'start, stop'** format rather than the duration of the interval itself. We use the `tmerge` [function](https://www.rdocumentation.org/packages/survival/versions/3.5-7/topics/tmerge){style="color: #1f7de6"} to do this.
+Up until now we have just used the data as it's been presented to us. Each patient has a single observation with all information about them contained in that row of data. However, to perform the correct time-dependent analysis we first need to construct a time-varying version of the treatment (i.e. transplant) variable. This data format is known as **'counting process'** and in the general case involves creating potentially multiple rows of data for each patient with each row corresponding to a different exposure/treatment period of that patients observation time. In this specific example, we will create an additional row of data for transplanted patients splitting time at the point of transplant, so that the first row contains the time from acceptance into the transplant program to the point of transplant, and the second row contains the time from transplant to either death or censoring. We specify this in **'start, stop'** format rather than the duration of the interval itself. We will use the `tmerge` [function](https://www.rdocumentation.org/packages/survival/versions/3.5-7/topics/tmerge){style="color: #1f7de6"} to do this, although a little bit of manual programming can also achieve the same result.
 
 ```{r}
 #| label: tmerge
@@ -119,6 +119,9 @@ jasa_cp <- tmerge(data1 = jasa_subset |> select(id, futime, fustat),
                   death = event(futime, fustat),
                   transplant = tdc(wait.time)) |> 
             select(-c(futime, fustat))
+
+head(jasa_subset)
+head(jasa_cp, 10)
 
 ```
 
