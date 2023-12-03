@@ -33,7 +33,7 @@ head(sleepstudy, 10)
 
 We can then plot the data interactively by simply 'wrapping' the ggplot object in a `plotly` call. If you hover over a data point you can easily identify which individual it belongs to as well as the observed reaction time. Similarly, by hovering over one of the random slopes you will see the predicted reaction time and the individual that corresponds to.
 
-You won't want to do this for every plot you make but it does provide a simple way to make some of your more complex visualisations using ggplot that bit more useful (and fun!) in helping to understanding your data.
+You won't want to do this for every plot you make but it does provide a simple way to make some of your more complex visualisations using ggplot that bit more useful (and fun!) in helping to understand your data.
 
 ```{r}
 #| label: plotly
