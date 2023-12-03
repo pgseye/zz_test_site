@@ -6,8 +6,10 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="dcterms.date" content="2024-02-09">
+<meta name="description" content="Learn why this misclassification of time in a survival analysis can seriously bias your results.">
 
-<title>Test Site</title>
+<title>Test Site - Immortal time bias - “The fallacy that never dies” (Part 1)</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -57,26 +59,24 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="site_libs/quarto-nav/headroom.min.js"></script>
-<script src="site_libs/clipboard/clipboard.min.js"></script>
-<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="site_libs/quarto-search/fuse.min.js"></script>
-<script src="site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="./">
-<script src="site_libs/quarto-listing/list.min.js"></script>
-<script src="site_libs/quarto-listing/quarto-listing.js"></script>
-<script src="site_libs/quarto-html/quarto.js"></script>
-<script src="site_libs/quarto-html/popper.min.js"></script>
-<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="site_libs/quarto-html/anchor.min.js"></script>
-<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
-<script src="site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -97,40 +97,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-label": "Search"
   }
 }</script>
-<script>
 
-  window.document.addEventListener("DOMContentLoaded", function (_event) {
-    const listingTargetEl = window.document.querySelector('#listing-listing .list');
-    if (!listingTargetEl) {
-      // No listing discovered, do not attach.
-      return; 
-    }
 
-    const options = {
-      valueNames: ['listing-image','listing-date','listing-title','listing-reading-time','listing-description','listing-categories',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
-      
-      searchColumns: ["listing-date","listing-title","listing-author","listing-image","listing-description","listing-categories"],
-    };
-
-    window['quarto-listings'] = window['quarto-listings'] || {};
-    window['quarto-listings']['listing-listing'] = new List('listing-listing', options);
-
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  });
-
-  window.addEventListener('hashchange',() => {
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  })
-  </script>
-
-  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
-
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="../../styles.css">
 </head>
 
 <body class="nav-fixed">
@@ -140,7 +109,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <nav class="navbar navbar-expand-lg navbar-dark ">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container">
-    <a class="navbar-brand" href="./index.html">
+    <a class="navbar-brand" href="../../index.html">
     <span class="navbar-title">Test Site</span>
     </a>
   </div>
@@ -151,7 +120,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item">
-    <a class="nav-link active" href="./index.html" rel="" target="" aria-current="page">
+    <a class="nav-link" href="../../index.html" rel="" target="">
  <span class="menu-text">All Posts</span></a>
   </li>  
 </ul>
@@ -163,25 +132,40 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     </nav>
 </header>
 <!-- content -->
-<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
         
-    <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(7)</span></div><div class="category" data-category="Bayesian">Bayesian <span class="quarto-category-count">(1)</span></div><div class="category" data-category="analysis">analysis <span class="quarto-category-count">(2)</span></div><div class="category" data-category="code">code <span class="quarto-category-count">(4)</span></div><div class="category" data-category="concept">concept <span class="quarto-category-count">(1)</span></div><div class="category" data-category="fun">fun <span class="quarto-category-count">(1)</span></div><div class="category" data-category="logistic">logistic <span class="quarto-category-count">(1)</span></div><div class="category" data-category="modelling">modelling <span class="quarto-category-count">(2)</span></div><div class="category" data-category="news">news <span class="quarto-category-count">(1)</span></div><div class="category" data-category="probability">probability <span class="quarto-category-count">(1)</span></div><div class="category" data-category="puzzle">puzzle <span class="quarto-category-count">(1)</span></div><div class="category" data-category="survival">survival <span class="quarto-category-count">(2)</span></div><div class="category" data-category="visualisation">visualisation <span class="quarto-category-count">(3)</span></div></div></div>
+    </div>
 <!-- main -->
-<main class="content column-page-left" id="quarto-document-content">
+<main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<div class="quarto-title-block"><div><h1 class="title">Test Site</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
-</div>
+<div class="quarto-title-block"><div><h1 class="title">Immortal time bias - “The fallacy that never dies” (Part 1)</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
+  <div class="quarto-categories">
+    <div class="quarto-category">concept</div>
+    <div class="quarto-category">survival</div>
+  </div>
+  </div>
 
+<div>
+  <div class="description">
+    Learn why this misclassification of time in a survival analysis can seriously bias your results.
+  </div>
+</div>
 
 
 <div class="quarto-title-meta">
 
     
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">February 9, 2024</p>
+    </div>
+  </div>
   
     
   </div>
@@ -189,325 +173,23 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 </header>
 
-
+<p>In 2001, a <a href="https://pubmed.ncbi.nlm.nih.gov/11352696/" style="color: #1f7de6" title="https://pubmed.ncbi.nlm.nih.gov/11352696/">paper</a> published in the <em>Annals of Internal Medicine</em> reported that Oscar winners had a longer life expectancy - by about <strong>4 years</strong> - compared to their less successful peers. The authors conclusions were that:</p>
+<p>“The association of high status with increased longevity that prevails in the public also extends to celebrities, contributes to a large survival advantage, and is partially explained by factors related to success.”</p>
+<p>The study received widespread attention in the media, with one future Oscar winner acknowledging the work in her acceptance <a href="https://www.thecut.com/2015/02/oscar-winners-really-live-longer.html" style="color: #1f7de6" title="https://www.thecut.com/2015/02/oscar-winners-really-live-longer.html">speech</a>.</p>
+<p>The problem was that the reported survival advantage was illusory, and the reason for this was an invalid analysis that is not alone in the <a href="https://pubmed.ncbi.nlm.nih.gov/17252614/" style="color: #1f7de6" title="https://pubmed.ncbi.nlm.nih.gov/17252614/">literature</a>. As in any simple time-to-event analysis, two groups may be compared in their respective ‘survival’ times. In this study, subjects were first classified as winners or non-winners and observation time counted as their time alive. The error in this case was to consider winning status <strong>time-fixed (A)</strong>, when in reality it is <strong>time-varying (B)</strong>. By naively assuming it is time-fixed, we are erroneously attributing the time that a winner was in fact a loser prior to getting their gong, to their winning observation time.</p>
+<p><img src="images/immortal_time_bias.png" class="img-fluid"></p>
+<p>This creates a distortion or bias in the exposure/treatment -&gt; outcome association, usually in a direction that overestimates the benefit of the exposure/treatment. When proper methods are then employed, the perceived benefits are reduced or sometimes reversed. And in fact that is exactly what was found when a <a href="https://pubmed.ncbi.nlm.nih.gov/16954361/" style="color: #1f7de6" title="https://pubmed.ncbi.nlm.nih.gov/16954361/">re-analysis</a> of the data was conducted in 2006 - the survival advantage was calculated to be closer to 1 year and not deemed statistically significant.</p>
+<p>In general, the observation time prior to the exposure/treatment commencing (for those exposed/treated) is considered ‘immortal’, because the subject cannot experience the outcome during this period as they have yet to receive the exposure/treatment. If you are like me, this fairly classic description of immortal time hurts my brain and so I just like to simply think of it as the period that a person’s observation time has been misclassified.</p>
+<p>Observational research that involves time-to-event outcomes is particularly prone to immortal time bias and central to the problem is the specification of ‘time zero’ - i.e.&nbsp;when does the clock start? There are several examples of study design choices that can lead you down the wrong analysis path if you are not careful, and an especially pertinent one in this field is drawing contrasts between treated and untreated patients (hint: a patient is not ‘treated’ for the duration of their observation time if they were only on treatment for the last 10% of that time).</p>
+<p>So, what’s the solution?</p>
+<p><font color="red"><strong>Time-varying covariates</strong></font></p>
+<p>I will illustrate their use in an example next week.</p>
 
 
 <!-- -->
 
 
-<div class="quarto-listing quarto-listing-container-default" id="listing-listing">
-<div class="listing-actions-group">
-   <div class="input-group input-group-sm quarto-listing-sort">
-     <span class="input-group-text"><i class="bi bi-sort-down"></i></span>
-     <select id="listing-listing-sort" class="form-select" aria-label="Order By" onchange="window['quarto-listings']['listing-listing'].sort(this.options[this.selectedIndex].value, { order: this.options[this.selectedIndex].getAttribute('data-direction')})">
-       <option value="" disabled="" selected="" hidden="">Order By</option>
-       <option value="index" data-direction="asc">Default</option>
-         <option value="listing-title" data-direction="asc">
-          Title
-        </option>
-         <option value="listing-date-sort" data-direction="asc">
-          Date - Oldest
-        </option>
-         <option value="listing-date-sort" data-direction="desc">
-          Date - Newest
-        </option>
-     </select>
-  </div>
-    <div class="input-group input-group-sm quarto-listing-filter">
-      <span class="input-group-text"><i class="bi bi-search"></i></span>
-      <input type="text" class="search form-control" placeholder="Filter">
-    </div>
-</div>
-<div class="list quarto-listing-default">
-<div class="quarto-post image-right" data-index="0" data-categories="code,analysis,modelling,survival,visualisation" data-listing-date-sort="1708002000000" data-listing-file-modified-sort="1701590065986" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="8">
-<div class="thumbnail">
-<p><a href="./posts/006_16Feb_2024/index.html"> <p class="card-img-top"><img src="posts/006_16Feb_2024/index_files/figure-html/survival trajectories-1.png"  class="thumbnail-image card-img"/></p> </a></p>
-</div>
-<div class="body">
-<a href="./posts/006_16Feb_2024/index.html">
-<h3 class="no-anchor listing-title">
-Immortal time bias - “The fallacy that never dies” (Part 2)
-</h3>
-<div class="listing-subtitle">
-
-</div>
-</a>
-<div class="listing-categories">
-<div class="listing-category" onclick="window.quartoListingCategory('code'); return false;">
-code
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('analysis'); return false;">
-analysis
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('modelling'); return false;">
-modelling
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('survival'); return false;">
-survival
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('visualisation'); return false;">
-visualisation
-</div>
-</div>
-<a href="./posts/006_16Feb_2024/index.html">
-<div class="listing-description">
-<p>Let’s investigate immortal time bias with a coded example.</p>
-</div>
-</a>
-</div>
-<div class="metadata">
-<a href="./posts/006_16Feb_2024/index.html">
-<div class="listing-date">
-Feb 16, 2024
-</div>
-<div class="listing-reading-time">
-8 min
-</div>
-</a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="1" data-categories="concept,survival" data-listing-date-sort="1707397200000" data-listing-file-modified-sort="1701301660361" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="3">
-<div class="thumbnail">
-<p><a href="./posts/005_09Feb_2024/index.html"> <p class="card-img-top"><img src="posts/005_09Feb_2024/images/immortal_time_bias.png"  class="thumbnail-image card-img"/></p> </a></p>
-</div>
-<div class="body">
-<a href="./posts/005_09Feb_2024/index.html">
-<h3 class="no-anchor listing-title">
-Immortal time bias - “The fallacy that never dies” (Part 1)
-</h3>
-<div class="listing-subtitle">
-
-</div>
-</a>
-<div class="listing-categories">
-<div class="listing-category" onclick="window.quartoListingCategory('concept'); return false;">
-concept
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('survival'); return false;">
-survival
-</div>
-</div>
-<a href="./posts/005_09Feb_2024/index.html">
-<div class="listing-description">
-<p>Learn why this misclassification of time in a survival analysis can seriously bias your results.</p>
-</div>
-</a>
-</div>
-<div class="metadata">
-<a href="./posts/005_09Feb_2024/index.html">
-<div class="listing-date">
-Feb 9, 2024
-</div>
-<div class="listing-reading-time">
-3 min
-</div>
-</a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="2" data-categories="visualisation,code" data-listing-date-sort="1706792400000" data-listing-file-modified-sort="1701592125619" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="3">
-<div class="thumbnail">
-<p><a href="./posts/004_02Feb_2024/index.html"> <img src="./posts/004_02Feb_2024/plotly_small.jpg" class="thumbnail-image"> </a></p>
-</div>
-<div class="body">
-<a href="./posts/004_02Feb_2024/index.html">
-<h3 class="no-anchor listing-title">
-Put your ggplot on steroids
-</h3>
-<div class="listing-subtitle">
-
-</div>
-</a>
-<div class="listing-categories">
-<div class="listing-category" onclick="window.quartoListingCategory('visualisation'); return false;">
-visualisation
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('code'); return false;">
-code
-</div>
-</div>
-<a href="./posts/004_02Feb_2024/index.html">
-<div class="listing-description">
-<p>Plotly adds some interactivity and can help clarify your data.</p>
-</div>
-</a>
-</div>
-<div class="metadata">
-<a href="./posts/004_02Feb_2024/index.html">
-<div class="listing-date">
-Feb 2, 2024
-</div>
-<div class="listing-reading-time">
-3 min
-</div>
-</a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="3" data-categories="fun,code,visualisation" data-listing-date-sort="1701954000000" data-listing-file-modified-sort="1701301610927" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="5">
-<div class="thumbnail">
-<p><a href="./posts/003_08Dec_2023/index.html"> <p class="card-img-top"><img src="posts/003_08Dec_2023/index_files/figure-html/unnamed-chunk-1-1.gif"  class="thumbnail-image card-img"/></p> </a></p>
-</div>
-<div class="body">
-<a href="./posts/003_08Dec_2023/index.html">
-<h3 class="no-anchor listing-title">
-A Very Merry Christmas
-</h3>
-<div class="listing-subtitle">
-
-</div>
-</a>
-<div class="listing-categories">
-<div class="listing-category" onclick="window.quartoListingCategory('fun'); return false;">
-fun
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('code'); return false;">
-code
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('visualisation'); return false;">
-visualisation
-</div>
-</div>
-<a href="./posts/003_08Dec_2023/index.html">
-<div class="listing-description">
-<p>Ho, Ho, Ho</p>
-</div>
-</a>
-</div>
-<div class="metadata">
-<a href="./posts/003_08Dec_2023/index.html">
-<div class="listing-date">
-Dec 8, 2023
-</div>
-<div class="listing-reading-time">
-5 min
-</div>
-</a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="4" data-categories="puzzle,probability,Bayesian" data-listing-date-sort="1701349200000" data-listing-file-modified-sort="1701247567229" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="6">
-<div class="thumbnail">
-<p><a href="./posts/002_01Dec_2023/index.html"> <img src="./posts/002_01Dec_2023/monty_small.jpg" class="thumbnail-image"> </a></p>
-</div>
-<div class="body">
-<a href="./posts/002_01Dec_2023/index.html">
-<h3 class="no-anchor listing-title">
-It pays to think like a Bayesian
-</h3>
-<div class="listing-subtitle">
-
-</div>
-</a>
-<div class="listing-categories">
-<div class="listing-category" onclick="window.quartoListingCategory('puzzle'); return false;">
-puzzle
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('probability'); return false;">
-probability
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('Bayesian'); return false;">
-Bayesian
-</div>
-</div>
-<a href="./posts/002_01Dec_2023/index.html">
-<div class="listing-description">
-<p>Bayesian reasoning is more in line with how we process chance in everyday life.</p>
-</div>
-</a>
-</div>
-<div class="metadata">
-<a href="./posts/002_01Dec_2023/index.html">
-<div class="listing-date">
-Dec 1, 2023
-</div>
-<div class="listing-reading-time">
-6 min
-</div>
-</a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="5" data-categories="code,analysis,modelling,logistic" data-listing-date-sort="1700744400000" data-listing-file-modified-sort="1701114320452" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="12">
-<div class="thumbnail">
-<p><a href="./posts/001_24Nov2023/index.html"> <img src="./posts/001_24Nov2023/interact_plot.jpg" class="thumbnail-image"> </a></p>
-</div>
-<div class="body">
-<a href="./posts/001_24Nov2023/index.html">
-<h3 class="no-anchor listing-title">
-Interactions (effect modifiers) are important - don’t ignore them
-</h3>
-<div class="listing-subtitle">
-
-</div>
-</a>
-<div class="listing-categories">
-<div class="listing-category" onclick="window.quartoListingCategory('code'); return false;">
-code
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('analysis'); return false;">
-analysis
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('modelling'); return false;">
-modelling
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('logistic'); return false;">
-logistic
-</div>
-</div>
-<a href="./posts/001_24Nov2023/index.html">
-<div class="listing-description">
-<p>Keep an open mind to interactions in your next model.</p>
-</div>
-</a>
-</div>
-<div class="metadata">
-<a href="./posts/001_24Nov2023/index.html">
-<div class="listing-date">
-Nov 24, 2023
-</div>
-<div class="listing-reading-time">
-12 min
-</div>
-</a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="6" data-categories="news" data-listing-date-sort="1700571600000" data-listing-file-modified-sort="1700771305929" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="2">
-<div class="thumbnail">
-<p><a href="./posts/welcome/index.html"> <img src="./posts/welcome/hello_world.jpg" class="thumbnail-image"> </a></p>
-</div>
-<div class="body">
-<a href="./posts/welcome/index.html">
-<h3 class="no-anchor listing-title">
-Stats Tips - Welcome
-</h3>
-<div class="listing-subtitle">
-
-</div>
-</a>
-<div class="listing-categories">
-<div class="listing-category" onclick="window.quartoListingCategory('news'); return false;">
-news
-</div>
-</div>
-<a href="./posts/welcome/index.html">
-<div class="listing-description">
-<p>Welcome to what I hope can become a useful stats resource.</p>
-</div>
-</a>
-</div>
-<div class="metadata">
-<a href="./posts/welcome/index.html">
-<div class="listing-date">
-Nov 22, 2023
-</div>
-<div class="listing-reading-time">
-2 min
-</div>
-</a>
-</div>
-</div>
-</div>
-<div class="listing-no-matching d-none">
-No matching items
-</div>
-</div></main> <!-- /main -->
+</main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {
@@ -906,21 +588,38 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }
   }
 });
+</script>
+<script src="https://giscus.app/client.js" data-repo="pgseye/Weekly_Stats_Tips" data-repo-id="R_kgDOKvfOfQ" data-category="General" data-category-id="DIC_kwDOKvfOfc4CbFWq" data-mapping="title" data-reactions-enabled="1" data-emit-metadata="0" data-input-position="top" data-theme="light" data-lang="en" crossorigin="anonymous" async="">
 </script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
 <div class="sourceCode" id="cb1" data-shortcodes="false"><pre class="sourceCode numberSource markdown number-lines code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1"></a><span class="co">---</span></span>
-<span id="cb1-2"><a href="#cb1-2"></a><span class="an">title:</span><span class="co"> "Test Site"</span></span>
-<span id="cb1-3"><a href="#cb1-3"></a><span class="an">listing:</span></span>
-<span id="cb1-4"><a href="#cb1-4"></a><span class="co">  contents: posts/**/*.qmd</span></span>
-<span id="cb1-5"><a href="#cb1-5"></a><span class="co">  sort: "date desc"</span></span>
-<span id="cb1-6"><a href="#cb1-6"></a><span class="co">  type: default</span></span>
-<span id="cb1-7"><a href="#cb1-7"></a><span class="co">  categories: true</span></span>
-<span id="cb1-8"><a href="#cb1-8"></a><span class="co">  sort-ui: true</span></span>
-<span id="cb1-9"><a href="#cb1-9"></a><span class="co">  filter-ui: true</span></span>
-<span id="cb1-10"><a href="#cb1-10"></a><span class="co">  fields: [image, date, title, reading-time, description, categories]</span></span>
-<span id="cb1-11"><a href="#cb1-11"></a><span class="co">  feed: true</span></span>
-<span id="cb1-12"><a href="#cb1-12"></a><span class="an">page-layout:</span><span class="co"> full</span></span>
-<span id="cb1-13"><a href="#cb1-13"></a><span class="an">title-block-banner:</span><span class="co"> false</span></span>
-<span id="cb1-14"><a href="#cb1-14"></a><span class="co">---</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="an">title:</span><span class="co"> "Immortal time bias - \"The fallacy that never dies\" (Part 1)"</span></span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="an">date:</span><span class="co"> 2024-02-09</span></span>
+<span id="cb1-4"><a href="#cb1-4"></a><span class="an">categories:</span><span class="co"> [concept, survival]</span></span>
+<span id="cb1-5"><a href="#cb1-5"></a><span class="co">#image: </span></span>
+<span id="cb1-6"><a href="#cb1-6"></a><span class="an">description:</span><span class="co"> "Learn why this misclassification of time in a survival analysis can seriously bias your results."</span></span>
+<span id="cb1-7"><a href="#cb1-7"></a><span class="co">---</span></span>
+<span id="cb1-8"><a href="#cb1-8"></a></span>
+<span id="cb1-9"><a href="#cb1-9"></a>In 2001, a <span class="co">[</span><span class="ot">paper</span><span class="co">](https://pubmed.ncbi.nlm.nih.gov/11352696/ "https://pubmed.ncbi.nlm.nih.gov/11352696/")</span>{style="color: #1f7de6"} published in the *Annals of Internal Medicine* reported that Oscar winners had a longer life expectancy - by about **4 years** - compared to their less successful peers. The authors conclusions were that:</span>
+<span id="cb1-10"><a href="#cb1-10"></a></span>
+<span id="cb1-11"><a href="#cb1-11"></a>"The association of high status with increased longevity that prevails in the public also extends to celebrities, contributes to a large survival advantage, and is partially explained by factors related to success."</span>
+<span id="cb1-12"><a href="#cb1-12"></a></span>
+<span id="cb1-13"><a href="#cb1-13"></a>The study received widespread attention in the media, with one future Oscar winner acknowledging the work in her acceptance <span class="co">[</span><span class="ot">speech</span><span class="co">](https://www.thecut.com/2015/02/oscar-winners-really-live-longer.html "https://www.thecut.com/2015/02/oscar-winners-really-live-longer.html")</span>{style="color: #1f7de6"}.</span>
+<span id="cb1-14"><a href="#cb1-14"></a></span>
+<span id="cb1-15"><a href="#cb1-15"></a>The problem was that the reported survival advantage was illusory, and the reason for this was an invalid analysis that is not alone in the <span class="co">[</span><span class="ot">literature</span><span class="co">](https://pubmed.ncbi.nlm.nih.gov/17252614/ "https://pubmed.ncbi.nlm.nih.gov/17252614/")</span>{style="color: #1f7de6"}. As in any simple time-to-event analysis, two groups may be compared in their respective 'survival' times. In this study, subjects were first classified as winners or non-winners and observation time counted as their time alive. The error in this case was to consider winning status **time-fixed (A)**, when in reality it is **time-varying (B)**. By naively assuming it is time-fixed, we are erroneously attributing the time that a winner was in fact a loser prior to getting their gong, to their winning observation time.</span>
+<span id="cb1-16"><a href="#cb1-16"></a></span>
+<span id="cb1-17"><a href="#cb1-17"></a><span class="al">![](images/immortal_time_bias.png)</span></span>
+<span id="cb1-18"><a href="#cb1-18"></a></span>
+<span id="cb1-19"><a href="#cb1-19"></a>This creates a distortion or bias in the exposure/treatment -<span class="sc">\&gt;</span> outcome association, usually in a direction that overestimates the benefit of the exposure/treatment. When proper methods are then employed, the perceived benefits are reduced or sometimes reversed. And in fact that is exactly what was found when a <span class="co">[</span><span class="ot">re-analysis</span><span class="co">](https://pubmed.ncbi.nlm.nih.gov/16954361/ "https://pubmed.ncbi.nlm.nih.gov/16954361/")</span>{style="color: #1f7de6"} of the data was conducted in 2006 - the survival advantage was calculated to be closer to 1 year and not deemed statistically significant.</span>
+<span id="cb1-20"><a href="#cb1-20"></a></span>
+<span id="cb1-21"><a href="#cb1-21"></a>In general, the observation time prior to the exposure/treatment commencing (for those exposed/treated) is considered 'immortal', because the subject cannot experience the outcome during this period as they have yet to receive the exposure/treatment. If you are like me, this fairly classic description of immortal time hurts my brain and so I just like to simply think of it as the period that a person's observation time has been misclassified.</span>
+<span id="cb1-22"><a href="#cb1-22"></a></span>
+<span id="cb1-23"><a href="#cb1-23"></a>Observational research that involves time-to-event outcomes is particularly prone to immortal time bias and central to the problem is the specification of 'time zero' - i.e. when does the clock start? There are several examples of study design choices that can lead you down the wrong analysis path if you are not careful, and an especially pertinent one in this field is drawing contrasts between treated and untreated patients (hint: a patient is not 'treated' for the duration of their observation time if they were only on treatment for the last 10% of that time).</span>
+<span id="cb1-24"><a href="#cb1-24"></a></span>
+<span id="cb1-25"><a href="#cb1-25"></a>So, what's the solution?</span>
+<span id="cb1-26"><a href="#cb1-26"></a></span>
+<span id="cb1-27"><a href="#cb1-27"></a><span class="kw">&lt;FONT</span> <span class="er">COLOR</span> <span class="ot">=</span> <span class="st">red</span><span class="kw">&gt;</span>**Time-varying covariates**<span class="kw">&lt;/FONT&gt;</span></span>
+<span id="cb1-28"><a href="#cb1-28"></a></span>
+<span id="cb1-29"><a href="#cb1-29"></a>I will illustrate their use in an example next week.</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 

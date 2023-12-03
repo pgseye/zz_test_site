@@ -162,4 +162,5 @@ Commensurately, the output of the Cox model now gives a `HR = 1.13 (95% CI 0.63,
 mod_correct <- coxph(Surv(tstart, tstop, death) ~ transplant, data = jasa_cp)
 tbl_regression(mod_correct, exp = T)
 ```
+
 The lesson here is to always think about whether your exposure or treatment changes over the course of an individual's observation time, and if it does, to account for that in your survival model by constructing a time-varying covariate.
