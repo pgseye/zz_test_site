@@ -2,7 +2,7 @@
 title: "Easily view your data by a grouping variable"
 date: 2024-02-23
 categories: [code]
-image: "R_small.jpg"
+image: "R_small.jpeg"
 description: "Use `by()` to view your data by a grouping variable."
 ---
 
@@ -41,11 +41,11 @@ If you want to take this a step further, you can generalise this with a function
 #| label: function
 # Create function
 print_groups <- function(df, index1, index2) {
-  ids_all <-  unique(df$ids)
+  ids_all <-  unique(df$id)
   ids_range <- ids_all[index1:index2]
   if (index1 <= length(ids_all) & index2 <= length(ids_all)) {
     for (id in ids_range) {
-      temp <- df[df$ids %in% id,]
+      temp <- df[df$id %in% id,]
       print(by(temp, temp$ids, identity)[id])
       cat("----------------------------\n\n")
     }
@@ -57,6 +57,7 @@ print_groups <- function(df, index1, index2) {
 # Get your data ready to use with function
 df <- sleepstudy              # substitute your df name here
 df$ids <- sleepstudy$Subject  # substitute your df and id variable names here
+sleepstudy$Subject <- NULL    # optional
 # Use function
 print_groups(df, 1, 3)
 ```
