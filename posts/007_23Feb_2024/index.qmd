@@ -57,7 +57,7 @@ print_groups <- function(df, index1, index2) {
 # Get your data ready to use with function
 df <- sleepstudy              # substitute your df name here
 df$ids <- sleepstudy$Subject  # substitute your df and id variable names here
-sleepstudy$Subject <- NULL    # optional
+df$Subject <- NULL            # optional
 # Use function
 print_groups(df, 1, 3)
 ```
