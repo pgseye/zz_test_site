@@ -9,7 +9,7 @@
 <meta name="dcterms.date" content="2024-02-23">
 <meta name="description" content="Use by() to view your data by a grouping variable.">
 
-<title>Test Site 2 - Easily view your data by group (id)</title>
+<title>Test Site 2 - Easily view your data by a grouping variable</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -143,7 +143,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<div class="quarto-title-block"><div><h1 class="title">Easily view your data by group (id)</h1><button type="button" class="btn code-tools-button dropdown-toggle" id="quarto-code-tools-menu" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi"></i> Code</button><ul class="dropdown-menu dropdown-menu-end" aria-labelelledby="quarto-code-tools-menu"><li><a id="quarto-show-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Show All Code</a></li><li><a id="quarto-hide-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Hide All Code</a></li><li><hr class="dropdown-divider"></li><li><a id="quarto-view-source" class="dropdown-item" href="javascript:void(0)" role="button">View Source</a></li></ul></div></div>
+<div class="quarto-title-block"><div><h1 class="title">Easily view your data by a grouping variable</h1><button type="button" class="btn code-tools-button dropdown-toggle" id="quarto-code-tools-menu" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi"></i> Code</button><ul class="dropdown-menu dropdown-menu-end" aria-labelelledby="quarto-code-tools-menu"><li><a id="quarto-show-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Show All Code</a></li><li><a id="quarto-hide-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Hide All Code</a></li><li><hr class="dropdown-divider"></li><li><a id="quarto-view-source" class="dropdown-item" href="javascript:void(0)" role="button">View Source</a></li></ul></div></div>
   <div class="quarto-categories">
     <div class="quarto-category">code</div>
   </div>
@@ -753,10 +753,10 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <script src="https://giscus.app/client.js" data-repo="pgseye/Weekly_Stats_Tips" data-repo-id="R_kgDOKvfOfQ" data-category="General" data-category-id="DIC_kwDOKvfOfc4CbFWq" data-mapping="title" data-reactions-enabled="1" data-emit-metadata="0" data-input-position="top" data-theme="light" data-lang="en" crossorigin="anonymous" async="">
 </script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
 <div class="sourceCode" id="cb7" data-shortcodes="false"><pre class="sourceCode numberSource markdown number-lines code-with-copy"><code class="sourceCode markdown"><span id="cb7-1"><a href="#cb7-1"></a><span class="co">---</span></span>
-<span id="cb7-2"><a href="#cb7-2"></a><span class="an">title:</span><span class="co"> "Easily view your data by group (id)"</span></span>
+<span id="cb7-2"><a href="#cb7-2"></a><span class="an">title:</span><span class="co"> "Easily view your data by a grouping variable"</span></span>
 <span id="cb7-3"><a href="#cb7-3"></a><span class="an">date:</span><span class="co"> 2024-02-23</span></span>
 <span id="cb7-4"><a href="#cb7-4"></a><span class="an">categories:</span><span class="co"> [code]</span></span>
-<span id="cb7-5"><a href="#cb7-5"></a><span class="co">#image: </span></span>
+<span id="cb7-5"><a href="#cb7-5"></a><span class="an">image:</span><span class="co"> "R_small.jpg"</span></span>
 <span id="cb7-6"><a href="#cb7-6"></a><span class="an">description:</span><span class="co"> "Use `by()` to view your data by a grouping variable."</span></span>
 <span id="cb7-7"><a href="#cb7-7"></a><span class="co">---</span></span>
 <span id="cb7-8"><a href="#cb7-8"></a></span>
@@ -787,9 +787,9 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb7-37"><a href="#cb7-37"></a></span>
 <span id="cb7-38"><a href="#cb7-38"></a>If you want to take this a step further, you can generalise this with a function that will allow you to quickly view the data in any range that you want, without having to continually copy and paste that line of code. You will need to do a little bit of housekeeping with dataframe and group variable names for the function to work but it's not much extra effort.</span>
 <span id="cb7-39"><a href="#cb7-39"></a></span>
-<span id="cb7-40"><a href="#cb7-40"></a><span class="in">`df &lt;- sleepstudy      # substitute your df name here`</span>  </span>
-<span id="cb7-41"><a href="#cb7-41"></a><span class="in">`df$ids &lt;- df$Subject  # substitute your df and id variable names here`</span>  </span>
-<span id="cb7-42"><a href="#cb7-42"></a><span class="in">`print_groups(df, 1, 3)`</span>  </span>
+<span id="cb7-40"><a href="#cb7-40"></a><span class="in">`df &lt;- sleepstudy      # substitute your df name here`</span>\</span>
+<span id="cb7-41"><a href="#cb7-41"></a><span class="in">`df$ids &lt;- df$Subject  # substitute your df and id variable names here`</span>\</span>
+<span id="cb7-42"><a href="#cb7-42"></a><span class="in">`print_groups(df, 1, 3)`</span></span>
 <span id="cb7-43"><a href="#cb7-43"></a></span>
 <span id="cb7-46"><a href="#cb7-46"></a><span class="in">```{r}</span></span>
 <span id="cb7-47"><a href="#cb7-47"></a><span class="co">#| label: function</span></span>

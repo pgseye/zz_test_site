@@ -1,8 +1,8 @@
 ---
-title: "Easily view your data by group (id)"
+title: "Easily view your data by a grouping variable"
 date: 2024-02-23
 categories: [code]
-#image: 
+image: "R_small.jpg"
 description: "Use `by()` to view your data by a grouping variable."
 ---
 
@@ -33,9 +33,9 @@ by(sleepstudy, sleepstudy$Subject, identity)[1:3]
 
 If you want to take this a step further, you can generalise this with a function that will allow you to quickly view the data in any range that you want, without having to continually copy and paste that line of code. You will need to do a little bit of housekeeping with dataframe and group variable names for the function to work but it's not much extra effort.
 
-`df <- sleepstudy      # substitute your df name here`  
-`df$ids <- df$Subject  # substitute your df and id variable names here`  
-`print_groups(df, 1, 3)`  
+`df <- sleepstudy      # substitute your df name here`\
+`df$ids <- df$Subject  # substitute your df and id variable names here`\
+`print_groups(df, 1, 3)`
 
 ```{r}
 #| label: function
