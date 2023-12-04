@@ -271,7 +271,7 @@ $`310`
 </div>
 <p>If you want to take this a step further, you can generalise this with a function that will allow you to quickly view the data in any range that you want, without having to continually copy and paste that line of code. You will need to do a little bit of housekeeping with dataframe and group variable names for the function to work but it’s not much extra effort.</p>
 <p><code>df &lt;- sleepstudy      # substitute your df name here</code><br>
-<code>df$ids &lt;- df$Subject  # substitute your df and id variable names here</code><br>
+<code>df$id &lt;- df$Subject   # substitute your df and id variable names here</code><br>
 <code>print_groups(df, 1, 3)</code></p>
 <div class="cell">
 <details>
@@ -283,7 +283,7 @@ $`310`
 <span id="cb5-5"><a href="#cb5-5"></a>  <span class="cf">if</span> (index1 <span class="sc">&lt;=</span> <span class="fu">length</span>(ids_all) <span class="sc">&amp;</span> index2 <span class="sc">&lt;=</span> <span class="fu">length</span>(ids_all)) {</span>
 <span id="cb5-6"><a href="#cb5-6"></a>    <span class="cf">for</span> (id <span class="cf">in</span> ids_range) {</span>
 <span id="cb5-7"><a href="#cb5-7"></a>      temp <span class="ot">&lt;-</span> df[df<span class="sc">$</span>id <span class="sc">%in%</span> id,]</span>
-<span id="cb5-8"><a href="#cb5-8"></a>      <span class="fu">print</span>(<span class="fu">by</span>(temp, temp<span class="sc">$</span>ids, identity)[id])</span>
+<span id="cb5-8"><a href="#cb5-8"></a>      <span class="fu">print</span>(<span class="fu">by</span>(temp, temp<span class="sc">$</span>id, identity)[id])</span>
 <span id="cb5-9"><a href="#cb5-9"></a>      <span class="fu">cat</span>(<span class="st">"----------------------------</span><span class="sc">\n\n</span><span class="st">"</span>)</span>
 <span id="cb5-10"><a href="#cb5-10"></a>    }</span>
 <span id="cb5-11"><a href="#cb5-11"></a>  } <span class="cf">else</span> {</span>
@@ -293,14 +293,14 @@ $`310`
 <span id="cb5-15"><a href="#cb5-15"></a></span>
 <span id="cb5-16"><a href="#cb5-16"></a><span class="co"># Get your data ready to use with function</span></span>
 <span id="cb5-17"><a href="#cb5-17"></a>df <span class="ot">&lt;-</span> sleepstudy              <span class="co"># substitute your df name here</span></span>
-<span id="cb5-18"><a href="#cb5-18"></a>df<span class="sc">$</span>ids <span class="ot">&lt;-</span> sleepstudy<span class="sc">$</span>Subject  <span class="co"># substitute your df and id variable names here</span></span>
+<span id="cb5-18"><a href="#cb5-18"></a>df<span class="sc">$</span>id <span class="ot">&lt;-</span> sleepstudy<span class="sc">$</span>Subject   <span class="co"># substitute your df and id variable names here</span></span>
 <span id="cb5-19"><a href="#cb5-19"></a>df<span class="sc">$</span>Subject <span class="ot">&lt;-</span> <span class="cn">NULL</span>            <span class="co"># optional</span></span>
 <span id="cb5-20"><a href="#cb5-20"></a><span class="co"># Use function</span></span>
 <span id="cb5-21"><a href="#cb5-21"></a><span class="fu">print_groups</span>(df, <span class="dv">1</span>, <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>$`308`
-   Reaction Days ids
+   Reaction Days  id
 1  249.5600    0 308
 2  258.7047    1 308
 3  250.8006    2 308
@@ -315,7 +315,7 @@ $`310`
 ----------------------------
 
 $`309`
-   Reaction Days ids
+   Reaction Days  id
 11 222.7339    0 309
 12 205.2658    1 309
 13 202.9778    2 309
@@ -330,7 +330,7 @@ $`309`
 ----------------------------
 
 $`310`
-   Reaction Days ids
+   Reaction Days  id
 21 199.0539    0 310
 22 194.3322    1 310
 23 234.3200    2 310
@@ -789,7 +789,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb7-38"><a href="#cb7-38"></a>If you want to take this a step further, you can generalise this with a function that will allow you to quickly view the data in any range that you want, without having to continually copy and paste that line of code. You will need to do a little bit of housekeeping with dataframe and group variable names for the function to work but it's not much extra effort.</span>
 <span id="cb7-39"><a href="#cb7-39"></a></span>
 <span id="cb7-40"><a href="#cb7-40"></a><span class="in">`df &lt;- sleepstudy      # substitute your df name here`</span>\</span>
-<span id="cb7-41"><a href="#cb7-41"></a><span class="in">`df$ids &lt;- df$Subject  # substitute your df and id variable names here`</span>\</span>
+<span id="cb7-41"><a href="#cb7-41"></a><span class="in">`df$id &lt;- df$Subject   # substitute your df and id variable names here`</span>\</span>
 <span id="cb7-42"><a href="#cb7-42"></a><span class="in">`print_groups(df, 1, 3)`</span></span>
 <span id="cb7-43"><a href="#cb7-43"></a></span>
 <span id="cb7-46"><a href="#cb7-46"></a><span class="in">```{r}</span></span>
@@ -801,7 +801,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb7-52"><a href="#cb7-52"></a>  <span class="cf">if</span> (index1 <span class="sc">&lt;=</span> <span class="fu">length</span>(ids_all) <span class="sc">&amp;</span> index2 <span class="sc">&lt;=</span> <span class="fu">length</span>(ids_all)) {</span>
 <span id="cb7-53"><a href="#cb7-53"></a>    <span class="cf">for</span> (id <span class="cf">in</span> ids_range) {</span>
 <span id="cb7-54"><a href="#cb7-54"></a>      temp <span class="ot">&lt;-</span> df[df<span class="sc">$</span>id <span class="sc">%in%</span> id,]</span>
-<span id="cb7-55"><a href="#cb7-55"></a>      <span class="fu">print</span>(<span class="fu">by</span>(temp, temp<span class="sc">$</span>ids, identity)[id])</span>
+<span id="cb7-55"><a href="#cb7-55"></a>      <span class="fu">print</span>(<span class="fu">by</span>(temp, temp<span class="sc">$</span>id, identity)[id])</span>
 <span id="cb7-56"><a href="#cb7-56"></a>      <span class="fu">cat</span>(<span class="st">"----------------------------</span><span class="sc">\n\n</span><span class="st">"</span>)</span>
 <span id="cb7-57"><a href="#cb7-57"></a>    }</span>
 <span id="cb7-58"><a href="#cb7-58"></a>  } <span class="cf">else</span> {</span>
@@ -811,7 +811,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb7-62"><a href="#cb7-62"></a></span>
 <span id="cb7-63"><a href="#cb7-63"></a><span class="co"># Get your data ready to use with function</span></span>
 <span id="cb7-64"><a href="#cb7-64"></a>df <span class="ot">&lt;-</span> sleepstudy              <span class="co"># substitute your df name here</span></span>
-<span id="cb7-65"><a href="#cb7-65"></a>df<span class="sc">$</span>ids <span class="ot">&lt;-</span> sleepstudy<span class="sc">$</span>Subject  <span class="co"># substitute your df and id variable names here</span></span>
+<span id="cb7-65"><a href="#cb7-65"></a>df<span class="sc">$</span>id <span class="ot">&lt;-</span> sleepstudy<span class="sc">$</span>Subject   <span class="co"># substitute your df and id variable names here</span></span>
 <span id="cb7-66"><a href="#cb7-66"></a>df<span class="sc">$</span>Subject <span class="ot">&lt;-</span> <span class="cn">NULL</span>            <span class="co"># optional</span></span>
 <span id="cb7-67"><a href="#cb7-67"></a><span class="co"># Use function</span></span>
 <span id="cb7-68"><a href="#cb7-68"></a><span class="fu">print_groups</span>(df, <span class="dv">1</span>, <span class="dv">3</span>)</span>

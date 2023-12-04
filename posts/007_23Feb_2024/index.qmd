@@ -34,7 +34,7 @@ by(sleepstudy, sleepstudy$Subject, identity)[1:3]
 If you want to take this a step further, you can generalise this with a function that will allow you to quickly view the data in any range that you want, without having to continually copy and paste that line of code. You will need to do a little bit of housekeeping with dataframe and group variable names for the function to work but it's not much extra effort.
 
 `df <- sleepstudy      # substitute your df name here`\
-`df$ids <- df$Subject  # substitute your df and id variable names here`\
+`df$id <- df$Subject   # substitute your df and id variable names here`\
 `print_groups(df, 1, 3)`
 
 ```{r}
@@ -46,7 +46,7 @@ print_groups <- function(df, index1, index2) {
   if (index1 <= length(ids_all) & index2 <= length(ids_all)) {
     for (id in ids_range) {
       temp <- df[df$id %in% id,]
-      print(by(temp, temp$ids, identity)[id])
+      print(by(temp, temp$id, identity)[id])
       cat("----------------------------\n\n")
     }
   } else {
@@ -56,7 +56,7 @@ print_groups <- function(df, index1, index2) {
 
 # Get your data ready to use with function
 df <- sleepstudy              # substitute your df name here
-df$ids <- sleepstudy$Subject  # substitute your df and id variable names here
+df$id <- sleepstudy$Subject   # substitute your df and id variable names here
 df$Subject <- NULL            # optional
 # Use function
 print_groups(df, 1, 3)
