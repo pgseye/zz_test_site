@@ -39,6 +39,7 @@ If you want to take this a step further, you can generalise this with a function
 #| label: function
 # Create function
 print_groups <- function(df, id, index1, index2) {
+  df <- data.frame(df)
   ids_all <-  unique(eval(substitute(id), df))
   ids_range <- ids_all[index1:index2]
   if (index1 <= length(ids_all) & index2 <= length(ids_all)) {

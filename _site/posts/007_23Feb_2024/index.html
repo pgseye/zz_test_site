@@ -276,21 +276,22 @@ $`310`
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="co"># Create function</span></span>
 <span id="cb5-2"><a href="#cb5-2"></a>print_groups <span class="ot">&lt;-</span> <span class="cf">function</span>(df, id, index1, index2) {</span>
-<span id="cb5-3"><a href="#cb5-3"></a>  ids_all <span class="ot">&lt;-</span>  <span class="fu">unique</span>(<span class="fu">eval</span>(<span class="fu">substitute</span>(id), df))</span>
-<span id="cb5-4"><a href="#cb5-4"></a>  ids_range <span class="ot">&lt;-</span> ids_all[index1<span class="sc">:</span>index2]</span>
-<span id="cb5-5"><a href="#cb5-5"></a>  <span class="cf">if</span> (index1 <span class="sc">&lt;=</span> <span class="fu">length</span>(ids_all) <span class="sc">&amp;</span> index2 <span class="sc">&lt;=</span> <span class="fu">length</span>(ids_all)) {</span>
-<span id="cb5-6"><a href="#cb5-6"></a>    <span class="cf">for</span> (id2 <span class="cf">in</span> ids_range) {</span>
-<span id="cb5-7"><a href="#cb5-7"></a>      <span class="fu">cat</span>(<span class="fu">paste0</span>(<span class="st">"id = "</span>, id2, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>))</span>
-<span id="cb5-8"><a href="#cb5-8"></a>      <span class="fu">print</span>(df[<span class="fu">eval</span>(<span class="fu">substitute</span>(id), df) <span class="sc">%in%</span> id2,])</span>
-<span id="cb5-9"><a href="#cb5-9"></a>      <span class="fu">cat</span>(<span class="st">"----------------------------</span><span class="sc">\n\n</span><span class="st">"</span>)</span>
-<span id="cb5-10"><a href="#cb5-10"></a>    }</span>
-<span id="cb5-11"><a href="#cb5-11"></a>  } <span class="cf">else</span> {</span>
-<span id="cb5-12"><a href="#cb5-12"></a>    <span class="fu">print</span>(<span class="st">"There aren't that many groups in your dataset"</span>)</span>
-<span id="cb5-13"><a href="#cb5-13"></a>  }</span>
-<span id="cb5-14"><a href="#cb5-14"></a>}</span>
-<span id="cb5-15"><a href="#cb5-15"></a></span>
-<span id="cb5-16"><a href="#cb5-16"></a><span class="co"># Use function</span></span>
-<span id="cb5-17"><a href="#cb5-17"></a><span class="fu">print_groups</span>(sleepstudy, Subject, <span class="dv">1</span>, <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb5-3"><a href="#cb5-3"></a>  df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(df)</span>
+<span id="cb5-4"><a href="#cb5-4"></a>  ids_all <span class="ot">&lt;-</span>  <span class="fu">unique</span>(<span class="fu">eval</span>(<span class="fu">substitute</span>(id), df))</span>
+<span id="cb5-5"><a href="#cb5-5"></a>  ids_range <span class="ot">&lt;-</span> ids_all[index1<span class="sc">:</span>index2]</span>
+<span id="cb5-6"><a href="#cb5-6"></a>  <span class="cf">if</span> (index1 <span class="sc">&lt;=</span> <span class="fu">length</span>(ids_all) <span class="sc">&amp;</span> index2 <span class="sc">&lt;=</span> <span class="fu">length</span>(ids_all)) {</span>
+<span id="cb5-7"><a href="#cb5-7"></a>    <span class="cf">for</span> (id2 <span class="cf">in</span> ids_range) {</span>
+<span id="cb5-8"><a href="#cb5-8"></a>      <span class="fu">cat</span>(<span class="fu">paste0</span>(<span class="st">"id = "</span>, id2, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>))</span>
+<span id="cb5-9"><a href="#cb5-9"></a>      <span class="fu">print</span>(df[<span class="fu">eval</span>(<span class="fu">substitute</span>(id), df) <span class="sc">%in%</span> id2,])</span>
+<span id="cb5-10"><a href="#cb5-10"></a>      <span class="fu">cat</span>(<span class="st">"----------------------------</span><span class="sc">\n\n</span><span class="st">"</span>)</span>
+<span id="cb5-11"><a href="#cb5-11"></a>    }</span>
+<span id="cb5-12"><a href="#cb5-12"></a>  } <span class="cf">else</span> {</span>
+<span id="cb5-13"><a href="#cb5-13"></a>    <span class="fu">print</span>(<span class="st">"There aren't that many groups in your dataset"</span>)</span>
+<span id="cb5-14"><a href="#cb5-14"></a>  }</span>
+<span id="cb5-15"><a href="#cb5-15"></a>}</span>
+<span id="cb5-16"><a href="#cb5-16"></a></span>
+<span id="cb5-17"><a href="#cb5-17"></a><span class="co"># Use function</span></span>
+<span id="cb5-18"><a href="#cb5-18"></a><span class="fu">print_groups</span>(sleepstudy, Subject, <span class="dv">1</span>, <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>id = 308
@@ -785,24 +786,25 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb7-45"><a href="#cb7-45"></a><span class="co">#| label: function</span></span>
 <span id="cb7-46"><a href="#cb7-46"></a><span class="co"># Create function</span></span>
 <span id="cb7-47"><a href="#cb7-47"></a>print_groups <span class="ot">&lt;-</span> <span class="cf">function</span>(df, id, index1, index2) {</span>
-<span id="cb7-48"><a href="#cb7-48"></a>  ids_all <span class="ot">&lt;-</span>  <span class="fu">unique</span>(<span class="fu">eval</span>(<span class="fu">substitute</span>(id), df))</span>
-<span id="cb7-49"><a href="#cb7-49"></a>  ids_range <span class="ot">&lt;-</span> ids_all[index1<span class="sc">:</span>index2]</span>
-<span id="cb7-50"><a href="#cb7-50"></a>  <span class="cf">if</span> (index1 <span class="sc">&lt;=</span> <span class="fu">length</span>(ids_all) <span class="sc">&amp;</span> index2 <span class="sc">&lt;=</span> <span class="fu">length</span>(ids_all)) {</span>
-<span id="cb7-51"><a href="#cb7-51"></a>    <span class="cf">for</span> (id2 <span class="cf">in</span> ids_range) {</span>
-<span id="cb7-52"><a href="#cb7-52"></a>      <span class="fu">cat</span>(<span class="fu">paste0</span>(<span class="st">"id = "</span>, id2, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>))</span>
-<span id="cb7-53"><a href="#cb7-53"></a>      <span class="fu">print</span>(df[<span class="fu">eval</span>(<span class="fu">substitute</span>(id), df) <span class="sc">%in%</span> id2,])</span>
-<span id="cb7-54"><a href="#cb7-54"></a>      <span class="fu">cat</span>(<span class="st">"----------------------------</span><span class="sc">\n\n</span><span class="st">"</span>)</span>
-<span id="cb7-55"><a href="#cb7-55"></a>    }</span>
-<span id="cb7-56"><a href="#cb7-56"></a>  } <span class="cf">else</span> {</span>
-<span id="cb7-57"><a href="#cb7-57"></a>    <span class="fu">print</span>(<span class="st">"There aren't that many groups in your dataset"</span>)</span>
-<span id="cb7-58"><a href="#cb7-58"></a>  }</span>
-<span id="cb7-59"><a href="#cb7-59"></a>}</span>
-<span id="cb7-60"><a href="#cb7-60"></a></span>
-<span id="cb7-61"><a href="#cb7-61"></a><span class="co"># Use function</span></span>
-<span id="cb7-62"><a href="#cb7-62"></a><span class="fu">print_groups</span>(sleepstudy, Subject, <span class="dv">1</span>, <span class="dv">3</span>)</span>
-<span id="cb7-63"><a href="#cb7-63"></a><span class="in">```</span></span>
-<span id="cb7-64"><a href="#cb7-64"></a></span>
-<span id="cb7-65"><a href="#cb7-65"></a>And there you have it!</span>
+<span id="cb7-48"><a href="#cb7-48"></a>  df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(df)</span>
+<span id="cb7-49"><a href="#cb7-49"></a>  ids_all <span class="ot">&lt;-</span>  <span class="fu">unique</span>(<span class="fu">eval</span>(<span class="fu">substitute</span>(id), df))</span>
+<span id="cb7-50"><a href="#cb7-50"></a>  ids_range <span class="ot">&lt;-</span> ids_all[index1<span class="sc">:</span>index2]</span>
+<span id="cb7-51"><a href="#cb7-51"></a>  <span class="cf">if</span> (index1 <span class="sc">&lt;=</span> <span class="fu">length</span>(ids_all) <span class="sc">&amp;</span> index2 <span class="sc">&lt;=</span> <span class="fu">length</span>(ids_all)) {</span>
+<span id="cb7-52"><a href="#cb7-52"></a>    <span class="cf">for</span> (id2 <span class="cf">in</span> ids_range) {</span>
+<span id="cb7-53"><a href="#cb7-53"></a>      <span class="fu">cat</span>(<span class="fu">paste0</span>(<span class="st">"id = "</span>, id2, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>))</span>
+<span id="cb7-54"><a href="#cb7-54"></a>      <span class="fu">print</span>(df[<span class="fu">eval</span>(<span class="fu">substitute</span>(id), df) <span class="sc">%in%</span> id2,])</span>
+<span id="cb7-55"><a href="#cb7-55"></a>      <span class="fu">cat</span>(<span class="st">"----------------------------</span><span class="sc">\n\n</span><span class="st">"</span>)</span>
+<span id="cb7-56"><a href="#cb7-56"></a>    }</span>
+<span id="cb7-57"><a href="#cb7-57"></a>  } <span class="cf">else</span> {</span>
+<span id="cb7-58"><a href="#cb7-58"></a>    <span class="fu">print</span>(<span class="st">"There aren't that many groups in your dataset"</span>)</span>
+<span id="cb7-59"><a href="#cb7-59"></a>  }</span>
+<span id="cb7-60"><a href="#cb7-60"></a>}</span>
+<span id="cb7-61"><a href="#cb7-61"></a></span>
+<span id="cb7-62"><a href="#cb7-62"></a><span class="co"># Use function</span></span>
+<span id="cb7-63"><a href="#cb7-63"></a><span class="fu">print_groups</span>(sleepstudy, Subject, <span class="dv">1</span>, <span class="dv">3</span>)</span>
+<span id="cb7-64"><a href="#cb7-64"></a><span class="in">```</span></span>
+<span id="cb7-65"><a href="#cb7-65"></a></span>
+<span id="cb7-66"><a href="#cb7-66"></a>And there you have it!</span>
 </code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
