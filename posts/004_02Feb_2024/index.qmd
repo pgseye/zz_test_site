@@ -8,6 +8,10 @@ description: "Plotly adds some interactivity and can help clarify your data."
 
 Welcome back to Stats Tips for 2024 - hope you managed a nice break.
 
+test
+
+test
+
 It's a short one today. If you didn't already now it existed, check out [`plotly`](https://plotly.com/ggplot2/ "https://plotly.com/ggplot2/"){style="color: #1f7de6"} for taking your ggplots to the next level.
 
 Sometimes it can be extremely helpful to quickly link discrete elements of a plot to the corresponding observation/s in your dataframe. For example, you have a suspected outlier in a scatterplot and you want to know which individual that belongs to. Or, you have an unavoidably busy plot; for example, plotting the predictions from a mixed model for longitudinal data overlaid on the observed data for comparison. In these cases it's nearly impossible to discern the origin of the plotted data. In both use-case scenarios (and many more), `plotly` can help.
