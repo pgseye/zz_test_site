@@ -1,12 +1,12 @@
 ---
 title: "Immortal time bias - \"The fallacy that never dies\" (Part 2)"
-date: 2024-02-16
+date: 2024-03-01
 categories: [code, analysis, modelling, survival, visualisation]
 #image: 
 description: "Let's investigate immortal time bias with a coded example."
 ---
 
-Last week I introduced the concept of immortal time bias and how it can distort associations in your survival analysis, if you naively misclassify unexposed/untreated observation time as exposed/treated. This week I am going to illustrate the concept with some data and `R` code. It would have been good to analyse the Oscar Winner's data but as I could not locate that anywhere online, we are instead going to look at [one of the first studies](https://www.jstor.org/stable/2286902 "https://www.jstor.org/stable/2286902"){style="color: #1f7de6"} in which immortal time bias was subsequently recognised to be a problem.
+In the last post I introduced the concept of immortal time bias and how it can distort associations in your survival analysis, if you naively misclassify unexposed/untreated observation time as exposed/treated. This week I am going to illustrate the concept with some data and `R` code. It would have been good to analyse the Oscar Winner's data but as I could not locate that anywhere online, we are instead going to look at [one of the first studies](https://www.jstor.org/stable/2286902 "https://www.jstor.org/stable/2286902"){style="color: #1f7de6"} in which immortal time bias was subsequently recognised to be a problem.
 
 The work came out of Stanford University in the early 1970s and assessed the survival benefit of potential heart transplant recipients. In the analysis, the event of interest was death and the primary treatment was heart transplantation - so survival amongst transplant recipients was compared to that amongst accepted patients into the program that did not end up receiving a transplant. Treatment was initially considered **time-fixed** and the patients divided into two groups - '*ever transplanted*' vs '*never transplanted*'. Survival time amongst recipients was found to be longer than those who didn't receive transplantation.
 
@@ -135,7 +135,7 @@ And the newly created dataframe in counting process format:
 head(jasa_cp, 9)
 ```
 
-Note the new 'start, stop' time variables. We have also renamed `fustat` to `death` for a more intuitive name.
+Note the new 'start, stop' time variables. We have also renamed `fustat` to `death` for a more intuitive name. In this small data subset, Subject's 3, 4 and 7 underwent a transplant, but only the latter two had both unexposed and exposed time periods during observation (Subject 3 was transplanted at the beginning of their observation), hence each subject now has two rows of data.
 
 ### Visualise survival curves
 
@@ -155,7 +155,7 @@ ggsurvplot(fit_correct,
 
 ### Cox model
 
-Commensurately, the output of the Cox model now gives a `HR = 1.13 (95% CI 0.63, 2.04; p = 0.7)` indicating that there is about a 14% increase in the risk of death with transplantation - but this could be as much as a 104% increase or even a 37% decrease. That is, we can't be confident the observed effect didn't occur just by chance. Clearly, this tells a different story to the naive analysis we previously conducted.
+Commensurately, the output of the Cox model now gives a `HR = 1.13 (95% CI 0.63, 2.04; p = 0.7)` indicating that there is about a 13% increase in the risk of death with transplantation - but this could be as much as a 104% increase or even a 37% decrease. That is, we can't be confident the observed effect didn't occur just by chance. Clearly, this tells a different story to the naive analysis we previously conducted.
 
 ```{r}
 #| label: correct Cox

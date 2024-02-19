@@ -2,11 +2,11 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.3.450">
+<meta name="generator" content="quarto-1.4.549">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2024-02-16">
+<meta name="dcterms.date" content="2024-03-01">
 <meta name="description" content="Let’s investigate immortal time bias with a coded example.">
 
 <title>Test Site 2 - Immortal time bias - “The fallacy that never dies” (Part 2)</title>
@@ -24,7 +24,7 @@ ul.task-list li input[type="checkbox"] {
 }
 /* CSS for syntax highlighting */
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span { line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -83,7 +83,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   "collapse-after": 3,
   "panel-placement": "end",
   "type": "overlay",
-  "limit": 20,
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
   "language": {
     "search-no-results-text": "No results",
     "search-matching-documents-text": "matching documents",
@@ -92,6 +98,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-more-match-text": "more match in this document",
     "search-more-matches-text": "more matches in this document",
     "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
     "search-detached-cancel-button-title": "Cancel",
     "search-submit-button-title": "Submit",
     "search-label": "Search"
@@ -106,9 +113,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
-    <nav class="navbar navbar-expand-lg navbar-dark ">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
-      <div class="navbar-brand-container">
+      <div class="navbar-brand-container mx-auto">
     <a class="navbar-brand" href="../../index.html">
     <span class="navbar-title">Test Site 2</span>
     </a>
@@ -120,14 +127,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item">
-    <a class="nav-link" href="../../index.html" rel="" target="">
- <span class="menu-text">All Posts</span></a>
+    <a class="nav-link" href="../../index.html"> 
+<span class="menu-text">All Posts</span></a>
   </li>  
 </ul>
-            <div class="quarto-navbar-tools">
+          </div> <!-- /navcollapse -->
+          <div class="quarto-navbar-tools">
   <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
 </div>
-          </div> <!-- /navcollapse -->
       </div> <!-- /container-fluid -->
     </nav>
 </header>
@@ -183,7 +190,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">February 16, 2024</p>
+      <p class="date">March 1, 2024</p>
     </div>
   </div>
   
@@ -191,16 +198,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </div>
   
 
+
 </header>
 
-<p>Last week I introduced the concept of immortal time bias and how it can distort associations in your survival analysis, if you naively misclassify unexposed/untreated observation time as exposed/treated. This week I am going to illustrate the concept with some data and <code>R</code> code. It would have been good to analyse the Oscar Winner’s data but as I could not locate that anywhere online, we are instead going to look at <a href="https://www.jstor.org/stable/2286902" style="color: #1f7de6" title="https://www.jstor.org/stable/2286902">one of the first studies</a> in which immortal time bias was subsequently recognised to be a problem.</p>
+
+<p>In the last post I introduced the concept of immortal time bias and how it can distort associations in your survival analysis, if you naively misclassify unexposed/untreated observation time as exposed/treated. This week I am going to illustrate the concept with some data and <code>R</code> code. It would have been good to analyse the Oscar Winner’s data but as I could not locate that anywhere online, we are instead going to look at <a href="https://www.jstor.org/stable/2286902" style="color: #1f7de6" title="https://www.jstor.org/stable/2286902">one of the first studies</a> in which immortal time bias was subsequently recognised to be a problem.</p>
 <p>The work came out of Stanford University in the early 1970s and assessed the survival benefit of potential heart transplant recipients. In the analysis, the event of interest was death and the primary treatment was heart transplantation - so survival amongst transplant recipients was compared to that amongst accepted patients into the program that did not end up receiving a transplant. Treatment was initially considered <strong>time-fixed</strong> and the patients divided into two groups - ‘<em>ever transplanted</em>’ vs ‘<em>never transplanted</em>’. Survival time amongst recipients was found to be longer than those who didn’t receive transplantation.</p>
 <p>The immortal time bias here involves the waiting time of those patients who survived to make it to the transplant. Because this portion of the observation time was classified as exposed to transplantation instead of unexposed, it offered a guaranteed survival time to the transplanted group. The result of this misclassification was to produce an artificial increase in the mortality rate of the reference group, thus suggesting a benefit of heart transplant surgery. In a later reanalysis of the data, the apparent survival benefit of the transplanted group disappeared when the immortal time was properly accounted for by a time-dependent analysis.</p>
 <section id="load-data" class="level2" data-number="1">
 <h2 data-number="1" class="anchored" data-anchor-id="load-data"><span class="header-section-number">1</span> Load data</h2>
 <p>As this study is considered a canonical example of immortal time bias, the data comes built into <code>R</code>’s <code>survival</code> package. We can load the data and inspect the relevant <code>jasa</code> dataframe as below.</p>
 <div class="cell">
-<details>
+<details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">library</span>(survival)</span>
 <span id="cb1-2"><a href="#cb1-2"></a><span class="fu">library</span>(survminer)</span>
@@ -360,7 +369,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 data-number="2" class="anchored" data-anchor-id="visualise-individual-survival-trajectories"><span class="header-section-number">2</span> Visualise individual survival trajectories</h2>
 <p>Using a bit of <code>ggplot2</code> magic, we can now plot the individual observation times for the 103 patients in the study. Note that I have stratified observation time by transplant status (<font color="#E7B800">orange</font> for the period a patient remains untransplanted and <font color="#2E9FDF">blue</font> for the period following a transplant).</p>
 <div class="cell">
-<details>
+<details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="co"># Create 'id' variable</span></span>
 <span id="cb2-2"><a href="#cb2-2"></a>jasa<span class="sc">$</span>id <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">dim</span>(jasa)[<span class="dv">1</span>])</span>
@@ -383,7 +392,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-19"><a href="#cb2-19"></a>  <span class="fu">theme</span>(<span class="at">axis.text.y =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">15</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/survival trajectories-1.png" class="img-fluid" width="1152"></p>
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/survival trajectories-1.png" class="img-fluid figure-img" width="1152"></p>
+</figure>
+</div>
 </div>
 </div>
 </section>
@@ -395,7 +408,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p><code>fit &lt;- survfit(Surv(futime, fustat) ~ transplant, data = jasa)</code></p>
 <p>and then passing this <code>ggsurvplot</code> which does a nicer job of plotting survival data then using <code>R</code>’s <code>base</code> functions. Note that we ignore <code>wait.time</code> and only specify <code>futime</code> in our fit function. This is because we are assuming if a patient was transplanted, the entire duration of their observation period was considered as such.</p>
 <div class="cell">
-<details>
+<details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>fit_naive <span class="ot">&lt;-</span> <span class="fu">survfit</span>(<span class="fu">Surv</span>(futime, fustat) <span class="sc">~</span> transplant, <span class="at">data =</span> jasa)</span>
 <span id="cb3-2"><a href="#cb3-2"></a><span class="fu">ggsurvplot</span>(fit_naive,</span>
@@ -407,7 +420,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-8"><a href="#cb3-8"></a>          <span class="at">palette =</span> <span class="fu">c</span>(<span class="st">"#E7B800"</span>, <span class="st">"#2E9FDF"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/naive KM curve-1.png" class="img-fluid" width="1152"></p>
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/naive KM curve-1.png" class="img-fluid figure-img" width="1152"></p>
+</figure>
+</div>
 </div>
 </div>
 </section>
@@ -416,30 +433,29 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Fitting a Cox model is also simple with:</p>
 <p><code>mod_naive &lt;- coxph(Surv(futime, fustat) ~ transplant, data = jasa)</code></p>
 <div class="cell">
-<details>
+<details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>mod_naive <span class="ot">&lt;-</span> <span class="fu">coxph</span>(<span class="fu">Surv</span>(futime, fustat) <span class="sc">~</span> transplant, <span class="at">data =</span> jasa)</span>
 <span id="cb4-2"><a href="#cb4-2"></a><span class="fu">tbl_regression</span>(mod_naive, <span class="at">exp =</span> T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-
-<div id="ecfzuckcno" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#ecfzuckcno table {
+<div id="asbofkblkr" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#asbofkblkr table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#ecfzuckcno thead, #ecfzuckcno tbody, #ecfzuckcno tfoot, #ecfzuckcno tr, #ecfzuckcno td, #ecfzuckcno th {
+#asbofkblkr thead, #asbofkblkr tbody, #asbofkblkr tfoot, #asbofkblkr tr, #asbofkblkr td, #asbofkblkr th {
   border-style: none;
 }
 
-#ecfzuckcno p {
+#asbofkblkr p {
   margin: 0;
   padding: 0;
 }
 
-#ecfzuckcno .gt_table {
+#asbofkblkr .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -465,12 +481,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-left-color: #D3D3D3;
 }
 
-#ecfzuckcno .gt_caption {
+#asbofkblkr .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#ecfzuckcno .gt_title {
+#asbofkblkr .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -482,7 +498,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-bottom-width: 0;
 }
 
-#ecfzuckcno .gt_subtitle {
+#asbofkblkr .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -494,7 +510,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-top-width: 0;
 }
 
-#ecfzuckcno .gt_heading {
+#asbofkblkr .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -506,13 +522,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-right-color: #D3D3D3;
 }
 
-#ecfzuckcno .gt_bottom_border {
+#asbofkblkr .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#ecfzuckcno .gt_col_headings {
+#asbofkblkr .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -527,7 +543,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-right-color: #D3D3D3;
 }
 
-#ecfzuckcno .gt_col_heading {
+#asbofkblkr .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -547,7 +563,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   overflow-x: hidden;
 }
 
-#ecfzuckcno .gt_column_spanner_outer {
+#asbofkblkr .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -559,15 +575,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   padding-right: 4px;
 }
 
-#ecfzuckcno .gt_column_spanner_outer:first-child {
+#asbofkblkr .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#ecfzuckcno .gt_column_spanner_outer:last-child {
+#asbofkblkr .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#ecfzuckcno .gt_column_spanner {
+#asbofkblkr .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -579,11 +595,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   width: 100%;
 }
 
-#ecfzuckcno .gt_spanner_row {
+#asbofkblkr .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#ecfzuckcno .gt_group_heading {
+#asbofkblkr .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -609,7 +625,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   text-align: left;
 }
 
-#ecfzuckcno .gt_empty_group_heading {
+#asbofkblkr .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -624,15 +640,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   vertical-align: middle;
 }
 
-#ecfzuckcno .gt_from_md > :first-child {
+#asbofkblkr .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#ecfzuckcno .gt_from_md > :last-child {
+#asbofkblkr .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#ecfzuckcno .gt_row {
+#asbofkblkr .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -651,7 +667,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   overflow-x: hidden;
 }
 
-#ecfzuckcno .gt_stub {
+#asbofkblkr .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -664,7 +680,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   padding-right: 5px;
 }
 
-#ecfzuckcno .gt_stub_row_group {
+#asbofkblkr .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -678,15 +694,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   vertical-align: top;
 }
 
-#ecfzuckcno .gt_row_group_first td {
+#asbofkblkr .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#ecfzuckcno .gt_row_group_first th {
+#asbofkblkr .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#ecfzuckcno .gt_summary_row {
+#asbofkblkr .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -696,16 +712,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   padding-right: 5px;
 }
 
-#ecfzuckcno .gt_first_summary_row {
+#asbofkblkr .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#ecfzuckcno .gt_first_summary_row.thick {
+#asbofkblkr .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#ecfzuckcno .gt_last_summary_row {
+#asbofkblkr .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -715,7 +731,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-bottom-color: #D3D3D3;
 }
 
-#ecfzuckcno .gt_grand_summary_row {
+#asbofkblkr .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -725,7 +741,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   padding-right: 5px;
 }
 
-#ecfzuckcno .gt_first_grand_summary_row {
+#asbofkblkr .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -735,7 +751,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-top-color: #D3D3D3;
 }
 
-#ecfzuckcno .gt_last_grand_summary_row_top {
+#asbofkblkr .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -745,11 +761,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-bottom-color: #D3D3D3;
 }
 
-#ecfzuckcno .gt_striped {
+#asbofkblkr .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#ecfzuckcno .gt_table_body {
+#asbofkblkr .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -758,7 +774,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-bottom-color: #D3D3D3;
 }
 
-#ecfzuckcno .gt_footnotes {
+#asbofkblkr .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -772,7 +788,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-right-color: #D3D3D3;
 }
 
-#ecfzuckcno .gt_footnote {
+#asbofkblkr .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -781,7 +797,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   padding-right: 5px;
 }
 
-#ecfzuckcno .gt_sourcenotes {
+#asbofkblkr .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -795,7 +811,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-right-color: #D3D3D3;
 }
 
-#ecfzuckcno .gt_sourcenote {
+#asbofkblkr .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -803,89 +819,91 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   padding-right: 5px;
 }
 
-#ecfzuckcno .gt_left {
+#asbofkblkr .gt_left {
   text-align: left;
 }
 
-#ecfzuckcno .gt_center {
+#asbofkblkr .gt_center {
   text-align: center;
 }
 
-#ecfzuckcno .gt_right {
+#asbofkblkr .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#ecfzuckcno .gt_font_normal {
+#asbofkblkr .gt_font_normal {
   font-weight: normal;
 }
 
-#ecfzuckcno .gt_font_bold {
+#asbofkblkr .gt_font_bold {
   font-weight: bold;
 }
 
-#ecfzuckcno .gt_font_italic {
+#asbofkblkr .gt_font_italic {
   font-style: italic;
 }
 
-#ecfzuckcno .gt_super {
+#asbofkblkr .gt_super {
   font-size: 65%;
 }
 
-#ecfzuckcno .gt_footnote_marks {
+#asbofkblkr .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#ecfzuckcno .gt_asterisk {
+#asbofkblkr .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#ecfzuckcno .gt_indent_1 {
+#asbofkblkr .gt_indent_1 {
   text-indent: 5px;
 }
 
-#ecfzuckcno .gt_indent_2 {
+#asbofkblkr .gt_indent_2 {
   text-indent: 10px;
 }
 
-#ecfzuckcno .gt_indent_3 {
+#asbofkblkr .gt_indent_3 {
   text-indent: 15px;
 }
 
-#ecfzuckcno .gt_indent_4 {
+#asbofkblkr .gt_indent_4 {
   text-indent: 20px;
 }
 
-#ecfzuckcno .gt_indent_5 {
+#asbofkblkr .gt_indent_5 {
   text-indent: 25px;
 }
 </style>
-<table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
-  <thead>
-    
-    <tr class="gt_col_headings">
-      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="<strong>Characteristic</strong>"><strong>Characteristic</strong></th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="<strong>HR</strong><span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;&quot;><sup>1</sup></span>"><strong>HR</strong><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>1</sup></span></th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="<strong>95% CI</strong><span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;&quot;><sup>1</sup></span>"><strong>95% CI</strong><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>1</sup></span></th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="<strong>p-value</strong>"><strong>p-value</strong></th>
-    </tr>
-  </thead>
-  <tbody class="gt_table_body">
-    <tr><td headers="label" class="gt_row gt_left">transplant</td>
-<td headers="estimate" class="gt_row gt_center">0.27</td>
-<td headers="ci" class="gt_row gt_center">0.17, 0.43</td>
-<td headers="p.value" class="gt_row gt_center">&lt;0.001</td></tr>
-  </tbody>
-  
-  <tfoot class="gt_footnotes">
-    <tr>
-      <td class="gt_footnote" colspan="4"><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>1</sup></span> HR = Hazard Ratio, CI = Confidence Interval</td>
-    </tr>
-  </tfoot>
+
+<table class="gt_table table table-sm table-striped small" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+<thead>
+<tr class="header gt_col_headings">
+<th id="<strong>Characteristic</strong>" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col"><strong>Characteristic</strong></th>
+<th id="<strong>HR</strong><span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;&quot;><sup>1</sup></span>" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col"><strong>HR</strong><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>1</sup></span></th>
+<th id="<strong>95% CI</strong><span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;&quot;><sup>1</sup></span>" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col"><strong>95% CI</strong><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>1</sup></span></th>
+<th id="<strong>p-value</strong>" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col"><strong>p-value</strong></th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_left" headers="label">transplant</td>
+<td class="gt_row gt_center" headers="estimate">0.27</td>
+<td class="gt_row gt_center" headers="ci">0.17, 0.43</td>
+<td class="gt_row gt_center" headers="p.value">&lt;0.001</td>
+</tr>
+</tbody><tfoot class="gt_footnotes">
+<tr class="even">
+<td colspan="4" class="gt_footnote"><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>1</sup></span> HR = Hazard Ratio, CI = Confidence Interval</td>
+</tr>
+</tfoot>
+
 </table>
+
 </div>
 </div>
 </div>
@@ -896,7 +914,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 data-number="4" class="anchored" data-anchor-id="correct-analysis-assuming-treatment-status-is-time-varying"><span class="header-section-number">4</span> Correct analysis assuming treatment status is time-varying</h2>
 <p>Up until now we have just used the data as it’s been presented to us. Each patient has a single observation with all information about them contained in that row of data. However, to perform the correct time-dependent analysis we first need to construct a time-varying version of the treatment (i.e.&nbsp;transplant) variable. This data format is known as <strong>‘counting process’</strong> and in the general case involves creating potentially multiple rows of data for each patient with each row corresponding to a different exposure/treatment period of that patients observation time. In this specific example, we will create an additional row of data for transplanted patients splitting time at the point of transplant, so that the first row contains the time from acceptance into the transplant program to the point of transplant, and the second row contains the time from transplant to either death or censoring. We specify this in <strong>‘start, stop’</strong> format rather than the duration of the interval itself. We will use the <code>tmerge</code> <a href="https://www.rdocumentation.org/packages/survival/versions/3.5-7/topics/tmerge" style="color: #1f7de6">function</a> to do this, although a little bit of manual programming can also achieve the same result.</p>
 <div class="cell">
-<details>
+<details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="co"># Create subset of data selecting relevant variables</span></span>
 <span id="cb5-2"><a href="#cb5-2"></a>jasa_subset <span class="ot">&lt;-</span> jasa <span class="sc">|&gt;</span> </span>
@@ -914,7 +932,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>Remember that the original data looked like:</p>
 <div class="cell">
-<details>
+<details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a><span class="fu">head</span>(jasa_subset, <span class="dv">7</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
@@ -987,7 +1005,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>And the newly created dataframe in counting process format:</p>
 <div class="cell">
-<details>
+<details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a><span class="fu">head</span>(jasa_cp, <span class="dv">9</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
@@ -1072,12 +1090,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-<p>Note the new ‘start, stop’ time variables. We have also renamed <code>fustat</code> to <code>death</code> for a more intuitive name.</p>
+<p>Note the new ‘start, stop’ time variables. We have also renamed <code>fustat</code> to <code>death</code> for a more intuitive name. In this small data subset, Subject’s 3, 4 and 7 underwent a transplant, but only the latter two had both unexposed and exposed time periods during observation (Subject 3 was transplanted at the beginning of their observation), hence each subject now has two rows of data.</p>
 <section id="visualise-survival-curves-1" class="level3" data-number="4.1">
 <h3 data-number="4.1" class="anchored" data-anchor-id="visualise-survival-curves-1"><span class="header-section-number">4.1</span> Visualise survival curves</h3>
 <p>Plotting the <strong>Kaplan-Meier</strong> survival curves for the data in this correct format reveals a vastly different result to that which we viewed earlier. There is now almost no separation in the curves.</p>
 <div class="cell">
-<details>
+<details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a>fit_correct <span class="ot">&lt;-</span> <span class="fu">survfit</span>(<span class="fu">Surv</span>(tstart, tstop, death) <span class="sc">~</span> transplant, <span class="at">data =</span> jasa_cp)</span>
 <span id="cb8-2"><a href="#cb8-2"></a><span class="fu">ggsurvplot</span>(fit_correct,</span>
@@ -1089,38 +1107,41 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb8-8"><a href="#cb8-8"></a>          <span class="at">palette =</span> <span class="fu">c</span>(<span class="st">"#E7B800"</span>, <span class="st">"#2E9FDF"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/correct KM curve-1.png" class="img-fluid" width="1152"></p>
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/correct KM curve-1.png" class="img-fluid figure-img" width="1152"></p>
+</figure>
+</div>
 </div>
 </div>
 </section>
 <section id="cox-model-1" class="level3" data-number="4.2">
 <h3 data-number="4.2" class="anchored" data-anchor-id="cox-model-1"><span class="header-section-number">4.2</span> Cox model</h3>
-<p>Commensurately, the output of the Cox model now gives a <code>HR = 1.13 (95% CI 0.63, 2.04; p = 0.7)</code> indicating that there is about a 14% increase in the risk of death with transplantation - but this could be as much as a 104% increase or even a 37% decrease. That is, we can’t be confident the observed effect didn’t occur just by chance. Clearly, this tells a different story to the naive analysis we previously conducted.</p>
+<p>Commensurately, the output of the Cox model now gives a <code>HR = 1.13 (95% CI 0.63, 2.04; p = 0.7)</code> indicating that there is about a 13% increase in the risk of death with transplantation - but this could be as much as a 104% increase or even a 37% decrease. That is, we can’t be confident the observed effect didn’t occur just by chance. Clearly, this tells a different story to the naive analysis we previously conducted.</p>
 <div class="cell">
-<details>
+<details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a>mod_correct <span class="ot">&lt;-</span> <span class="fu">coxph</span>(<span class="fu">Surv</span>(tstart, tstop, death) <span class="sc">~</span> transplant, <span class="at">data =</span> jasa_cp)</span>
 <span id="cb9-2"><a href="#cb9-2"></a><span class="fu">tbl_regression</span>(mod_correct, <span class="at">exp =</span> T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-
-<div id="ztvmyweiqm" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#ztvmyweiqm table {
+<div id="zvxijjiypo" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#zvxijjiypo table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#ztvmyweiqm thead, #ztvmyweiqm tbody, #ztvmyweiqm tfoot, #ztvmyweiqm tr, #ztvmyweiqm td, #ztvmyweiqm th {
+#zvxijjiypo thead, #zvxijjiypo tbody, #zvxijjiypo tfoot, #zvxijjiypo tr, #zvxijjiypo td, #zvxijjiypo th {
   border-style: none;
 }
 
-#ztvmyweiqm p {
+#zvxijjiypo p {
   margin: 0;
   padding: 0;
 }
 
-#ztvmyweiqm .gt_table {
+#zvxijjiypo .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -1146,12 +1167,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-left-color: #D3D3D3;
 }
 
-#ztvmyweiqm .gt_caption {
+#zvxijjiypo .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#ztvmyweiqm .gt_title {
+#zvxijjiypo .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -1163,7 +1184,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-bottom-width: 0;
 }
 
-#ztvmyweiqm .gt_subtitle {
+#zvxijjiypo .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -1175,7 +1196,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-top-width: 0;
 }
 
-#ztvmyweiqm .gt_heading {
+#zvxijjiypo .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -1187,13 +1208,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-right-color: #D3D3D3;
 }
 
-#ztvmyweiqm .gt_bottom_border {
+#zvxijjiypo .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#ztvmyweiqm .gt_col_headings {
+#zvxijjiypo .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1208,7 +1229,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-right-color: #D3D3D3;
 }
 
-#ztvmyweiqm .gt_col_heading {
+#zvxijjiypo .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1228,7 +1249,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   overflow-x: hidden;
 }
 
-#ztvmyweiqm .gt_column_spanner_outer {
+#zvxijjiypo .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1240,15 +1261,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   padding-right: 4px;
 }
 
-#ztvmyweiqm .gt_column_spanner_outer:first-child {
+#zvxijjiypo .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#ztvmyweiqm .gt_column_spanner_outer:last-child {
+#zvxijjiypo .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#ztvmyweiqm .gt_column_spanner {
+#zvxijjiypo .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -1260,11 +1281,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   width: 100%;
 }
 
-#ztvmyweiqm .gt_spanner_row {
+#zvxijjiypo .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#ztvmyweiqm .gt_group_heading {
+#zvxijjiypo .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1290,7 +1311,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   text-align: left;
 }
 
-#ztvmyweiqm .gt_empty_group_heading {
+#zvxijjiypo .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -1305,15 +1326,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   vertical-align: middle;
 }
 
-#ztvmyweiqm .gt_from_md > :first-child {
+#zvxijjiypo .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#ztvmyweiqm .gt_from_md > :last-child {
+#zvxijjiypo .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#ztvmyweiqm .gt_row {
+#zvxijjiypo .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1332,7 +1353,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   overflow-x: hidden;
 }
 
-#ztvmyweiqm .gt_stub {
+#zvxijjiypo .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1345,7 +1366,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   padding-right: 5px;
 }
 
-#ztvmyweiqm .gt_stub_row_group {
+#zvxijjiypo .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1359,15 +1380,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   vertical-align: top;
 }
 
-#ztvmyweiqm .gt_row_group_first td {
+#zvxijjiypo .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#ztvmyweiqm .gt_row_group_first th {
+#zvxijjiypo .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#ztvmyweiqm .gt_summary_row {
+#zvxijjiypo .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1377,16 +1398,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   padding-right: 5px;
 }
 
-#ztvmyweiqm .gt_first_summary_row {
+#zvxijjiypo .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#ztvmyweiqm .gt_first_summary_row.thick {
+#zvxijjiypo .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#ztvmyweiqm .gt_last_summary_row {
+#zvxijjiypo .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1396,7 +1417,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-bottom-color: #D3D3D3;
 }
 
-#ztvmyweiqm .gt_grand_summary_row {
+#zvxijjiypo .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1406,7 +1427,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   padding-right: 5px;
 }
 
-#ztvmyweiqm .gt_first_grand_summary_row {
+#zvxijjiypo .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1416,7 +1437,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-top-color: #D3D3D3;
 }
 
-#ztvmyweiqm .gt_last_grand_summary_row_top {
+#zvxijjiypo .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1426,11 +1447,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-bottom-color: #D3D3D3;
 }
 
-#ztvmyweiqm .gt_striped {
+#zvxijjiypo .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#ztvmyweiqm .gt_table_body {
+#zvxijjiypo .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1439,7 +1460,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-bottom-color: #D3D3D3;
 }
 
-#ztvmyweiqm .gt_footnotes {
+#zvxijjiypo .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1453,7 +1474,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-right-color: #D3D3D3;
 }
 
-#ztvmyweiqm .gt_footnote {
+#zvxijjiypo .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -1462,7 +1483,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   padding-right: 5px;
 }
 
-#ztvmyweiqm .gt_sourcenotes {
+#zvxijjiypo .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1476,7 +1497,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-right-color: #D3D3D3;
 }
 
-#ztvmyweiqm .gt_sourcenote {
+#zvxijjiypo .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -1484,89 +1505,91 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   padding-right: 5px;
 }
 
-#ztvmyweiqm .gt_left {
+#zvxijjiypo .gt_left {
   text-align: left;
 }
 
-#ztvmyweiqm .gt_center {
+#zvxijjiypo .gt_center {
   text-align: center;
 }
 
-#ztvmyweiqm .gt_right {
+#zvxijjiypo .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#ztvmyweiqm .gt_font_normal {
+#zvxijjiypo .gt_font_normal {
   font-weight: normal;
 }
 
-#ztvmyweiqm .gt_font_bold {
+#zvxijjiypo .gt_font_bold {
   font-weight: bold;
 }
 
-#ztvmyweiqm .gt_font_italic {
+#zvxijjiypo .gt_font_italic {
   font-style: italic;
 }
 
-#ztvmyweiqm .gt_super {
+#zvxijjiypo .gt_super {
   font-size: 65%;
 }
 
-#ztvmyweiqm .gt_footnote_marks {
+#zvxijjiypo .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#ztvmyweiqm .gt_asterisk {
+#zvxijjiypo .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#ztvmyweiqm .gt_indent_1 {
+#zvxijjiypo .gt_indent_1 {
   text-indent: 5px;
 }
 
-#ztvmyweiqm .gt_indent_2 {
+#zvxijjiypo .gt_indent_2 {
   text-indent: 10px;
 }
 
-#ztvmyweiqm .gt_indent_3 {
+#zvxijjiypo .gt_indent_3 {
   text-indent: 15px;
 }
 
-#ztvmyweiqm .gt_indent_4 {
+#zvxijjiypo .gt_indent_4 {
   text-indent: 20px;
 }
 
-#ztvmyweiqm .gt_indent_5 {
+#zvxijjiypo .gt_indent_5 {
   text-indent: 25px;
 }
 </style>
-<table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
-  <thead>
-    
-    <tr class="gt_col_headings">
-      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="<strong>Characteristic</strong>"><strong>Characteristic</strong></th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="<strong>HR</strong><span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;&quot;><sup>1</sup></span>"><strong>HR</strong><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>1</sup></span></th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="<strong>95% CI</strong><span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;&quot;><sup>1</sup></span>"><strong>95% CI</strong><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>1</sup></span></th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="<strong>p-value</strong>"><strong>p-value</strong></th>
-    </tr>
-  </thead>
-  <tbody class="gt_table_body">
-    <tr><td headers="label" class="gt_row gt_left">transplant</td>
-<td headers="estimate" class="gt_row gt_center">1.13</td>
-<td headers="ci" class="gt_row gt_center">0.63, 2.04</td>
-<td headers="p.value" class="gt_row gt_center">0.7</td></tr>
-  </tbody>
-  
-  <tfoot class="gt_footnotes">
-    <tr>
-      <td class="gt_footnote" colspan="4"><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>1</sup></span> HR = Hazard Ratio, CI = Confidence Interval</td>
-    </tr>
-  </tfoot>
+
+<table class="gt_table table table-sm table-striped small" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+<thead>
+<tr class="header gt_col_headings">
+<th id="<strong>Characteristic</strong>" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col"><strong>Characteristic</strong></th>
+<th id="<strong>HR</strong><span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;&quot;><sup>1</sup></span>" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col"><strong>HR</strong><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>1</sup></span></th>
+<th id="<strong>95% CI</strong><span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;&quot;><sup>1</sup></span>" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col"><strong>95% CI</strong><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>1</sup></span></th>
+<th id="<strong>p-value</strong>" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col"><strong>p-value</strong></th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_left" headers="label">transplant</td>
+<td class="gt_row gt_center" headers="estimate">1.13</td>
+<td class="gt_row gt_center" headers="ci">0.63, 2.04</td>
+<td class="gt_row gt_center" headers="p.value">0.7</td>
+</tr>
+</tbody><tfoot class="gt_footnotes">
+<tr class="even">
+<td colspan="4" class="gt_footnote"><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>1</sup></span> HR = Hazard Ratio, CI = Confidence Interval</td>
+</tr>
+</tfoot>
+
 </table>
+
 </div>
 </div>
 </div>
@@ -1620,6 +1643,33 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       } else {
         el.classList.add('notransition');
       }
+    }
+  }
+  const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+    const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+    const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+    let newTheme = '';
+    if(darkModeDefault) {
+      newTheme = isAlternate ? baseTheme : alternateTheme;
+    } else {
+      newTheme = isAlternate ? alternateTheme : baseTheme;
+    }
+    const changeGiscusTheme = () => {
+      // From: https://github.com/giscus/giscus/issues/336
+      const sendMessage = (message) => {
+        const iframe = document.querySelector('iframe.giscus-frame');
+        if (!iframe) return;
+        iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+      }
+      sendMessage({
+        setConfig: {
+          theme: newTheme
+        }
+      });
+    }
+    const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+    if (isGiscussLoaded) {
+      changeGiscusTheme();
     }
   }
   const toggleColorMode = (alternate) => {
@@ -1688,13 +1738,15 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       return localAlternateSentinel;
     }
   }
-  let localAlternateSentinel = 'default';
+  const darkModeDefault = false;
+  let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
   // Dark / light mode switch
   window.quartoToggleColorScheme = () => {
     // Read the current dark / light value 
     let toAlternate = !hasAlternateSentinel();
     toggleColorMode(toAlternate);
     setStyleSentinel(toAlternate);
+    toggleGiscusIfUsed(toAlternate, darkModeDefault);
   };
   // Ensure there is a toggle, if there isn't float one in the top right
   if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
@@ -1824,10 +1876,9 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   if (showAllCode) {
     showAllCode.addEventListener("click", toggleCodeHandler(true));
   }
-  function tippyHover(el, contentFn) {
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
     const config = {
       allowHTML: true,
-      content: contentFn,
       maxWidth: 500,
       delay: 100,
       arrow: false,
@@ -1837,8 +1888,17 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       interactive: true,
       interactiveBorder: 10,
       theme: 'quarto',
-      placement: 'bottom-start'
+      placement: 'bottom-start',
     };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
     window.tippy(el, config); 
   }
   const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
@@ -1851,6 +1911,125 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       const id = href.replace(/^#\/?/, "");
       const note = window.document.getElementById(id);
       return note.innerHTML;
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
     });
   }
       let selectedAnnoteEl;
@@ -1894,6 +2073,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
             }
             div.style.top = top - 2 + "px";
             div.style.height = height + 4 + "px";
+            div.style.left = 0;
             let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
             if (gutterDiv === null) {
               gutterDiv = window.document.createElement("div");
@@ -1919,6 +2099,32 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
         });
         selectedAnnoteEl = undefined;
       };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
       // Attach click handler to the DT
       const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
       for (const annoteDlNode of annoteDls) {
@@ -1979,16 +2185,18 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 });
 </script>
 <script src="https://giscus.app/client.js" data-repo="pgseye/Weekly_Stats_Tips" data-repo-id="R_kgDOKvfOfQ" data-category="General" data-category-id="DIC_kwDOKvfOfc4CbFWq" data-mapping="title" data-reactions-enabled="1" data-emit-metadata="0" data-input-position="top" data-theme="light" data-lang="en" crossorigin="anonymous" async="">
-</script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+</script>
+<input type="hidden" id="giscus-base-theme" value="light">
+<input type="hidden" id="giscus-alt-theme" value="dark"><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
 <div class="sourceCode" id="cb10" data-shortcodes="false"><pre class="sourceCode numberSource markdown number-lines code-with-copy"><code class="sourceCode markdown"><span id="cb10-1"><a href="#cb10-1"></a><span class="co">---</span></span>
 <span id="cb10-2"><a href="#cb10-2"></a><span class="an">title:</span><span class="co"> "Immortal time bias - \"The fallacy that never dies\" (Part 2)"</span></span>
-<span id="cb10-3"><a href="#cb10-3"></a><span class="an">date:</span><span class="co"> 2024-02-16</span></span>
+<span id="cb10-3"><a href="#cb10-3"></a><span class="an">date:</span><span class="co"> 2024-03-01</span></span>
 <span id="cb10-4"><a href="#cb10-4"></a><span class="an">categories:</span><span class="co"> [code, analysis, modelling, survival, visualisation]</span></span>
 <span id="cb10-5"><a href="#cb10-5"></a><span class="co">#image: </span></span>
 <span id="cb10-6"><a href="#cb10-6"></a><span class="an">description:</span><span class="co"> "Let's investigate immortal time bias with a coded example."</span></span>
 <span id="cb10-7"><a href="#cb10-7"></a><span class="co">---</span></span>
 <span id="cb10-8"><a href="#cb10-8"></a></span>
-<span id="cb10-9"><a href="#cb10-9"></a>Last week I introduced the concept of immortal time bias and how it can distort associations in your survival analysis, if you naively misclassify unexposed/untreated observation time as exposed/treated. This week I am going to illustrate the concept with some data and <span class="in">`R`</span> code. It would have been good to analyse the Oscar Winner's data but as I could not locate that anywhere online, we are instead going to look at <span class="co">[</span><span class="ot">one of the first studies</span><span class="co">](https://www.jstor.org/stable/2286902 "https://www.jstor.org/stable/2286902")</span>{style="color: #1f7de6"} in which immortal time bias was subsequently recognised to be a problem.</span>
+<span id="cb10-9"><a href="#cb10-9"></a>In the last post I introduced the concept of immortal time bias and how it can distort associations in your survival analysis, if you naively misclassify unexposed/untreated observation time as exposed/treated. This week I am going to illustrate the concept with some data and <span class="in">`R`</span> code. It would have been good to analyse the Oscar Winner's data but as I could not locate that anywhere online, we are instead going to look at <span class="co">[</span><span class="ot">one of the first studies</span><span class="co">](https://www.jstor.org/stable/2286902 "https://www.jstor.org/stable/2286902")</span>{style="color: #1f7de6"} in which immortal time bias was subsequently recognised to be a problem.</span>
 <span id="cb10-10"><a href="#cb10-10"></a></span>
 <span id="cb10-11"><a href="#cb10-11"></a>The work came out of Stanford University in the early 1970s and assessed the survival benefit of potential heart transplant recipients. In the analysis, the event of interest was death and the primary treatment was heart transplantation - so survival amongst transplant recipients was compared to that amongst accepted patients into the program that did not end up receiving a transplant. Treatment was initially considered **time-fixed** and the patients divided into two groups - '*ever transplanted*' vs '*never transplanted*'. Survival time amongst recipients was found to be longer than those who didn't receive transplantation.</span>
 <span id="cb10-12"><a href="#cb10-12"></a></span>
@@ -2022,7 +2230,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb10-42"><a href="#cb10-42"></a></span>
 <span id="cb10-43"><a href="#cb10-43"></a><span class="fu">## Visualise individual survival trajectories</span></span>
 <span id="cb10-44"><a href="#cb10-44"></a></span>
-<span id="cb10-45"><a href="#cb10-45"></a>Using a bit of <span class="in">`ggplot2`</span> magic, we can now plot the individual observation times for the 103 patients in the study. Note that I have stratified observation time by transplant status (<span class="kw">&lt;FONT</span> <span class="er">COLOR</span> <span class="ot">=</span> <span class="st">"#E7B800"</span><span class="kw">&gt;</span>orange<span class="kw">&lt;/FONT&gt;</span> for the period a patient remains untransplanted and <span class="kw">&lt;FONT</span> <span class="er">COLOR</span> <span class="ot">=</span> <span class="st">"#2E9FDF"</span><span class="kw">&gt;</span>blue<span class="kw">&lt;/FONT&gt;</span> for the period following a transplant).</span>
+<span id="cb10-45"><a href="#cb10-45"></a>Using a bit of <span class="in">`ggplot2`</span> magic, we can now plot the individual observation times for the 103 patients in the study. Note that I have stratified observation time by transplant status (&lt;FONT COLOR = "#E7B800"&gt;orange&lt;/FONT&gt; for the period a patient remains untransplanted and &lt;FONT COLOR = "#2E9FDF"&gt;blue&lt;/FONT&gt; for the period following a transplant).</span>
 <span id="cb10-46"><a href="#cb10-46"></a></span>
 <span id="cb10-49"><a href="#cb10-49"></a><span class="in">```{r}</span></span>
 <span id="cb10-50"><a href="#cb10-50"></a><span class="co">#| label: survival trajectories</span></span>
@@ -2117,7 +2325,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb10-149"><a href="#cb10-149"></a><span class="fu">head</span>(jasa_cp, <span class="dv">9</span>)</span>
 <span id="cb10-150"><a href="#cb10-150"></a><span class="in">```</span></span>
 <span id="cb10-151"><a href="#cb10-151"></a></span>
-<span id="cb10-152"><a href="#cb10-152"></a>Note the new 'start, stop' time variables. We have also renamed <span class="in">`fustat`</span> to <span class="in">`death`</span> for a more intuitive name.</span>
+<span id="cb10-152"><a href="#cb10-152"></a>Note the new 'start, stop' time variables. We have also renamed <span class="in">`fustat`</span> to <span class="in">`death`</span> for a more intuitive name. In this small data subset, Subject's 3, 4 and 7 underwent a transplant, but only the latter two had both unexposed and exposed time periods during observation (Subject 3 was transplanted at the beginning of their observation), hence each subject now has two rows of data.</span>
 <span id="cb10-153"><a href="#cb10-153"></a></span>
 <span id="cb10-154"><a href="#cb10-154"></a><span class="fu">### Visualise survival curves</span></span>
 <span id="cb10-155"><a href="#cb10-155"></a></span>
@@ -2137,7 +2345,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb10-171"><a href="#cb10-171"></a></span>
 <span id="cb10-172"><a href="#cb10-172"></a><span class="fu">### Cox model</span></span>
 <span id="cb10-173"><a href="#cb10-173"></a></span>
-<span id="cb10-174"><a href="#cb10-174"></a>Commensurately, the output of the Cox model now gives a <span class="in">`HR = 1.13 (95% CI 0.63, 2.04; p = 0.7)`</span> indicating that there is about a 14% increase in the risk of death with transplantation - but this could be as much as a 104% increase or even a 37% decrease. That is, we can't be confident the observed effect didn't occur just by chance. Clearly, this tells a different story to the naive analysis we previously conducted.</span>
+<span id="cb10-174"><a href="#cb10-174"></a>Commensurately, the output of the Cox model now gives a <span class="in">`HR = 1.13 (95% CI 0.63, 2.04; p = 0.7)`</span> indicating that there is about a 13% increase in the risk of death with transplantation - but this could be as much as a 104% increase or even a 37% decrease. That is, we can't be confident the observed effect didn't occur just by chance. Clearly, this tells a different story to the naive analysis we previously conducted.</span>
 <span id="cb10-175"><a href="#cb10-175"></a></span>
 <span id="cb10-178"><a href="#cb10-178"></a><span class="in">```{r}</span></span>
 <span id="cb10-179"><a href="#cb10-179"></a><span class="co">#| label: correct Cox</span></span>
@@ -2149,6 +2357,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
+
 
 
 
