@@ -6,10 +6,10 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2024-02-23">
-<meta name="description" content="Use by() to view your data by a grouping variable.">
+<meta name="dcterms.date" content="2024-02-16">
+<meta name="description" content="Learn why this misclassification of time in a survival analysis can seriously bias your results.">
 
-<title>Test Site 2 - Easily view your data by a grouping variable</title>
+<title>Test Site 2 - Immortal time bias - “The fallacy that never dies” (Part 1)</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -150,15 +150,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<div class="quarto-title-block"><div><h1 class="title">Easily view your data by a grouping variable</h1><button type="button" class="btn code-tools-button dropdown-toggle" id="quarto-code-tools-menu" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi"></i> Code</button><ul class="dropdown-menu dropdown-menu-end" aria-labelelledby="quarto-code-tools-menu"><li><a id="quarto-show-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Show All Code</a></li><li><a id="quarto-hide-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Hide All Code</a></li><li><hr class="dropdown-divider"></li><li><a id="quarto-view-source" class="dropdown-item" href="javascript:void(0)" role="button">View Source</a></li></ul></div></div>
+<div class="quarto-title-block"><div><h1 class="title">Immortal time bias - “The fallacy that never dies” (Part 1)</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
   <div class="quarto-categories">
-    <div class="quarto-category">code</div>
+    <div class="quarto-category">concept</div>
+    <div class="quarto-category">survival</div>
   </div>
   </div>
 
 <div>
   <div class="description">
-    Use <code>by()</code> to view your data by a grouping variable.
+    Learn why this misclassification of time in a survival analysis can seriously bias your results.
   </div>
 </div>
 
@@ -169,7 +170,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">February 23, 2024</p>
+      <p class="date">February 16, 2024</p>
     </div>
   </div>
   
@@ -181,172 +182,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p>It is easy enough to view a dataframe in <code>RStudio</code> by opening the dataframe in the viewer or printing the dataframe (or part of it) to the console. However, this can be messy if you want to quickly identify data by a grouping variable (usually the patient id). The <code>by()</code> function can help you to do this. Let’s illustrate its utility with the <code>sleepstudy</code> dataset from the <code>lme4</code> package. To start with I’ll print the data for the first 3 subjects as one might.</p>
-<p><code>sleepstudy |&gt; as_tibble() |&gt; print(n = 30)</code></p>
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">library</span>(lme4)</span>
-<span id="cb1-2"><a href="#cb1-2"></a><span class="fu">library</span>(dplyr)</span>
-<span id="cb1-3"><a href="#cb1-3"></a><span class="co"># Load data</span></span>
-<span id="cb1-4"><a href="#cb1-4"></a><span class="fu">data</span>(<span class="st">"sleepstudy"</span>)</span>
-<span id="cb1-5"><a href="#cb1-5"></a>sleepstudy <span class="sc">|&gt;</span> <span class="fu">as_tibble</span>() <span class="sc">|&gt;</span> <span class="fu">print</span>(<span class="at">n =</span> <span class="dv">30</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 180 × 3
-   Reaction  Days Subject
-      &lt;dbl&gt; &lt;dbl&gt; &lt;fct&gt;  
- 1     250.     0 308    
- 2     259.     1 308    
- 3     251.     2 308    
- 4     321.     3 308    
- 5     357.     4 308    
- 6     415.     5 308    
- 7     382.     6 308    
- 8     290.     7 308    
- 9     431.     8 308    
-10     466.     9 308    
-11     223.     0 309    
-12     205.     1 309    
-13     203.     2 309    
-14     205.     3 309    
-15     208.     4 309    
-16     216.     5 309    
-17     214.     6 309    
-18     218.     7 309    
-19     224.     8 309    
-20     237.     9 309    
-21     199.     0 310    
-22     194.     1 310    
-23     234.     2 310    
-24     233.     3 310    
-25     229.     4 310    
-26     220.     5 310    
-27     235.     6 310    
-28     256.     7 310    
-29     261.     8 310    
-30     248.     9 310    
-# ℹ 150 more rows</code></pre>
-</div>
-</div>
-<p>But we can do this better with:</p>
-<p><code>by(sleepstudy, sleepstudy$PATIENT_ID, identity)[1:3]</code></p>
-<p>Note that the <code>[1:3]</code> indicates the range of group indices that you want to view.</p>
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="fu">by</span>(sleepstudy, sleepstudy<span class="sc">$</span>Subject, identity)[<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>$`308`
-   Reaction Days Subject
-1  249.5600    0     308
-2  258.7047    1     308
-3  250.8006    2     308
-4  321.4398    3     308
-5  356.8519    4     308
-6  414.6901    5     308
-7  382.2038    6     308
-8  290.1486    7     308
-9  430.5853    8     308
-10 466.3535    9     308
-
-$`309`
-   Reaction Days Subject
-11 222.7339    0     309
-12 205.2658    1     309
-13 202.9778    2     309
-14 204.7070    3     309
-15 207.7161    4     309
-16 215.9618    5     309
-17 213.6303    6     309
-18 217.7272    7     309
-19 224.2957    8     309
-20 237.3142    9     309
-
-$`310`
-   Reaction Days Subject
-21 199.0539    0     310
-22 194.3322    1     310
-23 234.3200    2     310
-24 232.8416    3     310
-25 229.3074    4     310
-26 220.4579    5     310
-27 235.4208    6     310
-28 255.7511    7     310
-29 261.0125    8     310
-30 247.5153    9     310</code></pre>
-</div>
-</div>
-<p>If you want to take this a step further, you can generalise this with a function that will allow you to quickly view the data in any range that you want, without having to continually copy and paste that line of code. Just call the function with your dataframe and group id names and the range of group indices that you want to view (interestingly while writing this function I worked out you don’t even need the <code>by()</code> function to achieve the same result).</p>
-<p><code>print_groups(sleepstudy, Subject, 1, 3)</code></p>
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="co"># Create function</span></span>
-<span id="cb5-2"><a href="#cb5-2"></a>print_groups <span class="ot">&lt;-</span> <span class="cf">function</span>(df, id, index1, index2) {</span>
-<span id="cb5-3"><a href="#cb5-3"></a>  df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(df)</span>
-<span id="cb5-4"><a href="#cb5-4"></a>  ids_all <span class="ot">&lt;-</span>  <span class="fu">unique</span>(<span class="fu">eval</span>(<span class="fu">substitute</span>(id), df))</span>
-<span id="cb5-5"><a href="#cb5-5"></a>  ids_range <span class="ot">&lt;-</span> ids_all[index1<span class="sc">:</span>index2]</span>
-<span id="cb5-6"><a href="#cb5-6"></a>  <span class="cf">if</span> (index1 <span class="sc">&lt;=</span> <span class="fu">length</span>(ids_all) <span class="sc">&amp;</span> index2 <span class="sc">&lt;=</span> <span class="fu">length</span>(ids_all)) {</span>
-<span id="cb5-7"><a href="#cb5-7"></a>    <span class="cf">for</span> (id2 <span class="cf">in</span> ids_range) {</span>
-<span id="cb5-8"><a href="#cb5-8"></a>      <span class="fu">cat</span>(<span class="fu">paste0</span>(<span class="st">"id = "</span>, id2, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>))</span>
-<span id="cb5-9"><a href="#cb5-9"></a>      <span class="fu">print</span>(df[<span class="fu">eval</span>(<span class="fu">substitute</span>(id), df) <span class="sc">%in%</span> id2,])</span>
-<span id="cb5-10"><a href="#cb5-10"></a>      <span class="fu">cat</span>(<span class="st">"----------------------------</span><span class="sc">\n\n</span><span class="st">"</span>)</span>
-<span id="cb5-11"><a href="#cb5-11"></a>    }</span>
-<span id="cb5-12"><a href="#cb5-12"></a>  } <span class="cf">else</span> {</span>
-<span id="cb5-13"><a href="#cb5-13"></a>    <span class="fu">print</span>(<span class="st">"There aren't that many groups in your dataset"</span>)</span>
-<span id="cb5-14"><a href="#cb5-14"></a>  }</span>
-<span id="cb5-15"><a href="#cb5-15"></a>}</span>
-<span id="cb5-16"><a href="#cb5-16"></a></span>
-<span id="cb5-17"><a href="#cb5-17"></a><span class="co"># Use function</span></span>
-<span id="cb5-18"><a href="#cb5-18"></a><span class="fu">print_groups</span>(sleepstudy, Subject, <span class="dv">1</span>, <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stdout">
-<pre><code>id = 308
-   Reaction Days Subject
-1  249.5600    0     308
-2  258.7047    1     308
-3  250.8006    2     308
-4  321.4398    3     308
-5  356.8519    4     308
-6  414.6901    5     308
-7  382.2038    6     308
-8  290.1486    7     308
-9  430.5853    8     308
-10 466.3535    9     308
-----------------------------
-
-id = 309
-   Reaction Days Subject
-11 222.7339    0     309
-12 205.2658    1     309
-13 202.9778    2     309
-14 204.7070    3     309
-15 207.7161    4     309
-16 215.9618    5     309
-17 213.6303    6     309
-18 217.7272    7     309
-19 224.2957    8     309
-20 237.3142    9     309
-----------------------------
-
-id = 310
-   Reaction Days Subject
-21 199.0539    0     310
-22 194.3322    1     310
-23 234.3200    2     310
-24 232.8416    3     310
-25 229.3074    4     310
-26 220.4579    5     310
-27 235.4208    6     310
-28 255.7511    7     310
-29 261.0125    8     310
-30 247.5153    9     310
-----------------------------</code></pre>
-</div>
-</div>
-<p>And there you have it!</p>
+<p>In 2001, a <a href="https://pubmed.ncbi.nlm.nih.gov/11352696/" style="color: #1f7de6" title="https://pubmed.ncbi.nlm.nih.gov/11352696/">paper</a> published in the <em>Annals of Internal Medicine</em> reported that Oscar winners had a longer life expectancy - by about <strong>4 years</strong> - compared to their less successful peers. The authors conclusions were that:</p>
+<p>“The association of high status with increased longevity that prevails in the public also extends to celebrities, contributes to a large survival advantage, and is partially explained by factors related to success.”</p>
+<p>The study received widespread attention in the media, with one future Oscar winner acknowledging the work in her acceptance <a href="https://www.thecut.com/2015/02/oscar-winners-really-live-longer.html" style="color: #1f7de6" title="https://www.thecut.com/2015/02/oscar-winners-really-live-longer.html">speech</a>.</p>
+<p>The problem was that the reported survival advantage was illusory, and the reason for this was an invalid analysis that is not alone in the <a href="https://pubmed.ncbi.nlm.nih.gov/17252614/" style="color: #1f7de6" title="https://pubmed.ncbi.nlm.nih.gov/17252614/">literature</a>. As in any simple time-to-event analysis, two groups may be compared in their respective ‘survival’ times. In this study, subjects were first classified as winners or non-winners and observation time counted as their time alive. The error in this case was to consider winning status <strong>time-fixed (A)</strong>, when in reality it is <strong>time-varying (B)</strong>. By naively assuming it is time-fixed, we are erroneously attributing the time that a winner was in fact a loser prior to getting their gong, to their winning observation time.</p>
+<p><img src="images/immortal_time_bias.png" class="img-fluid"></p>
+<p>This creates a distortion or bias in the exposure/treatment -&gt; outcome association, usually in a direction that overestimates the benefit of the exposure/treatment. When proper methods are then employed, the perceived benefits are reduced or sometimes reversed. And in fact that is exactly what was found when a <a href="https://pubmed.ncbi.nlm.nih.gov/16954361/" style="color: #1f7de6" title="https://pubmed.ncbi.nlm.nih.gov/16954361/">re-analysis</a> of the data was conducted in 2006 - the survival advantage was calculated to be closer to 1 year and not deemed statistically significant.</p>
+<p>In general, the observation time prior to the exposure/treatment commencing (for those exposed/treated) is considered ‘immortal’, because the subject cannot experience the outcome during this period as they have yet to receive the exposure/treatment. If you are like me, this fairly classic description of immortal time hurts my brain and so I just like to simply think of it as the period that a person’s observation time has been misclassified.</p>
+<p>Observational research that involves time-to-event outcomes is particularly prone to immortal time bias and central to the problem is the specification of ‘time zero’ - i.e.&nbsp;when does the clock start? There are several examples of study design choices that can lead you down the wrong analysis path if you are not careful, and an especially pertinent one in this field is drawing contrasts between treated and untreated patients (hint: a patient is not ‘treated’ for the duration of their observation time if they were only on treatment for the last 10% of that time).</p>
+<p>So, what’s the solution?</p>
+<p><font color="red"><strong>Time-varying covariates</strong></font></p>
+<p>I will illustrate their use in an example in the next post.</p>
 
 
 <!-- -->
@@ -939,67 +785,35 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <input type="hidden" id="giscus-base-theme" value="light">
 <input type="hidden" id="giscus-alt-theme" value="dark"><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
-<div class="sourceCode" id="cb7" data-shortcodes="false"><pre class="sourceCode numberSource markdown number-lines code-with-copy"><code class="sourceCode markdown"><span id="cb7-1"><a href="#cb7-1"></a><span class="co">---</span></span>
-<span id="cb7-2"><a href="#cb7-2"></a><span class="an">title:</span><span class="co"> "Easily view your data by a grouping variable"</span></span>
-<span id="cb7-3"><a href="#cb7-3"></a><span class="an">date:</span><span class="co"> 2024-02-23</span></span>
-<span id="cb7-4"><a href="#cb7-4"></a><span class="an">categories:</span><span class="co"> [code]</span></span>
-<span id="cb7-5"><a href="#cb7-5"></a><span class="an">image:</span><span class="co"> "R_small.jpeg"</span></span>
-<span id="cb7-6"><a href="#cb7-6"></a><span class="an">description:</span><span class="co"> "Use `by()` to view your data by a grouping variable."</span></span>
-<span id="cb7-7"><a href="#cb7-7"></a><span class="co">---</span></span>
-<span id="cb7-8"><a href="#cb7-8"></a></span>
-<span id="cb7-9"><a href="#cb7-9"></a>It is easy enough to view a dataframe in <span class="in">`RStudio`</span> by opening the dataframe in the viewer or printing the dataframe (or part of it) to the console. However, this can be messy if you want to quickly identify data by a grouping variable (usually the patient id). The <span class="in">`by()`</span> function can help you to do this. Let's illustrate its utility with the <span class="in">`sleepstudy`</span> dataset from the <span class="in">`lme4`</span> package. To start with I'll print the data for the first 3 subjects as one might.</span>
-<span id="cb7-10"><a href="#cb7-10"></a></span>
-<span id="cb7-11"><a href="#cb7-11"></a><span class="in">`sleepstudy |&gt; as_tibble() |&gt; print(n = 30)`</span></span>
-<span id="cb7-12"><a href="#cb7-12"></a></span>
-<span id="cb7-15"><a href="#cb7-15"></a><span class="in">```{r}</span></span>
-<span id="cb7-16"><a href="#cb7-16"></a><span class="co">#| label: setup</span></span>
-<span id="cb7-17"><a href="#cb7-17"></a><span class="co">#| message: false</span></span>
-<span id="cb7-18"><a href="#cb7-18"></a><span class="fu">library</span>(lme4)</span>
-<span id="cb7-19"><a href="#cb7-19"></a><span class="fu">library</span>(dplyr)</span>
-<span id="cb7-20"><a href="#cb7-20"></a><span class="co"># Load data</span></span>
-<span id="cb7-21"><a href="#cb7-21"></a><span class="fu">data</span>(<span class="st">"sleepstudy"</span>)</span>
-<span id="cb7-22"><a href="#cb7-22"></a>sleepstudy <span class="sc">|&gt;</span> <span class="fu">as_tibble</span>() <span class="sc">|&gt;</span> <span class="fu">print</span>(<span class="at">n =</span> <span class="dv">30</span>)</span>
-<span id="cb7-23"><a href="#cb7-23"></a><span class="in">```</span></span>
-<span id="cb7-24"><a href="#cb7-24"></a></span>
-<span id="cb7-25"><a href="#cb7-25"></a>But we can do this better with:</span>
-<span id="cb7-26"><a href="#cb7-26"></a></span>
-<span id="cb7-27"><a href="#cb7-27"></a><span class="in">`by(sleepstudy, sleepstudy$PATIENT_ID, identity)[1:3]`</span></span>
-<span id="cb7-28"><a href="#cb7-28"></a></span>
-<span id="cb7-29"><a href="#cb7-29"></a>Note that the <span class="in">`[1:3]`</span> indicates the range of group indices that you want to view.</span>
-<span id="cb7-30"><a href="#cb7-30"></a></span>
-<span id="cb7-33"><a href="#cb7-33"></a><span class="in">```{r}</span></span>
-<span id="cb7-34"><a href="#cb7-34"></a><span class="co">#| label: by()</span></span>
-<span id="cb7-35"><a href="#cb7-35"></a><span class="fu">by</span>(sleepstudy, sleepstudy<span class="sc">$</span>Subject, identity)[<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>]</span>
-<span id="cb7-36"><a href="#cb7-36"></a><span class="in">```</span></span>
-<span id="cb7-37"><a href="#cb7-37"></a></span>
-<span id="cb7-38"><a href="#cb7-38"></a>If you want to take this a step further, you can generalise this with a function that will allow you to quickly view the data in any range that you want, without having to continually copy and paste that line of code. Just call the function with your dataframe and group id names and the range of group indices that you want to view (interestingly while writing this function I worked out you don't even need the <span class="in">`by()`</span> function to achieve the same result).</span>
-<span id="cb7-39"><a href="#cb7-39"></a></span>
-<span id="cb7-40"><a href="#cb7-40"></a><span class="in">`print_groups(sleepstudy, Subject, 1, 3)`</span></span>
-<span id="cb7-41"><a href="#cb7-41"></a></span>
-<span id="cb7-44"><a href="#cb7-44"></a><span class="in">```{r}</span></span>
-<span id="cb7-45"><a href="#cb7-45"></a><span class="co">#| label: function</span></span>
-<span id="cb7-46"><a href="#cb7-46"></a><span class="co"># Create function</span></span>
-<span id="cb7-47"><a href="#cb7-47"></a>print_groups <span class="ot">&lt;-</span> <span class="cf">function</span>(df, id, index1, index2) {</span>
-<span id="cb7-48"><a href="#cb7-48"></a>  df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(df)</span>
-<span id="cb7-49"><a href="#cb7-49"></a>  ids_all <span class="ot">&lt;-</span>  <span class="fu">unique</span>(<span class="fu">eval</span>(<span class="fu">substitute</span>(id), df))</span>
-<span id="cb7-50"><a href="#cb7-50"></a>  ids_range <span class="ot">&lt;-</span> ids_all[index1<span class="sc">:</span>index2]</span>
-<span id="cb7-51"><a href="#cb7-51"></a>  <span class="cf">if</span> (index1 <span class="sc">&lt;=</span> <span class="fu">length</span>(ids_all) <span class="sc">&amp;</span> index2 <span class="sc">&lt;=</span> <span class="fu">length</span>(ids_all)) {</span>
-<span id="cb7-52"><a href="#cb7-52"></a>    <span class="cf">for</span> (id2 <span class="cf">in</span> ids_range) {</span>
-<span id="cb7-53"><a href="#cb7-53"></a>      <span class="fu">cat</span>(<span class="fu">paste0</span>(<span class="st">"id = "</span>, id2, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>))</span>
-<span id="cb7-54"><a href="#cb7-54"></a>      <span class="fu">print</span>(df[<span class="fu">eval</span>(<span class="fu">substitute</span>(id), df) <span class="sc">%in%</span> id2,])</span>
-<span id="cb7-55"><a href="#cb7-55"></a>      <span class="fu">cat</span>(<span class="st">"----------------------------</span><span class="sc">\n\n</span><span class="st">"</span>)</span>
-<span id="cb7-56"><a href="#cb7-56"></a>    }</span>
-<span id="cb7-57"><a href="#cb7-57"></a>  } <span class="cf">else</span> {</span>
-<span id="cb7-58"><a href="#cb7-58"></a>    <span class="fu">print</span>(<span class="st">"There aren't that many groups in your dataset"</span>)</span>
-<span id="cb7-59"><a href="#cb7-59"></a>  }</span>
-<span id="cb7-60"><a href="#cb7-60"></a>}</span>
-<span id="cb7-61"><a href="#cb7-61"></a></span>
-<span id="cb7-62"><a href="#cb7-62"></a><span class="co"># Use function</span></span>
-<span id="cb7-63"><a href="#cb7-63"></a><span class="fu">print_groups</span>(sleepstudy, Subject, <span class="dv">1</span>, <span class="dv">3</span>)</span>
-<span id="cb7-64"><a href="#cb7-64"></a><span class="in">```</span></span>
-<span id="cb7-65"><a href="#cb7-65"></a></span>
-<span id="cb7-66"><a href="#cb7-66"></a>And there you have it!</span>
-</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb1" data-shortcodes="false"><pre class="sourceCode numberSource markdown number-lines code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1"></a><span class="co">---</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="an">title:</span><span class="co"> "Immortal time bias - \"The fallacy that never dies\" (Part 1)"</span></span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="an">date:</span><span class="co"> 2024-02-16</span></span>
+<span id="cb1-4"><a href="#cb1-4"></a><span class="an">categories:</span><span class="co"> [concept, survival]</span></span>
+<span id="cb1-5"><a href="#cb1-5"></a><span class="co">#image: </span></span>
+<span id="cb1-6"><a href="#cb1-6"></a><span class="an">description:</span><span class="co"> "Learn why this misclassification of time in a survival analysis can seriously bias your results."</span></span>
+<span id="cb1-7"><a href="#cb1-7"></a><span class="co">---</span></span>
+<span id="cb1-8"><a href="#cb1-8"></a></span>
+<span id="cb1-9"><a href="#cb1-9"></a>In 2001, a <span class="co">[</span><span class="ot">paper</span><span class="co">](https://pubmed.ncbi.nlm.nih.gov/11352696/ "https://pubmed.ncbi.nlm.nih.gov/11352696/")</span>{style="color: #1f7de6"} published in the *Annals of Internal Medicine* reported that Oscar winners had a longer life expectancy - by about **4 years** - compared to their less successful peers. The authors conclusions were that:</span>
+<span id="cb1-10"><a href="#cb1-10"></a></span>
+<span id="cb1-11"><a href="#cb1-11"></a>"The association of high status with increased longevity that prevails in the public also extends to celebrities, contributes to a large survival advantage, and is partially explained by factors related to success."</span>
+<span id="cb1-12"><a href="#cb1-12"></a></span>
+<span id="cb1-13"><a href="#cb1-13"></a>The study received widespread attention in the media, with one future Oscar winner acknowledging the work in her acceptance <span class="co">[</span><span class="ot">speech</span><span class="co">](https://www.thecut.com/2015/02/oscar-winners-really-live-longer.html "https://www.thecut.com/2015/02/oscar-winners-really-live-longer.html")</span>{style="color: #1f7de6"}.</span>
+<span id="cb1-14"><a href="#cb1-14"></a></span>
+<span id="cb1-15"><a href="#cb1-15"></a>The problem was that the reported survival advantage was illusory, and the reason for this was an invalid analysis that is not alone in the <span class="co">[</span><span class="ot">literature</span><span class="co">](https://pubmed.ncbi.nlm.nih.gov/17252614/ "https://pubmed.ncbi.nlm.nih.gov/17252614/")</span>{style="color: #1f7de6"}. As in any simple time-to-event analysis, two groups may be compared in their respective 'survival' times. In this study, subjects were first classified as winners or non-winners and observation time counted as their time alive. The error in this case was to consider winning status **time-fixed (A)**, when in reality it is **time-varying (B)**. By naively assuming it is time-fixed, we are erroneously attributing the time that a winner was in fact a loser prior to getting their gong, to their winning observation time.</span>
+<span id="cb1-16"><a href="#cb1-16"></a></span>
+<span id="cb1-17"><a href="#cb1-17"></a><span class="al">![](images/immortal_time_bias.png)</span></span>
+<span id="cb1-18"><a href="#cb1-18"></a></span>
+<span id="cb1-19"><a href="#cb1-19"></a>This creates a distortion or bias in the exposure/treatment -<span class="sc">\&gt;</span> outcome association, usually in a direction that overestimates the benefit of the exposure/treatment. When proper methods are then employed, the perceived benefits are reduced or sometimes reversed. And in fact that is exactly what was found when a <span class="co">[</span><span class="ot">re-analysis</span><span class="co">](https://pubmed.ncbi.nlm.nih.gov/16954361/ "https://pubmed.ncbi.nlm.nih.gov/16954361/")</span>{style="color: #1f7de6"} of the data was conducted in 2006 - the survival advantage was calculated to be closer to 1 year and not deemed statistically significant.</span>
+<span id="cb1-20"><a href="#cb1-20"></a></span>
+<span id="cb1-21"><a href="#cb1-21"></a>In general, the observation time prior to the exposure/treatment commencing (for those exposed/treated) is considered 'immortal', because the subject cannot experience the outcome during this period as they have yet to receive the exposure/treatment. If you are like me, this fairly classic description of immortal time hurts my brain and so I just like to simply think of it as the period that a person's observation time has been misclassified.</span>
+<span id="cb1-22"><a href="#cb1-22"></a></span>
+<span id="cb1-23"><a href="#cb1-23"></a>Observational research that involves time-to-event outcomes is particularly prone to immortal time bias and central to the problem is the specification of 'time zero' - i.e. when does the clock start? There are several examples of study design choices that can lead you down the wrong analysis path if you are not careful, and an especially pertinent one in this field is drawing contrasts between treated and untreated patients (hint: a patient is not 'treated' for the duration of their observation time if they were only on treatment for the last 10% of that time).</span>
+<span id="cb1-24"><a href="#cb1-24"></a></span>
+<span id="cb1-25"><a href="#cb1-25"></a>So, what's the solution?</span>
+<span id="cb1-26"><a href="#cb1-26"></a></span>
+<span id="cb1-27"><a href="#cb1-27"></a>&lt;FONT COLOR = red&gt;**Time-varying covariates**&lt;/FONT&gt;</span>
+<span id="cb1-28"><a href="#cb1-28"></a></span>
+<span id="cb1-29"><a href="#cb1-29"></a>I will illustrate their use in an example in the next post.</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 

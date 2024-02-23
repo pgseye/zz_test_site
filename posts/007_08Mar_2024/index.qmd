@@ -1,6 +1,6 @@
 ---
 title: "Easily view your data by a grouping variable"
-date: 2024-02-23
+date: 2024-03-08
 categories: [code]
 image: "R_small.jpeg"
 description: "Use `by()` to view your data by a grouping variable."

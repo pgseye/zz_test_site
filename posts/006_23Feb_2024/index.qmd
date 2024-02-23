@@ -1,6 +1,6 @@
 ---
 title: "Immortal time bias - \"The fallacy that never dies\" (Part 2)"
-date: 2024-03-01
+date: 2024-02-23
 categories: [code, analysis, modelling, survival, visualisation]
 #image: 
 description: "Let's investigate immortal time bias with a coded example."

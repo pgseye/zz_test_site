@@ -1,6 +1,6 @@
 ---
 title: "Immortal time bias - \"The fallacy that never dies\" (Part 1)"
-date: 2024-02-09
+date: 2024-02-16
 categories: [concept, survival]
 #image: 
 description: "Learn why this misclassification of time in a survival analysis can seriously bias your results."
@@ -26,4 +26,4 @@ So, what's the solution?
 
 <FONT COLOR = red>**Time-varying covariates**</FONT>
 
-I will illustrate their use in an example next week.
+I will illustrate their use in an example in the next post.

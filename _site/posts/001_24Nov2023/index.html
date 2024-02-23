@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.3.450">
+<meta name="generator" content="quarto-1.4.549">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -24,7 +24,7 @@ ul.task-list li input[type="checkbox"] {
 }
 /* CSS for syntax highlighting */
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span { line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -83,7 +83,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   "collapse-after": 3,
   "panel-placement": "end",
   "type": "overlay",
-  "limit": 20,
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
   "language": {
     "search-no-results-text": "No results",
     "search-matching-documents-text": "matching documents",
@@ -92,6 +98,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-more-match-text": "more match in this document",
     "search-more-matches-text": "more matches in this document",
     "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
     "search-detached-cancel-button-title": "Cancel",
     "search-submit-button-title": "Submit",
     "search-label": "Search"
@@ -108,9 +115,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
-    <nav class="navbar navbar-expand-lg navbar-dark ">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
-      <div class="navbar-brand-container">
+      <div class="navbar-brand-container mx-auto">
     <a class="navbar-brand" href="../../index.html">
     <span class="navbar-title">Test Site 2</span>
     </a>
@@ -122,14 +129,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item">
-    <a class="nav-link" href="../../index.html" rel="" target="">
- <span class="menu-text">All Posts</span></a>
+    <a class="nav-link" href="../../index.html"> 
+<span class="menu-text">All Posts</span></a>
   </li>  
 </ul>
-            <div class="quarto-navbar-tools">
+          </div> <!-- /navcollapse -->
+          <div class="quarto-navbar-tools">
   <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
 </div>
-          </div> <!-- /navcollapse -->
       </div> <!-- /container-fluid -->
     </nav>
 </header>
@@ -189,10 +196,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </div>
   
 
+
 </header>
 
+
 <div class="cell">
-<details>
+<details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">library</span>(knitr)</span>
 <span id="cb1-2"><a href="#cb1-2"></a><span class="fu">library</span>(quarto)</span>
@@ -247,7 +256,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Equivalence of model-derived crude estimate</p>
 <p>Recall that the aggregated data that the crude estimate is calculated from is:</p>
 <div class="cell">
-<details>
+<details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>dat_agg <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">sex =</span> <span class="fu">c</span>(<span class="st">"Male"</span>, <span class="st">"Female"</span>),</span>
 <span id="cb2-2"><a href="#cb2-2"></a>                      <span class="at">hospitalised =</span> <span class="fu">as.numeric</span>(<span class="fu">c</span>(<span class="dv">1330</span>, <span class="dv">798</span>)), </span>
@@ -283,13 +292,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>To estimate this model in <code>R</code> we essentially run a logistic regression but instead of outputting an odds ratio, we calculate a risk ratio by specifying a <code>log</code> rather than the default <code>logit</code> link. We will also use the aggregate model specification, as we don’t have the individual-level data.</p>
 <p>The model-derived crude risk ratio for <code>sex = 1.44 (95% CI 1.32, 1.56; p &lt; 0.001)</code>. This is very close to the estimate that we initially calculated manually from the 2 x 2 table (<code>1.45</code>).</p>
 <div class="cell">
-<details>
+<details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>mod_crude <span class="ot">&lt;-</span> <span class="fu">glm</span>(<span class="fu">cbind</span>(hospitalised, not_hospitalised) <span class="sc">~</span> sex, <span class="at">data =</span> dat_agg, <span class="at">family =</span> <span class="fu">binomial</span>(<span class="at">link =</span> <span class="st">"log"</span>))</span>
 <span id="cb3-2"><a href="#cb3-2"></a><span class="fu">tbl_regression</span>(mod_crude, <span class="at">exp =</span> T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-
 <div id="qnfxbharlh" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
 <style>#qnfxbharlh table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
@@ -730,37 +738,53 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   text-indent: 25px;
 }
 </style>
-<table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
-  <thead>
-    
-    <tr class="gt_col_headings">
-      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="<strong>Characteristic</strong>"><strong>Characteristic</strong></th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="<strong>RR</strong><span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;&quot;><sup>1</sup></span>"><strong>RR</strong><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>1</sup></span></th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="<strong>95% CI</strong><span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;&quot;><sup>1</sup></span>"><strong>95% CI</strong><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>1</sup></span></th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="<strong>p-value</strong>"><strong>p-value</strong></th>
-    </tr>
-  </thead>
-  <tbody class="gt_table_body">
-    <tr><td headers="label" class="gt_row gt_left">sex</td>
-<td headers="estimate" class="gt_row gt_center"><br></td>
-<td headers="ci" class="gt_row gt_center"><br></td>
-<td headers="p.value" class="gt_row gt_center"><br></td></tr>
-    <tr><td headers="label" class="gt_row gt_left">&nbsp;&nbsp;&nbsp;&nbsp;Female</td>
-<td headers="estimate" class="gt_row gt_center">—</td>
-<td headers="ci" class="gt_row gt_center">—</td>
-<td headers="p.value" class="gt_row gt_center"><br></td></tr>
-    <tr><td headers="label" class="gt_row gt_left">&nbsp;&nbsp;&nbsp;&nbsp;Male</td>
-<td headers="estimate" class="gt_row gt_center">1.44</td>
-<td headers="ci" class="gt_row gt_center">1.32, 1.56</td>
-<td headers="p.value" class="gt_row gt_center">&lt;0.001</td></tr>
-  </tbody>
-  
-  <tfoot class="gt_footnotes">
-    <tr>
-      <td class="gt_footnote" colspan="4"><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>1</sup></span> RR = Relative Risk, CI = Confidence Interval</td>
-    </tr>
-  </tfoot>
+
+<table class="gt_table table table-sm table-striped small" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header gt_col_headings">
+<th id="<strong>Characteristic</strong>" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col"><strong>Characteristic</strong></th>
+<th id="<strong>RR</strong><span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;&quot;><sup>1</sup></span>" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col"><strong>RR</strong><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>1</sup></span></th>
+<th id="<strong>95% CI</strong><span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;&quot;><sup>1</sup></span>" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col"><strong>95% CI</strong><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>1</sup></span></th>
+<th id="<strong>p-value</strong>" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col"><strong>p-value</strong></th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_left" headers="label">sex</td>
+<td class="gt_row gt_center" headers="estimate"><br>
+</td>
+<td class="gt_row gt_center" headers="ci"><br>
+</td>
+<td class="gt_row gt_center" headers="p.value"><br>
+</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="label">&nbsp;&nbsp;&nbsp;&nbsp;Female</td>
+<td class="gt_row gt_center" headers="estimate">—</td>
+<td class="gt_row gt_center" headers="ci">—</td>
+<td class="gt_row gt_center" headers="p.value"><br>
+</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="label">&nbsp;&nbsp;&nbsp;&nbsp;Male</td>
+<td class="gt_row gt_center" headers="estimate">1.44</td>
+<td class="gt_row gt_center" headers="ci">1.32, 1.56</td>
+<td class="gt_row gt_center" headers="p.value">&lt;0.001</td>
+</tr>
+</tbody><tfoot class="gt_footnotes">
+<tr class="even">
+<td colspan="4" class="gt_footnote"><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>1</sup></span> RR = Relative Risk, CI = Confidence Interval</td>
+</tr>
+</tfoot>
+
 </table>
+
 </div>
 </div>
 </div>
@@ -768,7 +792,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="lets-introduce-age-40-vs-40-as-a-third-variable" class="level2" data-number="3">
 <h2 data-number="3" class="anchored" data-anchor-id="lets-introduce-age-40-vs-40-as-a-third-variable"><span class="header-section-number">3</span> Let’s introduce age (&lt;40 vs ≥ 40) as a third variable</h2>
 <div class="cell">
-<details>
+<details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>dat_disagg <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">sex =</span> <span class="fu">c</span>(<span class="st">"Male"</span>, <span class="st">"Female"</span>, <span class="st">"Male"</span>, <span class="st">"Female"</span>),</span>
 <span id="cb4-2"><a href="#cb4-2"></a>                         <span class="at">age =</span> <span class="fu">c</span>(<span class="st">"&lt; 40"</span>, <span class="st">"&lt; 40"</span>, <span class="st">"≥ 40"</span>, <span class="st">"≥ 40"</span>),</span>
@@ -823,13 +847,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p><code>mod_adj &lt;- glm(cbind(hospitalised, not_hospitalised) ~ sex + age, data = dat_agg, family = binomial(link = "log"))</code></p>
 <p>and the risk ratios we get are:</p>
 <div class="cell">
-<details>
+<details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>mod_confound <span class="ot">&lt;-</span> <span class="fu">glm</span>(<span class="fu">cbind</span>(hospitalised, not_hospitalised) <span class="sc">~</span> sex <span class="sc">+</span> age, <span class="at">data =</span> dat_disagg, <span class="at">family =</span> <span class="fu">binomial</span>(<span class="at">link =</span> <span class="st">"log"</span>))</span>
 <span id="cb5-2"><a href="#cb5-2"></a><span class="fu">tbl_regression</span>(mod_confound, <span class="at">exp =</span> T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-
 <div id="vyejnihucm" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
 <style>#vyejnihucm table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
@@ -1270,49 +1293,75 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   text-indent: 25px;
 }
 </style>
-<table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
-  <thead>
-    
-    <tr class="gt_col_headings">
-      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="<strong>Characteristic</strong>"><strong>Characteristic</strong></th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="<strong>RR</strong><span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;&quot;><sup>1</sup></span>"><strong>RR</strong><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>1</sup></span></th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="<strong>95% CI</strong><span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;&quot;><sup>1</sup></span>"><strong>95% CI</strong><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>1</sup></span></th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="<strong>p-value</strong>"><strong>p-value</strong></th>
-    </tr>
-  </thead>
-  <tbody class="gt_table_body">
-    <tr><td headers="label" class="gt_row gt_left">sex</td>
-<td headers="estimate" class="gt_row gt_center"><br></td>
-<td headers="ci" class="gt_row gt_center"><br></td>
-<td headers="p.value" class="gt_row gt_center"><br></td></tr>
-    <tr><td headers="label" class="gt_row gt_left">&nbsp;&nbsp;&nbsp;&nbsp;Female</td>
-<td headers="estimate" class="gt_row gt_center">—</td>
-<td headers="ci" class="gt_row gt_center">—</td>
-<td headers="p.value" class="gt_row gt_center"><br></td></tr>
-    <tr><td headers="label" class="gt_row gt_left">&nbsp;&nbsp;&nbsp;&nbsp;Male</td>
-<td headers="estimate" class="gt_row gt_center">1.43</td>
-<td headers="ci" class="gt_row gt_center">1.32, 1.55</td>
-<td headers="p.value" class="gt_row gt_center">&lt;0.001</td></tr>
-    <tr><td headers="label" class="gt_row gt_left">age</td>
-<td headers="estimate" class="gt_row gt_center"><br></td>
-<td headers="ci" class="gt_row gt_center"><br></td>
-<td headers="p.value" class="gt_row gt_center"><br></td></tr>
-    <tr><td headers="label" class="gt_row gt_left">&nbsp;&nbsp;&nbsp;&nbsp;&lt; 40</td>
-<td headers="estimate" class="gt_row gt_center">—</td>
-<td headers="ci" class="gt_row gt_center">—</td>
-<td headers="p.value" class="gt_row gt_center"><br></td></tr>
-    <tr><td headers="label" class="gt_row gt_left">&nbsp;&nbsp;&nbsp;&nbsp;≥ 40</td>
-<td headers="estimate" class="gt_row gt_center">0.47</td>
-<td headers="ci" class="gt_row gt_center">0.43, 0.51</td>
-<td headers="p.value" class="gt_row gt_center">&lt;0.001</td></tr>
-  </tbody>
-  
-  <tfoot class="gt_footnotes">
-    <tr>
-      <td class="gt_footnote" colspan="4"><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>1</sup></span> RR = Relative Risk, CI = Confidence Interval</td>
-    </tr>
-  </tfoot>
+
+<table class="gt_table table table-sm table-striped small" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header gt_col_headings">
+<th id="<strong>Characteristic</strong>" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col"><strong>Characteristic</strong></th>
+<th id="<strong>RR</strong><span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;&quot;><sup>1</sup></span>" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col"><strong>RR</strong><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>1</sup></span></th>
+<th id="<strong>95% CI</strong><span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;&quot;><sup>1</sup></span>" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col"><strong>95% CI</strong><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>1</sup></span></th>
+<th id="<strong>p-value</strong>" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col"><strong>p-value</strong></th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_left" headers="label">sex</td>
+<td class="gt_row gt_center" headers="estimate"><br>
+</td>
+<td class="gt_row gt_center" headers="ci"><br>
+</td>
+<td class="gt_row gt_center" headers="p.value"><br>
+</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="label">&nbsp;&nbsp;&nbsp;&nbsp;Female</td>
+<td class="gt_row gt_center" headers="estimate">—</td>
+<td class="gt_row gt_center" headers="ci">—</td>
+<td class="gt_row gt_center" headers="p.value"><br>
+</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="label">&nbsp;&nbsp;&nbsp;&nbsp;Male</td>
+<td class="gt_row gt_center" headers="estimate">1.43</td>
+<td class="gt_row gt_center" headers="ci">1.32, 1.55</td>
+<td class="gt_row gt_center" headers="p.value">&lt;0.001</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="label">age</td>
+<td class="gt_row gt_center" headers="estimate"><br>
+</td>
+<td class="gt_row gt_center" headers="ci"><br>
+</td>
+<td class="gt_row gt_center" headers="p.value"><br>
+</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="label">&nbsp;&nbsp;&nbsp;&nbsp;&lt; 40</td>
+<td class="gt_row gt_center" headers="estimate">—</td>
+<td class="gt_row gt_center" headers="ci">—</td>
+<td class="gt_row gt_center" headers="p.value"><br>
+</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="label">&nbsp;&nbsp;&nbsp;&nbsp;≥ 40</td>
+<td class="gt_row gt_center" headers="estimate">0.47</td>
+<td class="gt_row gt_center" headers="ci">0.43, 0.51</td>
+<td class="gt_row gt_center" headers="p.value">&lt;0.001</td>
+</tr>
+</tbody><tfoot class="gt_footnotes">
+<tr class="odd">
+<td colspan="4" class="gt_footnote"><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>1</sup></span> RR = Relative Risk, CI = Confidence Interval</td>
+</tr>
+</tfoot>
+
 </table>
+
 </div>
 </div>
 </div>
@@ -1325,13 +1374,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p><code>mod_adj &lt;- glm(cbind(hospitalised, not_hospitalised) ~ sex * age, data = dat_agg, family = binomial(link = "log"))</code></p>
 <p>and the risk ratios we get are:</p>
 <div class="cell">
-<details>
+<details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a>mod_interact <span class="ot">&lt;-</span> <span class="fu">glm</span>(<span class="fu">cbind</span>(hospitalised, not_hospitalised) <span class="sc">~</span> sex <span class="sc">*</span> age, <span class="at">data =</span> dat_disagg, <span class="at">family =</span> <span class="fu">binomial</span>(<span class="at">link =</span> <span class="st">"log"</span>))</span>
 <span id="cb6-2"><a href="#cb6-2"></a><span class="fu">tbl_regression</span>(mod_interact, <span class="at">exp =</span> T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-
 <div id="wwvnxvtpfv" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
 <style>#wwvnxvtpfv table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
@@ -1772,57 +1820,90 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   text-indent: 25px;
 }
 </style>
-<table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
-  <thead>
-    
-    <tr class="gt_col_headings">
-      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="<strong>Characteristic</strong>"><strong>Characteristic</strong></th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="<strong>RR</strong><span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;&quot;><sup>1</sup></span>"><strong>RR</strong><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>1</sup></span></th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="<strong>95% CI</strong><span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;&quot;><sup>1</sup></span>"><strong>95% CI</strong><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>1</sup></span></th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="<strong>p-value</strong>"><strong>p-value</strong></th>
-    </tr>
-  </thead>
-  <tbody class="gt_table_body">
-    <tr><td headers="label" class="gt_row gt_left">sex</td>
-<td headers="estimate" class="gt_row gt_center"><br></td>
-<td headers="ci" class="gt_row gt_center"><br></td>
-<td headers="p.value" class="gt_row gt_center"><br></td></tr>
-    <tr><td headers="label" class="gt_row gt_left">&nbsp;&nbsp;&nbsp;&nbsp;Female</td>
-<td headers="estimate" class="gt_row gt_center">—</td>
-<td headers="ci" class="gt_row gt_center">—</td>
-<td headers="p.value" class="gt_row gt_center"><br></td></tr>
-    <tr><td headers="label" class="gt_row gt_left">&nbsp;&nbsp;&nbsp;&nbsp;Male</td>
-<td headers="estimate" class="gt_row gt_center">1.77</td>
-<td headers="ci" class="gt_row gt_center">1.60, 1.96</td>
-<td headers="p.value" class="gt_row gt_center">&lt;0.001</td></tr>
-    <tr><td headers="label" class="gt_row gt_left">age</td>
-<td headers="estimate" class="gt_row gt_center"><br></td>
-<td headers="ci" class="gt_row gt_center"><br></td>
-<td headers="p.value" class="gt_row gt_center"><br></td></tr>
-    <tr><td headers="label" class="gt_row gt_left">&nbsp;&nbsp;&nbsp;&nbsp;&lt; 40</td>
-<td headers="estimate" class="gt_row gt_center">—</td>
-<td headers="ci" class="gt_row gt_center">—</td>
-<td headers="p.value" class="gt_row gt_center"><br></td></tr>
-    <tr><td headers="label" class="gt_row gt_left">&nbsp;&nbsp;&nbsp;&nbsp;≥ 40</td>
-<td headers="estimate" class="gt_row gt_center">0.70</td>
-<td headers="ci" class="gt_row gt_center">0.61, 0.80</td>
-<td headers="p.value" class="gt_row gt_center">&lt;0.001</td></tr>
-    <tr><td headers="label" class="gt_row gt_left">sex * age</td>
-<td headers="estimate" class="gt_row gt_center"><br></td>
-<td headers="ci" class="gt_row gt_center"><br></td>
-<td headers="p.value" class="gt_row gt_center"><br></td></tr>
-    <tr><td headers="label" class="gt_row gt_left">&nbsp;&nbsp;&nbsp;&nbsp;Male * ≥ 40</td>
-<td headers="estimate" class="gt_row gt_center">0.52</td>
-<td headers="ci" class="gt_row gt_center">0.44, 0.62</td>
-<td headers="p.value" class="gt_row gt_center">&lt;0.001</td></tr>
-  </tbody>
-  
-  <tfoot class="gt_footnotes">
-    <tr>
-      <td class="gt_footnote" colspan="4"><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>1</sup></span> RR = Relative Risk, CI = Confidence Interval</td>
-    </tr>
-  </tfoot>
+
+<table class="gt_table table table-sm table-striped small" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header gt_col_headings">
+<th id="<strong>Characteristic</strong>" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col"><strong>Characteristic</strong></th>
+<th id="<strong>RR</strong><span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;&quot;><sup>1</sup></span>" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col"><strong>RR</strong><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>1</sup></span></th>
+<th id="<strong>95% CI</strong><span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;&quot;><sup>1</sup></span>" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col"><strong>95% CI</strong><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>1</sup></span></th>
+<th id="<strong>p-value</strong>" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col"><strong>p-value</strong></th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_left" headers="label">sex</td>
+<td class="gt_row gt_center" headers="estimate"><br>
+</td>
+<td class="gt_row gt_center" headers="ci"><br>
+</td>
+<td class="gt_row gt_center" headers="p.value"><br>
+</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="label">&nbsp;&nbsp;&nbsp;&nbsp;Female</td>
+<td class="gt_row gt_center" headers="estimate">—</td>
+<td class="gt_row gt_center" headers="ci">—</td>
+<td class="gt_row gt_center" headers="p.value"><br>
+</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="label">&nbsp;&nbsp;&nbsp;&nbsp;Male</td>
+<td class="gt_row gt_center" headers="estimate">1.77</td>
+<td class="gt_row gt_center" headers="ci">1.60, 1.96</td>
+<td class="gt_row gt_center" headers="p.value">&lt;0.001</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="label">age</td>
+<td class="gt_row gt_center" headers="estimate"><br>
+</td>
+<td class="gt_row gt_center" headers="ci"><br>
+</td>
+<td class="gt_row gt_center" headers="p.value"><br>
+</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="label">&nbsp;&nbsp;&nbsp;&nbsp;&lt; 40</td>
+<td class="gt_row gt_center" headers="estimate">—</td>
+<td class="gt_row gt_center" headers="ci">—</td>
+<td class="gt_row gt_center" headers="p.value"><br>
+</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="label">&nbsp;&nbsp;&nbsp;&nbsp;≥ 40</td>
+<td class="gt_row gt_center" headers="estimate">0.70</td>
+<td class="gt_row gt_center" headers="ci">0.61, 0.80</td>
+<td class="gt_row gt_center" headers="p.value">&lt;0.001</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="label">sex * age</td>
+<td class="gt_row gt_center" headers="estimate"><br>
+</td>
+<td class="gt_row gt_center" headers="ci"><br>
+</td>
+<td class="gt_row gt_center" headers="p.value"><br>
+</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="label">&nbsp;&nbsp;&nbsp;&nbsp;Male * ≥ 40</td>
+<td class="gt_row gt_center" headers="estimate">0.52</td>
+<td class="gt_row gt_center" headers="ci">0.44, 0.62</td>
+<td class="gt_row gt_center" headers="p.value">&lt;0.001</td>
+</tr>
+</tbody><tfoot class="gt_footnotes">
+<tr class="odd">
+<td colspan="4" class="gt_footnote"><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>1</sup></span> RR = Relative Risk, CI = Confidence Interval</td>
+</tr>
+</tfoot>
+
 </table>
+
 </div>
 </div>
 </div>
@@ -1860,7 +1941,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p><a href="https://aosmith.rbind.io/2019/03/25/getting-started-with-emmeans/" class="uri">https://aosmith.rbind.io/2019/03/25/getting-started-with-emmeans/</a></p>
 <p><code>emmeans</code> does a lot of things, but perhaps its workhorse function is to allow you to take a model and calculate adjusted predictions (either at set values of covariates, or by ‘averaging’ over them). In this case, we can very easily use <code>emmeans</code> to reproduce the manual calculations we just did.</p>
 <div class="cell">
-<details>
+<details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a><span class="fu">emmeans</span>(mod_interact, <span class="sc">~</span> sex <span class="sc">+</span> age, <span class="at">type =</span> <span class="st">"response"</span>) <span class="sc">|&gt;</span> </span>
 <span id="cb7-2"><a href="#cb7-2"></a>  <span class="fu">data.frame</span>() <span class="sc">|&gt;</span> </span>
@@ -1875,24 +1956,27 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb7-11"><a href="#cb7-11"></a>  <span class="fu">theme_vanilla</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-
 <div class="tabwid"><style>.cl-92509cd6{table-layout:auto;}.cl-92454ac0{font-family:'Consolas';font-size:11pt;font-weight:bold;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-92454ade{font-family:'Consolas';font-size:11pt;font-weight:normal;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-924a1654{margin:0;text-align:left;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-924a1668{margin:0;text-align:right;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-924a3ce2{height:0.25in;background-color:rgba(255, 255, 255, 1.00);vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-924a3cec{height:0.25in;background-color:rgba(255, 255, 255, 1.00);vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-924a3cf6{background-color:rgba(255, 255, 255, 1.00);vertical-align: middle;border-bottom: 0.75pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-924a3cf7{background-color:rgba(255, 255, 255, 1.00);vertical-align: middle;border-bottom: 0.75pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-924a3d00{background-color:rgba(255, 255, 255, 1.00);vertical-align: middle;border-bottom: 0.75pt solid rgba(102, 102, 102, 1.00);border-top: 0.75pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-924a3d0a{background-color:rgba(255, 255, 255, 1.00);vertical-align: middle;border-bottom: 0.75pt solid rgba(102, 102, 102, 1.00);border-top: 0.75pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-924a3d0b{background-color:rgba(255, 255, 255, 1.00);vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0.75pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-924a3d14{background-color:rgba(255, 255, 255, 1.00);vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0.75pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}</style><table data-quarto-disable-processing="true" class="cl-92509cd6"><caption><p>Predicted Probabilities of Hospitalisation</p></caption><thead><tr style="overflow-wrap:break-word;"><th class="cl-924a3ce2"><p class="cl-924a1654"><span class="cl-92454ac0">sex</span></p></th><th class="cl-924a3ce2"><p class="cl-924a1654"><span class="cl-92454ac0">age</span></p></th><th class="cl-924a3cec"><p class="cl-924a1668"><span class="cl-92454ac0">prob</span></p></th><th class="cl-924a3cec"><p class="cl-924a1668"><span class="cl-92454ac0">SE</span></p></th><th class="cl-924a3cec"><p class="cl-924a1668"><span class="cl-92454ac0">df</span></p></th><th class="cl-924a3cec"><p class="cl-924a1668"><span class="cl-92454ac0">asymp.LCL</span></p></th><th class="cl-924a3cec"><p class="cl-924a1668"><span class="cl-92454ac0">asymp.UCL</span></p></th></tr></thead><tbody><tr style="overflow-wrap:break-word;"><td class="cl-924a3cf6"><p class="cl-924a1654"><span class="cl-92454ade">Female</span></p></td><td class="cl-924a3cf6"><p class="cl-924a1654"><span class="cl-92454ade">&lt; 40</span></p></td><td class="cl-924a3cf7"><p class="cl-924a1668"><span class="cl-92454ade">0.133</span></p></td><td class="cl-924a3cf7"><p class="cl-924a1668"><span class="cl-92454ade">0.006</span></p></td><td class="cl-924a3cf7"><p class="cl-924a1668"><span class="cl-92454ade"> Inf</span></p></td><td class="cl-924a3cf7"><p class="cl-924a1668"><span class="cl-92454ade">0.122</span></p></td><td class="cl-924a3cf7"><p class="cl-924a1668"><span class="cl-92454ade">0.145</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-924a3d00"><p class="cl-924a1654"><span class="cl-92454ade">Male</span></p></td><td class="cl-924a3d00"><p class="cl-924a1654"><span class="cl-92454ade">&lt; 40</span></p></td><td class="cl-924a3d0a"><p class="cl-924a1668"><span class="cl-92454ade">0.235</span></p></td><td class="cl-924a3d0a"><p class="cl-924a1668"><span class="cl-92454ade">0.007</span></p></td><td class="cl-924a3d0a"><p class="cl-924a1668"><span class="cl-92454ade"> Inf</span></p></td><td class="cl-924a3d0a"><p class="cl-924a1668"><span class="cl-92454ade">0.222</span></p></td><td class="cl-924a3d0a"><p class="cl-924a1668"><span class="cl-92454ade">0.248</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-924a3d00"><p class="cl-924a1654"><span class="cl-92454ade">Female</span></p></td><td class="cl-924a3d00"><p class="cl-924a1654"><span class="cl-92454ade">≥ 40</span></p></td><td class="cl-924a3d0a"><p class="cl-924a1668"><span class="cl-92454ade">0.093</span></p></td><td class="cl-924a3d0a"><p class="cl-924a1668"><span class="cl-92454ade">0.005</span></p></td><td class="cl-924a3d0a"><p class="cl-924a1668"><span class="cl-92454ade"> Inf</span></p></td><td class="cl-924a3d0a"><p class="cl-924a1668"><span class="cl-92454ade">0.084</span></p></td><td class="cl-924a3d0a"><p class="cl-924a1668"><span class="cl-92454ade">0.103</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-924a3d0b"><p class="cl-924a1654"><span class="cl-92454ade">Male</span></p></td><td class="cl-924a3d0b"><p class="cl-924a1654"><span class="cl-92454ade">≥ 40</span></p></td><td class="cl-924a3d14"><p class="cl-924a1668"><span class="cl-92454ade">0.086</span></p></td><td class="cl-924a3d14"><p class="cl-924a1668"><span class="cl-92454ade">0.004</span></p></td><td class="cl-924a3d14"><p class="cl-924a1668"><span class="cl-92454ade"> Inf</span></p></td><td class="cl-924a3d14"><p class="cl-924a1668"><span class="cl-92454ade">0.078</span></p></td><td class="cl-924a3d14"><p class="cl-924a1668"><span class="cl-92454ade">0.095</span></p></td></tr></tbody></table></div>
 </div>
 </div>
 <p>Specifying <code>type = "response"</code> in the <code>emmeans</code> call indicates that we want to calculate the outcome on the probability (i.e.&nbsp;risk) scale. It is simple enough to plot these predicted probabilities using the <code>emmip</code> function in <code>emmeans</code>.</p>
 <div class="cell">
-<details>
+<details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a><span class="fu">emmip</span>(mod_interact, age <span class="sc">~</span> sex, <span class="at">type =</span> <span class="st">"response"</span>) <span class="sc">+</span> </span>
 <span id="cb8-2"><a href="#cb8-2"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">18</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<p><img src="index_files/figure-html/plot_risk_ratios-1.png" class="img-fluid" width="1152"></p>
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/plot_risk_ratios-1.png" class="img-fluid figure-img" width="1152"></p>
+</figure>
+</div>
 </div>
 </div>
 <p>To get the risk ratios we have been working with until now, we simply add the <code>pairs(rev = T)</code> function to the call:</p>
 <div class="cell">
-<details>
+<details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a><span class="fu">emmeans</span>(mod_interact, <span class="sc">~</span> sex <span class="sc">+</span> age, <span class="at">type =</span> <span class="st">"response"</span>) <span class="sc">|&gt;</span> <span class="fu">pairs</span>(<span class="at">rev =</span> T) <span class="sc">|&gt;</span> </span>
 <span id="cb9-2"><a href="#cb9-2"></a>  <span class="fu">data.frame</span>() <span class="sc">|&gt;</span> </span>
@@ -1907,13 +1991,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb9-11"><a href="#cb9-11"></a>  <span class="fu">theme_vanilla</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-
 <div class="tabwid"><style>.cl-9312f7ae{table-layout:auto;}.cl-9308d5c6{font-family:'Consolas';font-size:11pt;font-weight:bold;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-9308d5da{font-family:'Consolas';font-size:11pt;font-weight:normal;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-930cbc54{margin:0;text-align:left;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-930cbc5e{margin:0;text-align:right;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-930cd5a4{height:0.25in;background-color:rgba(255, 255, 255, 1.00);vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-930cd5ae{height:0.25in;background-color:rgba(255, 255, 255, 1.00);vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-930cd5b8{background-color:rgba(255, 255, 255, 1.00);vertical-align: middle;border-bottom: 0.75pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-930cd5b9{background-color:rgba(255, 255, 255, 1.00);vertical-align: middle;border-bottom: 0.75pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-930cd5c2{background-color:rgba(255, 255, 255, 1.00);vertical-align: middle;border-bottom: 0.75pt solid rgba(102, 102, 102, 1.00);border-top: 0.75pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-930cd5cc{background-color:rgba(255, 255, 255, 1.00);vertical-align: middle;border-bottom: 0.75pt solid rgba(102, 102, 102, 1.00);border-top: 0.75pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-930cd5cd{background-color:rgba(255, 255, 255, 1.00);vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0.75pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-930cd5ce{background-color:rgba(255, 255, 255, 1.00);vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0.75pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}</style><table data-quarto-disable-processing="true" class="cl-9312f7ae"><caption><p>All Pairwise Risk Ratios</p></caption><thead><tr style="overflow-wrap:break-word;"><th class="cl-930cd5a4"><p class="cl-930cbc54"><span class="cl-9308d5c6">contrast</span></p></th><th class="cl-930cd5ae"><p class="cl-930cbc5e"><span class="cl-9308d5c6">ratio</span></p></th><th class="cl-930cd5ae"><p class="cl-930cbc5e"><span class="cl-9308d5c6">SE</span></p></th><th class="cl-930cd5ae"><p class="cl-930cbc5e"><span class="cl-9308d5c6">df</span></p></th><th class="cl-930cd5ae"><p class="cl-930cbc5e"><span class="cl-9308d5c6">null</span></p></th><th class="cl-930cd5ae"><p class="cl-930cbc5e"><span class="cl-9308d5c6">z.ratio</span></p></th><th class="cl-930cd5ae"><p class="cl-930cbc5e"><span class="cl-9308d5c6">p.value</span></p></th></tr></thead><tbody><tr style="overflow-wrap:break-word;"><td class="cl-930cd5b8"><p class="cl-930cbc54"><span class="cl-9308d5da">Male &lt; 40 / Female &lt; 40</span></p></td><td class="cl-930cd5b9"><p class="cl-930cbc5e"><span class="cl-9308d5da">1.767</span></p></td><td class="cl-930cd5b9"><p class="cl-930cbc5e"><span class="cl-9308d5da">0.091</span></p></td><td class="cl-930cd5b9"><p class="cl-930cbc5e"><span class="cl-9308d5da"> Inf</span></p></td><td class="cl-930cd5b9"><p class="cl-930cbc5e"><span class="cl-9308d5da">1.000</span></p></td><td class="cl-930cd5b9"><p class="cl-930cbc5e"><span class="cl-9308d5da">11.003</span></p></td><td class="cl-930cd5b9"><p class="cl-930cbc5e"><span class="cl-9308d5da">0.000</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-930cd5c2"><p class="cl-930cbc54"><span class="cl-9308d5da">Female ≥ 40 / Female &lt; 40</span></p></td><td class="cl-930cd5cc"><p class="cl-930cbc5e"><span class="cl-9308d5da">0.698</span></p></td><td class="cl-930cd5cc"><p class="cl-930cbc5e"><span class="cl-9308d5da">0.047</span></p></td><td class="cl-930cd5cc"><p class="cl-930cbc5e"><span class="cl-9308d5da"> Inf</span></p></td><td class="cl-930cd5cc"><p class="cl-930cbc5e"><span class="cl-9308d5da">1.000</span></p></td><td class="cl-930cd5cc"><p class="cl-930cbc5e"><span class="cl-9308d5da">-5.356</span></p></td><td class="cl-930cd5cc"><p class="cl-930cbc5e"><span class="cl-9308d5da">0.000</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-930cd5c2"><p class="cl-930cbc54"><span class="cl-9308d5da">Female ≥ 40 / Male &lt; 40</span></p></td><td class="cl-930cd5cc"><p class="cl-930cbc5e"><span class="cl-9308d5da">0.395</span></p></td><td class="cl-930cd5cc"><p class="cl-930cbc5e"><span class="cl-9308d5da">0.023</span></p></td><td class="cl-930cd5cc"><p class="cl-930cbc5e"><span class="cl-9308d5da"> Inf</span></p></td><td class="cl-930cd5cc"><p class="cl-930cbc5e"><span class="cl-9308d5da">1.000</span></p></td><td class="cl-930cd5cc"><p class="cl-930cbc5e"><span class="cl-9308d5da">-15.923</span></p></td><td class="cl-930cd5cc"><p class="cl-930cbc5e"><span class="cl-9308d5da">0.000</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-930cd5c2"><p class="cl-930cbc54"><span class="cl-9308d5da">Male ≥ 40 / Female &lt; 40</span></p></td><td class="cl-930cd5cc"><p class="cl-930cbc5e"><span class="cl-9308d5da">0.646</span></p></td><td class="cl-930cd5cc"><p class="cl-930cbc5e"><span class="cl-9308d5da">0.043</span></p></td><td class="cl-930cd5cc"><p class="cl-930cbc5e"><span class="cl-9308d5da"> Inf</span></p></td><td class="cl-930cd5cc"><p class="cl-930cbc5e"><span class="cl-9308d5da">1.000</span></p></td><td class="cl-930cd5cc"><p class="cl-930cbc5e"><span class="cl-9308d5da">-6.582</span></p></td><td class="cl-930cd5cc"><p class="cl-930cbc5e"><span class="cl-9308d5da">0.000</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-930cd5c2"><p class="cl-930cbc54"><span class="cl-9308d5da">Male ≥ 40 / Male &lt; 40</span></p></td><td class="cl-930cd5cc"><p class="cl-930cbc5e"><span class="cl-9308d5da">0.366</span></p></td><td class="cl-930cd5cc"><p class="cl-930cbc5e"><span class="cl-9308d5da">0.021</span></p></td><td class="cl-930cd5cc"><p class="cl-930cbc5e"><span class="cl-9308d5da"> Inf</span></p></td><td class="cl-930cd5cc"><p class="cl-930cbc5e"><span class="cl-9308d5da">1.000</span></p></td><td class="cl-930cd5cc"><p class="cl-930cbc5e"><span class="cl-9308d5da">-17.499</span></p></td><td class="cl-930cd5cc"><p class="cl-930cbc5e"><span class="cl-9308d5da">0.000</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-930cd5cd"><p class="cl-930cbc54"><span class="cl-9308d5da">Male ≥ 40 / Female ≥ 40</span></p></td><td class="cl-930cd5ce"><p class="cl-930cbc5e"><span class="cl-9308d5da">0.925</span></p></td><td class="cl-930cd5ce"><p class="cl-930cbc5e"><span class="cl-9308d5da">0.066</span></p></td><td class="cl-930cd5ce"><p class="cl-930cbc5e"><span class="cl-9308d5da"> Inf</span></p></td><td class="cl-930cd5ce"><p class="cl-930cbc5e"><span class="cl-9308d5da">1.000</span></p></td><td class="cl-930cd5ce"><p class="cl-930cbc5e"><span class="cl-9308d5da">-1.083</span></p></td><td class="cl-930cd5ce"><p class="cl-930cbc5e"><span class="cl-9308d5da">0.700</span></p></td></tr></tbody></table></div>
 </div>
 </div>
 <p>Note that this gives us two extra comparisons we might not really want (the 3rd and 4th lines of the output) as it estimates every single pairwise comparison. We can get a bit fancier and customise the <code>emmeans</code> output to give us only what we want:</p>
 <div class="cell">
-<details>
+<details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a>emm <span class="ot">&lt;-</span> <span class="fu">emmeans</span>(mod_interact, <span class="sc">~</span> sex <span class="sc">+</span> age, <span class="at">type =</span> <span class="st">"response"</span>) <span class="co"># save the estimated risks</span></span>
 <span id="cb10-2"><a href="#cb10-2"></a>custom <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="st">`</span><span class="at">The effect of being male in younger individuals</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">0</span>),</span>
@@ -1934,7 +2017,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb10-17"><a href="#cb10-17"></a>  <span class="fu">theme_vanilla</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-
 <div class="tabwid"><style>.cl-93467516{table-layout:auto;}.cl-933c2aa2{font-family:'Consolas';font-size:11pt;font-weight:bold;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-933c2aac{font-family:'Consolas';font-size:11pt;font-weight:normal;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-93408354{margin:0;text-align:left;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-93408368{margin:0;text-align:right;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-93409c0e{height:0.25in;background-color:rgba(255, 255, 255, 1.00);vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-93409c18{height:0.25in;background-color:rgba(255, 255, 255, 1.00);vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-93409c22{background-color:rgba(255, 255, 255, 1.00);vertical-align: middle;border-bottom: 0.75pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-93409c23{background-color:rgba(255, 255, 255, 1.00);vertical-align: middle;border-bottom: 0.75pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-93409c2c{background-color:rgba(255, 255, 255, 1.00);vertical-align: middle;border-bottom: 0.75pt solid rgba(102, 102, 102, 1.00);border-top: 0.75pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-93409c2d{background-color:rgba(255, 255, 255, 1.00);vertical-align: middle;border-bottom: 0.75pt solid rgba(102, 102, 102, 1.00);border-top: 0.75pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-93409c36{background-color:rgba(255, 255, 255, 1.00);vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0.75pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-93409c37{background-color:rgba(255, 255, 255, 1.00);vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0.75pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}</style><table data-quarto-disable-processing="true" class="cl-93467516"><caption><p>Custom Pairwise Risk Ratios</p></caption><thead><tr style="overflow-wrap:break-word;"><th class="cl-93409c0e"><p class="cl-93408354"><span class="cl-933c2aa2">contrast</span></p></th><th class="cl-93409c18"><p class="cl-93408368"><span class="cl-933c2aa2">ratio</span></p></th><th class="cl-93409c18"><p class="cl-93408368"><span class="cl-933c2aa2">SE</span></p></th><th class="cl-93409c18"><p class="cl-93408368"><span class="cl-933c2aa2">df</span></p></th><th class="cl-93409c18"><p class="cl-93408368"><span class="cl-933c2aa2">asymp.LCL</span></p></th><th class="cl-93409c18"><p class="cl-93408368"><span class="cl-933c2aa2">asymp.UCL</span></p></th><th class="cl-93409c18"><p class="cl-93408368"><span class="cl-933c2aa2">null</span></p></th><th class="cl-93409c18"><p class="cl-93408368"><span class="cl-933c2aa2">z.ratio</span></p></th><th class="cl-93409c18"><p class="cl-93408368"><span class="cl-933c2aa2">p.value</span></p></th></tr></thead><tbody><tr style="overflow-wrap:break-word;"><td class="cl-93409c22"><p class="cl-93408354"><span class="cl-933c2aac">The effect of being male in younger individuals</span></p></td><td class="cl-93409c23"><p class="cl-93408368"><span class="cl-933c2aac">1.767</span></p></td><td class="cl-93409c23"><p class="cl-93408368"><span class="cl-933c2aac">0.091</span></p></td><td class="cl-93409c23"><p class="cl-93408368"><span class="cl-933c2aac"> Inf</span></p></td><td class="cl-93409c23"><p class="cl-93408368"><span class="cl-933c2aac">1.597</span></p></td><td class="cl-93409c23"><p class="cl-93408368"><span class="cl-933c2aac">1.956</span></p></td><td class="cl-93409c23"><p class="cl-93408368"><span class="cl-933c2aac">1.000</span></p></td><td class="cl-93409c23"><p class="cl-93408368"><span class="cl-933c2aac">11.003</span></p></td><td class="cl-93409c23"><p class="cl-93408368"><span class="cl-933c2aac">0.000</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-93409c2c"><p class="cl-93408354"><span class="cl-933c2aac">The effect of being male in older individuals</span></p></td><td class="cl-93409c2d"><p class="cl-93408368"><span class="cl-933c2aac">0.925</span></p></td><td class="cl-93409c2d"><p class="cl-93408368"><span class="cl-933c2aac">0.066</span></p></td><td class="cl-93409c2d"><p class="cl-93408368"><span class="cl-933c2aac"> Inf</span></p></td><td class="cl-93409c2d"><p class="cl-93408368"><span class="cl-933c2aac">0.804</span></p></td><td class="cl-93409c2d"><p class="cl-93408368"><span class="cl-933c2aac">1.065</span></p></td><td class="cl-93409c2d"><p class="cl-93408368"><span class="cl-933c2aac">1.000</span></p></td><td class="cl-93409c2d"><p class="cl-93408368"><span class="cl-933c2aac">-1.083</span></p></td><td class="cl-93409c2d"><p class="cl-93408368"><span class="cl-933c2aac">0.279</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-93409c2c"><p class="cl-93408354"><span class="cl-933c2aac">The effect of being older in females</span></p></td><td class="cl-93409c2d"><p class="cl-93408368"><span class="cl-933c2aac">0.698</span></p></td><td class="cl-93409c2d"><p class="cl-93408368"><span class="cl-933c2aac">0.047</span></p></td><td class="cl-93409c2d"><p class="cl-93408368"><span class="cl-933c2aac"> Inf</span></p></td><td class="cl-93409c2d"><p class="cl-93408368"><span class="cl-933c2aac">0.612</span></p></td><td class="cl-93409c2d"><p class="cl-93408368"><span class="cl-933c2aac">0.796</span></p></td><td class="cl-93409c2d"><p class="cl-93408368"><span class="cl-933c2aac">1.000</span></p></td><td class="cl-93409c2d"><p class="cl-93408368"><span class="cl-933c2aac">-5.356</span></p></td><td class="cl-93409c2d"><p class="cl-93408368"><span class="cl-933c2aac">0.000</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-93409c36"><p class="cl-93408354"><span class="cl-933c2aac">The effect of being older in males</span></p></td><td class="cl-93409c37"><p class="cl-93408368"><span class="cl-933c2aac">0.366</span></p></td><td class="cl-93409c37"><p class="cl-93408368"><span class="cl-933c2aac">0.021</span></p></td><td class="cl-93409c37"><p class="cl-93408368"><span class="cl-933c2aac"> Inf</span></p></td><td class="cl-93409c37"><p class="cl-93408368"><span class="cl-933c2aac">0.327</span></p></td><td class="cl-93409c37"><p class="cl-93408368"><span class="cl-933c2aac">0.409</span></p></td><td class="cl-93409c37"><p class="cl-93408368"><span class="cl-933c2aac">1.000</span></p></td><td class="cl-93409c37"><p class="cl-93408368"><span class="cl-933c2aac">-17.499</span></p></td><td class="cl-93409c37"><p class="cl-93408368"><span class="cl-933c2aac">0.000</span></p></td></tr></tbody></table></div>
 </div>
 </div>
@@ -1988,6 +2070,33 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       } else {
         el.classList.add('notransition');
       }
+    }
+  }
+  const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+    const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+    const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+    let newTheme = '';
+    if(darkModeDefault) {
+      newTheme = isAlternate ? baseTheme : alternateTheme;
+    } else {
+      newTheme = isAlternate ? alternateTheme : baseTheme;
+    }
+    const changeGiscusTheme = () => {
+      // From: https://github.com/giscus/giscus/issues/336
+      const sendMessage = (message) => {
+        const iframe = document.querySelector('iframe.giscus-frame');
+        if (!iframe) return;
+        iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+      }
+      sendMessage({
+        setConfig: {
+          theme: newTheme
+        }
+      });
+    }
+    const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+    if (isGiscussLoaded) {
+      changeGiscusTheme();
     }
   }
   const toggleColorMode = (alternate) => {
@@ -2056,13 +2165,15 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       return localAlternateSentinel;
     }
   }
-  let localAlternateSentinel = 'default';
+  const darkModeDefault = false;
+  let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
   // Dark / light mode switch
   window.quartoToggleColorScheme = () => {
     // Read the current dark / light value 
     let toAlternate = !hasAlternateSentinel();
     toggleColorMode(toAlternate);
     setStyleSentinel(toAlternate);
+    toggleGiscusIfUsed(toAlternate, darkModeDefault);
   };
   // Ensure there is a toggle, if there isn't float one in the top right
   if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
@@ -2192,10 +2303,9 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   if (showAllCode) {
     showAllCode.addEventListener("click", toggleCodeHandler(true));
   }
-  function tippyHover(el, contentFn) {
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
     const config = {
       allowHTML: true,
-      content: contentFn,
       maxWidth: 500,
       delay: 100,
       arrow: false,
@@ -2205,8 +2315,17 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       interactive: true,
       interactiveBorder: 10,
       theme: 'quarto',
-      placement: 'bottom-start'
+      placement: 'bottom-start',
     };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
     window.tippy(el, config); 
   }
   const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
@@ -2219,6 +2338,125 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       const id = href.replace(/^#\/?/, "");
       const note = window.document.getElementById(id);
       return note.innerHTML;
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
     });
   }
       let selectedAnnoteEl;
@@ -2262,6 +2500,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
             }
             div.style.top = top - 2 + "px";
             div.style.height = height + 4 + "px";
+            div.style.left = 0;
             let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
             if (gutterDiv === null) {
               gutterDiv = window.document.createElement("div");
@@ -2287,6 +2526,32 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
         });
         selectedAnnoteEl = undefined;
       };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
       // Attach click handler to the DT
       const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
       for (const annoteDlNode of annoteDls) {
@@ -2347,7 +2612,9 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 });
 </script>
 <script src="https://giscus.app/client.js" data-repo="pgseye/Weekly_Stats_Tips" data-repo-id="R_kgDOKvfOfQ" data-category="General" data-category-id="DIC_kwDOKvfOfc4CbFWq" data-mapping="title" data-reactions-enabled="1" data-emit-metadata="0" data-input-position="top" data-theme="light" data-lang="en" crossorigin="anonymous" async="">
-</script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+</script>
+<input type="hidden" id="giscus-base-theme" value="light">
+<input type="hidden" id="giscus-alt-theme" value="dark"><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
 <div class="sourceCode" id="cb11" data-shortcodes="false"><pre class="sourceCode numberSource markdown number-lines code-with-copy"><code class="sourceCode markdown"><span id="cb11-1"><a href="#cb11-1"></a><span class="co">---</span></span>
 <span id="cb11-2"><a href="#cb11-2"></a><span class="an">title:</span><span class="co"> "Interactions (effect modifiers) are important - don't ignore them"</span></span>
 <span id="cb11-3"><a href="#cb11-3"></a><span class="an">date:</span><span class="co"> 2023-11-24</span></span>
@@ -2372,11 +2639,11 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb11-24"><a href="#cb11-24"></a>               <span class="at">warning =</span> F)</span>
 <span id="cb11-25"><a href="#cb11-25"></a><span class="in">```</span></span>
 <span id="cb11-26"><a href="#cb11-26"></a></span>
-<span id="cb11-27"><a href="#cb11-27"></a><span class="kw">&lt;br&gt;</span></span>
+<span id="cb11-27"><a href="#cb11-27"></a>&lt;br&gt;</span>
 <span id="cb11-28"><a href="#cb11-28"></a></span>
 <span id="cb11-29"><a href="#cb11-29"></a><span class="fu">## The Question</span></span>
 <span id="cb11-30"><a href="#cb11-30"></a></span>
-<span id="cb11-31"><a href="#cb11-31"></a><span class="kw">&lt;details&gt;</span></span>
+<span id="cb11-31"><a href="#cb11-31"></a>&lt;details&gt;</span>
 <span id="cb11-32"><a href="#cb11-32"></a></span>
 <span id="cb11-33"><a href="#cb11-33"></a>Recall that the question this week was to choose between:</span>
 <span id="cb11-34"><a href="#cb11-34"></a></span>
@@ -2388,7 +2655,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb11-40"><a href="#cb11-40"></a></span>
 <span id="cb11-41"><a href="#cb11-41"></a><span class="al">![](images/interact.png)</span></span>
 <span id="cb11-42"><a href="#cb11-42"></a></span>
-<span id="cb11-43"><a href="#cb11-43"></a><span class="kw">&lt;/details&gt;</span></span>
+<span id="cb11-43"><a href="#cb11-43"></a>&lt;/details&gt;</span>
 <span id="cb11-44"><a href="#cb11-44"></a></span>
 <span id="cb11-45"><a href="#cb11-45"></a><span class="fu">## The Answer</span></span>
 <span id="cb11-46"><a href="#cb11-46"></a></span>
@@ -2591,6 +2858,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
+
 
 
 
