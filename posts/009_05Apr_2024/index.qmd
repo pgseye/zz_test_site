@@ -1,0 +1,60 @@
+---
+title: "Don't be Scared of Splines"
+date: 2024-04-05
+categories: [analysis, concept, code, modelling, visualisation]
+image: "R_small.jpeg"
+description: "Restricted cubic splines give you the ultimate flexiblity in modelling continuous predictors."
+---
+
+Follow guide in accompanying splines.R script
+
+`sleepstudy |> as_tibble() |> print(n = 30)`
+
+```{r}
+#| label: setup
+#| message: false
+library(lme4)
+library(dplyr)
+# Load data
+data("sleepstudy")
+sleepstudy |> as_tibble() |> print(n = 30)
+```
+
+But we can do this better with:
+
+`by(sleepstudy, sleepstudy$PATIENT_ID, identity)[1:3]`
+
+Note that the `[1:3]` indicates the range of group indices that you want to view.
+
+```{r}
+#| label: by()
+by(sleepstudy, sleepstudy$Subject, identity)[1:3]
+```
+
+If you want to take this a step further, you can generalise this with a function that will allow you to quickly view the data in any range that you want, without having to continually copy and paste that line of code. Just call the function with your dataframe and group id names and the range of group indices that you want to view (interestingly while writing this function I worked out you don't even need the `by()` function to achieve the same result).
+
+`print_groups(sleepstudy, Subject, 1, 3)`
+
+```{r}
+#| label: function
+# Create function
+print_groups <- function(df, id, index1, index2) {
+  df <- data.frame(df)
+  ids_all <-  unique(eval(substitute(id), df))
+  ids_range <- ids_all[index1:index2]
+  if (index1 <= length(ids_all) & index2 <= length(ids_all)) {
+    for (id2 in ids_range) {
+      cat(paste0("id = ", id2, "\n"))
+      print(df[eval(substitute(id), df) %in% id2,])
+      cat("----------------------------\n\n")
+    }
+  } else {
+    print("There aren't that many groups in your dataset")
+  }
+}
+
+# Use function
+print_groups(sleepstudy, Subject, 1, 3)
+```
+
+And there you have it!

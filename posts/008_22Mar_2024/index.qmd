@@ -1,0 +1,60 @@
+---
+title: "Easily view your data by a grouping variable"
+date: 2024-03-22
+categories: [code]
+image: "R_small.jpeg"
+description: "Use `by()` to view your data by a grouping variable."
+---
+
+It is easy enough to view a dataframe in `RStudio` by opening the dataframe in the viewer or printing the dataframe (or part of it) to the console. However, this can be messy if you want to quickly identify data by a grouping variable (usually the patient id). The `by()` function can help you to do this. Let's illustrate its utility with the `sleepstudy` dataset from the `lme4` package. To start with I'll print the data for the first 3 subjects as one might.
+
+`sleepstudy |> as_tibble() |> print(n = 30)`
+
+```{r}
+#| label: setup
+#| message: false
+library(lme4)
+library(dplyr)
+# Load data
+data("sleepstudy")
+sleepstudy |> as_tibble() |> print(n = 30)
+```
+
+But we can do this better with:
+
+`by(sleepstudy, sleepstudy$PATIENT_ID, identity)[1:3]`
+
+Note that the `[1:3]` indicates the range of group indices that you want to view.
+
+```{r}
+#| label: by()
+by(sleepstudy, sleepstudy$Subject, identity)[1:3]
+```
+
+If you want to take this a step further, you can generalise this with a function that will allow you to quickly view the data in any range that you want, without having to continually copy and paste that line of code. Just call the function with your dataframe and group id names and the range of group indices that you want to view (interestingly while writing this function I worked out you don't even need the `by()` function to achieve the same result).
+
+`print_groups(sleepstudy, Subject, 1, 3)`
+
+```{r}
+#| label: function
+# Create function
+print_groups <- function(df, id, index1, index2) {
+  df <- data.frame(df)
+  ids_all <-  unique(eval(substitute(id), df))
+  ids_range <- ids_all[index1:index2]
+  if (index1 <= length(ids_all) & index2 <= length(ids_all)) {
+    for (id2 in ids_range) {
+      cat(paste0("id = ", id2, "\n"))
+      print(df[eval(substitute(id), df) %in% id2,])
+      cat("----------------------------\n\n")
+    }
+  } else {
+    print("There aren't that many groups in your dataset")
+  }
+}
+
+# Use function
+print_groups(sleepstudy, Subject, 1, 3)
+```
+
+And there you have it!

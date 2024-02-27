@@ -1,60 +1,44 @@
 ---
-title: "Easily view your data by a grouping variable"
+title: "Simpson's Paradox - A Simple Explanation"
 date: 2024-03-08
-categories: [code]
+categories: [concept, code, visualisation]
 image: "R_small.jpeg"
-description: "Use `by()` to view your data by a grouping variable."
+description: "Simpson's Paradox is essentially an extreme form of confounding, characterised by a reversal of the effect estimate sign."
 ---
 
-It is easy enough to view a dataframe in `RStudio` by opening the dataframe in the viewer or printing the dataframe (or part of it) to the console. However, this can be messy if you want to quickly identify data by a grouping variable (usually the patient id). The `by()` function can help you to do this. Let's illustrate its utility with the `sleepstudy` dataset from the `lme4` package. To start with I'll print the data for the first 3 subjects as one might.
-
-`sleepstudy |> as_tibble() |> print(n = 30)`
+For this - have 3 groups - honours, masters and PhD's. Have aggregated slope of cups of coffee vs words per minute typing being negative, but then disaggregated slope being positive within each group. Honours students will have highest WPM because by the time you get to being a PhD, you're exhausted and have typing-related RSI...
 
 ```{r}
 #| label: setup
 #| message: false
-library(lme4)
-library(dplyr)
-# Load data
-data("sleepstudy")
-sleepstudy |> as_tibble() |> print(n = 30)
+library(bayestestR)
+library(ggplot2)
+
+# Simulate some data 
+set.seed(253445)
+dat <- simulate_simpson(
+  n = 50,
+  r = -0.5,
+  groups = 3,
+  difference = 2,
+  group_prefix = "G_"
+)
+dat$V2 <- abs(dat$V2*10)
+#dat$V1 <- abs(dat$V1)
 ```
-
-But we can do this better with:
-
-`by(sleepstudy, sleepstudy$PATIENT_ID, identity)[1:3]`
-
-Note that the `[1:3]` indicates the range of group indices that you want to view.
 
 ```{r}
-#| label: by()
-by(sleepstudy, sleepstudy$Subject, identity)[1:3]
+#| label: plot_aggregated
+#| message: false
+ggplot(dat, aes(x = V1, y = V2)) + 
+  geom_point() + 
+  theme_bw(base_size = 15)
 ```
-
-If you want to take this a step further, you can generalise this with a function that will allow you to quickly view the data in any range that you want, without having to continually copy and paste that line of code. Just call the function with your dataframe and group id names and the range of group indices that you want to view (interestingly while writing this function I worked out you don't even need the `by()` function to achieve the same result).
-
-`print_groups(sleepstudy, Subject, 1, 3)`
 
 ```{r}
-#| label: function
-# Create function
-print_groups <- function(df, id, index1, index2) {
-  df <- data.frame(df)
-  ids_all <-  unique(eval(substitute(id), df))
-  ids_range <- ids_all[index1:index2]
-  if (index1 <= length(ids_all) & index2 <= length(ids_all)) {
-    for (id2 in ids_range) {
-      cat(paste0("id = ", id2, "\n"))
-      print(df[eval(substitute(id), df) %in% id2,])
-      cat("----------------------------\n\n")
-    }
-  } else {
-    print("There aren't that many groups in your dataset")
-  }
-}
-
-# Use function
-print_groups(sleepstudy, Subject, 1, 3)
+#| label: plot_disaggregated
+#| message: false
+ggplot(dat, aes(x = V1, y = V2, color = Group)) + 
+  geom_point() + 
+  theme_bw(base_size = 15)
 ```
-
-And there you have it!

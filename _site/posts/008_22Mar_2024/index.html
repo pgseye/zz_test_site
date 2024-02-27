@@ -6,10 +6,10 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2024-03-08">
-<meta name="description" content="Simpson’s Paradox is essentially an extreme form of confounding, characterised by a reversal of the effect estimate sign.">
+<meta name="dcterms.date" content="2024-03-22">
+<meta name="description" content="Restricted cubic splines give you the ultimate flexiblity in modelling continuous predictors.">
 
-<title>Test Site 2 - Simpson’s Paradox - A Simple Explanation</title>
+<title>Test Site 2 - Easily view your data by a grouping variable</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -150,17 +150,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<div class="quarto-title-block"><div><h1 class="title">Simpson’s Paradox - A Simple Explanation</h1><button type="button" class="btn code-tools-button dropdown-toggle" id="quarto-code-tools-menu" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi"></i> Code</button><ul class="dropdown-menu dropdown-menu-end" aria-labelelledby="quarto-code-tools-menu"><li><a id="quarto-show-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Show All Code</a></li><li><a id="quarto-hide-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Hide All Code</a></li><li><hr class="dropdown-divider"></li><li><a id="quarto-view-source" class="dropdown-item" href="javascript:void(0)" role="button">View Source</a></li></ul></div></div>
+<div class="quarto-title-block"><div><h1 class="title">Don’t be Scared of Splines</h1><button type="button" class="btn code-tools-button dropdown-toggle" id="quarto-code-tools-menu" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi"></i> Code</button><ul class="dropdown-menu dropdown-menu-end" aria-labelelledby="quarto-code-tools-menu"><li><a id="quarto-show-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Show All Code</a></li><li><a id="quarto-hide-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Hide All Code</a></li><li><hr class="dropdown-divider"></li><li><a id="quarto-view-source" class="dropdown-item" href="javascript:void(0)" role="button">View Source</a></li></ul></div></div>
   <div class="quarto-categories">
     <div class="quarto-category">concept</div>
     <div class="quarto-category">code</div>
+    <div class="quarto-category">analysis</div>
+    <div class="quarto-category">modelling</div>
     <div class="quarto-category">visualisation</div>
   </div>
   </div>
 
 <div>
   <div class="description">
-    Simpson’s Paradox is essentially an extreme form of confounding, characterised by a reversal of the effect estimate sign.
+    Restricted cubic splines give you the ultimate flexiblity in modelling continuous predictors.
   </div>
 </div>
 
@@ -171,7 +173,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">March 8, 2024</p>
+      <p class="date">March 22, 2024</p>
     </div>
   </div>
   
@@ -183,56 +185,172 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p>For this - have 3 groups - honours, masters and PhD’s. Have aggregated slope of cups of coffee vs words per minute typing being negative, but then disaggregated slope being positive within each group. Honours students will have highest WPM because by the time you get to being a PhD, you’re exhausted and have typing-related RSI…</p>
+<p>It is easy enough to view a dataframe in <code>RStudio</code> by opening the dataframe in the viewer or printing the dataframe (or part of it) to the console. However, this can be messy if you want to quickly identify data by a grouping variable (usually the patient id). The <code>by()</code> function can help you to do this. Let’s illustrate its utility with the <code>sleepstudy</code> dataset from the <code>lme4</code> package. To start with I’ll print the data for the first 3 subjects as one might.</p>
+<p><code>sleepstudy |&gt; as_tibble() |&gt; print(n = 30)</code></p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">library</span>(bayestestR)</span>
-<span id="cb1-2"><a href="#cb1-2"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb1-3"><a href="#cb1-3"></a></span>
-<span id="cb1-4"><a href="#cb1-4"></a><span class="co"># Simulate some data </span></span>
-<span id="cb1-5"><a href="#cb1-5"></a><span class="fu">set.seed</span>(<span class="dv">253445</span>)</span>
-<span id="cb1-6"><a href="#cb1-6"></a>dat <span class="ot">&lt;-</span> <span class="fu">simulate_simpson</span>(</span>
-<span id="cb1-7"><a href="#cb1-7"></a>  <span class="at">n =</span> <span class="dv">50</span>,</span>
-<span id="cb1-8"><a href="#cb1-8"></a>  <span class="at">r =</span> <span class="sc">-</span><span class="fl">0.5</span>,</span>
-<span id="cb1-9"><a href="#cb1-9"></a>  <span class="at">groups =</span> <span class="dv">3</span>,</span>
-<span id="cb1-10"><a href="#cb1-10"></a>  <span class="at">difference =</span> <span class="dv">2</span>,</span>
-<span id="cb1-11"><a href="#cb1-11"></a>  <span class="at">group_prefix =</span> <span class="st">"G_"</span></span>
-<span id="cb1-12"><a href="#cb1-12"></a>)</span>
-<span id="cb1-13"><a href="#cb1-13"></a>dat<span class="sc">$</span>V2 <span class="ot">&lt;-</span> <span class="fu">abs</span>(dat<span class="sc">$</span>V2<span class="sc">*</span><span class="dv">10</span>)</span>
-<span id="cb1-14"><a href="#cb1-14"></a><span class="co">#dat$V1 &lt;- abs(dat$V1)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">library</span>(lme4)</span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="co"># Load data</span></span>
+<span id="cb1-4"><a href="#cb1-4"></a><span class="fu">data</span>(<span class="st">"sleepstudy"</span>)</span>
+<span id="cb1-5"><a href="#cb1-5"></a>sleepstudy <span class="sc">|&gt;</span> <span class="fu">as_tibble</span>() <span class="sc">|&gt;</span> <span class="fu">print</span>(<span class="at">n =</span> <span class="dv">30</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 180 × 3
+   Reaction  Days Subject
+      &lt;dbl&gt; &lt;dbl&gt; &lt;fct&gt;  
+ 1     250.     0 308    
+ 2     259.     1 308    
+ 3     251.     2 308    
+ 4     321.     3 308    
+ 5     357.     4 308    
+ 6     415.     5 308    
+ 7     382.     6 308    
+ 8     290.     7 308    
+ 9     431.     8 308    
+10     466.     9 308    
+11     223.     0 309    
+12     205.     1 309    
+13     203.     2 309    
+14     205.     3 309    
+15     208.     4 309    
+16     216.     5 309    
+17     214.     6 309    
+18     218.     7 309    
+19     224.     8 309    
+20     237.     9 309    
+21     199.     0 310    
+22     194.     1 310    
+23     234.     2 310    
+24     233.     3 310    
+25     229.     4 310    
+26     220.     5 310    
+27     235.     6 310    
+28     256.     7 310    
+29     261.     8 310    
+30     248.     9 310    
+# ℹ 150 more rows</code></pre>
 </div>
+</div>
+<p>But we can do this better with:</p>
+<p><code>by(sleepstudy, sleepstudy$PATIENT_ID, identity)[1:3]</code></p>
+<p>Note that the <code>[1:3]</code> indicates the range of group indices that you want to view.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="fu">ggplot</span>(dat, <span class="fu">aes</span>(<span class="at">x =</span> V1, <span class="at">y =</span> V2)) <span class="sc">+</span> </span>
-<span id="cb2-2"><a href="#cb2-2"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span> </span>
-<span id="cb2-3"><a href="#cb2-3"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">15</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="fu">by</span>(sleepstudy, sleepstudy<span class="sc">$</span>Subject, identity)[<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="index_files/figure-html/plot_aggregated-1.png" class="img-fluid figure-img" width="1152"></p>
-</figure>
+<div class="cell-output cell-output-stdout">
+<pre><code>$`308`
+   Reaction Days Subject
+1  249.5600    0     308
+2  258.7047    1     308
+3  250.8006    2     308
+4  321.4398    3     308
+5  356.8519    4     308
+6  414.6901    5     308
+7  382.2038    6     308
+8  290.1486    7     308
+9  430.5853    8     308
+10 466.3535    9     308
+
+$`309`
+   Reaction Days Subject
+11 222.7339    0     309
+12 205.2658    1     309
+13 202.9778    2     309
+14 204.7070    3     309
+15 207.7161    4     309
+16 215.9618    5     309
+17 213.6303    6     309
+18 217.7272    7     309
+19 224.2957    8     309
+20 237.3142    9     309
+
+$`310`
+   Reaction Days Subject
+21 199.0539    0     310
+22 194.3322    1     310
+23 234.3200    2     310
+24 232.8416    3     310
+25 229.3074    4     310
+26 220.4579    5     310
+27 235.4208    6     310
+28 255.7511    7     310
+29 261.0125    8     310
+30 247.5153    9     310</code></pre>
 </div>
 </div>
-</div>
+<p>If you want to take this a step further, you can generalise this with a function that will allow you to quickly view the data in any range that you want, without having to continually copy and paste that line of code. Just call the function with your dataframe and group id names and the range of group indices that you want to view (interestingly while writing this function I worked out you don’t even need the <code>by()</code> function to achieve the same result).</p>
+<p><code>print_groups(sleepstudy, Subject, 1, 3)</code></p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="fu">ggplot</span>(dat, <span class="fu">aes</span>(<span class="at">x =</span> V1, <span class="at">y =</span> V2, <span class="at">color =</span> Group)) <span class="sc">+</span> </span>
-<span id="cb3-2"><a href="#cb3-2"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span> </span>
-<span id="cb3-3"><a href="#cb3-3"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">15</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="co"># Create function</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a>print_groups <span class="ot">&lt;-</span> <span class="cf">function</span>(df, id, index1, index2) {</span>
+<span id="cb5-3"><a href="#cb5-3"></a>  df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(df)</span>
+<span id="cb5-4"><a href="#cb5-4"></a>  ids_all <span class="ot">&lt;-</span>  <span class="fu">unique</span>(<span class="fu">eval</span>(<span class="fu">substitute</span>(id), df))</span>
+<span id="cb5-5"><a href="#cb5-5"></a>  ids_range <span class="ot">&lt;-</span> ids_all[index1<span class="sc">:</span>index2]</span>
+<span id="cb5-6"><a href="#cb5-6"></a>  <span class="cf">if</span> (index1 <span class="sc">&lt;=</span> <span class="fu">length</span>(ids_all) <span class="sc">&amp;</span> index2 <span class="sc">&lt;=</span> <span class="fu">length</span>(ids_all)) {</span>
+<span id="cb5-7"><a href="#cb5-7"></a>    <span class="cf">for</span> (id2 <span class="cf">in</span> ids_range) {</span>
+<span id="cb5-8"><a href="#cb5-8"></a>      <span class="fu">cat</span>(<span class="fu">paste0</span>(<span class="st">"id = "</span>, id2, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>))</span>
+<span id="cb5-9"><a href="#cb5-9"></a>      <span class="fu">print</span>(df[<span class="fu">eval</span>(<span class="fu">substitute</span>(id), df) <span class="sc">%in%</span> id2,])</span>
+<span id="cb5-10"><a href="#cb5-10"></a>      <span class="fu">cat</span>(<span class="st">"----------------------------</span><span class="sc">\n\n</span><span class="st">"</span>)</span>
+<span id="cb5-11"><a href="#cb5-11"></a>    }</span>
+<span id="cb5-12"><a href="#cb5-12"></a>  } <span class="cf">else</span> {</span>
+<span id="cb5-13"><a href="#cb5-13"></a>    <span class="fu">print</span>(<span class="st">"There aren't that many groups in your dataset"</span>)</span>
+<span id="cb5-14"><a href="#cb5-14"></a>  }</span>
+<span id="cb5-15"><a href="#cb5-15"></a>}</span>
+<span id="cb5-16"><a href="#cb5-16"></a></span>
+<span id="cb5-17"><a href="#cb5-17"></a><span class="co"># Use function</span></span>
+<span id="cb5-18"><a href="#cb5-18"></a><span class="fu">print_groups</span>(sleepstudy, Subject, <span class="dv">1</span>, <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="index_files/figure-html/plot_disaggregated-1.png" class="img-fluid figure-img" width="1152"></p>
-</figure>
+<div class="cell-output cell-output-stdout">
+<pre><code>id = 308
+   Reaction Days Subject
+1  249.5600    0     308
+2  258.7047    1     308
+3  250.8006    2     308
+4  321.4398    3     308
+5  356.8519    4     308
+6  414.6901    5     308
+7  382.2038    6     308
+8  290.1486    7     308
+9  430.5853    8     308
+10 466.3535    9     308
+----------------------------
+
+id = 309
+   Reaction Days Subject
+11 222.7339    0     309
+12 205.2658    1     309
+13 202.9778    2     309
+14 204.7070    3     309
+15 207.7161    4     309
+16 215.9618    5     309
+17 213.6303    6     309
+18 217.7272    7     309
+19 224.2957    8     309
+20 237.3142    9     309
+----------------------------
+
+id = 310
+   Reaction Days Subject
+21 199.0539    0     310
+22 194.3322    1     310
+23 234.3200    2     310
+24 232.8416    3     310
+25 229.3074    4     310
+26 220.4579    5     310
+27 235.4208    6     310
+28 255.7511    7     310
+29 261.0125    8     310
+30 247.5153    9     310
+----------------------------</code></pre>
 </div>
 </div>
-</div>
+<p>And there you have it!</p>
 
 
 <!-- -->
@@ -825,50 +943,66 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <input type="hidden" id="giscus-base-theme" value="light">
 <input type="hidden" id="giscus-alt-theme" value="dark"><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
-<div class="sourceCode" id="cb4" data-shortcodes="false"><pre class="sourceCode numberSource markdown number-lines code-with-copy"><code class="sourceCode markdown"><span id="cb4-1"><a href="#cb4-1"></a><span class="co">---</span></span>
-<span id="cb4-2"><a href="#cb4-2"></a><span class="an">title:</span><span class="co"> "Simpson's Paradox - A Simple Explanation"</span></span>
-<span id="cb4-3"><a href="#cb4-3"></a><span class="an">date:</span><span class="co"> 2024-03-08</span></span>
-<span id="cb4-4"><a href="#cb4-4"></a><span class="an">categories:</span><span class="co"> [concept, code, visualisation]</span></span>
-<span id="cb4-5"><a href="#cb4-5"></a><span class="an">image:</span><span class="co"> "R_small.jpeg"</span></span>
-<span id="cb4-6"><a href="#cb4-6"></a><span class="an">description:</span><span class="co"> "Simpson's Paradox is essentially an extreme form of confounding, characterised by a reversal of the effect estimate sign."</span></span>
-<span id="cb4-7"><a href="#cb4-7"></a><span class="co">---</span></span>
-<span id="cb4-8"><a href="#cb4-8"></a></span>
-<span id="cb4-9"><a href="#cb4-9"></a>For this - have 3 groups - honours, masters and PhD's. Have aggregated slope of cups of coffee vs words per minute typing being negative, but then disaggregated slope being positive within each group. Honours students will have highest WPM because by the time you get to being a PhD, you're exhausted and have typing-related RSI...</span>
-<span id="cb4-10"><a href="#cb4-10"></a></span>
-<span id="cb4-13"><a href="#cb4-13"></a><span class="in">```{r}</span></span>
-<span id="cb4-14"><a href="#cb4-14"></a><span class="co">#| label: setup</span></span>
-<span id="cb4-15"><a href="#cb4-15"></a><span class="co">#| message: false</span></span>
-<span id="cb4-16"><a href="#cb4-16"></a><span class="fu">library</span>(bayestestR)</span>
-<span id="cb4-17"><a href="#cb4-17"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb4-18"><a href="#cb4-18"></a></span>
-<span id="cb4-19"><a href="#cb4-19"></a><span class="co"># Simulate some data </span></span>
-<span id="cb4-20"><a href="#cb4-20"></a><span class="fu">set.seed</span>(<span class="dv">253445</span>)</span>
-<span id="cb4-21"><a href="#cb4-21"></a>dat <span class="ot">&lt;-</span> <span class="fu">simulate_simpson</span>(</span>
-<span id="cb4-22"><a href="#cb4-22"></a>  <span class="at">n =</span> <span class="dv">50</span>,</span>
-<span id="cb4-23"><a href="#cb4-23"></a>  <span class="at">r =</span> <span class="sc">-</span><span class="fl">0.5</span>,</span>
-<span id="cb4-24"><a href="#cb4-24"></a>  <span class="at">groups =</span> <span class="dv">3</span>,</span>
-<span id="cb4-25"><a href="#cb4-25"></a>  <span class="at">difference =</span> <span class="dv">2</span>,</span>
-<span id="cb4-26"><a href="#cb4-26"></a>  <span class="at">group_prefix =</span> <span class="st">"G_"</span></span>
-<span id="cb4-27"><a href="#cb4-27"></a>)</span>
-<span id="cb4-28"><a href="#cb4-28"></a>dat<span class="sc">$</span>V2 <span class="ot">&lt;-</span> <span class="fu">abs</span>(dat<span class="sc">$</span>V2<span class="sc">*</span><span class="dv">10</span>)</span>
-<span id="cb4-29"><a href="#cb4-29"></a><span class="co">#dat$V1 &lt;- abs(dat$V1)</span></span>
-<span id="cb4-30"><a href="#cb4-30"></a><span class="in">```</span></span>
-<span id="cb4-31"><a href="#cb4-31"></a></span>
-<span id="cb4-34"><a href="#cb4-34"></a><span class="in">```{r}</span></span>
-<span id="cb4-35"><a href="#cb4-35"></a><span class="co">#| label: plot_aggregated</span></span>
-<span id="cb4-36"><a href="#cb4-36"></a><span class="co">#| message: false</span></span>
-<span id="cb4-37"><a href="#cb4-37"></a><span class="fu">ggplot</span>(dat, <span class="fu">aes</span>(<span class="at">x =</span> V1, <span class="at">y =</span> V2)) <span class="sc">+</span> </span>
-<span id="cb4-38"><a href="#cb4-38"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span> </span>
-<span id="cb4-39"><a href="#cb4-39"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">15</span>)</span>
-<span id="cb4-40"><a href="#cb4-40"></a><span class="in">```</span></span>
-<span id="cb4-41"><a href="#cb4-41"></a></span>
-<span id="cb4-44"><a href="#cb4-44"></a><span class="in">```{r}</span></span>
-<span id="cb4-45"><a href="#cb4-45"></a><span class="co">#| label: plot_disaggregated</span></span>
-<span id="cb4-46"><a href="#cb4-46"></a><span class="co">#| message: false</span></span>
-<span id="cb4-47"><a href="#cb4-47"></a><span class="fu">ggplot</span>(dat, <span class="fu">aes</span>(<span class="at">x =</span> V1, <span class="at">y =</span> V2, <span class="at">color =</span> Group)) <span class="sc">+</span> </span>
-<span id="cb4-48"><a href="#cb4-48"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span> </span>
-<span id="cb4-49"><a href="#cb4-49"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">15</span>)</span>
-<span id="cb4-50"><a href="#cb4-50"></a><span class="in">```</span></span>
+<div class="sourceCode" id="cb7" data-shortcodes="false"><pre class="sourceCode numberSource markdown number-lines code-with-copy"><code class="sourceCode markdown"><span id="cb7-1"><a href="#cb7-1"></a><span class="co">---</span></span>
+<span id="cb7-2"><a href="#cb7-2"></a><span class="an">title:</span><span class="co"> "Easily view your data by a grouping variable"</span></span>
+<span id="cb7-3"><a href="#cb7-3"></a><span class="an">date:</span><span class="co"> 2024-03-22</span></span>
+<span id="cb7-4"><a href="#cb7-4"></a><span class="an">categories:</span><span class="co"> [code]</span></span>
+<span id="cb7-5"><a href="#cb7-5"></a><span class="an">image:</span><span class="co"> "R_small.jpeg"</span></span>
+<span id="cb7-6"><a href="#cb7-6"></a><span class="an">description:</span><span class="co"> "Use `by()` to view your data by a grouping variable."</span></span>
+<span id="cb7-7"><a href="#cb7-7"></a><span class="co">---</span></span>
+<span id="cb7-8"><a href="#cb7-8"></a></span>
+<span id="cb7-9"><a href="#cb7-9"></a>It is easy enough to view a dataframe in <span class="in">`RStudio`</span> by opening the dataframe in the viewer or printing the dataframe (or part of it) to the console. However, this can be messy if you want to quickly identify data by a grouping variable (usually the patient id). The <span class="in">`by()`</span> function can help you to do this. Let's illustrate its utility with the <span class="in">`sleepstudy`</span> dataset from the <span class="in">`lme4`</span> package. To start with I'll print the data for the first 3 subjects as one might.</span>
+<span id="cb7-10"><a href="#cb7-10"></a></span>
+<span id="cb7-11"><a href="#cb7-11"></a><span class="in">`sleepstudy |&gt; as_tibble() |&gt; print(n = 30)`</span></span>
+<span id="cb7-12"><a href="#cb7-12"></a></span>
+<span id="cb7-15"><a href="#cb7-15"></a><span class="in">```{r}</span></span>
+<span id="cb7-16"><a href="#cb7-16"></a><span class="co">#| label: setup</span></span>
+<span id="cb7-17"><a href="#cb7-17"></a><span class="co">#| message: false</span></span>
+<span id="cb7-18"><a href="#cb7-18"></a><span class="fu">library</span>(lme4)</span>
+<span id="cb7-19"><a href="#cb7-19"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb7-20"><a href="#cb7-20"></a><span class="co"># Load data</span></span>
+<span id="cb7-21"><a href="#cb7-21"></a><span class="fu">data</span>(<span class="st">"sleepstudy"</span>)</span>
+<span id="cb7-22"><a href="#cb7-22"></a>sleepstudy <span class="sc">|&gt;</span> <span class="fu">as_tibble</span>() <span class="sc">|&gt;</span> <span class="fu">print</span>(<span class="at">n =</span> <span class="dv">30</span>)</span>
+<span id="cb7-23"><a href="#cb7-23"></a><span class="in">```</span></span>
+<span id="cb7-24"><a href="#cb7-24"></a></span>
+<span id="cb7-25"><a href="#cb7-25"></a>But we can do this better with:</span>
+<span id="cb7-26"><a href="#cb7-26"></a></span>
+<span id="cb7-27"><a href="#cb7-27"></a><span class="in">`by(sleepstudy, sleepstudy$PATIENT_ID, identity)[1:3]`</span></span>
+<span id="cb7-28"><a href="#cb7-28"></a></span>
+<span id="cb7-29"><a href="#cb7-29"></a>Note that the <span class="in">`[1:3]`</span> indicates the range of group indices that you want to view.</span>
+<span id="cb7-30"><a href="#cb7-30"></a></span>
+<span id="cb7-33"><a href="#cb7-33"></a><span class="in">```{r}</span></span>
+<span id="cb7-34"><a href="#cb7-34"></a><span class="co">#| label: by()</span></span>
+<span id="cb7-35"><a href="#cb7-35"></a><span class="fu">by</span>(sleepstudy, sleepstudy<span class="sc">$</span>Subject, identity)[<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>]</span>
+<span id="cb7-36"><a href="#cb7-36"></a><span class="in">```</span></span>
+<span id="cb7-37"><a href="#cb7-37"></a></span>
+<span id="cb7-38"><a href="#cb7-38"></a>If you want to take this a step further, you can generalise this with a function that will allow you to quickly view the data in any range that you want, without having to continually copy and paste that line of code. Just call the function with your dataframe and group id names and the range of group indices that you want to view (interestingly while writing this function I worked out you don't even need the <span class="in">`by()`</span> function to achieve the same result).</span>
+<span id="cb7-39"><a href="#cb7-39"></a></span>
+<span id="cb7-40"><a href="#cb7-40"></a><span class="in">`print_groups(sleepstudy, Subject, 1, 3)`</span></span>
+<span id="cb7-41"><a href="#cb7-41"></a></span>
+<span id="cb7-44"><a href="#cb7-44"></a><span class="in">```{r}</span></span>
+<span id="cb7-45"><a href="#cb7-45"></a><span class="co">#| label: function</span></span>
+<span id="cb7-46"><a href="#cb7-46"></a><span class="co"># Create function</span></span>
+<span id="cb7-47"><a href="#cb7-47"></a>print_groups <span class="ot">&lt;-</span> <span class="cf">function</span>(df, id, index1, index2) {</span>
+<span id="cb7-48"><a href="#cb7-48"></a>  df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(df)</span>
+<span id="cb7-49"><a href="#cb7-49"></a>  ids_all <span class="ot">&lt;-</span>  <span class="fu">unique</span>(<span class="fu">eval</span>(<span class="fu">substitute</span>(id), df))</span>
+<span id="cb7-50"><a href="#cb7-50"></a>  ids_range <span class="ot">&lt;-</span> ids_all[index1<span class="sc">:</span>index2]</span>
+<span id="cb7-51"><a href="#cb7-51"></a>  <span class="cf">if</span> (index1 <span class="sc">&lt;=</span> <span class="fu">length</span>(ids_all) <span class="sc">&amp;</span> index2 <span class="sc">&lt;=</span> <span class="fu">length</span>(ids_all)) {</span>
+<span id="cb7-52"><a href="#cb7-52"></a>    <span class="cf">for</span> (id2 <span class="cf">in</span> ids_range) {</span>
+<span id="cb7-53"><a href="#cb7-53"></a>      <span class="fu">cat</span>(<span class="fu">paste0</span>(<span class="st">"id = "</span>, id2, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>))</span>
+<span id="cb7-54"><a href="#cb7-54"></a>      <span class="fu">print</span>(df[<span class="fu">eval</span>(<span class="fu">substitute</span>(id), df) <span class="sc">%in%</span> id2,])</span>
+<span id="cb7-55"><a href="#cb7-55"></a>      <span class="fu">cat</span>(<span class="st">"----------------------------</span><span class="sc">\n\n</span><span class="st">"</span>)</span>
+<span id="cb7-56"><a href="#cb7-56"></a>    }</span>
+<span id="cb7-57"><a href="#cb7-57"></a>  } <span class="cf">else</span> {</span>
+<span id="cb7-58"><a href="#cb7-58"></a>    <span class="fu">print</span>(<span class="st">"There aren't that many groups in your dataset"</span>)</span>
+<span id="cb7-59"><a href="#cb7-59"></a>  }</span>
+<span id="cb7-60"><a href="#cb7-60"></a>}</span>
+<span id="cb7-61"><a href="#cb7-61"></a></span>
+<span id="cb7-62"><a href="#cb7-62"></a><span class="co"># Use function</span></span>
+<span id="cb7-63"><a href="#cb7-63"></a><span class="fu">print_groups</span>(sleepstudy, Subject, <span class="dv">1</span>, <span class="dv">3</span>)</span>
+<span id="cb7-64"><a href="#cb7-64"></a><span class="in">```</span></span>
+<span id="cb7-65"><a href="#cb7-65"></a></span>
+<span id="cb7-66"><a href="#cb7-66"></a>And there you have it!</span>
 </code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
