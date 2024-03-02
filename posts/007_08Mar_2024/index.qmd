@@ -5,9 +5,9 @@ categories: [concept, code, visualisation]
 description: "Simpson's Paradox is essentially an extreme form of confounding, characterised by a reversal of the effect estimate sign."
 ---
 
-A thought exercise this week in possible ways to interpret the following plot. This comes from  hypothetical (simulated) data that purports to assess research students productivity (measured by how quickly they can type) as a function of the number of standard cups of coffee they drink in a day.
+A thought exercise this week in possible ways to interpret the following plot. This comes from hypothetical (simulated) data that purports to assess research students productivity (measured by how quickly they can type) as a function of the number of standard cups of coffee they drink in a day.
 
-::: {.callout-note}
+::: callout-note
 I am no way suggesting that these findings apply to MSNI research students who no doubt remain highly productive throughout their research careers.
 :::
 
@@ -46,7 +46,7 @@ ggplot(dat, aes(x = V1, y = V2)) +
   theme_bw(base_size = 18)
 ```
 
-So what is this scatterplot showing? Well there appears to be a relationship between coffee drinking and typing speed - drinking more cups of coffee seems to be associated with reduced typing speed (note that I am not suggesting that drinking more coffee *causes* reduced typing speed, merely that there is a correlation). Fitting a regression model to these data produces a best-fitting line with a negative slope or coefficient. It is interesting though - is this direction of 'effect' what one might reasonably expect? Perhaps, but my intuition would be that drinking more coffee might naturally correlate with a faster typing ability (don't forget I've made up the data to suit the story I'm telling - I can only guess as to whether these associations are real or not). 
+So what is this scatterplot showing? Well there appears to be a relationship between coffee drinking and typing speed - drinking more cups of coffee seems to be associated with reduced typing speed (note that I am not suggesting that drinking more coffee *causes* reduced typing speed, merely that there is a correlation). Fitting a regression model to these data produces a best-fitting line with a negative slope or coefficient. It is interesting though - is this direction of 'effect' what one might reasonably expect? Perhaps, but my intuition would be that drinking more coffee might naturally correlate with a faster typing ability (don't forget I've made up the data to suit the story I'm telling - I can only guess as to whether these associations are real or not).
 
 So what else could be going on to produce the pattern that you see? Well, you might then naturally think that there is some other 'lurking' variable (i.e. a confounder) that is distorting or masking the true relationship between coffee consumption and typing speed leading to the association that we actually observe. And, you'd be right...
 
@@ -66,21 +66,12 @@ ggplot(dat, aes(x = V1, y = V2, color = `Student Type`)) +
   theme(legend.position = c(1,1), legend.justification = c(1.1,1.1))
 ```
 
-You might have come across  **Simpson's Paradox** in your statistical reading - it's a fairly common epidemiological bias but it can have important implications for the interpretation of evidence from observational studies, including yours. And so to that end it's not purely an exercise for academic interest. **Simpson's Paradox** is a version of **Lord's Paradox** (differentiated by whether exposure and outcome variables are categorical, or continuous, or a combination of both) but at the end of the day they are both a type of **Reversal Paradox**. Regardless of the variable type, a common characteristic is shared in the **Reversal Paradox**: the association between two variables can be reversed, diminished, or enhanced when another variable (confounder) is statistically controlled for. 
+You might have come across **Simpson's Paradox** in your statistical reading - it's a fairly common epidemiological bias but it can have important implications for the interpretation of evidence from observational studies, including yours. And so to that end it's not purely an exercise for academic interest. **Simpson's Paradox** is a version of **Lord's Paradox** (differentiated by whether exposure and outcome variables are categorical, or continuous, or a combination of both) but at the end of the day they are both a type of **Reversal Paradox**. Regardless of the variable type, a common characteristic is shared in the **Reversal Paradox**: the association between two variables can be reversed, diminished, or enhanced when another variable (confounder) is statistically controlled for.
 
-::: {.callout-important}
+::: callout-important
 Observed associations at the *aggregated* level - when important underlying group structures aren't realised - or worse still, ignored - can potentially reverse when the data are *disaggregated* and those underlying group structures are considered in the analysis. In other words, the observed association *across* all groups can be quite different to that *within* each group. **This is Simpson's Paradox in a nutshell.**
 :::
 
-A canonical example of Simpson's Paradox is the relationship between body mass and longevity across different species of animals. In general, across all animal species, larger animals (elephants, whales, etc) tend to live longer than smaller animals (rodents, birds, etc). There are of course exceptions to that rule - I'm looking at you Mr Tortoise. But when you look within species, an inverse correlation typically exists - heavier does not usually mean a longer life.
+A canonical example of Simpson's Paradox is the relationship between body mass and longevity across different species of animals. In general, across all animal species, larger animals (elephants, whales, etc) tend to live longer than smaller animals (rodents, birds, etc). There are of course exceptions to that rule - I'm looking at you Mr Tortoise. But when you look within species, an inverse correlation typically exists - being heavier tends to be associated with a shorter life.
 
 These examples highlight the importance of understanding your data and the research questions you are asking. Prior knowledge of potential variable relationships (measured and unmeasured) and underlying causal theory should be the primary considerations guiding you in the modelling of your data. Simply following variable selection techniques based on statistical criteria can still lead to models that are consistent and replicable, but also very easily lead to erroneous conclusions because you haven't considered a pesky 'lurking' factor that can leave you with the equivalent of statistical and scientific egg on your face.
-
-
-
-
-
-
-
-
-
