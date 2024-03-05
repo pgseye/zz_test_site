@@ -6,55 +6,327 @@ image: "R_small.jpeg"
 description: "Restricted cubic splines give you the ultimate flexiblity in modelling continuous predictors."
 ---
 
-Follow guide in accompanying splines.R script
+# Some Background
 
-`sleepstudy |> as_tibble() |> print(n = 30)`
+Have you heard the term **restricted cubic spline** (RCS) and thought 'that's just seems too hard but I should learn about it one day' and then stuck to modelling your continuous predictor as you always do, assuming it has a linear relationship with the outcome? Well I hope that by the end of this post you have a better basic understanding of what RCS's actually are, how they give you so much more flexibility in your modelling toolkit, and above all else, how they are really not that hard to use.
+
+When you want to explore the association between a continuous predictor variable and an outcome (of any form really - binary, count, continuous) you have choices to make about how you parameterise that predictor. In fact, one could consider a hierarchy of such choices that range from downright egregious through to 'we'll just do it how it's always done' through to what is becoming thought more of these days as 'best-practice' in statistical modelling. These approaches include:
+
+-   Categorising the predictor - <FONT COLOR = red>Egregious</FONT COLOR>.
+
+-   Assuming the predictor has a linear relationship with the outcome (or its link function if the outcome is not continuous) - <FONT COLOR = red>'We'll just do it how it's always done'</FONT COLOR>.
+
+-   Assuming the predictor has a non-linear relationship with the outcome and using a piece-wise model (segmented regression) to model smaller segments of the data where linearity does in fact hold - <FONT COLOR = red>A better alternative than assuming linearity</FONT COLOR>.
+
+-   Assuming the predictor has a non-linear relationship with the outcome and using polynomial (e.g. quadratic/cubic/etc) regression - <FONT COLOR = red>Again, a better alternative than assuming linearity</FONT COLOR>.
+
+-   Assuming the predictor has a non-linear relationship with the outcome and using RCS's - <FONT COLOR = red>arguably 'best practice'</FONT COLOR>.
+
+::: callout-important
+Don't forget it's always a good idea to plot your data first to visualise the relationship (using a lowess smoother helps). There is no need to worry about non-linearity if in fact the relationship between your predictor and outcome isn't - just model it as linear and you're done.
+:::
+
+Now, having made that point, let me follow by saying that this is relatively easy when you have a continuous predictor and a continuous outcome. But what do you do with other outcome types - for example, in the case of a binary outcome (successes/failures) your outcome just consists of a bunch of `0's` and `1's`. This is more challenging to visualise but it is possible. Here, a good way to visualise your observed data is to *'bin'* the predictor into discrete categories (arbitrarily decided by you), counting the number of successes out of the total in each bin - this will give the proportion of successes - i.e. the *observed* probability of success in each bin. You then convert each proportion into its equivalent logit (log-odds) and plot this (on the `Y` axis) against the mid-point of each bin of the predictor on the `X` axis. If the best-fitting line in that plot is approximately linear, then the assumption of linearity of the continuous predictor with the binary outcome is upheld.
+
+Well I did say this was more challenging...
+
+Ultimately, visualise your data where it's easy enough to do so (which will primarily be the continuous predictor vs continuous outcome case). But when this isn't so straightforward or practical, as in the binary outcome case above, we can in lieu use model-fitting statistics to help us decide whether incorporating non-linear predictor terms in our model is of value or not. In the basic comparison we fit two models - one assuming linearity and one assuming non-linearity (via one of the other methods) and let either some information criterion (e.g. the AIC), or a likelihood ratio test guide us as to the better fit. So it is certainly still possible to incorporate non-linear terms in a statistical model without having first plotted that data. I'll illustrate this shortly.
+
+Now let's have a look at some simulated data that demonstrates a non-linear relationship of the predictor with the outcome, and how these different approaches may be applied to model this.
+
+# The Data
+
+We're going to simulate a U-shaped relationship between `X` and `Y` using a simple cosine function. A plot of the data shows:
 
 ```{r}
 #| label: setup
 #| message: false
-library(lme4)
+library(splines)
 library(dplyr)
-# Load data
-data("sleepstudy")
-sleepstudy |> as_tibble() |> print(n = 30)
+library(tidyr)
+library(emmeans)
+library(paletteer)
+library(flextable)
+library(ggplot2)
+# Define function - use this to construct a curved relationship
+n <- 100
+x <- seq(0, 100, length.out = n)
+fx <- cos(2 * pi * x)
+# Add a bit of noise
+set.seed(1)
+y <- fx + rnorm(n, sd = 0.2)
+dat <- data.frame(x, y)
+# Plot
+ggplot(dat, aes(x = x, y = y)) +
+  geom_point(size = 3) +
+  xlab("x") + ylab("y") + 
+  theme_bw(base_size = 20)
 ```
 
-But we can do this better with:
+## Lowess Smoother
 
-`by(sleepstudy, sleepstudy$PATIENT_ID, identity)[1:3]`
-
-Note that the `[1:3]` indicates the range of group indices that you want to view.
+I mentioned using a lowess smoother above to help visualise any potential association in your data. Lowess regression is a type of non-parametric regression method that fits a smooth curve to your data by calculating a weighted average of `Y` across a moving *span* (or window) of `X`. It is a great initial exploratory method for looking at your data. If we fit a lowess curve to these data, we can see the following:
 
 ```{r}
-#| label: by()
-by(sleepstudy, sleepstudy$Subject, identity)[1:3]
+#| label: lowess
+#| message: false
+# Plot lowess
+ggplot(dat, aes(x = x, y = y)) +
+  geom_point(size = 3) +
+  geom_smooth(method = "loess", se = F, linewidth = 2, color = "#1F77B4FF") + 
+  xlab("x") + ylab("y") + 
+  theme_bw(base_size = 20)
 ```
 
-If you want to take this a step further, you can generalise this with a function that will allow you to quickly view the data in any range that you want, without having to continually copy and paste that line of code. Just call the function with your dataframe and group id names and the range of group indices that you want to view (interestingly while writing this function I worked out you don't even need the `by()` function to achieve the same result).
+# Modelling Approaches
 
-`print_groups(sleepstudy, Subject, 1, 3)`
+Now let's consider each of the treatments of the predictor described above in modelling the association between `X` and `Y`.
+
+## Categorising the Predictor
+
+I'm not even really going to talk about this - it's very rarely a good thing to categorise a continuous variable. The loss of information and power and introduction of spurious threshold effects (e.g., by grouping 20- to 29-year-olds in one category and 30- to 39-year-olds in another, we create the impression that 20- and 29-year-olds tend to be more alike than 29- and 30-year-olds) are just some of the reasons why this is a bad idea.
+
+## Assuming Linearity
+
+If you bothered to plot the data you would know the association between `X` and `Y` was non-linear. But plenty of people don't bother to do this and just go ahead and fit a model under the assumption of linearity. If we erroneously did this, the best-fitting regression line would appear as in the following plot. Clearly, for these data, this is a bad modelling choice leading one to think there is no association at all between `X` and `Y`.
 
 ```{r}
-#| label: function
-# Create function
-print_groups <- function(df, id, index1, index2) {
-  df <- data.frame(df)
-  ids_all <-  unique(eval(substitute(id), df))
-  ids_range <- ids_all[index1:index2]
-  if (index1 <= length(ids_all) & index2 <= length(ids_all)) {
-    for (id2 in ids_range) {
-      cat(paste0("id = ", id2, "\n"))
-      print(df[eval(substitute(id), df) %in% id2,])
-      cat("----------------------------\n\n")
-    }
-  } else {
-    print("There aren't that many groups in your dataset")
-  }
-}
-
-# Use function
-print_groups(sleepstudy, Subject, 1, 3)
+#| label: linear
+# Model
+mod1 <- lm(y ~ x, data = dat)
+# Predict Y from model
+dat$mod1_pred <- predict(mod1, dat)
+# Plot linear
+ggplot(dat, aes(x = x, y = mod1_pred)) +
+  geom_line(linewidth = 2, color = "deeppink") + 
+  geom_point(data = dat, aes(x = x, y = y), size = 3) +
+  xlab("x") + ylab("y") + 
+  theme_bw(base_size = 20)
 ```
 
-And there you have it!
+## Assuming Non-Linearity - Segmented Regression
+
+Let's now look at a *piecewise* or *linear spline* model. Another name for this is segmented regression - a method in which the predictor is partitioned into intervals and a separate line segment is fit to each interval. Essentially, we are fitting multiple, linked linear regression models. To do this we need to first decide where sensible threshold/s exist in the data for us to partition the predictor, allowing approximate linearity within those partitions. In this case, if we look back at the lowess plot, the vertex of the curve represents a reasonable threshold and so we might decide to use a predictor cut-point at `X = 50`.
+
+I won't go into the details of the parameterisation (it's there in the code), but if we fit such a model and then make model predictions from that, we get the following plot. Clearly this is a much better representation of the actual trend in the data, compared to assuming a linear relationship.
+
+```{r}
+#| label: piecewise
+# Create a new variable corresponding to change in slope (using 50 as threshold)
+dat <- dat |> 
+  mutate(x50 = (x - 50) * (x >= 50))  # will be 0 if x < 50
+# Model
+mod2 <- lm(y ~ x + x50, data = dat)
+# Predict Y from model
+dat$mod2_pred <- predict(mod2, dat)
+# Plot piecewise
+ggplot(dat, aes(x = x, y = mod2_pred)) +
+  geom_line(linewidth = 2, color = "chartreuse") + 
+  geom_point(data = dat, aes(x = x, y = y), size = 3) +
+  xlab("x") + ylab("y") + 
+  theme_bw(base_size = 20)
+```
+
+## Assuming Non-Linearity - Polynomial Regression
+
+Polynomial regression takes this idea further by allowing smoothness to be incorporated into the modelling of the non-linearity. It is a form of regression analysis in which the association between `X` and `Y` is modelled as an *nth* degree polynomial in `X`. It is important to keep in mind that while the model fits a non-linear curve to the data, the statistical estimation of the model is still considered linear (in the unknown parameters). This differentiates this and models with RCS splines from true non-linear models. See [here](https://www.graphpad.com/guides/prism/latest/curve-fitting/reg_the-distinction-between-linear.htm) for some further explanation.
+
+So now let's fit a quadratic model to these data. It doesn't look like too bad a fit either, does it.
+
+```{r}
+#| label: poly
+# Model - quadratic
+mod3 <- lm(y ~ x + I(x^2), data = dat)
+# Predict Y from models
+dat$mod3_pred <- predict(mod3, dat)
+# Plot piecewise
+ggplot(dat, aes(x = x, y = mod3_pred)) +
+  geom_line(linewidth = 2, color = "chocolate1") + 
+  geom_point(data = dat, aes(x = x, y = y), size = 3) +
+  xlab("x") + ylab("y") + 
+  theme_bw(base_size = 20)
+```
+
+## Assuming Non-Linearity - RCS's
+
+### The Basics of RCS's
+
+I'd like to make an important first point in that RCS's can be applied in any statistical model that linearly relates a predictor to an outcome. We have been emphasising continuous (predictor) vs continuous (outcome) associations because these are the simplest to conceptualise. But the same applies to any generalised linear or survival model. 
+
+::: callout-note
+Generalised linear models use link functions to linearise a predictor on the link scale and it is that scale that we are interested in knowing whether the predictor has an approximately linear relationship with the outcome to ensure model assumptions are met. E.g. for binary outcomes we want to know if the association of the continuous predictor and the logit (log-odds) of the outcome is linear or not. We don't so much care about the association of the continuous predictor with the odds or the probability of the outcome because we know these to be non-linear. I will hopefully elaborate on this idea in a future post.
+:::
+
+The intuition behind RCS's is that the continuous predictor is broken into multiple intervals at locations called *knots* and for each interval the association between the predictor and the outcome is estimated separately. The association within each interval can be estimated with increasing complexity - from the linear splines that we have already explored in segmented regression, to cubic splines (polynomials) as we describe them here. I won't go into detail of the underlying maths because it does get complicated, but a series of *spline basis functions* are used to 'build' the resulting cubic spline within each interval (please see the papers below for more detail.) The cubic splines within each interval are *restricted* in a couple of ways: firstly, adjacent splines join smoothly at knot locations because their slopes are constrained to be equal at these boundaries, and secondly, the spline functions are constrained to be linear in the tails (i.e., before the ﬁrst and after the last knot)
+
+### Fitting RCS's to the Current Data
+
+There are multiple packages in `R` that allow you to fit RCS's to your data but my go to is the `ns()` function in the `splines` package. I would encourage you to look at the papers listed below if you want to explore alternatives. Using `ns()`, the way to specify a RCS term on the relevant predictor in your model is really quite simple. The main argument that you need to specify is the degrees of freedom (`df`) which is equivalent to the number of different intervals that you want to model in your predictor-outcome relationship. This also corresponds to the number of RCS coefficients in your model output. However, as alluded to above, this DOES NOT represent the number of internal knots that the model uses under the hood to achieve this - which is always one less. So the take home here is that if you want to model 4 intervals of your predictor for which you feel the association differs with your outcome, you specify `df = 4` which signals to `ns()` that it needs to define 3 internal knots.
+
+Now the placement of the knots can also be specified, but to be honest I've never felt the need to do this. For the most part things seem to work fine with `ns()` default placement of knots at quantiles of the distribution of the predictor. For example, if you specified `df = 4`, then 3 internal knots would be placed at the 25th, 50th and 75th percentiles of the distribution of `X`.
+
+So the basic form of a linear model with an `ns()` term included is then:
+
+`lm(y ~ ns(x, df = 4), data = dat)`
+
+and if you wish to check at what actual values of your predictor `ns()` has placed the knots, you can use:
+
+`attr(ns(x, df = 4), "knots")`
+
+For an interesting comparison, we are now going to fit 4 models with RCS's:
+
+-   2 knots (df = 3)
+
+-   3 knots (df = 4)
+
+-   4 knots (df = 5)
+
+-   20 knots (df = 21)
+
+The resultant model predictions are shown below.
+
+```{r}
+#| label: rcs plots
+# Model - rcs with 2 knots
+mod4a <- lm(y ~ ns(x, df = 3), data = dat)
+# Model - rcs with 3 knots
+mod4b <- lm(y ~ ns(x, 4), data = dat)
+# Model - rcs with 4 knots
+mod4c <- lm(y ~ ns(x, 5), data = dat)
+# Model - rcs with 20 knots
+mod4d <- lm(y ~ ns(x, 21), data = dat)
+# Predict Y from models
+dat$mod4a_pred <- predict(mod4a, dat)
+dat$mod4b_pred <- predict(mod4b, dat)
+dat$mod4c_pred <- predict(mod4c, dat)
+dat$mod4d_pred <- predict(mod4d, dat)
+# Convert to long format for easier plotting
+dat_long <- dat |> 
+  select(1:2, 7:10) |> 
+  pivot_longer(3:6)
+# Plot rcs 
+ggplot() +
+  geom_line(data = dat_long, aes(x = x, y = value, color = name), linewidth = 2) + 
+  geom_point(data = dat, aes(x = x, y = y), size = 3) +
+  scale_color_paletteer_d("ggsci::category20_d3", name = "RCS - # of knots", labels = c("2", "3", "4", "20")) +
+  xlab("x") + ylab("y") + 
+  theme_bw(base_size = 20) +
+  theme(legend.position = c(1,1), legend.justification = c(2.8,1.1))
+```
+
+What can we gather from this. Well there is no doubt some subjectivity to the interpretation of these plots, but my take is that the RCS with 2 internal knots is actually very similar to the quadratic (polynomial) model - these are both quite 'smoothed'. We then start to see a little more flexibility in the model fit for the models with 3 and 4 internal knots - and really I'd be hard-pushed to say they're that different. We can unequivocally say, though, that the model with 20 internal knots looks like it's picking up a lot of noise in the data - this is a classic case of model over-fitting and we want to avoid this as much as possible. The main issue with overfit models is that they appear to work very well with the data that they were fit to - the predictions are excellent! But the catch is that the model has been fit to the idiosyncrasies of that specific dataset and consequently doesn't generalise well to any other dataset that you might want to test your model on - for these new data the predictions are now terrible! We should always keep this in mind when we are formulating models to fit to our data, irrespective of whether we are using RCS's or not. 
+
+When we are using RCS's though, for most applications, three to five internal knots strike a nice balance between complicating the model needlessly and fitting data pleasingly. For these data, it would not be unreasonable to suggest that the models with 3 or 4 internal knots capture the fit nicely (one could argue that the 2-knot model is a little underfit, and of course the 20 knot model is grossly overfit). So, from purely eyeballing the plots, I would tend to settle on the 3-knot model. 
+
+### Model Comparisons
+
+We can add some statistical rigour to this intuition by calculating model-fit statistics, and I have done this using the [AIC](https://en.wikipedia.org/wiki/Akaike_information_criterion) for all the models we have considered in this post. When we use the AIC to help decide on model fit we are looking for (relatively) lower (i.e. more negative numbers). When we calculate these we can see some interesting results. The model assuming linearity is comparatively a terrible fit (`AIC = 227`). The piecewise model isn't too bad though (`AIC = -23`) if we are looking to the RCS models as a gold standard. The quadratic model has a comparatively poorer fit (`AIC = 31`) and this is actually fairly similar to the 2-knot RCS model (`AIC = 11` - remember we said they looked similar). The 3-knot and greater RCS models seem to perform the best, but this is really a case of diminishing returns. We can fairly justify either a 3- (`AIC = -34`) or 4-knot (`AIC = -38`) model and I don't think any reasonable reviewer would criticise you for either choice.
+
+```{r}
+#| label: rcs aic
+# AIC for each model
+mods_aic <- data.frame(AIC(mod1, mod2, mod3, mod4a, mod4b, mod4c, mod4d))
+mods_aic <- tibble::rownames_to_column(mods_aic, var = "Model")
+mods_aic <- mods_aic |> 
+  select(-df) |> 
+  mutate(Model = case_when(Model == "mod1" ~ "Linear Regression",
+                           Model == "mod2" ~ "Segmented Regression",
+                           Model == "mod3" ~ "Polynomial Regression",
+                           Model == "mod4a" ~ "RCS - 2 knots",
+                           Model == "mod4b" ~ "RCS - 3 knots",
+                           Model == "mod4c" ~ "RCS - 4 knots",
+                           Model == "mod4d" ~ "RCS - 20 knots"))
+mods_aic
+
+```
+
+### Interpretation and Presentation of your Results
+
+Ok, so we're nearly done. You've done the hard work of recognising your predictor has a non-linear relationship with your outcome, assessed multiple approaches to modelling that non-linearity and settled on a RCS with 3 knots on the predictor as the best-fitting model. You excitedly run your model and get the following output:
+
+```{r}
+#| label: model output
+#| tbl-cap: Model Output
+# Model - rcs with 3 knots
+mod4b <- lm(y ~ ns(x, 4), data = dat)
+# Format model results in a table
+mod4b |> gtsummary::tbl_regression()
+```
+
+WTH?! What does that all mean? Paul, what are you doing to me? I just want the simple output that I'm used to where I can say that a one-unit change in my predictor corresponds to some change in my outcome!
+
+I apologise for my facetiousness - no doubt you have cottoned on to the fact that you when you specifically model a non-linear association between two variables, there is no longer any constancy in the relationship between the two variables. A one-unit change in `X` will give a different change in `Y` depending on the values of `X`.
+
+So, what to do? First recognise that the RCS coefficients presented to you in a regression output are essentially useless from an interpretation point of view. You can't easily use these to describe the association between `X` and `Y` in reporting your results. 
+
+The general approach to interpretation and reporting of results in the presence of non-linearity in a regression model is to pick salient values (biological, clinical) of `X` to predict model-estimated values of `Y`. You can quite easily calculate model-estimated means and differences using our friend `emmeans` which I described to you in an earlier post.
+
+For illustrative purposes, let's say we're interested in knowing the model-estimated values of `Y` corresponding to `X` values of 20, 30, 50 and 60. We can estimate these values and differences (contrasts) of interest using `emmeans`.
+
+```{r}
+#| label: emmeans
+#| tbl-cap: Estimated Marginal Means
+# Plot rcs 
+ggplot() +
+  geom_line(data = dat, aes(x = x, y = mod4b_pred), color = "#EE8635", linewidth = 2) + 
+  geom_point(data = dat, aes(x = x, y = y), size = 3) +
+  geom_vline(xintercept = c(20,30,50,60), color = "red", linetype = "dotted", linewidth = 1) +
+  xlab("x") + ylab("y") + 
+  theme_bw(base_size = 20)
+# emmeans
+emmeans(mod4b, ~ x, at = list(x = c(20,30,50,60))) |> 
+  data.frame() |> 
+  select(-df) |> 
+  rename("X" = "x",
+         "Emmean (Y)" = "emmean",
+         "95% C.I. (lower)" = "lower.CL",
+         "95% C.I. (upper)" = "upper.CL") |> 
+  flextable() |> 
+  colformat_double(j = c(2:5), digits = 3, na_str = "N/A") |>
+  set_table_properties(layout = "autofit") |> 
+  height(height = 1, unit = "cm") |> 
+  hrule(rule = "atleast", part = "header") |> 
+  align(align = "center", part = "body") |>
+  bg(bg = "white", part = "all") |> 
+  flextable::font(fontname = "Consolas", part = "all") |>
+  theme_vanilla()
+```
+
+```{r}
+#| label: contrasts
+#| tbl-cap: Contrasts of Estimated Marginal Means
+# contrasts
+emm <- emmeans(mod4b, ~ x, at = list(x = c(20,30,50,60)))
+custom <- list(`Change in Y corresponding to change in X from 20 to 30` = c(-1,1,0,0),
+               `Change in Y corresponding to change in X from 50 to 60` = c(0,0,-1,1))
+contrast(emm, custom) |> 
+  summary(infer = T) |> 
+  data.frame() |> 
+  select(c(-df, -t.ratio)) |> 
+  rename("Contrast" = "contrast",
+         "Estimate" = "estimate",
+         "95% C.I. (lower)" = "lower.CL",
+         "95% C.I. (upper)" = "upper.CL",
+         "p" = "p.value") |> 
+  flextable() |> 
+  colformat_double(digits = 3, na_str = "N/A") |>
+  set_table_properties(layout = "autofit") |> 
+  height(height = 1, unit = "cm") |> 
+  hrule(rule = "atleast", part = "header") |> 
+  align(align = "center", part = "body") |>
+  bg(bg = "white", part = "all") |> 
+  flextable::font(fontname = "Consolas", part = "all") |>
+  theme_vanilla()
+```
+
+That's probably enough on RCS's for now - this post has turned out longer than I initially anticipated. I hope you have found it helpful and above all, found some motivation to using RCS's in your modelling endeavours if you are not already. 
+
+### Extra Reading
+
+If you want to dive a little deeper into RCS's than we've done here, I can thoroughly recommend the following 3 papers:
+
+[Modeling non-linear relationships in epidemiological data: The application and interpretation of spline models](https://www.frontiersin.org/articles/10.3389/fepid.2022.975380/full)
+
+[Cubic splines to model relationships between continuous variables and outcomes: a guide for clinicians](https://www.nature.com/articles/s41409-019-0679-x)
+
+[A review of spline function procedures in R](https://bmcmedresmethodol.biomedcentral.com/articles/10.1186/s12874-019-0666-3)

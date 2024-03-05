@@ -104,6 +104,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-label": "Search"
   }
 }</script>
+<link href="../../site_libs/tabwid-1.1.3/tabwid.css" rel="stylesheet">
+<script src="../../site_libs/tabwid-1.1.3/tabwid.js"></script>
 
 
 <link rel="stylesheet" href="../../styles.css">
@@ -143,7 +145,32 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <!-- sidebar -->
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#some-background" id="toc-some-background" class="nav-link active" data-scroll-target="#some-background"><span class="header-section-number">1</span> Some Background</a></li>
+  <li><a href="#the-data" id="toc-the-data" class="nav-link" data-scroll-target="#the-data"><span class="header-section-number">2</span> The Data</a>
+  <ul class="collapse">
+  <li><a href="#lowess-smoother" id="toc-lowess-smoother" class="nav-link" data-scroll-target="#lowess-smoother"><span class="header-section-number">2.1</span> Lowess Smoother</a></li>
+  </ul></li>
+  <li><a href="#modelling-approaches" id="toc-modelling-approaches" class="nav-link" data-scroll-target="#modelling-approaches"><span class="header-section-number">3</span> Modelling Approaches</a>
+  <ul class="collapse">
+  <li><a href="#categorising-the-predictor" id="toc-categorising-the-predictor" class="nav-link" data-scroll-target="#categorising-the-predictor"><span class="header-section-number">3.1</span> Categorising the Predictor</a></li>
+  <li><a href="#assuming-linearity" id="toc-assuming-linearity" class="nav-link" data-scroll-target="#assuming-linearity"><span class="header-section-number">3.2</span> Assuming Linearity</a></li>
+  <li><a href="#assuming-non-linearity---segmented-regression" id="toc-assuming-non-linearity---segmented-regression" class="nav-link" data-scroll-target="#assuming-non-linearity---segmented-regression"><span class="header-section-number">3.3</span> Assuming Non-Linearity - Segmented Regression</a></li>
+  <li><a href="#assuming-non-linearity---polynomial-regression" id="toc-assuming-non-linearity---polynomial-regression" class="nav-link" data-scroll-target="#assuming-non-linearity---polynomial-regression"><span class="header-section-number">3.4</span> Assuming Non-Linearity - Polynomial Regression</a></li>
+  <li><a href="#assuming-non-linearity---rcss" id="toc-assuming-non-linearity---rcss" class="nav-link" data-scroll-target="#assuming-non-linearity---rcss"><span class="header-section-number">3.5</span> Assuming Non-Linearity - RCS’s</a>
+  <ul class="collapse">
+  <li><a href="#the-basics-of-rcss" id="toc-the-basics-of-rcss" class="nav-link" data-scroll-target="#the-basics-of-rcss"><span class="header-section-number">3.5.1</span> The Basics of RCS’s</a></li>
+  <li><a href="#fitting-rcss-to-the-current-data" id="toc-fitting-rcss-to-the-current-data" class="nav-link" data-scroll-target="#fitting-rcss-to-the-current-data"><span class="header-section-number">3.5.2</span> Fitting RCS’s to the Current Data</a></li>
+  <li><a href="#model-comparisons" id="toc-model-comparisons" class="nav-link" data-scroll-target="#model-comparisons"><span class="header-section-number">3.5.3</span> Model Comparisons</a></li>
+  <li><a href="#interpretation-and-presentation-of-your-results" id="toc-interpretation-and-presentation-of-your-results" class="nav-link" data-scroll-target="#interpretation-and-presentation-of-your-results"><span class="header-section-number">3.5.4</span> Interpretation and Presentation of your Results</a></li>
+  <li><a href="#extra-reading" id="toc-extra-reading" class="nav-link" data-scroll-target="#extra-reading"><span class="header-section-number">3.5.5</span> Extra Reading</a></li>
+  </ul></li>
+  </ul></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -185,176 +212,929 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p>Follow guide in accompanying splines.R script</p>
-<p><code>sleepstudy |&gt; as_tibble() |&gt; print(n = 30)</code></p>
+<section id="some-background" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Some Background</h1>
+<p>Have you heard the term <strong>restricted cubic spline</strong> (RCS) and thought ‘that’s just seems too hard but I should learn about it one day’ and then stuck to modelling your continuous predictor as you always do, assuming it has a linear relationship with the outcome? Well I hope that by the end of this post you have a better basic understanding of what RCS’s actually are, how they give you so much more flexibility in your modelling toolkit, and above all else, how they are really not that hard to use.</p>
+<p>When you want to explore the association between a continuous predictor variable and an outcome (of any form really - binary, count, continuous) you have choices to make about how you parameterise that predictor. In fact, one could consider a hierarchy of such choices that range from downright egregious through to ‘we’ll just do it how it’s always done’ through to what is becoming thought more of these days as ‘best-practice’ in statistical modelling. These approaches include:</p>
+<ul>
+<li><p>Categorising the predictor - <font color="red">Egregious</font>.</p></li>
+<li><p>Assuming the predictor has a linear relationship with the outcome (or its link function if the outcome is not continuous) - <font color="red">‘We’ll just do it how it’s always done’</font>.</p></li>
+<li><p>Assuming the predictor has a non-linear relationship with the outcome and using a piece-wise model (segmented regression) to model smaller segments of the data where linearity does in fact hold - <font color="red">A better alternative than assuming linearity</font>.</p></li>
+<li><p>Assuming the predictor has a non-linear relationship with the outcome and using polynomial (e.g.&nbsp;quadratic/cubic/etc) regression - <font color="red">Again, a better alternative than assuming linearity</font>.</p></li>
+<li><p>Assuming the predictor has a non-linear relationship with the outcome and using RCS’s - <font color="red">arguably ‘best practice’</font>.</p></li>
+</ul>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Don’t forget it’s always a good idea to plot your data first to visualise the relationship (using a lowess smoother helps). There is no need to worry about non-linearity if in fact the relationship between your predictor and outcome isn’t - just model it as linear and you’re done.</p>
+</div>
+</div>
+<p>Now, having made that point, let me follow by saying that this is relatively easy when you have a continuous predictor and a continuous outcome. But what do you do with other outcome types - for example, in the case of a binary outcome (successes/failures) your outcome just consists of a bunch of <code>0's</code> and <code>1's</code>. This is more challenging to visualise but it is possible. Here, a good way to visualise your observed data is to <em>‘bin’</em> the predictor into discrete categories (arbitrarily decided by you), counting the number of successes out of the total in each bin - this will give the proportion of successes - i.e.&nbsp;the <em>observed</em> probability of success in each bin. You then convert each proportion into its equivalent logit (log-odds) and plot this (on the <code>Y</code> axis) against the mid-point of each bin of the predictor on the <code>X</code> axis. If the best-fitting line in that plot is approximately linear, then the assumption of linearity of the continuous predictor with the binary outcome is upheld.</p>
+<p>Well I did say this was more challenging…</p>
+<p>Ultimately, visualise your data where it’s easy enough to do so (which will primarily be the continuous predictor vs continuous outcome case). But when this isn’t so straightforward or practical, as in the binary outcome case above, we can in lieu use model-fitting statistics to help us decide whether incorporating non-linear predictor terms in our model is of value or not. In the basic comparison we fit two models - one assuming linearity and one assuming non-linearity (via one of the other methods) and let either some information criterion (e.g.&nbsp;the AIC), or a likelihood ratio test guide us as to the better fit. So it is certainly still possible to incorporate non-linear terms in a statistical model without having first plotted that data. I’ll illustrate this shortly.</p>
+<p>Now let’s have a look at some simulated data that demonstrates a non-linear relationship of the predictor with the outcome, and how these different approaches may be applied to model this.</p>
+</section>
+<section id="the-data" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> The Data</h1>
+<p>We’re going to simulate a U-shaped relationship between <code>X</code> and <code>Y</code> using a simple cosine function. A plot of the data shows:</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">library</span>(lme4)</span>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">library</span>(splines)</span>
 <span id="cb1-2"><a href="#cb1-2"></a><span class="fu">library</span>(dplyr)</span>
-<span id="cb1-3"><a href="#cb1-3"></a><span class="co"># Load data</span></span>
-<span id="cb1-4"><a href="#cb1-4"></a><span class="fu">data</span>(<span class="st">"sleepstudy"</span>)</span>
-<span id="cb1-5"><a href="#cb1-5"></a>sleepstudy <span class="sc">|&gt;</span> <span class="fu">as_tibble</span>() <span class="sc">|&gt;</span> <span class="fu">print</span>(<span class="at">n =</span> <span class="dv">30</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="fu">library</span>(tidyr)</span>
+<span id="cb1-4"><a href="#cb1-4"></a><span class="fu">library</span>(emmeans)</span>
+<span id="cb1-5"><a href="#cb1-5"></a><span class="fu">library</span>(paletteer)</span>
+<span id="cb1-6"><a href="#cb1-6"></a><span class="fu">library</span>(flextable)</span>
+<span id="cb1-7"><a href="#cb1-7"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb1-8"><a href="#cb1-8"></a><span class="co"># Define function - use this to construct a curved relationship</span></span>
+<span id="cb1-9"><a href="#cb1-9"></a>n <span class="ot">&lt;-</span> <span class="dv">100</span></span>
+<span id="cb1-10"><a href="#cb1-10"></a>x <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">100</span>, <span class="at">length.out =</span> n)</span>
+<span id="cb1-11"><a href="#cb1-11"></a>fx <span class="ot">&lt;-</span> <span class="fu">cos</span>(<span class="dv">2</span> <span class="sc">*</span> pi <span class="sc">*</span> x)</span>
+<span id="cb1-12"><a href="#cb1-12"></a><span class="co"># Add a bit of noise</span></span>
+<span id="cb1-13"><a href="#cb1-13"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb1-14"><a href="#cb1-14"></a>y <span class="ot">&lt;-</span> fx <span class="sc">+</span> <span class="fu">rnorm</span>(n, <span class="at">sd =</span> <span class="fl">0.2</span>)</span>
+<span id="cb1-15"><a href="#cb1-15"></a>dat <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(x, y)</span>
+<span id="cb1-16"><a href="#cb1-16"></a><span class="co"># Plot</span></span>
+<span id="cb1-17"><a href="#cb1-17"></a><span class="fu">ggplot</span>(dat, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y)) <span class="sc">+</span></span>
+<span id="cb1-18"><a href="#cb1-18"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb1-19"><a href="#cb1-19"></a>  <span class="fu">xlab</span>(<span class="st">"x"</span>) <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">"y"</span>) <span class="sc">+</span> </span>
+<span id="cb1-20"><a href="#cb1-20"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">20</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 180 × 3
-   Reaction  Days Subject
-      &lt;dbl&gt; &lt;dbl&gt; &lt;fct&gt;  
- 1     250.     0 308    
- 2     259.     1 308    
- 3     251.     2 308    
- 4     321.     3 308    
- 5     357.     4 308    
- 6     415.     5 308    
- 7     382.     6 308    
- 8     290.     7 308    
- 9     431.     8 308    
-10     466.     9 308    
-11     223.     0 309    
-12     205.     1 309    
-13     203.     2 309    
-14     205.     3 309    
-15     208.     4 309    
-16     216.     5 309    
-17     214.     6 309    
-18     218.     7 309    
-19     224.     8 309    
-20     237.     9 309    
-21     199.     0 310    
-22     194.     1 310    
-23     234.     2 310    
-24     233.     3 310    
-25     229.     4 310    
-26     220.     5 310    
-27     235.     6 310    
-28     256.     7 310    
-29     261.     8 310    
-30     248.     9 310    
-# ℹ 150 more rows</code></pre>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/setup-1.png" class="img-fluid figure-img" width="1152"></p>
+</figure>
 </div>
 </div>
-<p>But we can do this better with:</p>
-<p><code>by(sleepstudy, sleepstudy$PATIENT_ID, identity)[1:3]</code></p>
-<p>Note that the <code>[1:3]</code> indicates the range of group indices that you want to view.</p>
+</div>
+<section id="lowess-smoother" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="lowess-smoother"><span class="header-section-number">2.1</span> Lowess Smoother</h2>
+<p>I mentioned using a lowess smoother above to help visualise any potential association in your data. Lowess regression is a type of non-parametric regression method that fits a smooth curve to your data by calculating a weighted average of <code>Y</code> across a moving <em>span</em> (or window) of <code>X</code>. It is a great initial exploratory method for looking at your data. If we fit a lowess curve to these data, we can see the following:</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="fu">by</span>(sleepstudy, sleepstudy<span class="sc">$</span>Subject, identity)[<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="co"># Plot lowess</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a><span class="fu">ggplot</span>(dat, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y)) <span class="sc">+</span></span>
+<span id="cb2-3"><a href="#cb2-3"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb2-4"><a href="#cb2-4"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"loess"</span>, <span class="at">se =</span> F, <span class="at">linewidth =</span> <span class="dv">2</span>, <span class="at">color =</span> <span class="st">"#1F77B4FF"</span>) <span class="sc">+</span> </span>
+<span id="cb2-5"><a href="#cb2-5"></a>  <span class="fu">xlab</span>(<span class="st">"x"</span>) <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">"y"</span>) <span class="sc">+</span> </span>
+<span id="cb2-6"><a href="#cb2-6"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">20</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-stdout">
-<pre><code>$`308`
-   Reaction Days Subject
-1  249.5600    0     308
-2  258.7047    1     308
-3  250.8006    2     308
-4  321.4398    3     308
-5  356.8519    4     308
-6  414.6901    5     308
-7  382.2038    6     308
-8  290.1486    7     308
-9  430.5853    8     308
-10 466.3535    9     308
-
-$`309`
-   Reaction Days Subject
-11 222.7339    0     309
-12 205.2658    1     309
-13 202.9778    2     309
-14 204.7070    3     309
-15 207.7161    4     309
-16 215.9618    5     309
-17 213.6303    6     309
-18 217.7272    7     309
-19 224.2957    8     309
-20 237.3142    9     309
-
-$`310`
-   Reaction Days Subject
-21 199.0539    0     310
-22 194.3322    1     310
-23 234.3200    2     310
-24 232.8416    3     310
-25 229.3074    4     310
-26 220.4579    5     310
-27 235.4208    6     310
-28 255.7511    7     310
-29 261.0125    8     310
-30 247.5153    9     310</code></pre>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/lowess-1.png" class="img-fluid figure-img" width="1152"></p>
+</figure>
 </div>
 </div>
-<p>If you want to take this a step further, you can generalise this with a function that will allow you to quickly view the data in any range that you want, without having to continually copy and paste that line of code. Just call the function with your dataframe and group id names and the range of group indices that you want to view (interestingly while writing this function I worked out you don’t even need the <code>by()</code> function to achieve the same result).</p>
-<p><code>print_groups(sleepstudy, Subject, 1, 3)</code></p>
+</div>
+</section>
+</section>
+<section id="modelling-approaches" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Modelling Approaches</h1>
+<p>Now let’s consider each of the treatments of the predictor described above in modelling the association between <code>X</code> and <code>Y</code>.</p>
+<section id="categorising-the-predictor" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="categorising-the-predictor"><span class="header-section-number">3.1</span> Categorising the Predictor</h2>
+<p>I’m not even really going to talk about this - it’s very rarely a good thing to categorise a continuous variable. The loss of information and power and introduction of spurious threshold effects (e.g., by grouping 20- to 29-year-olds in one category and 30- to 39-year-olds in another, we create the impression that 20- and 29-year-olds tend to be more alike than 29- and 30-year-olds) are just some of the reasons why this is a bad idea.</p>
+</section>
+<section id="assuming-linearity" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="assuming-linearity"><span class="header-section-number">3.2</span> Assuming Linearity</h2>
+<p>If you bothered to plot the data you would know the association between <code>X</code> and <code>Y</code> was non-linear. But plenty of people don’t bother to do this and just go ahead and fit a model under the assumption of linearity. If we erroneously did this, the best-fitting regression line would appear as in the following plot. Clearly, for these data, this is a bad modelling choice leading one to think there is no association at all between <code>X</code> and <code>Y</code>.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="co"># Create function</span></span>
-<span id="cb5-2"><a href="#cb5-2"></a>print_groups <span class="ot">&lt;-</span> <span class="cf">function</span>(df, id, index1, index2) {</span>
-<span id="cb5-3"><a href="#cb5-3"></a>  df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(df)</span>
-<span id="cb5-4"><a href="#cb5-4"></a>  ids_all <span class="ot">&lt;-</span>  <span class="fu">unique</span>(<span class="fu">eval</span>(<span class="fu">substitute</span>(id), df))</span>
-<span id="cb5-5"><a href="#cb5-5"></a>  ids_range <span class="ot">&lt;-</span> ids_all[index1<span class="sc">:</span>index2]</span>
-<span id="cb5-6"><a href="#cb5-6"></a>  <span class="cf">if</span> (index1 <span class="sc">&lt;=</span> <span class="fu">length</span>(ids_all) <span class="sc">&amp;</span> index2 <span class="sc">&lt;=</span> <span class="fu">length</span>(ids_all)) {</span>
-<span id="cb5-7"><a href="#cb5-7"></a>    <span class="cf">for</span> (id2 <span class="cf">in</span> ids_range) {</span>
-<span id="cb5-8"><a href="#cb5-8"></a>      <span class="fu">cat</span>(<span class="fu">paste0</span>(<span class="st">"id = "</span>, id2, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>))</span>
-<span id="cb5-9"><a href="#cb5-9"></a>      <span class="fu">print</span>(df[<span class="fu">eval</span>(<span class="fu">substitute</span>(id), df) <span class="sc">%in%</span> id2,])</span>
-<span id="cb5-10"><a href="#cb5-10"></a>      <span class="fu">cat</span>(<span class="st">"----------------------------</span><span class="sc">\n\n</span><span class="st">"</span>)</span>
-<span id="cb5-11"><a href="#cb5-11"></a>    }</span>
-<span id="cb5-12"><a href="#cb5-12"></a>  } <span class="cf">else</span> {</span>
-<span id="cb5-13"><a href="#cb5-13"></a>    <span class="fu">print</span>(<span class="st">"There aren't that many groups in your dataset"</span>)</span>
-<span id="cb5-14"><a href="#cb5-14"></a>  }</span>
-<span id="cb5-15"><a href="#cb5-15"></a>}</span>
-<span id="cb5-16"><a href="#cb5-16"></a></span>
-<span id="cb5-17"><a href="#cb5-17"></a><span class="co"># Use function</span></span>
-<span id="cb5-18"><a href="#cb5-18"></a><span class="fu">print_groups</span>(sleepstudy, Subject, <span class="dv">1</span>, <span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="co"># Model</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a>mod1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> x, <span class="at">data =</span> dat)</span>
+<span id="cb3-3"><a href="#cb3-3"></a><span class="co"># Predict Y from model</span></span>
+<span id="cb3-4"><a href="#cb3-4"></a>dat<span class="sc">$</span>mod1_pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(mod1, dat)</span>
+<span id="cb3-5"><a href="#cb3-5"></a><span class="co"># Plot linear</span></span>
+<span id="cb3-6"><a href="#cb3-6"></a><span class="fu">ggplot</span>(dat, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> mod1_pred)) <span class="sc">+</span></span>
+<span id="cb3-7"><a href="#cb3-7"></a>  <span class="fu">geom_line</span>(<span class="at">linewidth =</span> <span class="dv">2</span>, <span class="at">color =</span> <span class="st">"deeppink"</span>) <span class="sc">+</span> </span>
+<span id="cb3-8"><a href="#cb3-8"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> dat, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y), <span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb3-9"><a href="#cb3-9"></a>  <span class="fu">xlab</span>(<span class="st">"x"</span>) <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">"y"</span>) <span class="sc">+</span> </span>
+<span id="cb3-10"><a href="#cb3-10"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">20</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-stdout">
-<pre><code>id = 308
-   Reaction Days Subject
-1  249.5600    0     308
-2  258.7047    1     308
-3  250.8006    2     308
-4  321.4398    3     308
-5  356.8519    4     308
-6  414.6901    5     308
-7  382.2038    6     308
-8  290.1486    7     308
-9  430.5853    8     308
-10 466.3535    9     308
-----------------------------
-
-id = 309
-   Reaction Days Subject
-11 222.7339    0     309
-12 205.2658    1     309
-13 202.9778    2     309
-14 204.7070    3     309
-15 207.7161    4     309
-16 215.9618    5     309
-17 213.6303    6     309
-18 217.7272    7     309
-19 224.2957    8     309
-20 237.3142    9     309
-----------------------------
-
-id = 310
-   Reaction Days Subject
-21 199.0539    0     310
-22 194.3322    1     310
-23 234.3200    2     310
-24 232.8416    3     310
-25 229.3074    4     310
-26 220.4579    5     310
-27 235.4208    6     310
-28 255.7511    7     310
-29 261.0125    8     310
-30 247.5153    9     310
-----------------------------</code></pre>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/linear-1.png" class="img-fluid figure-img" width="1152"></p>
+</figure>
 </div>
 </div>
-<p>And there you have it!</p>
+</div>
+</section>
+<section id="assuming-non-linearity---segmented-regression" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="assuming-non-linearity---segmented-regression"><span class="header-section-number">3.3</span> Assuming Non-Linearity - Segmented Regression</h2>
+<p>Let’s now look at a <em>piecewise</em> or <em>linear spline</em> model. Another name for this is segmented regression - a method in which the predictor is partitioned into intervals and a separate line segment is fit to each interval. Essentially, we are fitting multiple, linked linear regression models. To do this we need to first decide where sensible threshold/s exist in the data for us to partition the predictor, allowing approximate linearity within those partitions. In this case, if we look back at the lowess plot, the vertex of the curve represents a reasonable threshold and so we might decide to use a predictor cut-point at <code>X = 50</code>.</p>
+<p>I won’t go into the details of the parameterisation (it’s there in the code), but if we fit such a model and then make model predictions from that, we get the following plot. Clearly this is a much better representation of the actual trend in the data, compared to assuming a linear relationship.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="co"># Create a new variable corresponding to change in slope (using 50 as threshold)</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a>dat <span class="ot">&lt;-</span> dat <span class="sc">|&gt;</span> </span>
+<span id="cb4-3"><a href="#cb4-3"></a>  <span class="fu">mutate</span>(<span class="at">x50 =</span> (x <span class="sc">-</span> <span class="dv">50</span>) <span class="sc">*</span> (x <span class="sc">&gt;=</span> <span class="dv">50</span>))  <span class="co"># will be 0 if x &lt; 50</span></span>
+<span id="cb4-4"><a href="#cb4-4"></a><span class="co"># Model</span></span>
+<span id="cb4-5"><a href="#cb4-5"></a>mod2 <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> x <span class="sc">+</span> x50, <span class="at">data =</span> dat)</span>
+<span id="cb4-6"><a href="#cb4-6"></a><span class="co"># Predict Y from model</span></span>
+<span id="cb4-7"><a href="#cb4-7"></a>dat<span class="sc">$</span>mod2_pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(mod2, dat)</span>
+<span id="cb4-8"><a href="#cb4-8"></a><span class="co"># Plot piecewise</span></span>
+<span id="cb4-9"><a href="#cb4-9"></a><span class="fu">ggplot</span>(dat, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> mod2_pred)) <span class="sc">+</span></span>
+<span id="cb4-10"><a href="#cb4-10"></a>  <span class="fu">geom_line</span>(<span class="at">linewidth =</span> <span class="dv">2</span>, <span class="at">color =</span> <span class="st">"chartreuse"</span>) <span class="sc">+</span> </span>
+<span id="cb4-11"><a href="#cb4-11"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> dat, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y), <span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb4-12"><a href="#cb4-12"></a>  <span class="fu">xlab</span>(<span class="st">"x"</span>) <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">"y"</span>) <span class="sc">+</span> </span>
+<span id="cb4-13"><a href="#cb4-13"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">20</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/piecewise-1.png" class="img-fluid figure-img" width="1152"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="assuming-non-linearity---polynomial-regression" class="level2" data-number="3.4">
+<h2 data-number="3.4" class="anchored" data-anchor-id="assuming-non-linearity---polynomial-regression"><span class="header-section-number">3.4</span> Assuming Non-Linearity - Polynomial Regression</h2>
+<p>Polynomial regression takes this idea further by allowing smoothness to be incorporated into the modelling of the non-linearity. It is a form of regression analysis in which the association between <code>X</code> and <code>Y</code> is modelled as an <em>nth</em> degree polynomial in <code>X</code>. It is important to keep in mind that while the model fits a non-linear curve to the data, the statistical estimation of the model is still considered linear (in the unknown parameters). This differentiates this and models with RCS splines from true non-linear models. See <a href="https://www.graphpad.com/guides/prism/latest/curve-fitting/reg_the-distinction-between-linear.htm">here</a> for some further explanation.</p>
+<p>So now let’s fit a quadratic model to these data. It doesn’t look like too bad a fit either, does it.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="co"># Model - quadratic</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a>mod3 <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> x <span class="sc">+</span> <span class="fu">I</span>(x<span class="sc">^</span><span class="dv">2</span>), <span class="at">data =</span> dat)</span>
+<span id="cb5-3"><a href="#cb5-3"></a><span class="co"># Predict Y from models</span></span>
+<span id="cb5-4"><a href="#cb5-4"></a>dat<span class="sc">$</span>mod3_pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(mod3, dat)</span>
+<span id="cb5-5"><a href="#cb5-5"></a><span class="co"># Plot piecewise</span></span>
+<span id="cb5-6"><a href="#cb5-6"></a><span class="fu">ggplot</span>(dat, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> mod3_pred)) <span class="sc">+</span></span>
+<span id="cb5-7"><a href="#cb5-7"></a>  <span class="fu">geom_line</span>(<span class="at">linewidth =</span> <span class="dv">2</span>, <span class="at">color =</span> <span class="st">"chocolate1"</span>) <span class="sc">+</span> </span>
+<span id="cb5-8"><a href="#cb5-8"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> dat, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y), <span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb5-9"><a href="#cb5-9"></a>  <span class="fu">xlab</span>(<span class="st">"x"</span>) <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">"y"</span>) <span class="sc">+</span> </span>
+<span id="cb5-10"><a href="#cb5-10"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">20</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/poly-1.png" class="img-fluid figure-img" width="1152"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="assuming-non-linearity---rcss" class="level2" data-number="3.5">
+<h2 data-number="3.5" class="anchored" data-anchor-id="assuming-non-linearity---rcss"><span class="header-section-number">3.5</span> Assuming Non-Linearity - RCS’s</h2>
+<section id="the-basics-of-rcss" class="level3" data-number="3.5.1">
+<h3 data-number="3.5.1" class="anchored" data-anchor-id="the-basics-of-rcss"><span class="header-section-number">3.5.1</span> The Basics of RCS’s</h3>
+<p>I’d like to make an important first point in that RCS’s can be applied in any statistical model that linearly relates a predictor to an outcome. We have been emphasising continuous (predictor) vs continuous (outcome) associations because these are the simplest to conceptualise. But the same applies to any generalised linear or survival model.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Generalised linear models use link functions to linearise a predictor on the link scale and it is that scale that we are interested in knowing whether the predictor has an approximately linear relationship with the outcome to ensure model assumptions are met. E.g. for binary outcomes we want to know if the association of the continuous predictor and the logit (log-odds) of the outcome is linear or not. We don’t so much care about the association of the continuous predictor with the odds or the probability of the outcome because we know these to be non-linear. I will hopefully elaborate on this idea in a future post.</p>
+</div>
+</div>
+<p>The intuition behind RCS’s is that the continuous predictor is broken into multiple intervals at locations called <em>knots</em> and for each interval the association between the predictor and the outcome is estimated separately. The association within each interval can be estimated with increasing complexity - from the linear splines that we have already explored in segmented regression, to cubic splines (polynomials) as we describe them here. I won’t go into detail of the underlying maths because it does get complicated, but a series of <em>spline basis functions</em> are used to ‘build’ the resulting cubic spline within each interval (please see the papers below for more detail.) The cubic splines within each interval are <em>restricted</em> in a couple of ways: firstly, adjacent splines join smoothly at knot locations because their slopes are constrained to be equal at these boundaries, and secondly, the spline functions are constrained to be linear in the tails (i.e., before the ﬁrst and after the last knot)</p>
+</section>
+<section id="fitting-rcss-to-the-current-data" class="level3" data-number="3.5.2">
+<h3 data-number="3.5.2" class="anchored" data-anchor-id="fitting-rcss-to-the-current-data"><span class="header-section-number">3.5.2</span> Fitting RCS’s to the Current Data</h3>
+<p>There are multiple packages in <code>R</code> that allow you to fit RCS’s to your data but my go to is the <code>ns()</code> function in the <code>splines</code> package. I would encourage you to look at the papers listed below if you want to explore alternatives. Using <code>ns()</code>, the way to specify a RCS term on the relevant predictor in your model is really quite simple. The main argument that you need to specify is the degrees of freedom (<code>df</code>) which is equivalent to the number of different intervals that you want to model in your predictor-outcome relationship. This also corresponds to the number of RCS coefficients in your model output. However, as alluded to above, this DOES NOT represent the number of internal knots that the model uses under the hood to achieve this - which is always one less. So the take home here is that if you want to model 4 intervals of your predictor for which you feel the association differs with your outcome, you specify <code>df = 4</code> which signals to <code>ns()</code> that it needs to define 3 internal knots.</p>
+<p>Now the placement of the knots can also be specified, but to be honest I’ve never felt the need to do this. For the most part things seem to work fine with <code>ns()</code> default placement of knots at quantiles of the distribution of the predictor. For example, if you specified <code>df = 4</code>, then 3 internal knots would be placed at the 25th, 50th and 75th percentiles of the distribution of <code>X</code>.</p>
+<p>So the basic form of a linear model with an <code>ns()</code> term included is then:</p>
+<p><code>lm(y ~ ns(x, df = 4), data = dat)</code></p>
+<p>and if you wish to check at what actual values of your predictor <code>ns()</code> has placed the knots, you can use:</p>
+<p><code>attr(ns(x, df = 4), "knots")</code></p>
+<p>For an interesting comparison, we are now going to fit 4 models with RCS’s:</p>
+<ul>
+<li><p>2 knots (df = 3)</p></li>
+<li><p>3 knots (df = 4)</p></li>
+<li><p>4 knots (df = 5)</p></li>
+<li><p>20 knots (df = 21)</p></li>
+</ul>
+<p>The resultant model predictions are shown below.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a><span class="co"># Model - rcs with 2 knots</span></span>
+<span id="cb6-2"><a href="#cb6-2"></a>mod4a <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> <span class="fu">ns</span>(x, <span class="at">df =</span> <span class="dv">3</span>), <span class="at">data =</span> dat)</span>
+<span id="cb6-3"><a href="#cb6-3"></a><span class="co"># Model - rcs with 3 knots</span></span>
+<span id="cb6-4"><a href="#cb6-4"></a>mod4b <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> <span class="fu">ns</span>(x, <span class="dv">4</span>), <span class="at">data =</span> dat)</span>
+<span id="cb6-5"><a href="#cb6-5"></a><span class="co"># Model - rcs with 4 knots</span></span>
+<span id="cb6-6"><a href="#cb6-6"></a>mod4c <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> <span class="fu">ns</span>(x, <span class="dv">5</span>), <span class="at">data =</span> dat)</span>
+<span id="cb6-7"><a href="#cb6-7"></a><span class="co"># Model - rcs with 20 knots</span></span>
+<span id="cb6-8"><a href="#cb6-8"></a>mod4d <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> <span class="fu">ns</span>(x, <span class="dv">21</span>), <span class="at">data =</span> dat)</span>
+<span id="cb6-9"><a href="#cb6-9"></a><span class="co"># Predict Y from models</span></span>
+<span id="cb6-10"><a href="#cb6-10"></a>dat<span class="sc">$</span>mod4a_pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(mod4a, dat)</span>
+<span id="cb6-11"><a href="#cb6-11"></a>dat<span class="sc">$</span>mod4b_pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(mod4b, dat)</span>
+<span id="cb6-12"><a href="#cb6-12"></a>dat<span class="sc">$</span>mod4c_pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(mod4c, dat)</span>
+<span id="cb6-13"><a href="#cb6-13"></a>dat<span class="sc">$</span>mod4d_pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(mod4d, dat)</span>
+<span id="cb6-14"><a href="#cb6-14"></a><span class="co"># Convert to long format for easier plotting</span></span>
+<span id="cb6-15"><a href="#cb6-15"></a>dat_long <span class="ot">&lt;-</span> dat <span class="sc">|&gt;</span> </span>
+<span id="cb6-16"><a href="#cb6-16"></a>  <span class="fu">select</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, <span class="dv">7</span><span class="sc">:</span><span class="dv">10</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb6-17"><a href="#cb6-17"></a>  <span class="fu">pivot_longer</span>(<span class="dv">3</span><span class="sc">:</span><span class="dv">6</span>)</span>
+<span id="cb6-18"><a href="#cb6-18"></a><span class="co"># Plot rcs </span></span>
+<span id="cb6-19"><a href="#cb6-19"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb6-20"><a href="#cb6-20"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> dat_long, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> value, <span class="at">color =</span> name), <span class="at">linewidth =</span> <span class="dv">2</span>) <span class="sc">+</span> </span>
+<span id="cb6-21"><a href="#cb6-21"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> dat, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y), <span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb6-22"><a href="#cb6-22"></a>  <span class="fu">scale_color_paletteer_d</span>(<span class="st">"ggsci::category20_d3"</span>, <span class="at">name =</span> <span class="st">"RCS - # of knots"</span>, <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"2"</span>, <span class="st">"3"</span>, <span class="st">"4"</span>, <span class="st">"20"</span>)) <span class="sc">+</span></span>
+<span id="cb6-23"><a href="#cb6-23"></a>  <span class="fu">xlab</span>(<span class="st">"x"</span>) <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">"y"</span>) <span class="sc">+</span> </span>
+<span id="cb6-24"><a href="#cb6-24"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">20</span>) <span class="sc">+</span></span>
+<span id="cb6-25"><a href="#cb6-25"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>), <span class="at">legend.justification =</span> <span class="fu">c</span>(<span class="fl">2.8</span>,<span class="fl">1.1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/rcs plots-1.png" class="img-fluid figure-img" width="1152"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>What can we gather from this. Well there is no doubt some subjectivity to the interpretation of these plots, but my take is that the RCS with 2 internal knots is actually very similar to the quadratic (polynomial) model - these are both quite ‘smoothed’. We then start to see a little more flexibility in the model fit for the models with 3 and 4 internal knots - and really I’d be hard-pushed to say they’re that different. We can unequivocally say, though, that the model with 20 internal knots looks like it’s picking up a lot of noise in the data - this is a classic case of model over-fitting and we want to avoid this as much as possible. The main issue with overfit models is that they appear to work very well with the data that they were fit to - the predictions are excellent! But the catch is that the model has been fit to the idiosyncrasies of that specific dataset and consequently doesn’t generalise well to any other dataset that you might want to test your model on - for these new data the predictions are now terrible! We should always keep this in mind when we are formulating models to fit to our data, irrespective of whether we are using RCS’s or not.</p>
+<p>When we are using RCS’s though, for most applications, three to five internal knots strike a nice balance between complicating the model needlessly and fitting data pleasingly. For these data, it would not be unreasonable to suggest that the models with 3 or 4 internal knots capture the fit nicely (one could argue that the 2-knot model is a little underfit, and of course the 20 knot model is grossly overfit). So, from purely eyeballing the plots, I would tend to settle on the 3-knot model.</p>
+</section>
+<section id="model-comparisons" class="level3" data-number="3.5.3">
+<h3 data-number="3.5.3" class="anchored" data-anchor-id="model-comparisons"><span class="header-section-number">3.5.3</span> Model Comparisons</h3>
+<p>We can add some statistical rigour to this intuition by calculating model-fit statistics, and I have done this using the <a href="https://en.wikipedia.org/wiki/Akaike_information_criterion">AIC</a> for all the models we have considered in this post. When we use the AIC to help decide on model fit we are looking for (relatively) lower (i.e.&nbsp;more negative numbers). When we calculate these we can see some interesting results. The model assuming linearity is comparatively a terrible fit (<code>AIC = 227</code>). The piecewise model isn’t too bad though (<code>AIC = -23</code>) if we are looking to the RCS models as a gold standard. The quadratic model has a comparatively poorer fit (<code>AIC = 31</code>) and this is actually fairly similar to the 2-knot RCS model (<code>AIC = 11</code> - remember we said they looked similar). The 3-knot and greater RCS models seem to perform the best, but this is really a case of diminishing returns. We can fairly justify either a 3- (<code>AIC = -34</code>) or 4-knot (<code>AIC = -38</code>) model and I don’t think any reasonable reviewer would criticise you for either choice.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a><span class="co"># AIC for each model</span></span>
+<span id="cb7-2"><a href="#cb7-2"></a>mods_aic <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">AIC</span>(mod1, mod2, mod3, mod4a, mod4b, mod4c, mod4d))</span>
+<span id="cb7-3"><a href="#cb7-3"></a>mods_aic <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">rownames_to_column</span>(mods_aic, <span class="at">var =</span> <span class="st">"Model"</span>)</span>
+<span id="cb7-4"><a href="#cb7-4"></a>mods_aic <span class="ot">&lt;-</span> mods_aic <span class="sc">|&gt;</span> </span>
+<span id="cb7-5"><a href="#cb7-5"></a>  <span class="fu">select</span>(<span class="sc">-</span>df) <span class="sc">|&gt;</span> </span>
+<span id="cb7-6"><a href="#cb7-6"></a>  <span class="fu">mutate</span>(<span class="at">Model =</span> <span class="fu">case_when</span>(Model <span class="sc">==</span> <span class="st">"mod1"</span> <span class="sc">~</span> <span class="st">"Linear Regression"</span>,</span>
+<span id="cb7-7"><a href="#cb7-7"></a>                           Model <span class="sc">==</span> <span class="st">"mod2"</span> <span class="sc">~</span> <span class="st">"Segmented Regression"</span>,</span>
+<span id="cb7-8"><a href="#cb7-8"></a>                           Model <span class="sc">==</span> <span class="st">"mod3"</span> <span class="sc">~</span> <span class="st">"Polynomial Regression"</span>,</span>
+<span id="cb7-9"><a href="#cb7-9"></a>                           Model <span class="sc">==</span> <span class="st">"mod4a"</span> <span class="sc">~</span> <span class="st">"RCS - 2 knots"</span>,</span>
+<span id="cb7-10"><a href="#cb7-10"></a>                           Model <span class="sc">==</span> <span class="st">"mod4b"</span> <span class="sc">~</span> <span class="st">"RCS - 3 knots"</span>,</span>
+<span id="cb7-11"><a href="#cb7-11"></a>                           Model <span class="sc">==</span> <span class="st">"mod4c"</span> <span class="sc">~</span> <span class="st">"RCS - 4 knots"</span>,</span>
+<span id="cb7-12"><a href="#cb7-12"></a>                           Model <span class="sc">==</span> <span class="st">"mod4d"</span> <span class="sc">~</span> <span class="st">"RCS - 20 knots"</span>))</span>
+<span id="cb7-13"><a href="#cb7-13"></a>mods_aic</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Model</th>
+<th style="text-align: right;">AIC</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Linear Regression</td>
+<td style="text-align: right;">226.55549</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Segmented Regression</td>
+<td style="text-align: right;">-22.98867</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Polynomial Regression</td>
+<td style="text-align: right;">30.77121</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">RCS - 2 knots</td>
+<td style="text-align: right;">10.55193</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">RCS - 3 knots</td>
+<td style="text-align: right;">-33.66342</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">RCS - 4 knots</td>
+<td style="text-align: right;">-38.49374</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">RCS - 20 knots</td>
+<td style="text-align: right;">-34.52662</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+<section id="interpretation-and-presentation-of-your-results" class="level3" data-number="3.5.4">
+<h3 data-number="3.5.4" class="anchored" data-anchor-id="interpretation-and-presentation-of-your-results"><span class="header-section-number">3.5.4</span> Interpretation and Presentation of your Results</h3>
+<p>Ok, so we’re nearly done. You’ve done the hard work of recognising your predictor has a non-linear relationship with your outcome, assessed multiple approaches to modelling that non-linearity and settled on a RCS with 3 knots on the predictor as the best-fitting model. You excitedly run your model and get the following output:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a><span class="co"># Model - rcs with 3 knots</span></span>
+<span id="cb8-2"><a href="#cb8-2"></a>mod4b <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> <span class="fu">ns</span>(x, <span class="dv">4</span>), <span class="at">data =</span> dat)</span>
+<span id="cb8-3"><a href="#cb8-3"></a><span class="co"># Format model results in a table</span></span>
+<span id="cb8-4"><a href="#cb8-4"></a>mod4b <span class="sc">|&gt;</span> gtsummary<span class="sc">::</span><span class="fu">tbl_regression</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div id="zmzbbsqbkc" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#zmzbbsqbkc table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#zmzbbsqbkc thead, #zmzbbsqbkc tbody, #zmzbbsqbkc tfoot, #zmzbbsqbkc tr, #zmzbbsqbkc td, #zmzbbsqbkc th {
+  border-style: none;
+}
+
+#zmzbbsqbkc p {
+  margin: 0;
+  padding: 0;
+}
+
+#zmzbbsqbkc .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#zmzbbsqbkc .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#zmzbbsqbkc .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#zmzbbsqbkc .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#zmzbbsqbkc .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#zmzbbsqbkc .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#zmzbbsqbkc .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#zmzbbsqbkc .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#zmzbbsqbkc .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#zmzbbsqbkc .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#zmzbbsqbkc .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#zmzbbsqbkc .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#zmzbbsqbkc .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#zmzbbsqbkc .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#zmzbbsqbkc .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#zmzbbsqbkc .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#zmzbbsqbkc .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#zmzbbsqbkc .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#zmzbbsqbkc .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#zmzbbsqbkc .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#zmzbbsqbkc .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#zmzbbsqbkc .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#zmzbbsqbkc .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#zmzbbsqbkc .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#zmzbbsqbkc .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#zmzbbsqbkc .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#zmzbbsqbkc .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#zmzbbsqbkc .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#zmzbbsqbkc .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#zmzbbsqbkc .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#zmzbbsqbkc .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#zmzbbsqbkc .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#zmzbbsqbkc .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#zmzbbsqbkc .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#zmzbbsqbkc .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#zmzbbsqbkc .gt_left {
+  text-align: left;
+}
+
+#zmzbbsqbkc .gt_center {
+  text-align: center;
+}
+
+#zmzbbsqbkc .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#zmzbbsqbkc .gt_font_normal {
+  font-weight: normal;
+}
+
+#zmzbbsqbkc .gt_font_bold {
+  font-weight: bold;
+}
+
+#zmzbbsqbkc .gt_font_italic {
+  font-style: italic;
+}
+
+#zmzbbsqbkc .gt_super {
+  font-size: 65%;
+}
+
+#zmzbbsqbkc .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#zmzbbsqbkc .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#zmzbbsqbkc .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#zmzbbsqbkc .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#zmzbbsqbkc .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#zmzbbsqbkc .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#zmzbbsqbkc .gt_indent_5 {
+  text-indent: 25px;
+}
+</style>
+
+<table class="gt_table table table-sm table-striped small" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+<caption>Model Output</caption>
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header gt_col_headings">
+<th id="<strong>Characteristic</strong>" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col"><strong>Characteristic</strong></th>
+<th id="<strong>Beta</strong>" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col"><strong>Beta</strong></th>
+<th id="<strong>95% CI</strong><span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;&quot;><sup>1</sup></span>" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col"><strong>95% CI</strong><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>1</sup></span></th>
+<th id="<strong>p-value</strong>" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col"><strong>p-value</strong></th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_left" headers="label">ns(x, 4)</td>
+<td class="gt_row gt_center" headers="estimate"><br>
+</td>
+<td class="gt_row gt_center" headers="ci"><br>
+</td>
+<td class="gt_row gt_center" headers="p.value"><br>
+</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="label">&nbsp;&nbsp;&nbsp;&nbsp;ns(x, 4)1</td>
+<td class="gt_row gt_center" headers="estimate">-2.8</td>
+<td class="gt_row gt_center" headers="ci">-3.0, -2.6</td>
+<td class="gt_row gt_center" headers="p.value">&lt;0.001</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="label">&nbsp;&nbsp;&nbsp;&nbsp;ns(x, 4)2</td>
+<td class="gt_row gt_center" headers="estimate">-0.69</td>
+<td class="gt_row gt_center" headers="ci">-0.89, -0.50</td>
+<td class="gt_row gt_center" headers="p.value">&lt;0.001</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="label">&nbsp;&nbsp;&nbsp;&nbsp;ns(x, 4)3</td>
+<td class="gt_row gt_center" headers="estimate">-1.2</td>
+<td class="gt_row gt_center" headers="ci">-1.6, -0.82</td>
+<td class="gt_row gt_center" headers="p.value">&lt;0.001</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="label">&nbsp;&nbsp;&nbsp;&nbsp;ns(x, 4)4</td>
+<td class="gt_row gt_center" headers="estimate">0.53</td>
+<td class="gt_row gt_center" headers="ci">0.34, 0.71</td>
+<td class="gt_row gt_center" headers="p.value">&lt;0.001</td>
+</tr>
+</tbody><tfoot class="gt_footnotes">
+<tr class="even">
+<td colspan="4" class="gt_footnote"><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>1</sup></span> CI = Confidence Interval</td>
+</tr>
+</tfoot>
+
+</table>
+
+</div>
+</div>
+</div>
+<p>WTH?! What does that all mean? Paul, what are you doing to me? I just want the simple output that I’m used to where I can say that a one-unit change in my predictor corresponds to some change in my outcome!</p>
+<p>I apologise for my facetiousness - no doubt you have cottoned on to the fact that you when you specifically model a non-linear association between two variables, there is no longer any constancy in the relationship between the two variables. A one-unit change in <code>X</code> will give a different change in <code>Y</code> depending on the values of <code>X</code>.</p>
+<p>So, what to do? First recognise that the RCS coefficients presented to you in a regression output are essentially useless from an interpretation point of view. You can’t easily use these to describe the association between <code>X</code> and <code>Y</code> in reporting your results.</p>
+<p>The general approach to interpretation and reporting of results in the presence of non-linearity in a regression model is to pick salient values (biological, clinical) of <code>X</code> to predict model-estimated values of <code>Y</code>. You can quite easily calculate model-estimated means and differences using our friend <code>emmeans</code> which I described to you in an earlier post.</p>
+<p>For illustrative purposes, let’s say we’re interested in knowing the model-estimated values of <code>Y</code> corresponding to <code>X</code> values of 20, 30, 50 and 60. We can estimate these values and differences (contrasts) of interest using <code>emmeans</code>.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a><span class="co"># Plot rcs </span></span>
+<span id="cb9-2"><a href="#cb9-2"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb9-3"><a href="#cb9-3"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> dat, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> mod4b_pred), <span class="at">color =</span> <span class="st">"#EE8635"</span>, <span class="at">linewidth =</span> <span class="dv">2</span>) <span class="sc">+</span> </span>
+<span id="cb9-4"><a href="#cb9-4"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> dat, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y), <span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb9-5"><a href="#cb9-5"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="fu">c</span>(<span class="dv">20</span>,<span class="dv">30</span>,<span class="dv">50</span>,<span class="dv">60</span>), <span class="at">color =</span> <span class="st">"red"</span>, <span class="at">linetype =</span> <span class="st">"dotted"</span>, <span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb9-6"><a href="#cb9-6"></a>  <span class="fu">xlab</span>(<span class="st">"x"</span>) <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">"y"</span>) <span class="sc">+</span> </span>
+<span id="cb9-7"><a href="#cb9-7"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">20</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/emmeans-1.png" class="img-fluid figure-img" width="1152"></p>
+</figure>
+</div>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a><span class="co"># emmeans</span></span>
+<span id="cb10-2"><a href="#cb10-2"></a><span class="fu">emmeans</span>(mod4b, <span class="sc">~</span> x, <span class="at">at =</span> <span class="fu">list</span>(<span class="at">x =</span> <span class="fu">c</span>(<span class="dv">20</span>,<span class="dv">30</span>,<span class="dv">50</span>,<span class="dv">60</span>))) <span class="sc">|&gt;</span> </span>
+<span id="cb10-3"><a href="#cb10-3"></a>  <span class="fu">data.frame</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb10-4"><a href="#cb10-4"></a>  <span class="fu">select</span>(<span class="sc">-</span>df) <span class="sc">|&gt;</span> </span>
+<span id="cb10-5"><a href="#cb10-5"></a>  <span class="fu">rename</span>(<span class="st">"X"</span> <span class="ot">=</span> <span class="st">"x"</span>,</span>
+<span id="cb10-6"><a href="#cb10-6"></a>         <span class="st">"Emmean (Y)"</span> <span class="ot">=</span> <span class="st">"emmean"</span>,</span>
+<span id="cb10-7"><a href="#cb10-7"></a>         <span class="st">"95% C.I. (lower)"</span> <span class="ot">=</span> <span class="st">"lower.CL"</span>,</span>
+<span id="cb10-8"><a href="#cb10-8"></a>         <span class="st">"95% C.I. (upper)"</span> <span class="ot">=</span> <span class="st">"upper.CL"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb10-9"><a href="#cb10-9"></a>  <span class="fu">flextable</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb10-10"><a href="#cb10-10"></a>  <span class="fu">colformat_double</span>(<span class="at">j =</span> <span class="fu">c</span>(<span class="dv">2</span><span class="sc">:</span><span class="dv">5</span>), <span class="at">digits =</span> <span class="dv">3</span>, <span class="at">na_str =</span> <span class="st">"N/A"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb10-11"><a href="#cb10-11"></a>  <span class="fu">set_table_properties</span>(<span class="at">layout =</span> <span class="st">"autofit"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb10-12"><a href="#cb10-12"></a>  <span class="fu">height</span>(<span class="at">height =</span> <span class="dv">1</span>, <span class="at">unit =</span> <span class="st">"cm"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb10-13"><a href="#cb10-13"></a>  <span class="fu">hrule</span>(<span class="at">rule =</span> <span class="st">"atleast"</span>, <span class="at">part =</span> <span class="st">"header"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb10-14"><a href="#cb10-14"></a>  <span class="fu">align</span>(<span class="at">align =</span> <span class="st">"center"</span>, <span class="at">part =</span> <span class="st">"body"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb10-15"><a href="#cb10-15"></a>  <span class="fu">bg</span>(<span class="at">bg =</span> <span class="st">"white"</span>, <span class="at">part =</span> <span class="st">"all"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb10-16"><a href="#cb10-16"></a>  flextable<span class="sc">::</span><span class="fu">font</span>(<span class="at">fontname =</span> <span class="st">"Consolas"</span>, <span class="at">part =</span> <span class="st">"all"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb10-17"><a href="#cb10-17"></a>  <span class="fu">theme_vanilla</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div class="tabwid"><style>.cl-387b7c3a{table-layout:auto;}.cl-3878b874{font-family:'Consolas';font-size:11pt;font-weight:bold;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-3878b87e{font-family:'Consolas';font-size:11pt;font-weight:normal;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-3879d344{margin:0;text-align:right;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-3879dcb8{height:0.25in;background-color:rgba(255, 255, 255, 1.00);vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-3879dcc2{background-color:rgba(255, 255, 255, 1.00);vertical-align: middle;border-bottom: 0.75pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-3879dcc3{background-color:rgba(255, 255, 255, 1.00);vertical-align: middle;border-bottom: 0.75pt solid rgba(102, 102, 102, 1.00);border-top: 0.75pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-3879dcc4{background-color:rgba(255, 255, 255, 1.00);vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0.75pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}</style><table data-quarto-disable-processing="true" class="cl-387b7c3a"><caption><p>Estimated Marginal Means</p></caption><thead><tr style="overflow-wrap:break-word;"><th class="cl-3879dcb8"><p class="cl-3879d344"><span class="cl-3878b874">X</span></p></th><th class="cl-3879dcb8"><p class="cl-3879d344"><span class="cl-3878b874">Emmean (Y)</span></p></th><th class="cl-3879dcb8"><p class="cl-3879d344"><span class="cl-3878b874">SE</span></p></th><th class="cl-3879dcb8"><p class="cl-3879d344"><span class="cl-3878b874">95% C.I. (lower)</span></p></th><th class="cl-3879dcb8"><p class="cl-3879d344"><span class="cl-3878b874">95% C.I. (upper)</span></p></th></tr></thead><tbody><tr style="overflow-wrap:break-word;"><td class="cl-3879dcc2"><p class="cl-3879d344"><span class="cl-3878b87e">20</span></p></td><td class="cl-3879dcc2"><p class="cl-3879d344"><span class="cl-3878b87e">0.305</span></p></td><td class="cl-3879dcc2"><p class="cl-3879d344"><span class="cl-3878b87e">0.042</span></p></td><td class="cl-3879dcc2"><p class="cl-3879d344"><span class="cl-3878b87e">0.222</span></p></td><td class="cl-3879dcc2"><p class="cl-3879d344"><span class="cl-3878b87e">0.388</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-3879dcc3"><p class="cl-3879d344"><span class="cl-3878b87e">30</span></p></td><td class="cl-3879dcc3"><p class="cl-3879d344"><span class="cl-3878b87e">-0.248</span></p></td><td class="cl-3879dcc3"><p class="cl-3879d344"><span class="cl-3878b87e">0.040</span></p></td><td class="cl-3879dcc3"><p class="cl-3879d344"><span class="cl-3878b87e">-0.328</span></p></td><td class="cl-3879dcc3"><p class="cl-3879d344"><span class="cl-3878b87e">-0.168</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-3879dcc3"><p class="cl-3879d344"><span class="cl-3878b87e">50</span></p></td><td class="cl-3879dcc3"><p class="cl-3879d344"><span class="cl-3878b87e">-1.012</span></p></td><td class="cl-3879dcc3"><p class="cl-3879d344"><span class="cl-3878b87e">0.043</span></p></td><td class="cl-3879dcc3"><p class="cl-3879d344"><span class="cl-3878b87e">-1.098</span></p></td><td class="cl-3879dcc3"><p class="cl-3879d344"><span class="cl-3878b87e">-0.925</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-3879dcc4"><p class="cl-3879d344"><span class="cl-3878b87e">60</span></p></td><td class="cl-3879dcc4"><p class="cl-3879d344"><span class="cl-3878b87e">-0.765</span></p></td><td class="cl-3879dcc4"><p class="cl-3879d344"><span class="cl-3878b87e">0.036</span></p></td><td class="cl-3879dcc4"><p class="cl-3879d344"><span class="cl-3878b87e">-0.837</span></p></td><td class="cl-3879dcc4"><p class="cl-3879d344"><span class="cl-3878b87e">-0.693</span></p></td></tr></tbody></table></div>
+</div>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a><span class="co"># contrasts</span></span>
+<span id="cb11-2"><a href="#cb11-2"></a>emm <span class="ot">&lt;-</span> <span class="fu">emmeans</span>(mod4b, <span class="sc">~</span> x, <span class="at">at =</span> <span class="fu">list</span>(<span class="at">x =</span> <span class="fu">c</span>(<span class="dv">20</span>,<span class="dv">30</span>,<span class="dv">50</span>,<span class="dv">60</span>)))</span>
+<span id="cb11-3"><a href="#cb11-3"></a>custom <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="st">`</span><span class="at">Change in Y corresponding to change in X from 20 to 30</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">0</span>),</span>
+<span id="cb11-4"><a href="#cb11-4"></a>               <span class="st">`</span><span class="at">Change in Y corresponding to change in X from 50 to 60</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="sc">-</span><span class="dv">1</span>,<span class="dv">1</span>))</span>
+<span id="cb11-5"><a href="#cb11-5"></a><span class="fu">contrast</span>(emm, custom) <span class="sc">|&gt;</span> </span>
+<span id="cb11-6"><a href="#cb11-6"></a>  <span class="fu">summary</span>(<span class="at">infer =</span> T) <span class="sc">|&gt;</span> </span>
+<span id="cb11-7"><a href="#cb11-7"></a>  <span class="fu">data.frame</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb11-8"><a href="#cb11-8"></a>  <span class="fu">select</span>(<span class="fu">c</span>(<span class="sc">-</span>df, <span class="sc">-</span>t.ratio)) <span class="sc">|&gt;</span> </span>
+<span id="cb11-9"><a href="#cb11-9"></a>  <span class="fu">rename</span>(<span class="st">"Contrast"</span> <span class="ot">=</span> <span class="st">"contrast"</span>,</span>
+<span id="cb11-10"><a href="#cb11-10"></a>         <span class="st">"Estimate"</span> <span class="ot">=</span> <span class="st">"estimate"</span>,</span>
+<span id="cb11-11"><a href="#cb11-11"></a>         <span class="st">"95% C.I. (lower)"</span> <span class="ot">=</span> <span class="st">"lower.CL"</span>,</span>
+<span id="cb11-12"><a href="#cb11-12"></a>         <span class="st">"95% C.I. (upper)"</span> <span class="ot">=</span> <span class="st">"upper.CL"</span>,</span>
+<span id="cb11-13"><a href="#cb11-13"></a>         <span class="st">"p"</span> <span class="ot">=</span> <span class="st">"p.value"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb11-14"><a href="#cb11-14"></a>  <span class="fu">flextable</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb11-15"><a href="#cb11-15"></a>  <span class="fu">colformat_double</span>(<span class="at">digits =</span> <span class="dv">3</span>, <span class="at">na_str =</span> <span class="st">"N/A"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb11-16"><a href="#cb11-16"></a>  <span class="fu">set_table_properties</span>(<span class="at">layout =</span> <span class="st">"autofit"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb11-17"><a href="#cb11-17"></a>  <span class="fu">height</span>(<span class="at">height =</span> <span class="dv">1</span>, <span class="at">unit =</span> <span class="st">"cm"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb11-18"><a href="#cb11-18"></a>  <span class="fu">hrule</span>(<span class="at">rule =</span> <span class="st">"atleast"</span>, <span class="at">part =</span> <span class="st">"header"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb11-19"><a href="#cb11-19"></a>  <span class="fu">align</span>(<span class="at">align =</span> <span class="st">"center"</span>, <span class="at">part =</span> <span class="st">"body"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb11-20"><a href="#cb11-20"></a>  <span class="fu">bg</span>(<span class="at">bg =</span> <span class="st">"white"</span>, <span class="at">part =</span> <span class="st">"all"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb11-21"><a href="#cb11-21"></a>  flextable<span class="sc">::</span><span class="fu">font</span>(<span class="at">fontname =</span> <span class="st">"Consolas"</span>, <span class="at">part =</span> <span class="st">"all"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb11-22"><a href="#cb11-22"></a>  <span class="fu">theme_vanilla</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div class="tabwid"><style>.cl-3894ea6c{table-layout:auto;}.cl-38922282{font-family:'Consolas';font-size:11pt;font-weight:bold;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-3892228c{font-family:'Consolas';font-size:11pt;font-weight:normal;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-38936868{margin:0;text-align:left;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-3893687c{margin:0;text-align:right;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-389370e2{height:0.25in;background-color:rgba(255, 255, 255, 1.00);vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-389370ec{height:0.25in;background-color:rgba(255, 255, 255, 1.00);vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 1.5pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-389370ed{background-color:rgba(255, 255, 255, 1.00);vertical-align: middle;border-bottom: 0.75pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-389370ee{background-color:rgba(255, 255, 255, 1.00);vertical-align: middle;border-bottom: 0.75pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-389370f6{background-color:rgba(255, 255, 255, 1.00);vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0.75pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-389370f7{background-color:rgba(255, 255, 255, 1.00);vertical-align: middle;border-bottom: 1.5pt solid rgba(102, 102, 102, 1.00);border-top: 0.75pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}</style><table data-quarto-disable-processing="true" class="cl-3894ea6c"><caption><p>Contrasts of Estimated Marginal Means</p></caption><thead><tr style="overflow-wrap:break-word;"><th class="cl-389370e2"><p class="cl-38936868"><span class="cl-38922282">Contrast</span></p></th><th class="cl-389370ec"><p class="cl-3893687c"><span class="cl-38922282">Estimate</span></p></th><th class="cl-389370ec"><p class="cl-3893687c"><span class="cl-38922282">SE</span></p></th><th class="cl-389370ec"><p class="cl-3893687c"><span class="cl-38922282">95% C.I. (lower)</span></p></th><th class="cl-389370ec"><p class="cl-3893687c"><span class="cl-38922282">95% C.I. (upper)</span></p></th><th class="cl-389370ec"><p class="cl-3893687c"><span class="cl-38922282">p</span></p></th></tr></thead><tbody><tr style="overflow-wrap:break-word;"><td class="cl-389370ed"><p class="cl-38936868"><span class="cl-3892228c">Change in Y corresponding to change in X from 20 to 30</span></p></td><td class="cl-389370ee"><p class="cl-3893687c"><span class="cl-3892228c">-0.553</span></p></td><td class="cl-389370ee"><p class="cl-3893687c"><span class="cl-3892228c">0.019</span></p></td><td class="cl-389370ee"><p class="cl-3893687c"><span class="cl-3892228c">-0.592</span></p></td><td class="cl-389370ee"><p class="cl-3893687c"><span class="cl-3892228c">-0.515</span></p></td><td class="cl-389370ee"><p class="cl-3893687c"><span class="cl-3892228c">0.000</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-389370f6"><p class="cl-38936868"><span class="cl-3892228c">Change in Y corresponding to change in X from 50 to 60</span></p></td><td class="cl-389370f7"><p class="cl-3893687c"><span class="cl-3892228c">0.247</span></p></td><td class="cl-389370f7"><p class="cl-3893687c"><span class="cl-3892228c">0.026</span></p></td><td class="cl-389370f7"><p class="cl-3893687c"><span class="cl-3892228c">0.196</span></p></td><td class="cl-389370f7"><p class="cl-3893687c"><span class="cl-3892228c">0.297</span></p></td><td class="cl-389370f7"><p class="cl-3893687c"><span class="cl-3892228c">0.000</span></p></td></tr></tbody></table></div>
+</div>
+</div>
+<p>That’s probably enough on RCS’s for now - this post has turned out longer than I initially anticipated. I hope you have found it helpful and above all, found some motivation to using RCS’s in your modelling endeavours if you are not already.</p>
+</section>
+<section id="extra-reading" class="level3" data-number="3.5.5">
+<h3 data-number="3.5.5" class="anchored" data-anchor-id="extra-reading"><span class="header-section-number">3.5.5</span> Extra Reading</h3>
+<p>If you want to dive a little deeper into RCS’s than we’ve done here, I can thoroughly recommend the following 3 papers:</p>
+<p><a href="https://www.frontiersin.org/articles/10.3389/fepid.2022.975380/full">Modeling non-linear relationships in epidemiological data: The application and interpretation of spline models</a></p>
+<p><a href="https://www.nature.com/articles/s41409-019-0679-x">Cubic splines to model relationships between continuous variables and outcomes: a guide for clinicians</a></p>
+<p><a href="https://bmcmedresmethodol.biomedcentral.com/articles/10.1186/s12874-019-0666-3">A review of spline function procedures in R</a></p>
 
 
 <!-- -->
 
+</section>
+</section>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -943,66 +1723,338 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <input type="hidden" id="giscus-base-theme" value="light">
 <input type="hidden" id="giscus-alt-theme" value="dark"><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
-<div class="sourceCode" id="cb7" data-shortcodes="false"><pre class="sourceCode numberSource markdown number-lines code-with-copy"><code class="sourceCode markdown"><span id="cb7-1"><a href="#cb7-1"></a><span class="co">---</span></span>
-<span id="cb7-2"><a href="#cb7-2"></a><span class="an">title:</span><span class="co"> "Don't be Scared of Splines"</span></span>
-<span id="cb7-3"><a href="#cb7-3"></a><span class="an">date:</span><span class="co"> 2024-04-05</span></span>
-<span id="cb7-4"><a href="#cb7-4"></a><span class="an">categories:</span><span class="co"> [analysis, concept, code, modelling, visualisation]</span></span>
-<span id="cb7-5"><a href="#cb7-5"></a><span class="an">image:</span><span class="co"> "R_small.jpeg"</span></span>
-<span id="cb7-6"><a href="#cb7-6"></a><span class="an">description:</span><span class="co"> "Restricted cubic splines give you the ultimate flexiblity in modelling continuous predictors."</span></span>
-<span id="cb7-7"><a href="#cb7-7"></a><span class="co">---</span></span>
-<span id="cb7-8"><a href="#cb7-8"></a></span>
-<span id="cb7-9"><a href="#cb7-9"></a>Follow guide in accompanying splines.R script</span>
-<span id="cb7-10"><a href="#cb7-10"></a></span>
-<span id="cb7-11"><a href="#cb7-11"></a><span class="in">`sleepstudy |&gt; as_tibble() |&gt; print(n = 30)`</span></span>
-<span id="cb7-12"><a href="#cb7-12"></a></span>
-<span id="cb7-15"><a href="#cb7-15"></a><span class="in">```{r}</span></span>
-<span id="cb7-16"><a href="#cb7-16"></a><span class="co">#| label: setup</span></span>
-<span id="cb7-17"><a href="#cb7-17"></a><span class="co">#| message: false</span></span>
-<span id="cb7-18"><a href="#cb7-18"></a><span class="fu">library</span>(lme4)</span>
-<span id="cb7-19"><a href="#cb7-19"></a><span class="fu">library</span>(dplyr)</span>
-<span id="cb7-20"><a href="#cb7-20"></a><span class="co"># Load data</span></span>
-<span id="cb7-21"><a href="#cb7-21"></a><span class="fu">data</span>(<span class="st">"sleepstudy"</span>)</span>
-<span id="cb7-22"><a href="#cb7-22"></a>sleepstudy <span class="sc">|&gt;</span> <span class="fu">as_tibble</span>() <span class="sc">|&gt;</span> <span class="fu">print</span>(<span class="at">n =</span> <span class="dv">30</span>)</span>
-<span id="cb7-23"><a href="#cb7-23"></a><span class="in">```</span></span>
-<span id="cb7-24"><a href="#cb7-24"></a></span>
-<span id="cb7-25"><a href="#cb7-25"></a>But we can do this better with:</span>
-<span id="cb7-26"><a href="#cb7-26"></a></span>
-<span id="cb7-27"><a href="#cb7-27"></a><span class="in">`by(sleepstudy, sleepstudy$PATIENT_ID, identity)[1:3]`</span></span>
-<span id="cb7-28"><a href="#cb7-28"></a></span>
-<span id="cb7-29"><a href="#cb7-29"></a>Note that the <span class="in">`[1:3]`</span> indicates the range of group indices that you want to view.</span>
-<span id="cb7-30"><a href="#cb7-30"></a></span>
-<span id="cb7-33"><a href="#cb7-33"></a><span class="in">```{r}</span></span>
-<span id="cb7-34"><a href="#cb7-34"></a><span class="co">#| label: by()</span></span>
-<span id="cb7-35"><a href="#cb7-35"></a><span class="fu">by</span>(sleepstudy, sleepstudy<span class="sc">$</span>Subject, identity)[<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>]</span>
-<span id="cb7-36"><a href="#cb7-36"></a><span class="in">```</span></span>
-<span id="cb7-37"><a href="#cb7-37"></a></span>
-<span id="cb7-38"><a href="#cb7-38"></a>If you want to take this a step further, you can generalise this with a function that will allow you to quickly view the data in any range that you want, without having to continually copy and paste that line of code. Just call the function with your dataframe and group id names and the range of group indices that you want to view (interestingly while writing this function I worked out you don't even need the <span class="in">`by()`</span> function to achieve the same result).</span>
-<span id="cb7-39"><a href="#cb7-39"></a></span>
-<span id="cb7-40"><a href="#cb7-40"></a><span class="in">`print_groups(sleepstudy, Subject, 1, 3)`</span></span>
-<span id="cb7-41"><a href="#cb7-41"></a></span>
-<span id="cb7-44"><a href="#cb7-44"></a><span class="in">```{r}</span></span>
-<span id="cb7-45"><a href="#cb7-45"></a><span class="co">#| label: function</span></span>
-<span id="cb7-46"><a href="#cb7-46"></a><span class="co"># Create function</span></span>
-<span id="cb7-47"><a href="#cb7-47"></a>print_groups <span class="ot">&lt;-</span> <span class="cf">function</span>(df, id, index1, index2) {</span>
-<span id="cb7-48"><a href="#cb7-48"></a>  df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(df)</span>
-<span id="cb7-49"><a href="#cb7-49"></a>  ids_all <span class="ot">&lt;-</span>  <span class="fu">unique</span>(<span class="fu">eval</span>(<span class="fu">substitute</span>(id), df))</span>
-<span id="cb7-50"><a href="#cb7-50"></a>  ids_range <span class="ot">&lt;-</span> ids_all[index1<span class="sc">:</span>index2]</span>
-<span id="cb7-51"><a href="#cb7-51"></a>  <span class="cf">if</span> (index1 <span class="sc">&lt;=</span> <span class="fu">length</span>(ids_all) <span class="sc">&amp;</span> index2 <span class="sc">&lt;=</span> <span class="fu">length</span>(ids_all)) {</span>
-<span id="cb7-52"><a href="#cb7-52"></a>    <span class="cf">for</span> (id2 <span class="cf">in</span> ids_range) {</span>
-<span id="cb7-53"><a href="#cb7-53"></a>      <span class="fu">cat</span>(<span class="fu">paste0</span>(<span class="st">"id = "</span>, id2, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>))</span>
-<span id="cb7-54"><a href="#cb7-54"></a>      <span class="fu">print</span>(df[<span class="fu">eval</span>(<span class="fu">substitute</span>(id), df) <span class="sc">%in%</span> id2,])</span>
-<span id="cb7-55"><a href="#cb7-55"></a>      <span class="fu">cat</span>(<span class="st">"----------------------------</span><span class="sc">\n\n</span><span class="st">"</span>)</span>
-<span id="cb7-56"><a href="#cb7-56"></a>    }</span>
-<span id="cb7-57"><a href="#cb7-57"></a>  } <span class="cf">else</span> {</span>
-<span id="cb7-58"><a href="#cb7-58"></a>    <span class="fu">print</span>(<span class="st">"There aren't that many groups in your dataset"</span>)</span>
-<span id="cb7-59"><a href="#cb7-59"></a>  }</span>
-<span id="cb7-60"><a href="#cb7-60"></a>}</span>
-<span id="cb7-61"><a href="#cb7-61"></a></span>
-<span id="cb7-62"><a href="#cb7-62"></a><span class="co"># Use function</span></span>
-<span id="cb7-63"><a href="#cb7-63"></a><span class="fu">print_groups</span>(sleepstudy, Subject, <span class="dv">1</span>, <span class="dv">3</span>)</span>
-<span id="cb7-64"><a href="#cb7-64"></a><span class="in">```</span></span>
-<span id="cb7-65"><a href="#cb7-65"></a></span>
-<span id="cb7-66"><a href="#cb7-66"></a>And there you have it!</span>
+<div class="sourceCode" id="cb12" data-shortcodes="false"><pre class="sourceCode numberSource markdown number-lines code-with-copy"><code class="sourceCode markdown"><span id="cb12-1"><a href="#cb12-1"></a><span class="co">---</span></span>
+<span id="cb12-2"><a href="#cb12-2"></a><span class="an">title:</span><span class="co"> "Don't be Scared of Splines"</span></span>
+<span id="cb12-3"><a href="#cb12-3"></a><span class="an">date:</span><span class="co"> 2024-04-05</span></span>
+<span id="cb12-4"><a href="#cb12-4"></a><span class="an">categories:</span><span class="co"> [analysis, concept, code, modelling, visualisation]</span></span>
+<span id="cb12-5"><a href="#cb12-5"></a><span class="an">image:</span><span class="co"> "R_small.jpeg"</span></span>
+<span id="cb12-6"><a href="#cb12-6"></a><span class="an">description:</span><span class="co"> "Restricted cubic splines give you the ultimate flexiblity in modelling continuous predictors."</span></span>
+<span id="cb12-7"><a href="#cb12-7"></a><span class="co">---</span></span>
+<span id="cb12-8"><a href="#cb12-8"></a></span>
+<span id="cb12-9"><a href="#cb12-9"></a><span class="fu"># Some Background</span></span>
+<span id="cb12-10"><a href="#cb12-10"></a></span>
+<span id="cb12-11"><a href="#cb12-11"></a>Have you heard the term **restricted cubic spline** (RCS) and thought 'that's just seems too hard but I should learn about it one day' and then stuck to modelling your continuous predictor as you always do, assuming it has a linear relationship with the outcome? Well I hope that by the end of this post you have a better basic understanding of what RCS's actually are, how they give you so much more flexibility in your modelling toolkit, and above all else, how they are really not that hard to use.</span>
+<span id="cb12-12"><a href="#cb12-12"></a></span>
+<span id="cb12-13"><a href="#cb12-13"></a>When you want to explore the association between a continuous predictor variable and an outcome (of any form really - binary, count, continuous) you have choices to make about how you parameterise that predictor. In fact, one could consider a hierarchy of such choices that range from downright egregious through to 'we'll just do it how it's always done' through to what is becoming thought more of these days as 'best-practice' in statistical modelling. These approaches include:</span>
+<span id="cb12-14"><a href="#cb12-14"></a></span>
+<span id="cb12-15"><a href="#cb12-15"></a><span class="ss">-   </span>Categorising the predictor - &lt;FONT COLOR = red&gt;Egregious&lt;/FONT COLOR&gt;.</span>
+<span id="cb12-16"><a href="#cb12-16"></a></span>
+<span id="cb12-17"><a href="#cb12-17"></a><span class="ss">-   </span>Assuming the predictor has a linear relationship with the outcome (or its link function if the outcome is not continuous) - &lt;FONT COLOR = red&gt;'We'll just do it how it's always done'&lt;/FONT COLOR&gt;.</span>
+<span id="cb12-18"><a href="#cb12-18"></a></span>
+<span id="cb12-19"><a href="#cb12-19"></a><span class="ss">-   </span>Assuming the predictor has a non-linear relationship with the outcome and using a piece-wise model (segmented regression) to model smaller segments of the data where linearity does in fact hold - &lt;FONT COLOR = red&gt;A better alternative than assuming linearity&lt;/FONT COLOR&gt;.</span>
+<span id="cb12-20"><a href="#cb12-20"></a></span>
+<span id="cb12-21"><a href="#cb12-21"></a><span class="ss">-   </span>Assuming the predictor has a non-linear relationship with the outcome and using polynomial (e.g. quadratic/cubic/etc) regression - &lt;FONT COLOR = red&gt;Again, a better alternative than assuming linearity&lt;/FONT COLOR&gt;.</span>
+<span id="cb12-22"><a href="#cb12-22"></a></span>
+<span id="cb12-23"><a href="#cb12-23"></a><span class="ss">-   </span>Assuming the predictor has a non-linear relationship with the outcome and using RCS's - &lt;FONT COLOR = red&gt;arguably 'best practice'&lt;/FONT COLOR&gt;.</span>
+<span id="cb12-24"><a href="#cb12-24"></a></span>
+<span id="cb12-25"><a href="#cb12-25"></a>::: callout-important</span>
+<span id="cb12-26"><a href="#cb12-26"></a>Don't forget it's always a good idea to plot your data first to visualise the relationship (using a lowess smoother helps). There is no need to worry about non-linearity if in fact the relationship between your predictor and outcome isn't - just model it as linear and you're done.</span>
+<span id="cb12-27"><a href="#cb12-27"></a>:::</span>
+<span id="cb12-28"><a href="#cb12-28"></a></span>
+<span id="cb12-29"><a href="#cb12-29"></a>Now, having made that point, let me follow by saying that this is relatively easy when you have a continuous predictor and a continuous outcome. But what do you do with other outcome types - for example, in the case of a binary outcome (successes/failures) your outcome just consists of a bunch of <span class="in">`0's`</span> and <span class="in">`1's`</span>. This is more challenging to visualise but it is possible. Here, a good way to visualise your observed data is to *'bin'* the predictor into discrete categories (arbitrarily decided by you), counting the number of successes out of the total in each bin - this will give the proportion of successes - i.e. the *observed* probability of success in each bin. You then convert each proportion into its equivalent logit (log-odds) and plot this (on the <span class="in">`Y`</span> axis) against the mid-point of each bin of the predictor on the <span class="in">`X`</span> axis. If the best-fitting line in that plot is approximately linear, then the assumption of linearity of the continuous predictor with the binary outcome is upheld.</span>
+<span id="cb12-30"><a href="#cb12-30"></a></span>
+<span id="cb12-31"><a href="#cb12-31"></a>Well I did say this was more challenging...</span>
+<span id="cb12-32"><a href="#cb12-32"></a></span>
+<span id="cb12-33"><a href="#cb12-33"></a>Ultimately, visualise your data where it's easy enough to do so (which will primarily be the continuous predictor vs continuous outcome case). But when this isn't so straightforward or practical, as in the binary outcome case above, we can in lieu use model-fitting statistics to help us decide whether incorporating non-linear predictor terms in our model is of value or not. In the basic comparison we fit two models - one assuming linearity and one assuming non-linearity (via one of the other methods) and let either some information criterion (e.g. the AIC), or a likelihood ratio test guide us as to the better fit. So it is certainly still possible to incorporate non-linear terms in a statistical model without having first plotted that data. I'll illustrate this shortly.</span>
+<span id="cb12-34"><a href="#cb12-34"></a></span>
+<span id="cb12-35"><a href="#cb12-35"></a>Now let's have a look at some simulated data that demonstrates a non-linear relationship of the predictor with the outcome, and how these different approaches may be applied to model this.</span>
+<span id="cb12-36"><a href="#cb12-36"></a></span>
+<span id="cb12-37"><a href="#cb12-37"></a><span class="fu"># The Data</span></span>
+<span id="cb12-38"><a href="#cb12-38"></a></span>
+<span id="cb12-39"><a href="#cb12-39"></a>We're going to simulate a U-shaped relationship between <span class="in">`X`</span> and <span class="in">`Y`</span> using a simple cosine function. A plot of the data shows:</span>
+<span id="cb12-40"><a href="#cb12-40"></a></span>
+<span id="cb12-43"><a href="#cb12-43"></a><span class="in">```{r}</span></span>
+<span id="cb12-44"><a href="#cb12-44"></a><span class="co">#| label: setup</span></span>
+<span id="cb12-45"><a href="#cb12-45"></a><span class="co">#| message: false</span></span>
+<span id="cb12-46"><a href="#cb12-46"></a><span class="fu">library</span>(splines)</span>
+<span id="cb12-47"><a href="#cb12-47"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb12-48"><a href="#cb12-48"></a><span class="fu">library</span>(tidyr)</span>
+<span id="cb12-49"><a href="#cb12-49"></a><span class="fu">library</span>(emmeans)</span>
+<span id="cb12-50"><a href="#cb12-50"></a><span class="fu">library</span>(paletteer)</span>
+<span id="cb12-51"><a href="#cb12-51"></a><span class="fu">library</span>(flextable)</span>
+<span id="cb12-52"><a href="#cb12-52"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb12-53"><a href="#cb12-53"></a><span class="co"># Define function - use this to construct a curved relationship</span></span>
+<span id="cb12-54"><a href="#cb12-54"></a>n <span class="ot">&lt;-</span> <span class="dv">100</span></span>
+<span id="cb12-55"><a href="#cb12-55"></a>x <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">100</span>, <span class="at">length.out =</span> n)</span>
+<span id="cb12-56"><a href="#cb12-56"></a>fx <span class="ot">&lt;-</span> <span class="fu">cos</span>(<span class="dv">2</span> <span class="sc">*</span> pi <span class="sc">*</span> x)</span>
+<span id="cb12-57"><a href="#cb12-57"></a><span class="co"># Add a bit of noise</span></span>
+<span id="cb12-58"><a href="#cb12-58"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb12-59"><a href="#cb12-59"></a>y <span class="ot">&lt;-</span> fx <span class="sc">+</span> <span class="fu">rnorm</span>(n, <span class="at">sd =</span> <span class="fl">0.2</span>)</span>
+<span id="cb12-60"><a href="#cb12-60"></a>dat <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(x, y)</span>
+<span id="cb12-61"><a href="#cb12-61"></a><span class="co"># Plot</span></span>
+<span id="cb12-62"><a href="#cb12-62"></a><span class="fu">ggplot</span>(dat, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y)) <span class="sc">+</span></span>
+<span id="cb12-63"><a href="#cb12-63"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb12-64"><a href="#cb12-64"></a>  <span class="fu">xlab</span>(<span class="st">"x"</span>) <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">"y"</span>) <span class="sc">+</span> </span>
+<span id="cb12-65"><a href="#cb12-65"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">20</span>)</span>
+<span id="cb12-66"><a href="#cb12-66"></a><span class="in">```</span></span>
+<span id="cb12-67"><a href="#cb12-67"></a></span>
+<span id="cb12-68"><a href="#cb12-68"></a><span class="fu">## Lowess Smoother</span></span>
+<span id="cb12-69"><a href="#cb12-69"></a></span>
+<span id="cb12-70"><a href="#cb12-70"></a>I mentioned using a lowess smoother above to help visualise any potential association in your data. Lowess regression is a type of non-parametric regression method that fits a smooth curve to your data by calculating a weighted average of <span class="in">`Y`</span> across a moving *span* (or window) of <span class="in">`X`</span>. It is a great initial exploratory method for looking at your data. If we fit a lowess curve to these data, we can see the following:</span>
+<span id="cb12-71"><a href="#cb12-71"></a></span>
+<span id="cb12-74"><a href="#cb12-74"></a><span class="in">```{r}</span></span>
+<span id="cb12-75"><a href="#cb12-75"></a><span class="co">#| label: lowess</span></span>
+<span id="cb12-76"><a href="#cb12-76"></a><span class="co">#| message: false</span></span>
+<span id="cb12-77"><a href="#cb12-77"></a><span class="co"># Plot lowess</span></span>
+<span id="cb12-78"><a href="#cb12-78"></a><span class="fu">ggplot</span>(dat, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y)) <span class="sc">+</span></span>
+<span id="cb12-79"><a href="#cb12-79"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb12-80"><a href="#cb12-80"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"loess"</span>, <span class="at">se =</span> F, <span class="at">linewidth =</span> <span class="dv">2</span>, <span class="at">color =</span> <span class="st">"#1F77B4FF"</span>) <span class="sc">+</span> </span>
+<span id="cb12-81"><a href="#cb12-81"></a>  <span class="fu">xlab</span>(<span class="st">"x"</span>) <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">"y"</span>) <span class="sc">+</span> </span>
+<span id="cb12-82"><a href="#cb12-82"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">20</span>)</span>
+<span id="cb12-83"><a href="#cb12-83"></a><span class="in">```</span></span>
+<span id="cb12-84"><a href="#cb12-84"></a></span>
+<span id="cb12-85"><a href="#cb12-85"></a><span class="fu"># Modelling Approaches</span></span>
+<span id="cb12-86"><a href="#cb12-86"></a></span>
+<span id="cb12-87"><a href="#cb12-87"></a>Now let's consider each of the treatments of the predictor described above in modelling the association between <span class="in">`X`</span> and <span class="in">`Y`</span>.</span>
+<span id="cb12-88"><a href="#cb12-88"></a></span>
+<span id="cb12-89"><a href="#cb12-89"></a><span class="fu">## Categorising the Predictor</span></span>
+<span id="cb12-90"><a href="#cb12-90"></a></span>
+<span id="cb12-91"><a href="#cb12-91"></a>I'm not even really going to talk about this - it's very rarely a good thing to categorise a continuous variable. The loss of information and power and introduction of spurious threshold effects (e.g., by grouping 20- to 29-year-olds in one category and 30- to 39-year-olds in another, we create the impression that 20- and 29-year-olds tend to be more alike than 29- and 30-year-olds) are just some of the reasons why this is a bad idea.</span>
+<span id="cb12-92"><a href="#cb12-92"></a></span>
+<span id="cb12-93"><a href="#cb12-93"></a><span class="fu">## Assuming Linearity</span></span>
+<span id="cb12-94"><a href="#cb12-94"></a></span>
+<span id="cb12-95"><a href="#cb12-95"></a>If you bothered to plot the data you would know the association between <span class="in">`X`</span> and <span class="in">`Y`</span> was non-linear. But plenty of people don't bother to do this and just go ahead and fit a model under the assumption of linearity. If we erroneously did this, the best-fitting regression line would appear as in the following plot. Clearly, for these data, this is a bad modelling choice leading one to think there is no association at all between <span class="in">`X`</span> and <span class="in">`Y`</span>.</span>
+<span id="cb12-96"><a href="#cb12-96"></a></span>
+<span id="cb12-99"><a href="#cb12-99"></a><span class="in">```{r}</span></span>
+<span id="cb12-100"><a href="#cb12-100"></a><span class="co">#| label: linear</span></span>
+<span id="cb12-101"><a href="#cb12-101"></a><span class="co"># Model</span></span>
+<span id="cb12-102"><a href="#cb12-102"></a>mod1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> x, <span class="at">data =</span> dat)</span>
+<span id="cb12-103"><a href="#cb12-103"></a><span class="co"># Predict Y from model</span></span>
+<span id="cb12-104"><a href="#cb12-104"></a>dat<span class="sc">$</span>mod1_pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(mod1, dat)</span>
+<span id="cb12-105"><a href="#cb12-105"></a><span class="co"># Plot linear</span></span>
+<span id="cb12-106"><a href="#cb12-106"></a><span class="fu">ggplot</span>(dat, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> mod1_pred)) <span class="sc">+</span></span>
+<span id="cb12-107"><a href="#cb12-107"></a>  <span class="fu">geom_line</span>(<span class="at">linewidth =</span> <span class="dv">2</span>, <span class="at">color =</span> <span class="st">"deeppink"</span>) <span class="sc">+</span> </span>
+<span id="cb12-108"><a href="#cb12-108"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> dat, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y), <span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb12-109"><a href="#cb12-109"></a>  <span class="fu">xlab</span>(<span class="st">"x"</span>) <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">"y"</span>) <span class="sc">+</span> </span>
+<span id="cb12-110"><a href="#cb12-110"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">20</span>)</span>
+<span id="cb12-111"><a href="#cb12-111"></a><span class="in">```</span></span>
+<span id="cb12-112"><a href="#cb12-112"></a></span>
+<span id="cb12-113"><a href="#cb12-113"></a><span class="fu">## Assuming Non-Linearity - Segmented Regression</span></span>
+<span id="cb12-114"><a href="#cb12-114"></a></span>
+<span id="cb12-115"><a href="#cb12-115"></a>Let's now look at a *piecewise* or *linear spline* model. Another name for this is segmented regression - a method in which the predictor is partitioned into intervals and a separate line segment is fit to each interval. Essentially, we are fitting multiple, linked linear regression models. To do this we need to first decide where sensible threshold/s exist in the data for us to partition the predictor, allowing approximate linearity within those partitions. In this case, if we look back at the lowess plot, the vertex of the curve represents a reasonable threshold and so we might decide to use a predictor cut-point at <span class="in">`X = 50`</span>.</span>
+<span id="cb12-116"><a href="#cb12-116"></a></span>
+<span id="cb12-117"><a href="#cb12-117"></a>I won't go into the details of the parameterisation (it's there in the code), but if we fit such a model and then make model predictions from that, we get the following plot. Clearly this is a much better representation of the actual trend in the data, compared to assuming a linear relationship.</span>
+<span id="cb12-118"><a href="#cb12-118"></a></span>
+<span id="cb12-121"><a href="#cb12-121"></a><span class="in">```{r}</span></span>
+<span id="cb12-122"><a href="#cb12-122"></a><span class="co">#| label: piecewise</span></span>
+<span id="cb12-123"><a href="#cb12-123"></a><span class="co"># Create a new variable corresponding to change in slope (using 50 as threshold)</span></span>
+<span id="cb12-124"><a href="#cb12-124"></a>dat <span class="ot">&lt;-</span> dat <span class="sc">|&gt;</span> </span>
+<span id="cb12-125"><a href="#cb12-125"></a>  <span class="fu">mutate</span>(<span class="at">x50 =</span> (x <span class="sc">-</span> <span class="dv">50</span>) <span class="sc">*</span> (x <span class="sc">&gt;=</span> <span class="dv">50</span>))  <span class="co"># will be 0 if x &lt; 50</span></span>
+<span id="cb12-126"><a href="#cb12-126"></a><span class="co"># Model</span></span>
+<span id="cb12-127"><a href="#cb12-127"></a>mod2 <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> x <span class="sc">+</span> x50, <span class="at">data =</span> dat)</span>
+<span id="cb12-128"><a href="#cb12-128"></a><span class="co"># Predict Y from model</span></span>
+<span id="cb12-129"><a href="#cb12-129"></a>dat<span class="sc">$</span>mod2_pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(mod2, dat)</span>
+<span id="cb12-130"><a href="#cb12-130"></a><span class="co"># Plot piecewise</span></span>
+<span id="cb12-131"><a href="#cb12-131"></a><span class="fu">ggplot</span>(dat, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> mod2_pred)) <span class="sc">+</span></span>
+<span id="cb12-132"><a href="#cb12-132"></a>  <span class="fu">geom_line</span>(<span class="at">linewidth =</span> <span class="dv">2</span>, <span class="at">color =</span> <span class="st">"chartreuse"</span>) <span class="sc">+</span> </span>
+<span id="cb12-133"><a href="#cb12-133"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> dat, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y), <span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb12-134"><a href="#cb12-134"></a>  <span class="fu">xlab</span>(<span class="st">"x"</span>) <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">"y"</span>) <span class="sc">+</span> </span>
+<span id="cb12-135"><a href="#cb12-135"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">20</span>)</span>
+<span id="cb12-136"><a href="#cb12-136"></a><span class="in">```</span></span>
+<span id="cb12-137"><a href="#cb12-137"></a></span>
+<span id="cb12-138"><a href="#cb12-138"></a><span class="fu">## Assuming Non-Linearity - Polynomial Regression</span></span>
+<span id="cb12-139"><a href="#cb12-139"></a></span>
+<span id="cb12-140"><a href="#cb12-140"></a>Polynomial regression takes this idea further by allowing smoothness to be incorporated into the modelling of the non-linearity. It is a form of regression analysis in which the association between <span class="in">`X`</span> and <span class="in">`Y`</span> is modelled as an *nth* degree polynomial in <span class="in">`X`</span>. It is important to keep in mind that while the model fits a non-linear curve to the data, the statistical estimation of the model is still considered linear (in the unknown parameters). This differentiates this and models with RCS splines from true non-linear models. See <span class="co">[</span><span class="ot">here</span><span class="co">](https://www.graphpad.com/guides/prism/latest/curve-fitting/reg_the-distinction-between-linear.htm)</span> for some further explanation.</span>
+<span id="cb12-141"><a href="#cb12-141"></a></span>
+<span id="cb12-142"><a href="#cb12-142"></a>So now let's fit a quadratic model to these data. It doesn't look like too bad a fit either, does it.</span>
+<span id="cb12-143"><a href="#cb12-143"></a></span>
+<span id="cb12-146"><a href="#cb12-146"></a><span class="in">```{r}</span></span>
+<span id="cb12-147"><a href="#cb12-147"></a><span class="co">#| label: poly</span></span>
+<span id="cb12-148"><a href="#cb12-148"></a><span class="co"># Model - quadratic</span></span>
+<span id="cb12-149"><a href="#cb12-149"></a>mod3 <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> x <span class="sc">+</span> <span class="fu">I</span>(x<span class="sc">^</span><span class="dv">2</span>), <span class="at">data =</span> dat)</span>
+<span id="cb12-150"><a href="#cb12-150"></a><span class="co"># Predict Y from models</span></span>
+<span id="cb12-151"><a href="#cb12-151"></a>dat<span class="sc">$</span>mod3_pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(mod3, dat)</span>
+<span id="cb12-152"><a href="#cb12-152"></a><span class="co"># Plot piecewise</span></span>
+<span id="cb12-153"><a href="#cb12-153"></a><span class="fu">ggplot</span>(dat, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> mod3_pred)) <span class="sc">+</span></span>
+<span id="cb12-154"><a href="#cb12-154"></a>  <span class="fu">geom_line</span>(<span class="at">linewidth =</span> <span class="dv">2</span>, <span class="at">color =</span> <span class="st">"chocolate1"</span>) <span class="sc">+</span> </span>
+<span id="cb12-155"><a href="#cb12-155"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> dat, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y), <span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb12-156"><a href="#cb12-156"></a>  <span class="fu">xlab</span>(<span class="st">"x"</span>) <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">"y"</span>) <span class="sc">+</span> </span>
+<span id="cb12-157"><a href="#cb12-157"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">20</span>)</span>
+<span id="cb12-158"><a href="#cb12-158"></a><span class="in">```</span></span>
+<span id="cb12-159"><a href="#cb12-159"></a></span>
+<span id="cb12-160"><a href="#cb12-160"></a><span class="fu">## Assuming Non-Linearity - RCS's</span></span>
+<span id="cb12-161"><a href="#cb12-161"></a></span>
+<span id="cb12-162"><a href="#cb12-162"></a><span class="fu">### The Basics of RCS's</span></span>
+<span id="cb12-163"><a href="#cb12-163"></a></span>
+<span id="cb12-164"><a href="#cb12-164"></a>I'd like to make an important first point in that RCS's can be applied in any statistical model that linearly relates a predictor to an outcome. We have been emphasising continuous (predictor) vs continuous (outcome) associations because these are the simplest to conceptualise. But the same applies to any generalised linear or survival model. </span>
+<span id="cb12-165"><a href="#cb12-165"></a></span>
+<span id="cb12-166"><a href="#cb12-166"></a>::: callout-note</span>
+<span id="cb12-167"><a href="#cb12-167"></a>Generalised linear models use link functions to linearise a predictor on the link scale and it is that scale that we are interested in knowing whether the predictor has an approximately linear relationship with the outcome to ensure model assumptions are met. E.g. for binary outcomes we want to know if the association of the continuous predictor and the logit (log-odds) of the outcome is linear or not. We don't so much care about the association of the continuous predictor with the odds or the probability of the outcome because we know these to be non-linear. I will hopefully elaborate on this idea in a future post.</span>
+<span id="cb12-168"><a href="#cb12-168"></a>:::</span>
+<span id="cb12-169"><a href="#cb12-169"></a></span>
+<span id="cb12-170"><a href="#cb12-170"></a>The intuition behind RCS's is that the continuous predictor is broken into multiple intervals at locations called *knots* and for each interval the association between the predictor and the outcome is estimated separately. The association within each interval can be estimated with increasing complexity - from the linear splines that we have already explored in segmented regression, to cubic splines (polynomials) as we describe them here. I won't go into detail of the underlying maths because it does get complicated, but a series of *spline basis functions* are used to 'build' the resulting cubic spline within each interval (please see the papers below for more detail.) The cubic splines within each interval are *restricted* in a couple of ways: firstly, adjacent splines join smoothly at knot locations because their slopes are constrained to be equal at these boundaries, and secondly, the spline functions are constrained to be linear in the tails (i.e., before the ﬁrst and after the last knot)</span>
+<span id="cb12-171"><a href="#cb12-171"></a></span>
+<span id="cb12-172"><a href="#cb12-172"></a><span class="fu">### Fitting RCS's to the Current Data</span></span>
+<span id="cb12-173"><a href="#cb12-173"></a></span>
+<span id="cb12-174"><a href="#cb12-174"></a>There are multiple packages in <span class="in">`R`</span> that allow you to fit RCS's to your data but my go to is the <span class="in">`ns()`</span> function in the <span class="in">`splines`</span> package. I would encourage you to look at the papers listed below if you want to explore alternatives. Using <span class="in">`ns()`</span>, the way to specify a RCS term on the relevant predictor in your model is really quite simple. The main argument that you need to specify is the degrees of freedom (<span class="in">`df`</span>) which is equivalent to the number of different intervals that you want to model in your predictor-outcome relationship. This also corresponds to the number of RCS coefficients in your model output. However, as alluded to above, this DOES NOT represent the number of internal knots that the model uses under the hood to achieve this - which is always one less. So the take home here is that if you want to model 4 intervals of your predictor for which you feel the association differs with your outcome, you specify <span class="in">`df = 4`</span> which signals to <span class="in">`ns()`</span> that it needs to define 3 internal knots.</span>
+<span id="cb12-175"><a href="#cb12-175"></a></span>
+<span id="cb12-176"><a href="#cb12-176"></a>Now the placement of the knots can also be specified, but to be honest I've never felt the need to do this. For the most part things seem to work fine with <span class="in">`ns()`</span> default placement of knots at quantiles of the distribution of the predictor. For example, if you specified <span class="in">`df = 4`</span>, then 3 internal knots would be placed at the 25th, 50th and 75th percentiles of the distribution of <span class="in">`X`</span>.</span>
+<span id="cb12-177"><a href="#cb12-177"></a></span>
+<span id="cb12-178"><a href="#cb12-178"></a>So the basic form of a linear model with an <span class="in">`ns()`</span> term included is then:</span>
+<span id="cb12-179"><a href="#cb12-179"></a></span>
+<span id="cb12-180"><a href="#cb12-180"></a><span class="in">`lm(y ~ ns(x, df = 4), data = dat)`</span></span>
+<span id="cb12-181"><a href="#cb12-181"></a></span>
+<span id="cb12-182"><a href="#cb12-182"></a>and if you wish to check at what actual values of your predictor <span class="in">`ns()`</span> has placed the knots, you can use:</span>
+<span id="cb12-183"><a href="#cb12-183"></a></span>
+<span id="cb12-184"><a href="#cb12-184"></a><span class="in">`attr(ns(x, df = 4), "knots")`</span></span>
+<span id="cb12-185"><a href="#cb12-185"></a></span>
+<span id="cb12-186"><a href="#cb12-186"></a>For an interesting comparison, we are now going to fit 4 models with RCS's:</span>
+<span id="cb12-187"><a href="#cb12-187"></a></span>
+<span id="cb12-188"><a href="#cb12-188"></a><span class="ss">-   </span>2 knots (df = 3)</span>
+<span id="cb12-189"><a href="#cb12-189"></a></span>
+<span id="cb12-190"><a href="#cb12-190"></a><span class="ss">-   </span>3 knots (df = 4)</span>
+<span id="cb12-191"><a href="#cb12-191"></a></span>
+<span id="cb12-192"><a href="#cb12-192"></a><span class="ss">-   </span>4 knots (df = 5)</span>
+<span id="cb12-193"><a href="#cb12-193"></a></span>
+<span id="cb12-194"><a href="#cb12-194"></a><span class="ss">-   </span>20 knots (df = 21)</span>
+<span id="cb12-195"><a href="#cb12-195"></a></span>
+<span id="cb12-196"><a href="#cb12-196"></a>The resultant model predictions are shown below.</span>
+<span id="cb12-197"><a href="#cb12-197"></a></span>
+<span id="cb12-200"><a href="#cb12-200"></a><span class="in">```{r}</span></span>
+<span id="cb12-201"><a href="#cb12-201"></a><span class="co">#| label: rcs plots</span></span>
+<span id="cb12-202"><a href="#cb12-202"></a><span class="co"># Model - rcs with 2 knots</span></span>
+<span id="cb12-203"><a href="#cb12-203"></a>mod4a <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> <span class="fu">ns</span>(x, <span class="at">df =</span> <span class="dv">3</span>), <span class="at">data =</span> dat)</span>
+<span id="cb12-204"><a href="#cb12-204"></a><span class="co"># Model - rcs with 3 knots</span></span>
+<span id="cb12-205"><a href="#cb12-205"></a>mod4b <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> <span class="fu">ns</span>(x, <span class="dv">4</span>), <span class="at">data =</span> dat)</span>
+<span id="cb12-206"><a href="#cb12-206"></a><span class="co"># Model - rcs with 4 knots</span></span>
+<span id="cb12-207"><a href="#cb12-207"></a>mod4c <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> <span class="fu">ns</span>(x, <span class="dv">5</span>), <span class="at">data =</span> dat)</span>
+<span id="cb12-208"><a href="#cb12-208"></a><span class="co"># Model - rcs with 20 knots</span></span>
+<span id="cb12-209"><a href="#cb12-209"></a>mod4d <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> <span class="fu">ns</span>(x, <span class="dv">21</span>), <span class="at">data =</span> dat)</span>
+<span id="cb12-210"><a href="#cb12-210"></a><span class="co"># Predict Y from models</span></span>
+<span id="cb12-211"><a href="#cb12-211"></a>dat<span class="sc">$</span>mod4a_pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(mod4a, dat)</span>
+<span id="cb12-212"><a href="#cb12-212"></a>dat<span class="sc">$</span>mod4b_pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(mod4b, dat)</span>
+<span id="cb12-213"><a href="#cb12-213"></a>dat<span class="sc">$</span>mod4c_pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(mod4c, dat)</span>
+<span id="cb12-214"><a href="#cb12-214"></a>dat<span class="sc">$</span>mod4d_pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(mod4d, dat)</span>
+<span id="cb12-215"><a href="#cb12-215"></a><span class="co"># Convert to long format for easier plotting</span></span>
+<span id="cb12-216"><a href="#cb12-216"></a>dat_long <span class="ot">&lt;-</span> dat <span class="sc">|&gt;</span> </span>
+<span id="cb12-217"><a href="#cb12-217"></a>  <span class="fu">select</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, <span class="dv">7</span><span class="sc">:</span><span class="dv">10</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb12-218"><a href="#cb12-218"></a>  <span class="fu">pivot_longer</span>(<span class="dv">3</span><span class="sc">:</span><span class="dv">6</span>)</span>
+<span id="cb12-219"><a href="#cb12-219"></a><span class="co"># Plot rcs </span></span>
+<span id="cb12-220"><a href="#cb12-220"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb12-221"><a href="#cb12-221"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> dat_long, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> value, <span class="at">color =</span> name), <span class="at">linewidth =</span> <span class="dv">2</span>) <span class="sc">+</span> </span>
+<span id="cb12-222"><a href="#cb12-222"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> dat, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y), <span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb12-223"><a href="#cb12-223"></a>  <span class="fu">scale_color_paletteer_d</span>(<span class="st">"ggsci::category20_d3"</span>, <span class="at">name =</span> <span class="st">"RCS - # of knots"</span>, <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"2"</span>, <span class="st">"3"</span>, <span class="st">"4"</span>, <span class="st">"20"</span>)) <span class="sc">+</span></span>
+<span id="cb12-224"><a href="#cb12-224"></a>  <span class="fu">xlab</span>(<span class="st">"x"</span>) <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">"y"</span>) <span class="sc">+</span> </span>
+<span id="cb12-225"><a href="#cb12-225"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">20</span>) <span class="sc">+</span></span>
+<span id="cb12-226"><a href="#cb12-226"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>), <span class="at">legend.justification =</span> <span class="fu">c</span>(<span class="fl">2.8</span>,<span class="fl">1.1</span>))</span>
+<span id="cb12-227"><a href="#cb12-227"></a><span class="in">```</span></span>
+<span id="cb12-228"><a href="#cb12-228"></a></span>
+<span id="cb12-229"><a href="#cb12-229"></a>What can we gather from this. Well there is no doubt some subjectivity to the interpretation of these plots, but my take is that the RCS with 2 internal knots is actually very similar to the quadratic (polynomial) model - these are both quite 'smoothed'. We then start to see a little more flexibility in the model fit for the models with 3 and 4 internal knots - and really I'd be hard-pushed to say they're that different. We can unequivocally say, though, that the model with 20 internal knots looks like it's picking up a lot of noise in the data - this is a classic case of model over-fitting and we want to avoid this as much as possible. The main issue with overfit models is that they appear to work very well with the data that they were fit to - the predictions are excellent! But the catch is that the model has been fit to the idiosyncrasies of that specific dataset and consequently doesn't generalise well to any other dataset that you might want to test your model on - for these new data the predictions are now terrible! We should always keep this in mind when we are formulating models to fit to our data, irrespective of whether we are using RCS's or not. </span>
+<span id="cb12-230"><a href="#cb12-230"></a></span>
+<span id="cb12-231"><a href="#cb12-231"></a>When we are using RCS's though, for most applications, three to five internal knots strike a nice balance between complicating the model needlessly and fitting data pleasingly. For these data, it would not be unreasonable to suggest that the models with 3 or 4 internal knots capture the fit nicely (one could argue that the 2-knot model is a little underfit, and of course the 20 knot model is grossly overfit). So, from purely eyeballing the plots, I would tend to settle on the 3-knot model. </span>
+<span id="cb12-232"><a href="#cb12-232"></a></span>
+<span id="cb12-233"><a href="#cb12-233"></a><span class="fu">### Model Comparisons</span></span>
+<span id="cb12-234"><a href="#cb12-234"></a></span>
+<span id="cb12-235"><a href="#cb12-235"></a>We can add some statistical rigour to this intuition by calculating model-fit statistics, and I have done this using the <span class="co">[</span><span class="ot">AIC</span><span class="co">](https://en.wikipedia.org/wiki/Akaike_information_criterion)</span> for all the models we have considered in this post. When we use the AIC to help decide on model fit we are looking for (relatively) lower (i.e. more negative numbers). When we calculate these we can see some interesting results. The model assuming linearity is comparatively a terrible fit (<span class="in">`AIC = 227`</span>). The piecewise model isn't too bad though (<span class="in">`AIC = -23`</span>) if we are looking to the RCS models as a gold standard. The quadratic model has a comparatively poorer fit (<span class="in">`AIC = 31`</span>) and this is actually fairly similar to the 2-knot RCS model (<span class="in">`AIC = 11`</span> - remember we said they looked similar). The 3-knot and greater RCS models seem to perform the best, but this is really a case of diminishing returns. We can fairly justify either a 3- (<span class="in">`AIC = -34`</span>) or 4-knot (<span class="in">`AIC = -38`</span>) model and I don't think any reasonable reviewer would criticise you for either choice.</span>
+<span id="cb12-236"><a href="#cb12-236"></a></span>
+<span id="cb12-239"><a href="#cb12-239"></a><span class="in">```{r}</span></span>
+<span id="cb12-240"><a href="#cb12-240"></a><span class="co">#| label: rcs aic</span></span>
+<span id="cb12-241"><a href="#cb12-241"></a><span class="co"># AIC for each model</span></span>
+<span id="cb12-242"><a href="#cb12-242"></a>mods_aic <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">AIC</span>(mod1, mod2, mod3, mod4a, mod4b, mod4c, mod4d))</span>
+<span id="cb12-243"><a href="#cb12-243"></a>mods_aic <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">rownames_to_column</span>(mods_aic, <span class="at">var =</span> <span class="st">"Model"</span>)</span>
+<span id="cb12-244"><a href="#cb12-244"></a>mods_aic <span class="ot">&lt;-</span> mods_aic <span class="sc">|&gt;</span> </span>
+<span id="cb12-245"><a href="#cb12-245"></a>  <span class="fu">select</span>(<span class="sc">-</span>df) <span class="sc">|&gt;</span> </span>
+<span id="cb12-246"><a href="#cb12-246"></a>  <span class="fu">mutate</span>(<span class="at">Model =</span> <span class="fu">case_when</span>(Model <span class="sc">==</span> <span class="st">"mod1"</span> <span class="sc">~</span> <span class="st">"Linear Regression"</span>,</span>
+<span id="cb12-247"><a href="#cb12-247"></a>                           Model <span class="sc">==</span> <span class="st">"mod2"</span> <span class="sc">~</span> <span class="st">"Segmented Regression"</span>,</span>
+<span id="cb12-248"><a href="#cb12-248"></a>                           Model <span class="sc">==</span> <span class="st">"mod3"</span> <span class="sc">~</span> <span class="st">"Polynomial Regression"</span>,</span>
+<span id="cb12-249"><a href="#cb12-249"></a>                           Model <span class="sc">==</span> <span class="st">"mod4a"</span> <span class="sc">~</span> <span class="st">"RCS - 2 knots"</span>,</span>
+<span id="cb12-250"><a href="#cb12-250"></a>                           Model <span class="sc">==</span> <span class="st">"mod4b"</span> <span class="sc">~</span> <span class="st">"RCS - 3 knots"</span>,</span>
+<span id="cb12-251"><a href="#cb12-251"></a>                           Model <span class="sc">==</span> <span class="st">"mod4c"</span> <span class="sc">~</span> <span class="st">"RCS - 4 knots"</span>,</span>
+<span id="cb12-252"><a href="#cb12-252"></a>                           Model <span class="sc">==</span> <span class="st">"mod4d"</span> <span class="sc">~</span> <span class="st">"RCS - 20 knots"</span>))</span>
+<span id="cb12-253"><a href="#cb12-253"></a>mods_aic</span>
+<span id="cb12-254"><a href="#cb12-254"></a></span>
+<span id="cb12-255"><a href="#cb12-255"></a><span class="in">```</span></span>
+<span id="cb12-256"><a href="#cb12-256"></a></span>
+<span id="cb12-257"><a href="#cb12-257"></a><span class="fu">### Interpretation and Presentation of your Results</span></span>
+<span id="cb12-258"><a href="#cb12-258"></a></span>
+<span id="cb12-259"><a href="#cb12-259"></a>Ok, so we're nearly done. You've done the hard work of recognising your predictor has a non-linear relationship with your outcome, assessed multiple approaches to modelling that non-linearity and settled on a RCS with 3 knots on the predictor as the best-fitting model. You excitedly run your model and get the following output:</span>
+<span id="cb12-260"><a href="#cb12-260"></a></span>
+<span id="cb12-263"><a href="#cb12-263"></a><span class="in">```{r}</span></span>
+<span id="cb12-264"><a href="#cb12-264"></a><span class="co">#| label: model output</span></span>
+<span id="cb12-265"><a href="#cb12-265"></a><span class="co">#| tbl-cap: Model Output</span></span>
+<span id="cb12-266"><a href="#cb12-266"></a><span class="co"># Model - rcs with 3 knots</span></span>
+<span id="cb12-267"><a href="#cb12-267"></a>mod4b <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> <span class="fu">ns</span>(x, <span class="dv">4</span>), <span class="at">data =</span> dat)</span>
+<span id="cb12-268"><a href="#cb12-268"></a><span class="co"># Format model results in a table</span></span>
+<span id="cb12-269"><a href="#cb12-269"></a>mod4b <span class="sc">|&gt;</span> gtsummary<span class="sc">::</span><span class="fu">tbl_regression</span>()</span>
+<span id="cb12-270"><a href="#cb12-270"></a><span class="in">```</span></span>
+<span id="cb12-271"><a href="#cb12-271"></a></span>
+<span id="cb12-272"><a href="#cb12-272"></a>WTH?! What does that all mean? Paul, what are you doing to me? I just want the simple output that I'm used to where I can say that a one-unit change in my predictor corresponds to some change in my outcome!</span>
+<span id="cb12-273"><a href="#cb12-273"></a></span>
+<span id="cb12-274"><a href="#cb12-274"></a>I apologise for my facetiousness - no doubt you have cottoned on to the fact that you when you specifically model a non-linear association between two variables, there is no longer any constancy in the relationship between the two variables. A one-unit change in <span class="in">`X`</span> will give a different change in <span class="in">`Y`</span> depending on the values of <span class="in">`X`</span>.</span>
+<span id="cb12-275"><a href="#cb12-275"></a></span>
+<span id="cb12-276"><a href="#cb12-276"></a>So, what to do? First recognise that the RCS coefficients presented to you in a regression output are essentially useless from an interpretation point of view. You can't easily use these to describe the association between <span class="in">`X`</span> and <span class="in">`Y`</span> in reporting your results. </span>
+<span id="cb12-277"><a href="#cb12-277"></a></span>
+<span id="cb12-278"><a href="#cb12-278"></a>The general approach to interpretation and reporting of results in the presence of non-linearity in a regression model is to pick salient values (biological, clinical) of <span class="in">`X`</span> to predict model-estimated values of <span class="in">`Y`</span>. You can quite easily calculate model-estimated means and differences using our friend <span class="in">`emmeans`</span> which I described to you in an earlier post.</span>
+<span id="cb12-279"><a href="#cb12-279"></a></span>
+<span id="cb12-280"><a href="#cb12-280"></a>For illustrative purposes, let's say we're interested in knowing the model-estimated values of <span class="in">`Y`</span> corresponding to <span class="in">`X`</span> values of 20, 30, 50 and 60. We can estimate these values and differences (contrasts) of interest using <span class="in">`emmeans`</span>.</span>
+<span id="cb12-281"><a href="#cb12-281"></a></span>
+<span id="cb12-284"><a href="#cb12-284"></a><span class="in">```{r}</span></span>
+<span id="cb12-285"><a href="#cb12-285"></a><span class="co">#| label: emmeans</span></span>
+<span id="cb12-286"><a href="#cb12-286"></a><span class="co">#| tbl-cap: Estimated Marginal Means</span></span>
+<span id="cb12-287"><a href="#cb12-287"></a><span class="co"># Plot rcs </span></span>
+<span id="cb12-288"><a href="#cb12-288"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb12-289"><a href="#cb12-289"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> dat, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> mod4b_pred), <span class="at">color =</span> <span class="st">"#EE8635"</span>, <span class="at">linewidth =</span> <span class="dv">2</span>) <span class="sc">+</span> </span>
+<span id="cb12-290"><a href="#cb12-290"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> dat, <span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y), <span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb12-291"><a href="#cb12-291"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="fu">c</span>(<span class="dv">20</span>,<span class="dv">30</span>,<span class="dv">50</span>,<span class="dv">60</span>), <span class="at">color =</span> <span class="st">"red"</span>, <span class="at">linetype =</span> <span class="st">"dotted"</span>, <span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb12-292"><a href="#cb12-292"></a>  <span class="fu">xlab</span>(<span class="st">"x"</span>) <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">"y"</span>) <span class="sc">+</span> </span>
+<span id="cb12-293"><a href="#cb12-293"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">20</span>)</span>
+<span id="cb12-294"><a href="#cb12-294"></a><span class="co"># emmeans</span></span>
+<span id="cb12-295"><a href="#cb12-295"></a><span class="fu">emmeans</span>(mod4b, <span class="sc">~</span> x, <span class="at">at =</span> <span class="fu">list</span>(<span class="at">x =</span> <span class="fu">c</span>(<span class="dv">20</span>,<span class="dv">30</span>,<span class="dv">50</span>,<span class="dv">60</span>))) <span class="sc">|&gt;</span> </span>
+<span id="cb12-296"><a href="#cb12-296"></a>  <span class="fu">data.frame</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb12-297"><a href="#cb12-297"></a>  <span class="fu">select</span>(<span class="sc">-</span>df) <span class="sc">|&gt;</span> </span>
+<span id="cb12-298"><a href="#cb12-298"></a>  <span class="fu">rename</span>(<span class="st">"X"</span> <span class="ot">=</span> <span class="st">"x"</span>,</span>
+<span id="cb12-299"><a href="#cb12-299"></a>         <span class="st">"Emmean (Y)"</span> <span class="ot">=</span> <span class="st">"emmean"</span>,</span>
+<span id="cb12-300"><a href="#cb12-300"></a>         <span class="st">"95% C.I. (lower)"</span> <span class="ot">=</span> <span class="st">"lower.CL"</span>,</span>
+<span id="cb12-301"><a href="#cb12-301"></a>         <span class="st">"95% C.I. (upper)"</span> <span class="ot">=</span> <span class="st">"upper.CL"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb12-302"><a href="#cb12-302"></a>  <span class="fu">flextable</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb12-303"><a href="#cb12-303"></a>  <span class="fu">colformat_double</span>(<span class="at">j =</span> <span class="fu">c</span>(<span class="dv">2</span><span class="sc">:</span><span class="dv">5</span>), <span class="at">digits =</span> <span class="dv">3</span>, <span class="at">na_str =</span> <span class="st">"N/A"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb12-304"><a href="#cb12-304"></a>  <span class="fu">set_table_properties</span>(<span class="at">layout =</span> <span class="st">"autofit"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb12-305"><a href="#cb12-305"></a>  <span class="fu">height</span>(<span class="at">height =</span> <span class="dv">1</span>, <span class="at">unit =</span> <span class="st">"cm"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb12-306"><a href="#cb12-306"></a>  <span class="fu">hrule</span>(<span class="at">rule =</span> <span class="st">"atleast"</span>, <span class="at">part =</span> <span class="st">"header"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb12-307"><a href="#cb12-307"></a>  <span class="fu">align</span>(<span class="at">align =</span> <span class="st">"center"</span>, <span class="at">part =</span> <span class="st">"body"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb12-308"><a href="#cb12-308"></a>  <span class="fu">bg</span>(<span class="at">bg =</span> <span class="st">"white"</span>, <span class="at">part =</span> <span class="st">"all"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb12-309"><a href="#cb12-309"></a>  flextable<span class="sc">::</span><span class="fu">font</span>(<span class="at">fontname =</span> <span class="st">"Consolas"</span>, <span class="at">part =</span> <span class="st">"all"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb12-310"><a href="#cb12-310"></a>  <span class="fu">theme_vanilla</span>()</span>
+<span id="cb12-311"><a href="#cb12-311"></a><span class="in">```</span></span>
+<span id="cb12-312"><a href="#cb12-312"></a></span>
+<span id="cb12-315"><a href="#cb12-315"></a><span class="in">```{r}</span></span>
+<span id="cb12-316"><a href="#cb12-316"></a><span class="co">#| label: contrasts</span></span>
+<span id="cb12-317"><a href="#cb12-317"></a><span class="co">#| tbl-cap: Contrasts of Estimated Marginal Means</span></span>
+<span id="cb12-318"><a href="#cb12-318"></a><span class="co"># contrasts</span></span>
+<span id="cb12-319"><a href="#cb12-319"></a>emm <span class="ot">&lt;-</span> <span class="fu">emmeans</span>(mod4b, <span class="sc">~</span> x, <span class="at">at =</span> <span class="fu">list</span>(<span class="at">x =</span> <span class="fu">c</span>(<span class="dv">20</span>,<span class="dv">30</span>,<span class="dv">50</span>,<span class="dv">60</span>)))</span>
+<span id="cb12-320"><a href="#cb12-320"></a>custom <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="st">`</span><span class="at">Change in Y corresponding to change in X from 20 to 30</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">0</span>),</span>
+<span id="cb12-321"><a href="#cb12-321"></a>               <span class="st">`</span><span class="at">Change in Y corresponding to change in X from 50 to 60</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="sc">-</span><span class="dv">1</span>,<span class="dv">1</span>))</span>
+<span id="cb12-322"><a href="#cb12-322"></a><span class="fu">contrast</span>(emm, custom) <span class="sc">|&gt;</span> </span>
+<span id="cb12-323"><a href="#cb12-323"></a>  <span class="fu">summary</span>(<span class="at">infer =</span> T) <span class="sc">|&gt;</span> </span>
+<span id="cb12-324"><a href="#cb12-324"></a>  <span class="fu">data.frame</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb12-325"><a href="#cb12-325"></a>  <span class="fu">select</span>(<span class="fu">c</span>(<span class="sc">-</span>df, <span class="sc">-</span>t.ratio)) <span class="sc">|&gt;</span> </span>
+<span id="cb12-326"><a href="#cb12-326"></a>  <span class="fu">rename</span>(<span class="st">"Contrast"</span> <span class="ot">=</span> <span class="st">"contrast"</span>,</span>
+<span id="cb12-327"><a href="#cb12-327"></a>         <span class="st">"Estimate"</span> <span class="ot">=</span> <span class="st">"estimate"</span>,</span>
+<span id="cb12-328"><a href="#cb12-328"></a>         <span class="st">"95% C.I. (lower)"</span> <span class="ot">=</span> <span class="st">"lower.CL"</span>,</span>
+<span id="cb12-329"><a href="#cb12-329"></a>         <span class="st">"95% C.I. (upper)"</span> <span class="ot">=</span> <span class="st">"upper.CL"</span>,</span>
+<span id="cb12-330"><a href="#cb12-330"></a>         <span class="st">"p"</span> <span class="ot">=</span> <span class="st">"p.value"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb12-331"><a href="#cb12-331"></a>  <span class="fu">flextable</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb12-332"><a href="#cb12-332"></a>  <span class="fu">colformat_double</span>(<span class="at">digits =</span> <span class="dv">3</span>, <span class="at">na_str =</span> <span class="st">"N/A"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb12-333"><a href="#cb12-333"></a>  <span class="fu">set_table_properties</span>(<span class="at">layout =</span> <span class="st">"autofit"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb12-334"><a href="#cb12-334"></a>  <span class="fu">height</span>(<span class="at">height =</span> <span class="dv">1</span>, <span class="at">unit =</span> <span class="st">"cm"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb12-335"><a href="#cb12-335"></a>  <span class="fu">hrule</span>(<span class="at">rule =</span> <span class="st">"atleast"</span>, <span class="at">part =</span> <span class="st">"header"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb12-336"><a href="#cb12-336"></a>  <span class="fu">align</span>(<span class="at">align =</span> <span class="st">"center"</span>, <span class="at">part =</span> <span class="st">"body"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb12-337"><a href="#cb12-337"></a>  <span class="fu">bg</span>(<span class="at">bg =</span> <span class="st">"white"</span>, <span class="at">part =</span> <span class="st">"all"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb12-338"><a href="#cb12-338"></a>  flextable<span class="sc">::</span><span class="fu">font</span>(<span class="at">fontname =</span> <span class="st">"Consolas"</span>, <span class="at">part =</span> <span class="st">"all"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb12-339"><a href="#cb12-339"></a>  <span class="fu">theme_vanilla</span>()</span>
+<span id="cb12-340"><a href="#cb12-340"></a><span class="in">```</span></span>
+<span id="cb12-341"><a href="#cb12-341"></a></span>
+<span id="cb12-342"><a href="#cb12-342"></a>That's probably enough on RCS's for now - this post has turned out longer than I initially anticipated. I hope you have found it helpful and above all, found some motivation to using RCS's in your modelling endeavours if you are not already. </span>
+<span id="cb12-343"><a href="#cb12-343"></a></span>
+<span id="cb12-344"><a href="#cb12-344"></a><span class="fu">### Extra Reading</span></span>
+<span id="cb12-345"><a href="#cb12-345"></a></span>
+<span id="cb12-346"><a href="#cb12-346"></a>If you want to dive a little deeper into RCS's than we've done here, I can thoroughly recommend the following 3 papers:</span>
+<span id="cb12-347"><a href="#cb12-347"></a></span>
+<span id="cb12-348"><a href="#cb12-348"></a><span class="co">[</span><span class="ot">Modeling non-linear relationships in epidemiological data: The application and interpretation of spline models</span><span class="co">](https://www.frontiersin.org/articles/10.3389/fepid.2022.975380/full)</span></span>
+<span id="cb12-349"><a href="#cb12-349"></a></span>
+<span id="cb12-350"><a href="#cb12-350"></a><span class="co">[</span><span class="ot">Cubic splines to model relationships between continuous variables and outcomes: a guide for clinicians</span><span class="co">](https://www.nature.com/articles/s41409-019-0679-x)</span></span>
+<span id="cb12-351"><a href="#cb12-351"></a></span>
+<span id="cb12-352"><a href="#cb12-352"></a><span class="co">[</span><span class="ot">A review of spline function procedures in R</span><span class="co">](https://bmcmedresmethodol.biomedcentral.com/articles/10.1186/s12874-019-0666-3)</span></span>
 </code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
