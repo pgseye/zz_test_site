@@ -2,7 +2,7 @@
 title: "Don't be Scared of Splines"
 date: 2024-04-05
 categories: [analysis, concept, code, modelling, visualisation]
-image: "R_small.jpeg"
+image: "spline_small.jpg"
 description: "Restricted cubic splines give you the ultimate flexiblity in modelling continuous predictors."
 ---
 
