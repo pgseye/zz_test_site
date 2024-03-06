@@ -271,6 +271,7 @@ ggplot() +
   geom_line(data = dat, aes(x = x, y = mod4b_pred), color = "#EE8635", linewidth = 2) + 
   geom_point(data = dat, aes(x = x, y = y), size = 3) +
   geom_vline(xintercept = c(20,30,50,60), color = "red", linetype = "dotted", linewidth = 1) +
+  scale_x_continuous(limits = c(0, 100), breaks = c(20, 30, 50, 60)) +
   xlab("x") + ylab("y") + 
   theme_bw(base_size = 20)
 # emmeans
