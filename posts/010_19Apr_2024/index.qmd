@@ -14,9 +14,26 @@ The former are specific-use tests, whereas the latter is an 'umbrella' model tha
 ```{r}
 #| label: data
 #| message: false
-library(kableExtra)
+library(ggplot2)
 data("genderweight", package = "datarium")
 head(genderweight, 10)
+```
+
+# Plot the Data
+
+It's always helpful to first plot the data:
+
+```{r}
+#| label: plot
+#| message: false
+ggplot(genderweight, aes(x = group, y = weight)) +
+  geom_jitter(size = 3, width = 0.05) +
+  scale_y_continuous(limits = c(50, 100), breaks = seq(50, 100, by = 10)) +
+  stat_summary(fun = mean, 
+               geom = "errorbar", 
+               aes(ymax = after_stat(y), ymin = after_stat(y)), 
+               width = 0.25) +
+  theme_bw(base_size = 20)
 ```
 
 # Two-Sample t-Test
