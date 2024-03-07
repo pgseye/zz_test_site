@@ -46,6 +46,12 @@ ggplot(dat, aes(x = V1, y = V2)) +
   theme_bw(base_size = 18)
 ```
 
+*If they define typing speed as total words/total time elapsed then the time spent buying/making coffee, holding cups and drinking would inflate the denominator without the numerator increasing and make it appear that typing speed has decreased as more time is spent not typing. Would be very hard to get the speed back up just by typing faster in that scenario. So clearly the workplace should be providing each worker with a pre-made, heated camelbak filled with coffee each day to improve productivity. Hands free coffee drinking! (Robb - former Research Student)*
+
+The best response of the week has to go to Robb for this very well considered and justified attempt to have the bosses supply one of these (I'm assuming this is what you really meant Robb):
+
+![New MSNI Coffee Facilities?](images/espresso.png)
+
 So what is this scatterplot showing? Well there appears to be a relationship between coffee drinking and typing speed - drinking more cups of coffee seems to be associated with reduced typing speed (note that I am not suggesting that drinking more coffee *causes* reduced typing speed, merely that there is a correlation). Fitting a regression model to these data produces a best-fitting line with a negative slope or coefficient. It is interesting though - is this direction of 'effect' what one might reasonably expect? Perhaps, but my intuition would be that drinking more coffee might naturally correlate with a faster typing ability (don't forget I've made up the data to suit the story I'm telling - I can only guess as to whether these associations are real or not).
 
 So what else could be going on to produce the pattern that you see? Well, you might then naturally think that there is some other 'lurking' variable (i.e. a confounder) that is distorting or masking the true relationship between coffee consumption and typing speed leading to the association that we actually observe. And, you'd be right...

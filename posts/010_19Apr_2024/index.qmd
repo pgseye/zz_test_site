@@ -72,7 +72,7 @@ The output is slightly different but the information contained is almost the sam
 confint(lm(weight ~ group, data = genderweight))
 ```
 
-Note the slight difference in the 95% C.I.'s to that obtained from the t-test. The general linear model, by assumption, assumes homogeneity of variances among the two groups. 
+Note the slight difference in the 95% C.I.'s to that obtained from the t-test. The general linear model, by assumption, assumes homogeneity of variances among the two groups.
 
 Finally, if you would prefer to know the actual mean values of each group as well, it's possible to amend the `lm` call slightly by removing the intercept term. This gives:
 
