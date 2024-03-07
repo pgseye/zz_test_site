@@ -1,0 +1,70 @@
+---
+title: "Everything is a Linear Model"
+date: 2024-04-19
+categories: [analysis, concept, code, modelling]
+description: "The t-test and linear model with one grouping variable are two sides of the same coin."
+---
+
+I want to share with you a secret - maybe you already know it. It took me a while into my statistical learnings to realise this and since then I've seen people write about it (see [here](https://lindeloev.github.io/tests-as-linear/) and [here](https://danielroelfs.com/blog/everything-is-a-linear-model/) for examples). But the basic idea is that many of the common statistical tests that we use (e.g. t-test, ANOVA, etc) are really nothing more than variations on the general linear model that we're all accustomed to:
+
+$$ y = ax + b $$
+
+The former are specific-use tests, whereas the latter is an 'umbrella' model that can be broadly adapted to accomplish each of the same tasks - perhaps there's something to be said for learning just one set of syntax. Let me illustrate this to you with one example using the two-sample t-test. We'll use the `genderweight` dataset from the `datarium` package in R which consists of the bodyweights of 40 subjects (20 males, 20 females). We're interested in working out whether there is a gender difference. A look at the data shows:
+
+```{r}
+#| label: data
+#| message: false
+library(kableExtra)
+data("genderweight", package = "datarium")
+head(genderweight, 10)
+```
+
+# Two-Sample t-Test
+
+Now, we can run our standard t-test as follows (by default, computing the Welch version of the test which does not assume the same variances in each group). In words, we are asking to test the difference in weight by group (i.e. males vs females).
+
+`t.test(weight ~ group, data = genderweight)`
+
+```{r}
+#| label: ttest
+#| message: false
+t.test(weight ~ group, data = genderweight)
+```
+
+This output tells us that the mean weight in females and males is `63.5 kg` and `85.8 kg`, respectively. Furthermore, the 95% C.I. for the difference (note that is does not give us the actual difference) in those two weights is `-24.5, -20.1` and as the interval does not contain `0` this is statistically significant (as also reflected in the p-value).
+
+# Linear Model
+
+Now, the equivalent linear model (i.e. linear regression) in `R` is simply:
+
+`summary(lm(weight ~ group, data = genderweight))`
+
+```{r}
+#| label: lm
+#| message: false
+summary(lm(weight ~ group, data = genderweight))
+```
+
+The output is slightly different but the information contained is almost the same. `(Intercept)` represents the mean weight in the reference category of the `group` variable (in this case females). `groupM` represents the difference in means between females and males (`22.3 kg`). Note that the 95% C.I.'s aren't presented as part of this standard output, but we can obtain that information easily enough with:
+
+`confint(lm(weight ~ group, data = genderweight))`
+
+```{r}
+#| label: ci
+#| message: false
+confint(lm(weight ~ group, data = genderweight))
+```
+
+Note the slight difference in the 95% C.I.'s to that obtained from the t-test. The general linear model, by assumption, assumes homogeneity of variances among the two groups. 
+
+Finally, if you would prefer to know the actual mean values of each group as well, it's possible to amend the `lm` call slightly by removing the intercept term. This gives:
+
+`summary(lm(weight ~ group - 1, data = genderweight))`
+
+```{r}
+#| label: lm2
+#| message: false
+summary(lm(weight ~ group - 1, data = genderweight))
+```
+
+The two-sample t-test is just one example of a special case of the general linear model. The first link I provided above contains a neat pdf describing many other special cases and I would encourage you to have a look at these. While you might still use these specific tests in your day to day work, it is nonetheless helpful to broaden your statistical knowledge in the realisation that the general linear model is fundamental to all of these.
