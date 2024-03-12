@@ -49,7 +49,7 @@ dat |>
   add_overall()
 ```
 
-In fact, that's a pretty good start. However, we think that including the column frequency as the denominator in every cell is just clutter, so let's remove that. We'll also include an argument for reporting missingness if any exists. Additionally, we want to tidy up some of the variable names - I'll just do `Age`, `Age.of.onset` and the somewhat convoluted `Does.the.time.difference.between.MRI.acquisition.and.EDSS...two.months` for now. In fact, for the latter we'll make it a short name and include a footnote to expand on the variable description. 
+In fact, that's a pretty good start. However, we think that including the column frequency as the denominator in every cell is just clutter, so let's remove that. We'll also include an argument for reporting missingness if any exists. Additionally, we want to tidy up some of the variable names - I'll just do `Age`, `Age.of.onset` and the somewhat convoluted `Does.the.time.difference.between.MRI.acquisition.and.EDSS...two.months` for now. In fact, for the latter we'll make it a short name and include a footnote to expand on the variable description.
 
 ```{r}
 #| label: sum_tab2 
@@ -112,6 +112,16 @@ What if you want to include some model summary fit-statistics:
 #| label: reg_tab3
 mod |> 
   tbl_regression(exponentiate = T) |> 
+  add_glance_source_note()
+```
+
+That's all great, but I've just noticed that the predictor variable isn't formatted so well, so let's change that.
+
+```{r}
+#| label: reg_tab4
+mod |> 
+  tbl_regression(exponentiate = T,
+                 label = c(Age.of.onset ~ "Age onset")) |> 
   add_glance_source_note()
 ```
 
