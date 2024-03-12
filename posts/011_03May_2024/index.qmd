@@ -1,0 +1,122 @@
+---
+title: "gtsummary - Your New Go-To for Tables"
+date: 2024-05-03
+categories: [code, presentation]
+image: "logo.png"
+description: "Create summary and regression tables in a flash."
+---
+
+I thought I should bring this excellent package to your attention if you weren't aware that it exists, as I have taken `gtsummary` somewhat for granted over the last few years since it first appeared on `CRAN`. I'm prompted in part due to a research student having to recently remake several "Table 1" - style tables (following a data change) in manuscript preparation for submission and they were going to redo this manually. When they realised what `gtsummary` could do in terms of saving them time, I think they were fairly impressed. So today, I'm just going to show you a couple of basic functionalities of this package. It is extremely extensible and if you can't find answers for your own customisation needs on the homepage or vignette, I have found googling the issue often brings an answer. The developer is also quite active on `stackoverflow.com`. The homepage can be found at:
+
+<https://www.danieldsjoberg.com/gtsummary/index.html>
+
+We going to use a publicly available MS dataset, so if you want to run the code yourself you will first need to download the data from:
+
+[Brain MRI dataset of multiple sclerosis with consensus manual lesion segmentation and patient meta information](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC9043670/)
+
+This dataset contains the demographic and clinical data on 60 patients (MRI data in accompanying datasets available at link).
+
+```{r}
+#| label: load data
+#| include: false
+dat <- read.csv("/Users/paulsanfilippo/Dropbox/Alfred Neuroscience/zz_test_site/posts/011_03May_2024/Supplementary Table 1 for patient info .csv", header = T)
+```
+
+# Load and Inspect the Data
+
+Let's have a look at the first few lines:
+
+```{r}
+#| label: data
+head(dat, 10)
+```
+
+# Summary Table
+
+Let's say you want to create a summary table showing descriptive statistics of the various demographic and clinical characteristics, stratified by DMT (`Types.of.Medicines`). In the first instance, this can be a basic call of `tbl_summary()` specifying `Types.of.Medicines` as the stratifying variable. We want to specify **medians (IQR)** and **n's (%'s)** as the summary statistics.
+
+```{r}
+#| label: sum_tab1 
+#| warning: false
+library(gtsummary)
+dat |> 
+  select(-ID) |> 
+  tbl_summary(
+    by = Types.of.Medicines,
+    statistic = list(all_continuous() ~ "{median} ({p25},{p75})",
+                     all_categorical() ~ "{n}/{N} ({p}%)"),
+    digits = all_continuous() ~ 1) |> 
+  add_overall()
+```
+
+In fact, that's a pretty good start. However, we think that including the column frequency as the denominator in every cell is just clutter, so let's remove that. We'll also include an argument for reporting missingness if any exists. Additionally, we want to tidy up some of the variable names - I'll just do `Age`, `Age.of.onset` and the somewhat convoluted `Does.the.time.difference.between.MRI.acquisition.and.EDSS...two.months` for now. In fact, for the latter we'll make it a short name and include a footnote to expand on the variable description. 
+
+```{r}
+#| label: sum_tab2 
+dat |> 
+  select(-ID) |> 
+  tbl_summary(
+    by = Types.of.Medicines,
+    statistic = list(all_continuous() ~ "{median} ({p25},{p75})",
+                     all_categorical() ~ "{n} ({p}%)"),
+    digits = all_continuous() ~ 1,
+    missing_text = "(Missing)",
+    label = c(Age ~ "Age, yrs - median (IQR)",
+              Age.of.onset ~ "Age onset, yrs - median (IQR)",
+              Does.the.time.difference.between.MRI.acquisition.and.EDSS...two.months ~ "Time difference < 2 months")) |> 
+    modify_table_styling(columns = label,
+                         rows = label == "Time difference < 2 months",
+                         footnote = "Does the time difference between MRI acquisition and EDSS < two months") |> 
+  add_overall()
+```
+
+If you want to save the created table, you can do this in one of two ways. The first is save it directly as a `.docx` file which should work most of the time. However, if you notice any formatting issues, change the save target file extension to `.html`, then open that in Word and you should be ok as well. An important point is to first save the table in your `R` script to an object - e.g.
+
+`tbl <- dat |> tbl_summary(...`
+
+The command to save the table as a Word (or html file is then):
+
+`gt::gtsave(as_gt(tbl), filename = "summary_table.docx", path = "...your_path.../")`
+
+# Regression Table
+
+`gtsummary`'s other strength is in making regression tables, and the relevant workhorse function here is `tbl_regression()`.
+
+Let's say we're interested in the association between `Age onset` and the presence of `Sensory` symptoms (I don't really know whether this makes sense or not but it's just to run a regression). The outcome variable here is binary, so we'll need to specify a logistic regression model. We can do that as follows in `R` and we obtain the standard (fairly bland from the point of view of presentation/collaboration) ouput:
+
+```{r}
+#| label: log_reg
+mod <- glm(Sensory ~ Age.of.onset, family = 'binomial', data = dat)
+summary(mod)
+```
+
+Let's pretty this up by passing the model results through `tbl_regression()`:
+
+```{r}
+#| label: reg_tab1
+mod |> 
+  tbl_regression()
+```
+
+Not bad, but we'd like the output to be in terms of odds-ratios rather than log odds-ratios. That's actually quite simple to do:
+
+```{r}
+#| label: reg_tab2
+mod |> 
+  tbl_regression(exponentiate = T)
+```
+
+What if you want to include some model summary fit-statistics:
+
+```{r}
+#| label: reg_tab3
+mod |> 
+  tbl_regression(exponentiate = T) |> 
+  add_glance_source_note()
+```
+
+`tbl_regression()` supports almost any model you can throw at it.
+
+# Last Word
+
+I hope you find both of these functions useful in your day-to-day coding and data analysis - they are great additions to your `R` toolkit, not only for their time-saving capabilities, but also the fantastic improvements to the visual style of results formatting that you can achieve, for which base `R` often falls far short.

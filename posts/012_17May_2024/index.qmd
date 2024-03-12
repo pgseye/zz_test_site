@@ -1,0 +1,6 @@
+---
+title: "Prop Odds"
+date: 2024-05-17
+categories: [analysis, concept, code, modelling]
+description: ""
+---

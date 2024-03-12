@@ -1,9 +1,9 @@
 ---
 title: "Logistic regression under the hood"
-date: 2024-12-01
+date: 2024-05-31
 categories: [code, analysis, modelling, visualisation, probability]
 #image: "R_small.jpeg"
-description: "See how log-odds, odds and probability are all sides of the same logistic regression 'coin'."
+description: "See how log-odds, odds and probability are all simply versions of each other - and fundamental to logistic regression."
 ---
 
 ```{r}
