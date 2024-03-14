@@ -7,8 +7,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="dcterms.date" content="2024-05-17">
+<meta name="description" content="The proportional odds model is the best choice when we are regressing an ordinal outcome.">
 
-<title>Test Site 2 - Prop Odds</title>
+<title>Test Site 2 - Ordinal Logistic Regression for Ordinal Outcomes?</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -142,22 +143,42 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <!-- sidebar -->
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#some-background" id="toc-some-background" class="nav-link active" data-scroll-target="#some-background"><span class="header-section-number">1</span> Some Background</a></li>
+  <li><a href="#the-debate" id="toc-the-debate" class="nav-link" data-scroll-target="#the-debate"><span class="header-section-number">2</span> The Debate</a></li>
+  <li><a href="#analysis-options" id="toc-analysis-options" class="nav-link" data-scroll-target="#analysis-options"><span class="header-section-number">3</span> Analysis Options</a>
+  <ul class="collapse">
+  <li><a href="#load-and-inspect-the-data" id="toc-load-and-inspect-the-data" class="nav-link" data-scroll-target="#load-and-inspect-the-data"><span class="header-section-number">3.1</span> Load and Inspect the Data</a></li>
+  <li><a href="#linear-regression" id="toc-linear-regression" class="nav-link" data-scroll-target="#linear-regression"><span class="header-section-number">3.2</span> Linear Regression</a></li>
+  <li><a href="#ordinal-logistic-regression" id="toc-ordinal-logistic-regression" class="nav-link" data-scroll-target="#ordinal-logistic-regression"><span class="header-section-number">3.3</span> Ordinal Logistic Regression</a></li>
+  </ul></li>
+  <li><a href="#what-about-edss" id="toc-what-about-edss" class="nav-link" data-scroll-target="#what-about-edss"><span class="header-section-number">4</span> What About EDSS?</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<div class="quarto-title-block"><div><h1 class="title">Prop Odds</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
+<div class="quarto-title-block"><div><h1 class="title">Ordinal Logistic Regression for Ordinal Outcomes?</h1><button type="button" class="btn code-tools-button dropdown-toggle" id="quarto-code-tools-menu" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi"></i> Code</button><ul class="dropdown-menu dropdown-menu-end" aria-labelelledby="quarto-code-tools-menu"><li><a id="quarto-show-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Show All Code</a></li><li><a id="quarto-hide-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Hide All Code</a></li><li><hr class="dropdown-divider"></li><li><a id="quarto-view-source" class="dropdown-item" href="javascript:void(0)" role="button">View Source</a></li></ul></div></div>
   <div class="quarto-categories">
     <div class="quarto-category">analysis</div>
     <div class="quarto-category">concept</div>
     <div class="quarto-category">code</div>
+    <div class="quarto-category">logistic</div>
     <div class="quarto-category">modelling</div>
   </div>
   </div>
 
+<div>
+  <div class="description">
+    The proportional odds model is the best choice when we are regressing an ordinal outcome.
+  </div>
+</div>
 
 
 <div class="quarto-title-meta">
@@ -178,10 +199,1603 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
+<section id="some-background" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Some Background</h1>
+<p>It has become clear to me over the years that there is usually no one <em>correct</em> way to kick a statistical goal - several approaches might all converge to the same “best” answer. To that end it’s also often difficult to identify an unequivocally <em>incorrect</em> way to do something. So data analysis is not black and white - there are shades of grey (not 50 though). However, there are some approaches that are well-intentioned but ill-considered and some that are performed purely as shortcuts - whether that be for the sake of time or simplicity. Both conditions can lead to results and their interpretation that are misleading at best.</p>
+<p>Where am I heading with this? Well, today’s post is based on something as fundamental as the scale that we use to measure or record our data on. It might be good at this point to take a few moments to look over the following link (there is no point in me re-inventing the wheel as Harvey Motulsky - the author of <code>Prism</code> - explains things so eloquently):</p>
+<p><a href="https://www.graphpad.com/support/faq/what-is-the-difference-between-ordinal-interval-and-ratio-variables-why-should-i-care/">Measurement/Variable Scales</a></p>
+<p>This page describes a ‘hierarchy’ of measurement/variable scales (nominal -&gt; ordinal -&gt; interval -&gt; ratio) as well as their differences. If you’re unfamiliar with these concepts, it would be worthwhile brushing up on them as they are integral to the discussion that follows.</p>
+</section>
+<section id="the-debate" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> The Debate</h1>
+<p>There is a long-standing debate in the statistical literature that continues to simmer in the background, and I would guess depending on which camp you align yourself with, you are guilty of egregious statistical crimes from the other. The debate centres around the question of:</p>
+<p><strong>Can you ever treat ordinal data as if it were interval?</strong></p>
+<p>An ordinal variable is one that - like an interval (numeric) variable - contains numbers, but is in fact a set of ordered categories. So, the numbers that are attached to an ordinal variable aren’t really quantitative, but instead describe the <strong>order</strong> of responses, not the actual <strong>numeric</strong> value. Ordinal variables are typically ratings or rankings - good examples are Likert scales and patient reported outcomes (PRO’s). Think of the difference between a Pain Scale (1-10) and human weight in kg.</p>
+<p>One camp will maintain that as ordered categories, the intervals between the values on the Pain Scale are not equal. That is, we cannot say with confidence that the increase in pain that a patient feels going from a score of 2 to 3, is the same increase they would feel in going from a score of 7 to 8. As a corollary, however, we can say that the increase in weight with each additional kg remains the same across all values. Consequently, this camp also maintains that any mean, correlation, or other numerical test applied to these ordered categorical numerals is invalid and only non-parametic statistics are really appropriate. Some references I’ve found in support of this camp are <a href="https://www.sciencedirect.com/science/article/abs/pii/S0022103117307746">here</a>, <a href="https://pubmed.ncbi.nlm.nih.gov/28009595/">here</a> and <a href="https://pubmed.ncbi.nlm.nih.gov/2331075/">here</a>.</p>
+<p>The other camp will acknowledge that while ordinal variables may not conform to all the regular assumptions of interval variables, parametric tests can still be practically valid and informative in many situations. Additionally, they’re usually easier to run and easier to communicate. Similarly, some references I’ve found in support of this camp are <a href="https://www.frontiersin.org/articles/10.3389/feduc.2020.589965/full">here</a>, <a href="https://www.tandfonline.com/doi/abs/10.1080/01488376.2017.1329775">here</a> and <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3886444/">here</a>.</p>
+<p>So, who’s right?</p>
+<p>The answer is ‘Yes’.</p>
+<p>Facetiousness aside, I don’t really have an answer for this. My feeling is that it ultimately depends on the research question at hand, the assumptions you are willing to make, and the robustness of your position and justification in doing so. I will concede that I always find it easier to deal with analyses that assume variables are continuous (and by definition at least interval in nature in the scale measurement hierarchy). That aside, I start to feel uncomfortable when you can’t reasonably justify the equivalence of interval differences and especially so when working with small scales where there might only be half a dozen values. In these cases, I really think it’s a bit of a stretch to use parametric statistics.</p>
+</section>
+<section id="analysis-options" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Analysis Options</h1>
+<p>Without taking a hard stance one way or the other, and considering that there is some nuance to this debate, I want to now change tack and explain what you <em>can</em> do if you are unsure as to the best approach to analyse your ordinal-scale data. I am not going to delve into the descriptive and simple hypothesis statistics side of things where you can easily choose non-parametric alternatives to what you commonly use. For example, medians and interquartile ranges vs means and standard deviations; and Mann-Whitney U tests instead of t-tests. A quick Google search will easily find you lots of information on this.</p>
+<p>Instead I want to focus on regression models, as this is where some confusion can set in. It’s important to note that all of this is really only relevant in relation to your outcome (i.e dependent) variable - you can have variables on different scales as predictors and still run a linear regression if your outcome is interval (or ratio) in nature.</p>
+<p>So, what can we do if we want to regress an ordinal variable on a set of predictors?</p>
+<section id="load-and-inspect-the-data" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="load-and-inspect-the-data"><span class="header-section-number">3.1</span> Load and Inspect the Data</h2>
+<p>We first need to load some data to experiment on, and we’ll use the same publicly available MS dataset that we used in the last post. So if you want to run the code yourself you will first need to download the data from:</p>
+<p><a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC9043670/">Brain MRI dataset of multiple sclerosis with consensus manual lesion segmentation and patient meta information</a></p>
+<p>This dataset contains the demographic and clinical data on 60 patients (MRI data in accompanying datasets available at link).</p>
+<p>Let’s have a look at the first few lines:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">head</span>(dat, <span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="table table-sm table-striped small">
+<colgroup>
+<col style="width: 0%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 3%">
+<col style="width: 1%">
+<col style="width: 17%">
+<col style="width: 4%">
+<col style="width: 5%">
+<col style="width: 8%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 2%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 1%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 1%">
+<col style="width: 6%">
+<col style="width: 2%">
+<col style="width: 3%">
+<col style="width: 3%">
+<col style="width: 1%">
+<col style="width: 2%">
+<col style="width: 4%">
+<col style="width: 2%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: right;">ID</th>
+<th style="text-align: left;">Gender</th>
+<th style="text-align: right;">Age</th>
+<th style="text-align: right;">Age.of.onset</th>
+<th style="text-align: right;">EDSS</th>
+<th style="text-align: left;">Does.the.time.difference.between.MRI.acquisition.and.EDSS…two.months</th>
+<th style="text-align: left;">Types.of.Medicines</th>
+<th style="text-align: left;">Presenting.Symptom</th>
+<th style="text-align: left;">Dose.the.patient.has.Co.moroidity</th>
+<th style="text-align: right;">Pyramidal</th>
+<th style="text-align: right;">Cerebella</th>
+<th style="text-align: right;">Brain.stem</th>
+<th style="text-align: right;">Sensory</th>
+<th style="text-align: right;">Sphincters</th>
+<th style="text-align: right;">Visual</th>
+<th style="text-align: right;">Mental</th>
+<th style="text-align: right;">Speech</th>
+<th style="text-align: right;">Motor.System</th>
+<th style="text-align: right;">Sensory.System</th>
+<th style="text-align: right;">Coordination</th>
+<th style="text-align: right;">Gait</th>
+<th style="text-align: right;">Bowel.and.bladder.function</th>
+<th style="text-align: right;">Mobility</th>
+<th style="text-align: right;">Mental.State</th>
+<th style="text-align: right;">Optic.discs</th>
+<th style="text-align: right;">Fields</th>
+<th style="text-align: right;">Nystagmus</th>
+<th style="text-align: right;">Ocular.Movement</th>
+<th style="text-align: right;">Swallowing</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">56</td>
+<td style="text-align: right;">43</td>
+<td style="text-align: right;">3.0</td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;">Gelenia</td>
+<td style="text-align: left;">Motor</td>
+<td style="text-align: left;">No</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">29</td>
+<td style="text-align: right;">19</td>
+<td style="text-align: right;">1.5</td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;">Gelenia</td>
+<td style="text-align: left;">Sensory</td>
+<td style="text-align: left;">No</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">3</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">4.0</td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;">Tysabri</td>
+<td style="text-align: left;">Motor</td>
+<td style="text-align: left;">No</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">4</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">24</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">6.0</td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;">Tysabri</td>
+<td style="text-align: left;">Sensory</td>
+<td style="text-align: left;">No</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">5</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">33</td>
+<td style="text-align: right;">31</td>
+<td style="text-align: right;">0.0</td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;">Avonex</td>
+<td style="text-align: left;">Pain</td>
+<td style="text-align: left;">No</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">6</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">44</td>
+<td style="text-align: right;">40</td>
+<td style="text-align: right;">5.0</td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;">Avonex</td>
+<td style="text-align: left;">Motor</td>
+<td style="text-align: left;">No</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">7</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">43</td>
+<td style="text-align: right;">40</td>
+<td style="text-align: right;">3.5</td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;">Betaferon</td>
+<td style="text-align: left;">Motor &amp; Visual</td>
+<td style="text-align: left;">No</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">8</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">32</td>
+<td style="text-align: right;">30</td>
+<td style="text-align: right;">1.0</td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;">Gelenia</td>
+<td style="text-align: left;">Visual</td>
+<td style="text-align: left;">No</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">9</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">36</td>
+<td style="text-align: right;">33</td>
+<td style="text-align: right;">6.0</td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;">Gelenia</td>
+<td style="text-align: left;">Motore</td>
+<td style="text-align: left;">No</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">10</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">39</td>
+<td style="text-align: right;">35</td>
+<td style="text-align: right;">3.0</td>
+<td style="text-align: left;">No</td>
+<td style="text-align: left;">Betaferon</td>
+<td style="text-align: left;">Motor &amp; Behavioural</td>
+<td style="text-align: left;">No</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<p>Let’s say we want to regress <code>EDSS</code> on <code>Sensory</code> (the presence of sensory symptoms). In the first instance it’s always good to visualise the data, so let’s do that by using some boxplots. It appears that sensory symptoms are associated with higher EDSS - eyeballing the plot suggests that the median <code>EDSS</code> is ~ 1.5 in the absence of <code>Sensory</code> symptoms and ~ 3 when <code>Sensory</code> symptoms are present.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb2-2"><a href="#cb2-2"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb2-3"><a href="#cb2-3"></a><span class="fu">library</span>(gtsummary) </span>
+<span id="cb2-4"><a href="#cb2-4"></a><span class="fu">library</span>(ordinal)</span>
+<span id="cb2-5"><a href="#cb2-5"></a><span class="fu">library</span>(ggeffects)</span>
+<span id="cb2-6"><a href="#cb2-6"></a><span class="fu">ggplot</span>(dat, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">factor</span>(Sensory), <span class="at">y =</span> EDSS)) <span class="sc">+</span></span>
+<span id="cb2-7"><a href="#cb2-7"></a>  <span class="fu">geom_boxplot</span>() <span class="sc">+</span></span>
+<span id="cb2-8"><a href="#cb2-8"></a>  <span class="fu">geom_dotplot</span>(<span class="at">binaxis =</span> <span class="st">'y'</span>, <span class="at">stackdir =</span> <span class="st">'center'</span>, <span class="at">position =</span> <span class="fu">position_dodge</span>(<span class="dv">1</span>), <span class="at">dotsize =</span> <span class="fl">0.8</span>) <span class="sc">+</span></span>
+<span id="cb2-9"><a href="#cb2-9"></a>  <span class="fu">xlab</span>(<span class="st">"Sensory Symptoms"</span>) <span class="sc">+</span></span>
+<span id="cb2-10"><a href="#cb2-10"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">20</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/boxplot-1.png" class="img-fluid figure-img" width="1152"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="linear-regression" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="linear-regression"><span class="header-section-number">3.2</span> Linear Regression</h2>
+<p>One way to model the association between the two variables would be to simply treat EDSS as a numeric variable. That’s very straightforward and I’m sure you’ve run a linear regression model before. I’ll use the <code>gtsummary</code> package that I highlighted in the last post to format the results.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>mod1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(EDSS <span class="sc">~</span> Sensory, <span class="at">data =</span> dat)</span>
+<span id="cb3-2"><a href="#cb3-2"></a>mod1 <span class="sc">|&gt;</span> <span class="fu">tbl_regression</span>(<span class="at">intercept =</span> T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div id="nzcuyknisp" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#nzcuyknisp table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#nzcuyknisp thead, #nzcuyknisp tbody, #nzcuyknisp tfoot, #nzcuyknisp tr, #nzcuyknisp td, #nzcuyknisp th {
+  border-style: none;
+}
+
+#nzcuyknisp p {
+  margin: 0;
+  padding: 0;
+}
+
+#nzcuyknisp .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#nzcuyknisp .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#nzcuyknisp .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#nzcuyknisp .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#nzcuyknisp .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#nzcuyknisp .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#nzcuyknisp .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#nzcuyknisp .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#nzcuyknisp .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#nzcuyknisp .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#nzcuyknisp .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#nzcuyknisp .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#nzcuyknisp .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#nzcuyknisp .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#nzcuyknisp .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#nzcuyknisp .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#nzcuyknisp .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#nzcuyknisp .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#nzcuyknisp .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#nzcuyknisp .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#nzcuyknisp .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#nzcuyknisp .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#nzcuyknisp .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#nzcuyknisp .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#nzcuyknisp .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#nzcuyknisp .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#nzcuyknisp .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#nzcuyknisp .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#nzcuyknisp .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#nzcuyknisp .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#nzcuyknisp .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#nzcuyknisp .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#nzcuyknisp .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#nzcuyknisp .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#nzcuyknisp .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#nzcuyknisp .gt_left {
+  text-align: left;
+}
+
+#nzcuyknisp .gt_center {
+  text-align: center;
+}
+
+#nzcuyknisp .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#nzcuyknisp .gt_font_normal {
+  font-weight: normal;
+}
+
+#nzcuyknisp .gt_font_bold {
+  font-weight: bold;
+}
+
+#nzcuyknisp .gt_font_italic {
+  font-style: italic;
+}
+
+#nzcuyknisp .gt_super {
+  font-size: 65%;
+}
+
+#nzcuyknisp .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#nzcuyknisp .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#nzcuyknisp .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#nzcuyknisp .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#nzcuyknisp .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#nzcuyknisp .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#nzcuyknisp .gt_indent_5 {
+  text-indent: 25px;
+}
+</style>
+
+<table class="gt_table table table-sm table-striped small" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+<thead>
+<tr class="header gt_col_headings">
+<th id="<strong>Characteristic</strong>" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col"><strong>Characteristic</strong></th>
+<th id="<strong>Beta</strong>" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col"><strong>Beta</strong></th>
+<th id="<strong>95% CI</strong><span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;&quot;><sup>1</sup></span>" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col"><strong>95% CI</strong><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>1</sup></span></th>
+<th id="<strong>p-value</strong>" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col"><strong>p-value</strong></th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_left" headers="label">(Intercept)</td>
+<td class="gt_row gt_center" headers="estimate">2.0</td>
+<td class="gt_row gt_center" headers="ci">1.5, 2.5</td>
+<td class="gt_row gt_center" headers="p.value">&lt;0.001</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="label">Sensory</td>
+<td class="gt_row gt_center" headers="estimate">0.93</td>
+<td class="gt_row gt_center" headers="ci">0.05, 1.8</td>
+<td class="gt_row gt_center" headers="p.value">0.038</td>
+</tr>
+</tbody><tfoot class="gt_footnotes">
+<tr class="odd">
+<td colspan="4" class="gt_footnote"><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>1</sup></span> CI = Confidence Interval</td>
+</tr>
+</tfoot>
+
+</table>
+
+</div>
+</div>
+</div>
+<p>While we are now estimating means and not medians, the model results are mostly in line with trend observed in the boxplot. The <code>EDSS</code> in the reference group (no symptoms) is on average, <code>2.0</code>, and the difference in <code>EDSS</code> in the group with symptoms is an additional 0.93 units (i.e.&nbsp;<code>2.9</code> on average).</p>
+<p>There is nothing too difficult about that - if you are willing to accept that the difference between any two equally spaced EDSS scores has about the same clinical impact on the patient, and you are willing to accept the assumptions that go along with linear regression.</p>
+</section>
+<section id="ordinal-logistic-regression" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="ordinal-logistic-regression"><span class="header-section-number">3.3</span> Ordinal Logistic Regression</h2>
+<p>An alternative approach to model the association between the two variables is to treat EDSS as an ordinal variable. Ordinal logistic regression (using the <em>proportional-odds</em> or the <em>cumulative-logit</em> model) may be used with an outcome variable that consists of three or more categories to model the <strong>cumulative probability</strong> of falling in any particular category <strong>or those below</strong>, versus all categories above. In other words we are considering cumulative probabilities up to a threshold, thereby making the whole range of ordinal categories binary at that threshold. Another way to think about the cumulative-logit model is that it essentially consists of a set of binary logistic regression models for each possible binary dichotomisation (i.e.&nbsp;threshold/cut-point) of the ordinal outcome. For example, in the simplest case of an (ordered) three-category outcome, there are two possible thresholds and thus two possible binary logistic regression models. The proportional-odds model allows a comparison of category 1 vs categories 2-3, and simultaneously categories 1-2 vs 3, producing a kind of averaged or summary odds ratio reflecting one overall ‘effect’ estimate (if one traditionally considered ‘important’ assumption is met - more on this soon).</p>
+<p>Conceptually, the proportional-odds model is based on the idea of a continuous <em>latent</em> outcome - think of a normal distribution. While we cannot observe or measure this construct, the actual observed ordered categories are <strong>mapped</strong> to this latent continuous variable and used in the model estimation process. In addition to the ‘effect’ estimates for each predictor in the model, a series of <em>intercepts</em> (which represent the thresholds or cutpoints) are also typically reported, depending on your software. Let’s actually run one of these models now.</p>
+<p>There are a couple of packages in <code>R</code> that estimate proportional-odds models and today we’ll use the <code>ordinal</code> package. The essential function here is <code>clm()</code>. An important thing to note with these models is that your outcome has to be formatted as a factor. The basic specification is simple and in line with typical <code>R</code> models:</p>
+<p><code>clm(EDSS ~ Sensory, data = dat, link = "logit")</code></p>
+<p>We will format our results using the excellent <code>gtsummary</code> package I introduced you to in the last post.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>dat<span class="sc">$</span>EDSS <span class="ot">&lt;-</span> <span class="fu">factor</span>(dat<span class="sc">$</span>EDSS) <span class="co"># format EDSS as factor</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a>mod2 <span class="ot">&lt;-</span> <span class="fu">clm</span>(EDSS <span class="sc">~</span> <span class="fu">factor</span>(Sensory), <span class="at">data =</span> dat, <span class="at">link =</span> <span class="st">"logit"</span>)</span>
+<span id="cb4-3"><a href="#cb4-3"></a>mod2 <span class="sc">|&gt;</span> <span class="fu">tbl_regression</span>(<span class="at">exponentiate =</span> T, <span class="at">intercept =</span> T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div id="rgjltpsswu" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#rgjltpsswu table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#rgjltpsswu thead, #rgjltpsswu tbody, #rgjltpsswu tfoot, #rgjltpsswu tr, #rgjltpsswu td, #rgjltpsswu th {
+  border-style: none;
+}
+
+#rgjltpsswu p {
+  margin: 0;
+  padding: 0;
+}
+
+#rgjltpsswu .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#rgjltpsswu .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#rgjltpsswu .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#rgjltpsswu .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#rgjltpsswu .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#rgjltpsswu .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#rgjltpsswu .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#rgjltpsswu .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#rgjltpsswu .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#rgjltpsswu .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#rgjltpsswu .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#rgjltpsswu .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#rgjltpsswu .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#rgjltpsswu .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#rgjltpsswu .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#rgjltpsswu .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#rgjltpsswu .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#rgjltpsswu .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#rgjltpsswu .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#rgjltpsswu .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#rgjltpsswu .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#rgjltpsswu .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#rgjltpsswu .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#rgjltpsswu .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#rgjltpsswu .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#rgjltpsswu .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#rgjltpsswu .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#rgjltpsswu .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#rgjltpsswu .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#rgjltpsswu .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#rgjltpsswu .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#rgjltpsswu .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#rgjltpsswu .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#rgjltpsswu .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#rgjltpsswu .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#rgjltpsswu .gt_left {
+  text-align: left;
+}
+
+#rgjltpsswu .gt_center {
+  text-align: center;
+}
+
+#rgjltpsswu .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#rgjltpsswu .gt_font_normal {
+  font-weight: normal;
+}
+
+#rgjltpsswu .gt_font_bold {
+  font-weight: bold;
+}
+
+#rgjltpsswu .gt_font_italic {
+  font-style: italic;
+}
+
+#rgjltpsswu .gt_super {
+  font-size: 65%;
+}
+
+#rgjltpsswu .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#rgjltpsswu .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#rgjltpsswu .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#rgjltpsswu .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#rgjltpsswu .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#rgjltpsswu .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#rgjltpsswu .gt_indent_5 {
+  text-indent: 25px;
+}
+</style>
+
+<table class="gt_table table table-sm table-striped small" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header gt_col_headings">
+<th id="<strong>Characteristic</strong>" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col"><strong>Characteristic</strong></th>
+<th id="<strong>OR</strong><span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;&quot;><sup>1</sup></span>" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col"><strong>OR</strong><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>1</sup></span></th>
+<th id="<strong>95% CI</strong><span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;&quot;><sup>1</sup></span>" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col"><strong>95% CI</strong><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>1</sup></span></th>
+<th id="<strong>p-value</strong>" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col"><strong>p-value</strong></th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_left" headers="label">0|0.5</td>
+<td class="gt_row gt_center" headers="estimate">0.12</td>
+<td class="gt_row gt_center" headers="ci"><br>
+</td>
+<td class="gt_row gt_center" headers="p.value">&lt;0.001</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="label">0.5|1</td>
+<td class="gt_row gt_center" headers="estimate">0.23</td>
+<td class="gt_row gt_center" headers="ci"><br>
+</td>
+<td class="gt_row gt_center" headers="p.value">&lt;0.001</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="label">1|1.5</td>
+<td class="gt_row gt_center" headers="estimate">0.81</td>
+<td class="gt_row gt_center" headers="ci"><br>
+</td>
+<td class="gt_row gt_center" headers="p.value">0.5</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="label">1.5|2</td>
+<td class="gt_row gt_center" headers="estimate">1.36</td>
+<td class="gt_row gt_center" headers="ci"><br>
+</td>
+<td class="gt_row gt_center" headers="p.value">0.3</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="label">2|2.5</td>
+<td class="gt_row gt_center" headers="estimate">1.82</td>
+<td class="gt_row gt_center" headers="ci"><br>
+</td>
+<td class="gt_row gt_center" headers="p.value">0.062</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="label">2.5|3</td>
+<td class="gt_row gt_center" headers="estimate">2.12</td>
+<td class="gt_row gt_center" headers="ci"><br>
+</td>
+<td class="gt_row gt_center" headers="p.value">0.022</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="label">3|3.5</td>
+<td class="gt_row gt_center" headers="estimate">3.91</td>
+<td class="gt_row gt_center" headers="ci"><br>
+</td>
+<td class="gt_row gt_center" headers="p.value">&lt;0.001</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="label">3.5|4</td>
+<td class="gt_row gt_center" headers="estimate">5.62</td>
+<td class="gt_row gt_center" headers="ci"><br>
+</td>
+<td class="gt_row gt_center" headers="p.value">&lt;0.001</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="label">4|4.5</td>
+<td class="gt_row gt_center" headers="estimate">14.6</td>
+<td class="gt_row gt_center" headers="ci"><br>
+</td>
+<td class="gt_row gt_center" headers="p.value">&lt;0.001</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="label">4.5|5</td>
+<td class="gt_row gt_center" headers="estimate">18.0</td>
+<td class="gt_row gt_center" headers="ci"><br>
+</td>
+<td class="gt_row gt_center" headers="p.value">&lt;0.001</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="label">5|6</td>
+<td class="gt_row gt_center" headers="estimate">47.7</td>
+<td class="gt_row gt_center" headers="ci"><br>
+</td>
+<td class="gt_row gt_center" headers="p.value">&lt;0.001</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="label">factor(Sensory)</td>
+<td class="gt_row gt_center" headers="estimate"><br>
+</td>
+<td class="gt_row gt_center" headers="ci"><br>
+</td>
+<td class="gt_row gt_center" headers="p.value"><br>
+</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="label">&nbsp;&nbsp;&nbsp;&nbsp;0</td>
+<td class="gt_row gt_center" headers="estimate">—</td>
+<td class="gt_row gt_center" headers="ci">—</td>
+<td class="gt_row gt_center" headers="p.value"><br>
+</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="label">&nbsp;&nbsp;&nbsp;&nbsp;1</td>
+<td class="gt_row gt_center" headers="estimate">3.08</td>
+<td class="gt_row gt_center" headers="ci">1.18, 8.31</td>
+<td class="gt_row gt_center" headers="p.value">0.024</td>
+</tr>
+</tbody><tfoot class="gt_footnotes">
+<tr class="odd">
+<td colspan="4" class="gt_footnote"><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>1</sup></span> OR = Odds Ratio, CI = Confidence Interval</td>
+</tr>
+</tfoot>
+
+</table>
+
+</div>
+</div>
+</div>
+<p>So let’s not worry too much about the intercepts and instead just focus on the OR for the predictor of interest (<code>Sensory</code>). The basic interpretation of this is that sensory symptoms are associated with higher EDSS - specifically, there is an ~ 3-fold increase in the odds of having a higher EDSS vs a lower EDSS at <em>any</em> of the possible cutpoints that result in a hypothetical dichotomisation of the data. An example of this might be a group of patients with EDSS above 2 vs below 2, or equivalently a group of patients with EDSS above 5 vs below 5. Note that we are getting the same direction of effect that we observed with a simple linear regression (really, we shouldn’t have expected anything else).</p>
+<p>Now, let’s talk about model assumptions. Compared to the linear regression model, the proportional-odds model is relatively assumption-free. This actually makes it an alternative modelling option even for continuous (interval) outcomes when these fail to meet the standard assumptions (mostly to do with model residuals). This has been described <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5675816/">here</a>. There is one assumption, however, that has historically been deemed important to the validity of the proportional-odds model, and that is aptly called the <em>proportional odds assumption</em>. In a nutshell, violation of this assumption suggests that the association of predictor variable with the ordinal outcome depends on the level (category) of the outcome. Hence, the assumption of a single summary OR then supposedly becomes untenable.</p>
+<p>There are a couple of ways to test the proportional-odds assumption and the simplest is with the <strong>Brant-Wald test</strong>. A p-value of less than 0.05 on this test — particularly on the Omnibus plus at least one of the variables (if you have multiple predictors) — should be interpreted as a failure of the proportional odds assumption.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="fu">library</span>(gofcat)</span>
+<span id="cb5-2"><a href="#cb5-2"></a><span class="fu">brant.test</span>(mod2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Brant Test:
+                    chi-sq   df   pr(&gt;chi)  
+Omnibus               17.3   10      0.068 .
+factor(Sensory)1      17.3   10      0.068 .
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+H0: Proportional odds assumption holds</code></pre>
+</div>
+</div>
+<p>This is a very simple model, so I would have hoped that the test would pass. But I must say that I have not had a lot of luck in my own experience - proportional-odds fail by this test more often than they pass. It does seem well known, however, that the test can falsely reject the null hypothesis that the assumption is satisfied, leading to an incorrect conclusion that the analysis is invalid. On this topic, I am willing to pay more attention to what Frank Harrell on his blog (not that I am using it as a get-out-of-jail-free card):</p>
+<p><a href="https://www.fharrell.com/post/po/">Violation of Proportional Odds is Not Fatal</a></p>
+<p>One last thing before we finish this section. I’m an advocate of not just stopping at the model results. Model coefficients tell you something, for sure - the ‘effect’ on the outcome of a one-unit change in the predictor. But that doesn’t really tell you what the predicted values of the outcome (for given values of the predictor) actually are. So I always think it’s a good idea to plot the model predictions. Let’s do that now with the following code:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a><span class="co"># Create new dataframe to predict on</span></span>
+<span id="cb7-2"><a href="#cb7-2"></a>newdat <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">Sensory =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>)) <span class="sc">|&gt;</span> </span>
+<span id="cb7-3"><a href="#cb7-3"></a>  <span class="fu">mutate</span>(<span class="at">Sensory =</span> <span class="fu">factor</span>(Sensory))</span>
+<span id="cb7-4"><a href="#cb7-4"></a><span class="co"># Predict on the linear (log-odds) scale</span></span>
+<span id="cb7-5"><a href="#cb7-5"></a>mod2predict  <span class="ot">&lt;-</span> <span class="fu">cbind</span>(newdat, <span class="fu">predict</span>(mod2, newdat, <span class="at">interval =</span> T, <span class="at">type =</span> <span class="st">"prob"</span>))</span>
+<span id="cb7-6"><a href="#cb7-6"></a><span class="co"># Put estimated probabilities into long format</span></span>
+<span id="cb7-7"><a href="#cb7-7"></a>dat_long_est <span class="ot">&lt;-</span> mod2predict <span class="sc">|&gt;</span></span>
+<span id="cb7-8"><a href="#cb7-8"></a>  <span class="fu">pivot_longer</span>(<span class="dv">2</span><span class="sc">:</span><span class="dv">13</span>,</span>
+<span id="cb7-9"><a href="#cb7-9"></a>    <span class="at">names_to =</span> <span class="st">"outcome_val"</span>,</span>
+<span id="cb7-10"><a href="#cb7-10"></a>    <span class="at">values_to =</span> <span class="st">"pred_prob"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb7-11"><a href="#cb7-11"></a>  <span class="fu">select</span>(Sensory, outcome_val, pred_prob)</span>
+<span id="cb7-12"><a href="#cb7-12"></a><span class="co"># Put estimated lower CI into long format</span></span>
+<span id="cb7-13"><a href="#cb7-13"></a>dat_long_lowerci <span class="ot">&lt;-</span> mod2predict <span class="sc">|&gt;</span></span>
+<span id="cb7-14"><a href="#cb7-14"></a>  <span class="fu">pivot_longer</span>(<span class="dv">14</span><span class="sc">:</span><span class="dv">25</span>,</span>
+<span id="cb7-15"><a href="#cb7-15"></a>    <span class="at">names_to =</span> <span class="st">"outcome_val"</span>,</span>
+<span id="cb7-16"><a href="#cb7-16"></a>    <span class="at">values_to =</span> <span class="st">"pred_lowerci"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb7-17"><a href="#cb7-17"></a>  <span class="fu">select</span>(Sensory, outcome_val, pred_lowerci)</span>
+<span id="cb7-18"><a href="#cb7-18"></a><span class="co"># Put estimated upper CI into long format</span></span>
+<span id="cb7-19"><a href="#cb7-19"></a>dat_long_upperci <span class="ot">&lt;-</span> mod2predict <span class="sc">|&gt;</span></span>
+<span id="cb7-20"><a href="#cb7-20"></a>  <span class="fu">pivot_longer</span>(<span class="dv">26</span><span class="sc">:</span><span class="dv">37</span>,</span>
+<span id="cb7-21"><a href="#cb7-21"></a>    <span class="at">names_to =</span> <span class="st">"outcome_val"</span>,</span>
+<span id="cb7-22"><a href="#cb7-22"></a>    <span class="at">values_to =</span> <span class="st">"pred_upperci"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb7-23"><a href="#cb7-23"></a>  <span class="fu">select</span>(Sensory, outcome_val, pred_upperci)</span>
+<span id="cb7-24"><a href="#cb7-24"></a><span class="co"># cbind together</span></span>
+<span id="cb7-25"><a href="#cb7-25"></a>dat_long <span class="ot">&lt;-</span> <span class="fu">cbind</span>(dat_long_est, dat_long_lowerci[<span class="dv">3</span>], dat_long_upperci[<span class="dv">3</span>])</span>
+<span id="cb7-26"><a href="#cb7-26"></a><span class="co"># Create EDSS variable from outcome_val</span></span>
+<span id="cb7-27"><a href="#cb7-27"></a>dat_long <span class="ot">&lt;-</span> dat_long <span class="sc">|&gt;</span> </span>
+<span id="cb7-28"><a href="#cb7-28"></a>  <span class="fu">mutate</span>(<span class="at">EDSS =</span> <span class="fu">as.numeric</span>(<span class="fu">str_sub</span>(outcome_val, <span class="dv">5</span>, <span class="sc">-</span><span class="dv">1</span>)))</span>
+<span id="cb7-29"><a href="#cb7-29"></a><span class="co"># Plot</span></span>
+<span id="cb7-30"><a href="#cb7-30"></a><span class="fu">ggplot</span>(dat_long, <span class="fu">aes</span>(<span class="at">x =</span> EDSS, <span class="at">y =</span> pred_prob)) <span class="sc">+</span> </span>
+<span id="cb7-31"><a href="#cb7-31"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">color =</span> Sensory), <span class="at">position =</span> <span class="fu">position_dodge</span>(<span class="at">width =</span> <span class="fl">0.4</span>), <span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb7-32"><a href="#cb7-32"></a>  <span class="fu">geom_errorbar</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> pred_lowerci, <span class="at">ymax =</span> pred_upperci, <span class="at">color =</span> Sensory), <span class="at">position =</span> <span class="fu">position_dodge</span>(<span class="at">width =</span> <span class="fl">0.4</span>), <span class="at">width =</span> <span class="fl">0.4</span>, <span class="at">linewidth =</span> <span class="fl">0.8</span>) <span class="sc">+</span> </span>
+<span id="cb7-33"><a href="#cb7-33"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">6</span>), <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">6</span>, <span class="at">by =</span> <span class="fl">0.5</span>)) <span class="sc">+</span></span>
+<span id="cb7-34"><a href="#cb7-34"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="at">by =</span> <span class="fl">0.1</span>)) <span class="sc">+</span></span>
+<span id="cb7-35"><a href="#cb7-35"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"#E69F00"</span>, <span class="st">"#56B4E9"</span>)) <span class="sc">+</span></span>
+<span id="cb7-36"><a href="#cb7-36"></a>  <span class="fu">xlab</span>(<span class="st">"EDSS"</span>) <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">"Predicted Probability"</span>) <span class="sc">+</span></span>
+<span id="cb7-37"><a href="#cb7-37"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">20</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/predict-1.png" class="img-fluid figure-img" width="1152"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>This shows the predicted probability of having each level of EDSS, stratified by the presence or absence of sensory symptoms. Compared to being symptom-free, the presence of sensory symptoms are associated with higher predicted probabilities as one’s EDSS increases.</p>
+</section>
+</section>
+<section id="what-about-edss" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> What About EDSS?</h1>
+<p>So I’ve used EDSS in the example today, but I’ve skirted around the idea of how it should really be treated in analyses as an outcome. Where does EDSS fit into all of this? I don’t know the answer to this either. I tried doing a literature search for how EDSS has been considered analytically in scientific studies and I didn’t come up with a lot, but I get the feeling it is most often treated as an interval variable. The following paper found:</p>
+<p><a href="https://www.ncbi.nlm.nih.gov/books/NBK395612/" class="uri">https://www.ncbi.nlm.nih.gov/books/NBK395612/</a></p>
+<p><em>Our study indicates that EDSS trajectory can be modelled using multilevel models. In all models, there was no strong evidence of non-normality of residuals and, therefore, no need to consider further transformations of EDSS score. <strong>We also found no evidence against the use of the EDSS score as a continuous variable, rather than an ordinal outcome (as it was designed), in that the models with EDSS score as a continuous outcome appeared to predict EDSS score well</strong>. There was evidence that intraindividual variability in EDSS score was greater for lower EDSS scores, as previously suggested.</em></p>
+<p>I would be interested to hear people’s thoughts on how they feel EDSS should be treated in statistical analyses…</p>
 
 
 <!-- -->
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -770,12 +2384,195 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <input type="hidden" id="giscus-base-theme" value="light">
 <input type="hidden" id="giscus-alt-theme" value="dark"><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
-<div class="sourceCode" id="cb1" data-shortcodes="false"><pre class="sourceCode numberSource markdown number-lines code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1"></a><span class="co">---</span></span>
-<span id="cb1-2"><a href="#cb1-2"></a><span class="an">title:</span><span class="co"> "Prop Odds"</span></span>
-<span id="cb1-3"><a href="#cb1-3"></a><span class="an">date:</span><span class="co"> 2024-05-17</span></span>
-<span id="cb1-4"><a href="#cb1-4"></a><span class="an">categories:</span><span class="co"> [analysis, concept, code, modelling]</span></span>
-<span id="cb1-5"><a href="#cb1-5"></a><span class="an">description:</span><span class="co"> ""</span></span>
-<span id="cb1-6"><a href="#cb1-6"></a><span class="co">---</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb8" data-shortcodes="false"><pre class="sourceCode numberSource markdown number-lines code-with-copy"><code class="sourceCode markdown"><span id="cb8-1"><a href="#cb8-1"></a><span class="co">---</span></span>
+<span id="cb8-2"><a href="#cb8-2"></a><span class="an">title:</span><span class="co"> "Ordinal Logistic Regression for Ordinal Outcomes?"</span></span>
+<span id="cb8-3"><a href="#cb8-3"></a><span class="an">date:</span><span class="co"> 2024-05-17</span></span>
+<span id="cb8-4"><a href="#cb8-4"></a><span class="an">categories:</span><span class="co"> [analysis, concept, code, logistic, modelling]</span></span>
+<span id="cb8-5"><a href="#cb8-5"></a><span class="an">description:</span><span class="co"> "The proportional odds model is the best choice when we are regressing an ordinal outcome."</span></span>
+<span id="cb8-6"><a href="#cb8-6"></a><span class="co">---</span></span>
+<span id="cb8-7"><a href="#cb8-7"></a></span>
+<span id="cb8-8"><a href="#cb8-8"></a><span class="fu"># Some Background</span></span>
+<span id="cb8-9"><a href="#cb8-9"></a></span>
+<span id="cb8-10"><a href="#cb8-10"></a>It has become clear to me over the years that there is usually no one *correct* way to kick a statistical goal - several approaches might all converge to the same "best" answer. To that end it's also often difficult to identify an unequivocally *incorrect* way to do something. So data analysis is not black and white - there are shades of grey (not 50 though). However, there are some approaches that are well-intentioned but ill-considered and some that are performed purely as shortcuts - whether that be for the sake of time or simplicity. Both conditions can lead to results and their interpretation that are misleading at best.</span>
+<span id="cb8-11"><a href="#cb8-11"></a></span>
+<span id="cb8-12"><a href="#cb8-12"></a>Where am I heading with this? Well, today's post is based on something as fundamental as the scale that we use to measure or record our data on. It might be good at this point to take a few moments to look over the following link (there is no point in me re-inventing the wheel as Harvey Motulsky - the author of <span class="in">`Prism`</span> - explains things so eloquently):</span>
+<span id="cb8-13"><a href="#cb8-13"></a></span>
+<span id="cb8-14"><a href="#cb8-14"></a><span class="co">[</span><span class="ot">Measurement/Variable Scales</span><span class="co">](https://www.graphpad.com/support/faq/what-is-the-difference-between-ordinal-interval-and-ratio-variables-why-should-i-care/)</span></span>
+<span id="cb8-15"><a href="#cb8-15"></a></span>
+<span id="cb8-16"><a href="#cb8-16"></a>This page describes a 'hierarchy' of measurement/variable scales (nominal -<span class="sc">\&gt;</span> ordinal -<span class="sc">\&gt;</span> interval -<span class="sc">\&gt;</span> ratio) as well as their differences. If you're unfamiliar with these concepts, it would be worthwhile brushing up on them as they are integral to the discussion that follows.</span>
+<span id="cb8-17"><a href="#cb8-17"></a></span>
+<span id="cb8-18"><a href="#cb8-18"></a><span class="fu"># The Debate</span></span>
+<span id="cb8-19"><a href="#cb8-19"></a></span>
+<span id="cb8-20"><a href="#cb8-20"></a>There is a long-standing debate in the statistical literature that continues to simmer in the background, and I would guess depending on which camp you align yourself with, you are guilty of egregious statistical crimes from the other. The debate centres around the question of:</span>
+<span id="cb8-21"><a href="#cb8-21"></a></span>
+<span id="cb8-22"><a href="#cb8-22"></a>**Can you ever treat ordinal data as if it were interval?**</span>
+<span id="cb8-23"><a href="#cb8-23"></a></span>
+<span id="cb8-24"><a href="#cb8-24"></a>An ordinal variable is one that - like an interval (numeric) variable - contains numbers, but is in fact a set of ordered categories. So, the numbers that are attached to an ordinal variable aren't really quantitative, but instead describe the **order** of responses, not the actual **numeric** value. Ordinal variables are typically ratings or rankings - good examples are Likert scales and patient reported outcomes (PRO's). Think of the difference between a Pain Scale (1-10) and human weight in kg.</span>
+<span id="cb8-25"><a href="#cb8-25"></a></span>
+<span id="cb8-26"><a href="#cb8-26"></a>One camp will maintain that as ordered categories, the intervals between the values on the Pain Scale are not equal. That is, we cannot say with confidence that the increase in pain that a patient feels going from a score of 2 to 3, is the same increase they would feel in going from a score of 7 to 8. As a corollary, however, we can say that the increase in weight with each additional kg remains the same across all values. Consequently, this camp also maintains that any mean, correlation, or other numerical test applied to these ordered categorical numerals is invalid and only non-parametic statistics are really appropriate. Some references I've found in support of this camp are <span class="co">[</span><span class="ot">here</span><span class="co">](https://www.sciencedirect.com/science/article/abs/pii/S0022103117307746)</span>, <span class="co">[</span><span class="ot">here</span><span class="co">](https://pubmed.ncbi.nlm.nih.gov/28009595/)</span> and <span class="co">[</span><span class="ot">here</span><span class="co">](https://pubmed.ncbi.nlm.nih.gov/2331075/)</span>.</span>
+<span id="cb8-27"><a href="#cb8-27"></a></span>
+<span id="cb8-28"><a href="#cb8-28"></a>The other camp will acknowledge that while ordinal variables may not conform to all the regular assumptions of interval variables, parametric tests can still be practically valid and informative in many situations. Additionally, they’re usually easier to run and easier to communicate. Similarly, some references I've found in support of this camp are <span class="co">[</span><span class="ot">here</span><span class="co">](https://www.frontiersin.org/articles/10.3389/feduc.2020.589965/full)</span>, <span class="co">[</span><span class="ot">here</span><span class="co">](https://www.tandfonline.com/doi/abs/10.1080/01488376.2017.1329775)</span> and <span class="co">[</span><span class="ot">here</span><span class="co">](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3886444/)</span>.</span>
+<span id="cb8-29"><a href="#cb8-29"></a></span>
+<span id="cb8-30"><a href="#cb8-30"></a>So, who's right?</span>
+<span id="cb8-31"><a href="#cb8-31"></a></span>
+<span id="cb8-32"><a href="#cb8-32"></a>The answer is 'Yes'.</span>
+<span id="cb8-33"><a href="#cb8-33"></a></span>
+<span id="cb8-34"><a href="#cb8-34"></a>Facetiousness aside, I don't really have an answer for this. My feeling is that it ultimately depends on the research question at hand, the assumptions you are willing to make, and the robustness of your position and justification in doing so. I will concede that I always find it easier to deal with analyses that assume variables are continuous (and by definition at least interval in nature in the scale measurement hierarchy). That aside, I start to feel uncomfortable when you can't reasonably justify the equivalence of interval differences and especially so when working with small scales where there might only be half a dozen values. In these cases, I really think it's a bit of a stretch to use parametric statistics.</span>
+<span id="cb8-35"><a href="#cb8-35"></a></span>
+<span id="cb8-36"><a href="#cb8-36"></a><span class="fu"># Analysis Options</span></span>
+<span id="cb8-37"><a href="#cb8-37"></a></span>
+<span id="cb8-38"><a href="#cb8-38"></a>Without taking a hard stance one way or the other, and considering that there is some nuance to this debate, I want to now change tack and explain what you *can* do if you are unsure as to the best approach to analyse your ordinal-scale data. I am not going to delve into the descriptive and simple hypothesis statistics side of things where you can easily choose non-parametric alternatives to what you commonly use. For example, medians and interquartile ranges vs means and standard deviations; and Mann-Whitney U tests instead of t-tests. A quick Google search will easily find you lots of information on this.</span>
+<span id="cb8-39"><a href="#cb8-39"></a></span>
+<span id="cb8-40"><a href="#cb8-40"></a>Instead I want to focus on regression models, as this is where some confusion can set in. It's important to note that all of this is really only relevant in relation to your outcome (i.e dependent) variable - you can have variables on different scales as predictors and still run a linear regression if your outcome is interval (or ratio) in nature.</span>
+<span id="cb8-41"><a href="#cb8-41"></a></span>
+<span id="cb8-42"><a href="#cb8-42"></a>So, what can we do if we want to regress an ordinal variable on a set of predictors?</span>
+<span id="cb8-43"><a href="#cb8-43"></a></span>
+<span id="cb8-44"><a href="#cb8-44"></a><span class="fu">## Load and Inspect the Data</span></span>
+<span id="cb8-45"><a href="#cb8-45"></a></span>
+<span id="cb8-46"><a href="#cb8-46"></a>We first need to load some data to experiment on, and we'll use the same publicly available MS dataset that we used in the last post. So if you want to run the code yourself you will first need to download the data from:</span>
+<span id="cb8-47"><a href="#cb8-47"></a></span>
+<span id="cb8-48"><a href="#cb8-48"></a><span class="co">[</span><span class="ot">Brain MRI dataset of multiple sclerosis with consensus manual lesion segmentation and patient meta information</span><span class="co">](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC9043670/)</span></span>
+<span id="cb8-49"><a href="#cb8-49"></a></span>
+<span id="cb8-50"><a href="#cb8-50"></a>This dataset contains the demographic and clinical data on 60 patients (MRI data in accompanying datasets available at link).</span>
+<span id="cb8-51"><a href="#cb8-51"></a></span>
+<span id="cb8-54"><a href="#cb8-54"></a><span class="in">```{r}</span></span>
+<span id="cb8-55"><a href="#cb8-55"></a><span class="co">#| label: load data</span></span>
+<span id="cb8-56"><a href="#cb8-56"></a><span class="co">#| include: false</span></span>
+<span id="cb8-57"><a href="#cb8-57"></a>dat <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"/Users/paulsanfilippo/Dropbox/Alfred Neuroscience/zz_test_site/posts/011_03May_2024/Supplementary Table 1 for patient info .csv"</span>, <span class="at">header =</span> T)</span>
+<span id="cb8-58"><a href="#cb8-58"></a><span class="in">```</span></span>
+<span id="cb8-59"><a href="#cb8-59"></a></span>
+<span id="cb8-60"><a href="#cb8-60"></a>Let's have a look at the first few lines:</span>
+<span id="cb8-61"><a href="#cb8-61"></a></span>
+<span id="cb8-64"><a href="#cb8-64"></a><span class="in">```{r}</span></span>
+<span id="cb8-65"><a href="#cb8-65"></a><span class="co">#| label: data</span></span>
+<span id="cb8-66"><a href="#cb8-66"></a><span class="fu">head</span>(dat, <span class="dv">10</span>)</span>
+<span id="cb8-67"><a href="#cb8-67"></a><span class="in">```</span></span>
+<span id="cb8-68"><a href="#cb8-68"></a></span>
+<span id="cb8-69"><a href="#cb8-69"></a>Let's say we want to regress <span class="in">`EDSS`</span> on <span class="in">`Sensory`</span> (the presence of sensory symptoms). In the first instance it's always good to visualise the data, so let's do that by using some boxplots. It appears that sensory symptoms are associated with higher EDSS - eyeballing the plot suggests that the median <span class="in">`EDSS`</span> is \~ 1.5 in the absence of <span class="in">`Sensory`</span> symptoms and \~ 3 when <span class="in">`Sensory`</span> symptoms are present.</span>
+<span id="cb8-70"><a href="#cb8-70"></a></span>
+<span id="cb8-73"><a href="#cb8-73"></a><span class="in">```{r}</span></span>
+<span id="cb8-74"><a href="#cb8-74"></a><span class="co">#| label: boxplot</span></span>
+<span id="cb8-75"><a href="#cb8-75"></a><span class="co">#| warning: false</span></span>
+<span id="cb8-76"><a href="#cb8-76"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb8-77"><a href="#cb8-77"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb8-78"><a href="#cb8-78"></a><span class="fu">library</span>(gtsummary) </span>
+<span id="cb8-79"><a href="#cb8-79"></a><span class="fu">library</span>(ordinal)</span>
+<span id="cb8-80"><a href="#cb8-80"></a><span class="fu">library</span>(ggeffects)</span>
+<span id="cb8-81"><a href="#cb8-81"></a><span class="fu">ggplot</span>(dat, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">factor</span>(Sensory), <span class="at">y =</span> EDSS)) <span class="sc">+</span></span>
+<span id="cb8-82"><a href="#cb8-82"></a>  <span class="fu">geom_boxplot</span>() <span class="sc">+</span></span>
+<span id="cb8-83"><a href="#cb8-83"></a>  <span class="fu">geom_dotplot</span>(<span class="at">binaxis =</span> <span class="st">'y'</span>, <span class="at">stackdir =</span> <span class="st">'center'</span>, <span class="at">position =</span> <span class="fu">position_dodge</span>(<span class="dv">1</span>), <span class="at">dotsize =</span> <span class="fl">0.8</span>) <span class="sc">+</span></span>
+<span id="cb8-84"><a href="#cb8-84"></a>  <span class="fu">xlab</span>(<span class="st">"Sensory Symptoms"</span>) <span class="sc">+</span></span>
+<span id="cb8-85"><a href="#cb8-85"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">20</span>)</span>
+<span id="cb8-86"><a href="#cb8-86"></a><span class="in">```</span></span>
+<span id="cb8-87"><a href="#cb8-87"></a></span>
+<span id="cb8-88"><a href="#cb8-88"></a><span class="fu">## Linear Regression</span></span>
+<span id="cb8-89"><a href="#cb8-89"></a></span>
+<span id="cb8-90"><a href="#cb8-90"></a>One way to model the association between the two variables would be to simply treat EDSS as a numeric variable. That's very straightforward and I'm sure you've run a linear regression model before. I'll use the <span class="in">`gtsummary`</span> package that I highlighted in the last post to format the results.</span>
+<span id="cb8-91"><a href="#cb8-91"></a></span>
+<span id="cb8-94"><a href="#cb8-94"></a><span class="in">```{r}</span></span>
+<span id="cb8-95"><a href="#cb8-95"></a><span class="co">#| label: lm</span></span>
+<span id="cb8-96"><a href="#cb8-96"></a><span class="co">#| warning: false</span></span>
+<span id="cb8-97"><a href="#cb8-97"></a>mod1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(EDSS <span class="sc">~</span> Sensory, <span class="at">data =</span> dat)</span>
+<span id="cb8-98"><a href="#cb8-98"></a>mod1 <span class="sc">|&gt;</span> <span class="fu">tbl_regression</span>(<span class="at">intercept =</span> T)</span>
+<span id="cb8-99"><a href="#cb8-99"></a><span class="in">```</span></span>
+<span id="cb8-100"><a href="#cb8-100"></a></span>
+<span id="cb8-101"><a href="#cb8-101"></a>While we are now estimating means and not medians, the model results are mostly in line with trend observed in the boxplot. The <span class="in">`EDSS`</span> in the reference group (no symptoms) is on average, <span class="in">`2.0`</span>, and the difference in <span class="in">`EDSS`</span> in the group with symptoms is an additional 0.93 units (i.e. <span class="in">`2.9`</span> on average).</span>
+<span id="cb8-102"><a href="#cb8-102"></a></span>
+<span id="cb8-103"><a href="#cb8-103"></a>There is nothing too difficult about that - if you are willing to accept that the difference between any two equally spaced EDSS scores has about the same clinical impact on the patient, and you are willing to accept the assumptions that go along with linear regression.</span>
+<span id="cb8-104"><a href="#cb8-104"></a></span>
+<span id="cb8-105"><a href="#cb8-105"></a><span class="fu">## Ordinal Logistic Regression</span></span>
+<span id="cb8-106"><a href="#cb8-106"></a></span>
+<span id="cb8-107"><a href="#cb8-107"></a>An alternative approach to model the association between the two variables is to treat EDSS as an ordinal variable. Ordinal logistic regression (using the *proportional-odds* or the *cumulative-logit* model) may be used with an outcome variable that consists of three or more categories to model the **cumulative probability** of falling in any particular category **or those below**, versus all categories above. In other words we are considering cumulative probabilities up to a threshold, thereby making the whole range of ordinal categories binary at that threshold. Another way to think about the cumulative-logit model is that it essentially consists of a set of binary logistic regression models for each possible binary dichotomisation (i.e. threshold/cut-point) of the ordinal outcome. For example, in the simplest case of an (ordered) three-category outcome, there are two possible thresholds and thus two possible binary logistic regression models. The proportional-odds model allows a comparison of category 1 vs categories 2-3, and simultaneously categories 1-2 vs 3, producing a kind of averaged or summary odds ratio reflecting one overall 'effect' estimate (if one traditionally considered 'important' assumption is met - more on this soon).</span>
+<span id="cb8-108"><a href="#cb8-108"></a></span>
+<span id="cb8-109"><a href="#cb8-109"></a>Conceptually, the proportional-odds model is based on the idea of a continuous *latent* outcome - think of a normal distribution. While we cannot observe or measure this construct, the actual observed ordered categories are **mapped** to this latent continuous variable and used in the model estimation process. In addition to the 'effect' estimates for each predictor in the model, a series of *intercepts* (which represent the thresholds or cutpoints) are also typically reported, depending on your software. Let's actually run one of these models now.</span>
+<span id="cb8-110"><a href="#cb8-110"></a></span>
+<span id="cb8-111"><a href="#cb8-111"></a>There are a couple of packages in <span class="in">`R`</span> that estimate proportional-odds models and today we'll use the <span class="in">`ordinal`</span> package. The essential function here is <span class="in">`clm()`</span>. An important thing to note with these models is that your outcome has to be formatted as a factor. The basic specification is simple and in line with typical <span class="in">`R`</span> models:</span>
+<span id="cb8-112"><a href="#cb8-112"></a></span>
+<span id="cb8-113"><a href="#cb8-113"></a><span class="in">`clm(EDSS ~ Sensory, data = dat, link = "logit")`</span></span>
+<span id="cb8-114"><a href="#cb8-114"></a></span>
+<span id="cb8-115"><a href="#cb8-115"></a>We will format our results using the excellent <span class="in">`gtsummary`</span> package I introduced you to in the last post.</span>
+<span id="cb8-116"><a href="#cb8-116"></a></span>
+<span id="cb8-119"><a href="#cb8-119"></a><span class="in">```{r}</span></span>
+<span id="cb8-120"><a href="#cb8-120"></a><span class="co">#| label: clm</span></span>
+<span id="cb8-121"><a href="#cb8-121"></a><span class="co">#| warning: false</span></span>
+<span id="cb8-122"><a href="#cb8-122"></a>dat<span class="sc">$</span>EDSS <span class="ot">&lt;-</span> <span class="fu">factor</span>(dat<span class="sc">$</span>EDSS) <span class="co"># format EDSS as factor</span></span>
+<span id="cb8-123"><a href="#cb8-123"></a>mod2 <span class="ot">&lt;-</span> <span class="fu">clm</span>(EDSS <span class="sc">~</span> <span class="fu">factor</span>(Sensory), <span class="at">data =</span> dat, <span class="at">link =</span> <span class="st">"logit"</span>)</span>
+<span id="cb8-124"><a href="#cb8-124"></a>mod2 <span class="sc">|&gt;</span> <span class="fu">tbl_regression</span>(<span class="at">exponentiate =</span> T, <span class="at">intercept =</span> T)</span>
+<span id="cb8-125"><a href="#cb8-125"></a><span class="in">```</span></span>
+<span id="cb8-126"><a href="#cb8-126"></a></span>
+<span id="cb8-127"><a href="#cb8-127"></a>So let's not worry too much about the intercepts and instead just focus on the OR for the predictor of interest (<span class="in">`Sensory`</span>). The basic interpretation of this is that sensory symptoms are associated with higher EDSS - specifically, there is an \~ 3-fold increase in the odds of having a higher EDSS vs a lower EDSS at *any* of the possible cutpoints that result in a hypothetical dichotomisation of the data. An example of this might be a group of patients with EDSS above 2 vs below 2, or equivalently a group of patients with EDSS above 5 vs below 5. Note that we are getting the same direction of effect that we observed with a simple linear regression (really, we shouldn't have expected anything else).</span>
+<span id="cb8-128"><a href="#cb8-128"></a></span>
+<span id="cb8-129"><a href="#cb8-129"></a>Now, let's talk about model assumptions. Compared to the linear regression model, the proportional-odds model is relatively assumption-free. This actually makes it an alternative modelling option even for continuous (interval) outcomes when these fail to meet the standard assumptions (mostly to do with model residuals). This has been described <span class="co">[</span><span class="ot">here</span><span class="co">](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5675816/)</span>. There is one assumption, however, that has historically been deemed important to the validity of the proportional-odds model, and that is aptly called the *proportional odds assumption*. In a nutshell, violation of this assumption suggests that the association of predictor variable with the ordinal outcome depends on the level (category) of the outcome. Hence, the assumption of a single summary OR then supposedly becomes untenable.</span>
+<span id="cb8-130"><a href="#cb8-130"></a></span>
+<span id="cb8-131"><a href="#cb8-131"></a>There are a couple of ways to test the proportional-odds assumption and the simplest is with the **Brant-Wald test**. A p-value of less than 0.05 on this test — particularly on the Omnibus plus at least one of the variables (if you have multiple predictors) — should be interpreted as a failure of the proportional odds assumption.</span>
+<span id="cb8-132"><a href="#cb8-132"></a></span>
+<span id="cb8-135"><a href="#cb8-135"></a><span class="in">```{r}</span></span>
+<span id="cb8-136"><a href="#cb8-136"></a><span class="co">#| label: propodds</span></span>
+<span id="cb8-137"><a href="#cb8-137"></a><span class="co">#| warning: false</span></span>
+<span id="cb8-138"><a href="#cb8-138"></a><span class="fu">library</span>(gofcat)</span>
+<span id="cb8-139"><a href="#cb8-139"></a><span class="fu">brant.test</span>(mod2)</span>
+<span id="cb8-140"><a href="#cb8-140"></a><span class="in">```</span></span>
+<span id="cb8-141"><a href="#cb8-141"></a></span>
+<span id="cb8-142"><a href="#cb8-142"></a>This is a very simple model, so I would have hoped that the test would pass. But I must say that I have not had a lot of luck in my own experience - proportional-odds fail by this test more often than they pass. It does seem well known, however, that the test can falsely reject the null hypothesis that the assumption is satisfied, leading to an incorrect conclusion that the analysis is invalid. On this topic, I am willing to pay more attention to what Frank Harrell on his blog (not that I am using it as a get-out-of-jail-free card):</span>
+<span id="cb8-143"><a href="#cb8-143"></a></span>
+<span id="cb8-144"><a href="#cb8-144"></a><span class="co">[</span><span class="ot">Violation of Proportional Odds is Not Fatal</span><span class="co">](https://www.fharrell.com/post/po/)</span></span>
+<span id="cb8-145"><a href="#cb8-145"></a></span>
+<span id="cb8-146"><a href="#cb8-146"></a>One last thing before we finish this section. I'm an advocate of not just stopping at the model results. Model coefficients tell you something, for sure - the 'effect' on the outcome of a one-unit change in the predictor. But that doesn't really tell you what the predicted values of the outcome (for given values of the predictor) actually are. So I always think it's a good idea to plot the model predictions. Let's do that now with the following code:</span>
+<span id="cb8-147"><a href="#cb8-147"></a></span>
+<span id="cb8-150"><a href="#cb8-150"></a><span class="in">```{r}</span></span>
+<span id="cb8-151"><a href="#cb8-151"></a><span class="co">#| label: predict</span></span>
+<span id="cb8-152"><a href="#cb8-152"></a><span class="co">#| warning: false</span></span>
+<span id="cb8-153"><a href="#cb8-153"></a><span class="co"># Create new dataframe to predict on</span></span>
+<span id="cb8-154"><a href="#cb8-154"></a>newdat <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">Sensory =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>)) <span class="sc">|&gt;</span> </span>
+<span id="cb8-155"><a href="#cb8-155"></a>  <span class="fu">mutate</span>(<span class="at">Sensory =</span> <span class="fu">factor</span>(Sensory))</span>
+<span id="cb8-156"><a href="#cb8-156"></a><span class="co"># Predict on the linear (log-odds) scale</span></span>
+<span id="cb8-157"><a href="#cb8-157"></a>mod2predict  <span class="ot">&lt;-</span> <span class="fu">cbind</span>(newdat, <span class="fu">predict</span>(mod2, newdat, <span class="at">interval =</span> T, <span class="at">type =</span> <span class="st">"prob"</span>))</span>
+<span id="cb8-158"><a href="#cb8-158"></a><span class="co"># Put estimated probabilities into long format</span></span>
+<span id="cb8-159"><a href="#cb8-159"></a>dat_long_est <span class="ot">&lt;-</span> mod2predict <span class="sc">|&gt;</span></span>
+<span id="cb8-160"><a href="#cb8-160"></a>  <span class="fu">pivot_longer</span>(<span class="dv">2</span><span class="sc">:</span><span class="dv">13</span>,</span>
+<span id="cb8-161"><a href="#cb8-161"></a>    <span class="at">names_to =</span> <span class="st">"outcome_val"</span>,</span>
+<span id="cb8-162"><a href="#cb8-162"></a>    <span class="at">values_to =</span> <span class="st">"pred_prob"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb8-163"><a href="#cb8-163"></a>  <span class="fu">select</span>(Sensory, outcome_val, pred_prob)</span>
+<span id="cb8-164"><a href="#cb8-164"></a><span class="co"># Put estimated lower CI into long format</span></span>
+<span id="cb8-165"><a href="#cb8-165"></a>dat_long_lowerci <span class="ot">&lt;-</span> mod2predict <span class="sc">|&gt;</span></span>
+<span id="cb8-166"><a href="#cb8-166"></a>  <span class="fu">pivot_longer</span>(<span class="dv">14</span><span class="sc">:</span><span class="dv">25</span>,</span>
+<span id="cb8-167"><a href="#cb8-167"></a>    <span class="at">names_to =</span> <span class="st">"outcome_val"</span>,</span>
+<span id="cb8-168"><a href="#cb8-168"></a>    <span class="at">values_to =</span> <span class="st">"pred_lowerci"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb8-169"><a href="#cb8-169"></a>  <span class="fu">select</span>(Sensory, outcome_val, pred_lowerci)</span>
+<span id="cb8-170"><a href="#cb8-170"></a><span class="co"># Put estimated upper CI into long format</span></span>
+<span id="cb8-171"><a href="#cb8-171"></a>dat_long_upperci <span class="ot">&lt;-</span> mod2predict <span class="sc">|&gt;</span></span>
+<span id="cb8-172"><a href="#cb8-172"></a>  <span class="fu">pivot_longer</span>(<span class="dv">26</span><span class="sc">:</span><span class="dv">37</span>,</span>
+<span id="cb8-173"><a href="#cb8-173"></a>    <span class="at">names_to =</span> <span class="st">"outcome_val"</span>,</span>
+<span id="cb8-174"><a href="#cb8-174"></a>    <span class="at">values_to =</span> <span class="st">"pred_upperci"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb8-175"><a href="#cb8-175"></a>  <span class="fu">select</span>(Sensory, outcome_val, pred_upperci)</span>
+<span id="cb8-176"><a href="#cb8-176"></a><span class="co"># cbind together</span></span>
+<span id="cb8-177"><a href="#cb8-177"></a>dat_long <span class="ot">&lt;-</span> <span class="fu">cbind</span>(dat_long_est, dat_long_lowerci[<span class="dv">3</span>], dat_long_upperci[<span class="dv">3</span>])</span>
+<span id="cb8-178"><a href="#cb8-178"></a><span class="co"># Create EDSS variable from outcome_val</span></span>
+<span id="cb8-179"><a href="#cb8-179"></a>dat_long <span class="ot">&lt;-</span> dat_long <span class="sc">|&gt;</span> </span>
+<span id="cb8-180"><a href="#cb8-180"></a>  <span class="fu">mutate</span>(<span class="at">EDSS =</span> <span class="fu">as.numeric</span>(<span class="fu">str_sub</span>(outcome_val, <span class="dv">5</span>, <span class="sc">-</span><span class="dv">1</span>)))</span>
+<span id="cb8-181"><a href="#cb8-181"></a><span class="co"># Plot</span></span>
+<span id="cb8-182"><a href="#cb8-182"></a><span class="fu">ggplot</span>(dat_long, <span class="fu">aes</span>(<span class="at">x =</span> EDSS, <span class="at">y =</span> pred_prob)) <span class="sc">+</span> </span>
+<span id="cb8-183"><a href="#cb8-183"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">color =</span> Sensory), <span class="at">position =</span> <span class="fu">position_dodge</span>(<span class="at">width =</span> <span class="fl">0.4</span>), <span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb8-184"><a href="#cb8-184"></a>  <span class="fu">geom_errorbar</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> pred_lowerci, <span class="at">ymax =</span> pred_upperci, <span class="at">color =</span> Sensory), <span class="at">position =</span> <span class="fu">position_dodge</span>(<span class="at">width =</span> <span class="fl">0.4</span>), <span class="at">width =</span> <span class="fl">0.4</span>, <span class="at">linewidth =</span> <span class="fl">0.8</span>) <span class="sc">+</span> </span>
+<span id="cb8-185"><a href="#cb8-185"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">6</span>), <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">6</span>, <span class="at">by =</span> <span class="fl">0.5</span>)) <span class="sc">+</span></span>
+<span id="cb8-186"><a href="#cb8-186"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="at">by =</span> <span class="fl">0.1</span>)) <span class="sc">+</span></span>
+<span id="cb8-187"><a href="#cb8-187"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"#E69F00"</span>, <span class="st">"#56B4E9"</span>)) <span class="sc">+</span></span>
+<span id="cb8-188"><a href="#cb8-188"></a>  <span class="fu">xlab</span>(<span class="st">"EDSS"</span>) <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">"Predicted Probability"</span>) <span class="sc">+</span></span>
+<span id="cb8-189"><a href="#cb8-189"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">20</span>)</span>
+<span id="cb8-190"><a href="#cb8-190"></a></span>
+<span id="cb8-191"><a href="#cb8-191"></a><span class="in">```</span></span>
+<span id="cb8-192"><a href="#cb8-192"></a>This shows the predicted probability of having each level of EDSS, stratified by the presence or absence of sensory symptoms. Compared to being symptom-free, the presence of sensory symptoms are associated with higher predicted probabilities as one's EDSS increases.</span>
+<span id="cb8-193"><a href="#cb8-193"></a></span>
+<span id="cb8-194"><a href="#cb8-194"></a><span class="fu"># What About EDSS?</span></span>
+<span id="cb8-195"><a href="#cb8-195"></a></span>
+<span id="cb8-196"><a href="#cb8-196"></a>So I've used EDSS in the example today, but I've skirted around the idea of how it should really be treated in analyses as an outcome. Where does EDSS fit into all of this? I don't know the answer to this either. I tried doing a literature search for how EDSS has been considered analytically in scientific studies and I didn't come up with a lot, but I get the feeling it is most often treated as an interval variable. The following paper found:</span>
+<span id="cb8-197"><a href="#cb8-197"></a></span>
+<span id="cb8-198"><a href="#cb8-198"></a><span class="ot">&lt;https://www.ncbi.nlm.nih.gov/books/NBK395612/&gt;</span></span>
+<span id="cb8-199"><a href="#cb8-199"></a></span>
+<span id="cb8-200"><a href="#cb8-200"></a>*Our study indicates that EDSS trajectory can be modelled using multilevel models. In all models, there was no strong evidence of non-normality of residuals and, therefore, no need to consider further transformations of EDSS score. **We also found no evidence against the use of the EDSS score as a continuous variable, rather than an ordinal outcome (as it was designed), in that the models with EDSS score as a continuous outcome appeared to predict EDSS score well**. There was evidence that intraindividual variability in EDSS score was greater for lower EDSS scores, as previously suggested.*</span>
+<span id="cb8-201"><a href="#cb8-201"></a></span>
+<span id="cb8-202"><a href="#cb8-202"></a>I would be interested to hear people's thoughts on how they feel EDSS should be treated in statistical analyses...</span>
+</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 
