@@ -1,0 +1,65 @@
+---
+title: "Reshaping Data - Think Before you Pivot"
+date: 2024-06-14
+categories: [concept, code]
+description: "Some common-use scenarios for reshaping your data from wide to long format"
+---
+
+In your day-to-day data analysis work you will probably find yourself at some point needing to *reshape* data, and this is usually to suit an analytical need. Reshaping is changing the rectangular structure of the columns and rows in your dataset without altering the content. Data comes in two basic shapes: **wide** and **long**.
+
+# Wide Data
+
+I would argue that most data is collected in this format. A defining feature of the **wide** data format is that all measurements collected for a single 'unit of observation' occur on the same row.
+
+::: callout-note
+Think of the unit of observation as hierarchical in nature. Typically, the unit of observation is a patient or subject, but it may also be at a higher level - e.g. measurements on eyes of patients; or at a lower level - e.g. measurements on hospitals.
+:::
+
+A good example of this is repeated measures for some variable that occur over time. The first column might be an subject ID variable and then additional columns, the value of the measurement over each time point. Let's simulate some data to show this idea.
+
+```{r}
+#| message: false
+library(tidyverse)
+library(kableExtra)
+id <- seq(1:5)
+for(i in 0:3){
+  var_name <- paste0("month_",i)
+  assign(var_name, rnorm(5, 130, 20))
+}
+df_wide <- data.frame(cbind(id, month_0, month_1, month_2, month_3))
+```
+
+In this simulated dataframe I have created values of some variable - for the sake of the example let's say it's systolic blood pressure (mean `130` mmHg, SD `20` mmHg) for `5` subjects, measured at `4` time points - baseline and then every month for `3` months. The data look like:
+
+```{r}
+df_wide |> 
+  kable(align = "c", digits = 2)
+```
+
+This in an intuitive format for collecting and recording data like this, but it doesn't easily lend itself to the various analyses you might want to conduct. Sure, if you were interested in testing for differences in BP at different time points, you could do that with t-tests across relevant columns, but it may mean multiple tests. Indeed, there are more statistically efficient approaches to do this, but first you need to reshape your data into **long** format.
+
+# Long Data
+
+Data is in long format when the measurements collected for a single unit of observation occur on multiple rows. In effect, they are transposed from going across columns within a single row to down rows within a single column (I will illustrate this below). This is the data format required for many modelling approaches in most statistical software and is the default format for longitudinal or repeated measures data. This is what the same data in long format look like:
+
+```{r}
+#| echo: FALSE
+df_long <- df_wide |> 
+  pivot_longer(cols = month_0:month_3,
+               names_to = "month",
+               names_prefix = "month_",
+               values_to = "bp")
+```
+
+```{r}
+df_long |>  
+  kable(align = "c", digits = 2)
+```
+
+So, what have we done here?
+
+![Pivot_Longer in Action](images/pivot_graphic.png){fig-align="center"}
+
+Enter `pivot_longer()` from the `tidyr` package.
+
+## Case 1: One Name Column, One Value Column
