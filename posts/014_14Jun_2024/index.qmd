@@ -9,7 +9,7 @@ In your day-to-day data analysis work you will probably find yourself at some po
 
 # Wide Data
 
-I would argue that most data is collected in this format. A defining feature of the **wide** data format is that all measurements collected for a single 'unit of observation' occur on the same row.
+I would argue that most data is collected and recorded in this format. A defining feature of the **wide** data format is that all measurements collected for a single 'unit of observation' occur on the same row.
 
 ::: callout-note
 Think of the unit of observation as hierarchical in nature. Typically, the unit of observation is a patient or subject, but it may also be at a higher level - e.g. measurements on eyes of patients; or at a lower level - e.g. measurements on hospitals.
@@ -19,6 +19,7 @@ A good example of this is repeated measures for some variable that occur over ti
 
 ```{r}
 #| message: false
+#| warning: false
 library(tidyverse)
 library(kableExtra)
 id <- seq(1:5)
@@ -40,7 +41,7 @@ This in an intuitive format for collecting and recording data like this, but it 
 
 # Long Data
 
-Data is in long format when the measurements collected for a single unit of observation occur on multiple rows. In effect, they are transposed from going across columns within a single row to down rows within a single column (I will illustrate this below). This is the data format required for many modelling approaches in most statistical software and is the default format for longitudinal or repeated measures data. This is what the same data in long format look like:
+Data is in long format when the measurements collected for a single unit of observation occur on multiple rows. In effect, they are transformed from going across columns within a single row to down rows within a single column (I will illustrate this below). This is the data format required for many modelling approaches in most statistical software and is the default format for longitudinal or repeated measures data. This is what the same data in long format look like:
 
 ```{r}
 #| echo: FALSE
@@ -58,8 +59,124 @@ df_long |>
 
 So, what have we done here?
 
-![Pivot_Longer in Action](images/pivot_graphic.png){fig-align="center"}
-
 Enter `pivot_longer()` from the `tidyr` package.
 
+The figure below shows how `pivot_longer()` has transformed each component of the data from its original format to the new long format. In other words we have **pivoted** the data from wide to long. You will see that where the data for a specific ID originally spanned across multiple columns but within one row, in long format the data for each ID now spans across multiple rows but within one column.
+
+![pivot_longer() in Action](images/pivot_graphic.png){fig-align="center"}
+
+The basic syntax of `pivot_longer()` is as follows:
+
+`pivot_longer(data, cols, names_to, values_to)`
+
+where:
+
+-   `data`: The data frame or tibble to be reshaped.
+
+-   `cols`: The columns to be transformed from wide to long.
+
+-   `names_to`: The name of the new (long) column that will hold the (currently wide) variable names.
+
+-   `values_to`: The name of the new (long) column that will hold the corresponding (currently wide) values.
+
+That's basically it. While knowledge of how to write the code is clearly important, It may still seem confusing as to how to actually operationalise it. So let's go through a few of some of the more common use-case scenarios that might require you to reshape data from wide to long format. As these examples will illustrate, not all wide data is equal and there are certainly some nuances to the coding depending on how the data are recorded and how you want the data to look after pivoting.
+
 ## Case 1: One Name Column, One Value Column
+
+This is the most common and most straight-forward application of reshaping to long that you might be required to perform. In this case we have multiple value columns in wide format that we want to reshape to one name column and one value column. The good news is that we have already done this in the example above. The code is also shown but just to revisit that briefly for clarity:
+
+```{r}
+#| code-fold: false
+df_long <- df_wide |> 
+  pivot_longer(cols = month_0:month_3,
+               names_to = "month",
+               names_prefix = "month_",
+               values_to = "bp")
+```
+
+So we take the `df_wide` dataframe and 'pipe' it to the `pivot_longer()` function where we specify that we want to take the columns from (and including) `month_0` to `month_3`, assigning those column names as category labels in the new `month` name variable, while also placing each corresponding BP measurement into the new `bp` value variable. The `names_prefix` argument is optional but was used here to strip out the somewhat redundant `month_` text from each column name prior to labelling. You could certainly leave this in if you wanted and the result would then be:
+
+```{r}
+#| echo: FALSE
+df_wide |> 
+  pivot_longer(cols = month_0:month_3,
+               names_to = "month",
+               values_to = "bp") |>  
+  head(8) |>
+  kable(align = "c", digits = 2)
+
+```
+
+But I'm sure you'd agree that the results looks cleaner without all that unnecessary repetition.
+
+## Case 2: Multiple Name Columns, One Value Column
+
+Let's now extend this idea a little. Imagine that in addition to BP measurements, subjects also had their weight measured at the same time points (simulated with a mean of `70` kg and SD `15` kg). Now we have data that could potentially look like:
+
+```{r}
+id <- seq(1:5)
+for(i in 0:3){
+  var_name_bp <- paste0("month_",i,"_bp")
+  assign(var_name_bp, rnorm(5, 130, 20))
+  var_name_wt <- paste0("month_",i,"_wt")
+  assign(var_name_wt, rnorm(5, 70, 15))
+}
+df_wide <- data.frame(cbind(id, month_0_bp, month_0_wt, month_1_bp, month_1_wt, month_2_bp, month_2_wt, month_3_bp, month_3_wt))
+df_wide |>  
+  kable(align = "c", digits = 2)
+```
+
+What to do here?
+
+Actually, some thought is required at this point as there are two potential paths you could go down and it all depends on what you want to achieve. **Let's assume that you want to put all measurement values in one column**. Once you have decided on this final form, the code is not challenging. We will necessarily end up with **two** names columns instead of just one, one for time (month) and one for the all the clinical measures (BP and weight). The main changes to the code are to now supply two new variable names to the `names_to` argument as well as tell the function how to source the new category labels with the `names_sep` argument. This will split the currently wide variable names at the second `_` (after stripping out the redundant `month_` text) and use the number as the month label and the type of measurement as the clinical measure label.
+
+```{r}
+#| code-fold: false
+df_long <- df_wide |> 
+  pivot_longer(cols = month_0_bp:month_3_wt,
+               names_to = c("month", "clinical_measure"),
+               names_prefix = "month_",
+               names_sep = "_",
+               values_to = "value")
+```
+
+and the data looks like:
+
+```{r}
+df_long |>  
+  kable(align = "c", digits = 2)
+```
+
+I tend to think of this as a **complete reshaping** to long format.
+
+## Case 3: One Name Column, Multiple Value Columns
+
+But what if didn’t want to do this and instead wanted the values of BP and weight to appear in their own columns - a **partial reshaping** to long format if you like. To my mind this is probably a more useful long format than what we considered in the last example, although there may be some niche use-case scenarios that require data to be in that format for analysis (they just elude me right now).
+
+**So let's now assume that you want separate columns of values for each type of measurement**. Now we will end up with **one** name column and **two** value columns - one for BP and one for weight. The general form of the code doesn't change a lot in this case - the main thing being that we replace "clinical_measure" in the `names_to` argument with a special term `.value` which indicates that the pivoted (new) columns will be split by the text after the second `_` in the currently wide column names - i.e. taking on the value of `bp` or `wt` (so it's not necessary to specify a `values_to` term this time around). In those two new columns the corresponding measurement values will be placed. The code looks like:
+
+```{r}
+#| code-fold: false
+df_long <- df_wide |> 
+  pivot_longer(cols = month_0_bp:month_3_wt,
+               names_to = c("month", ".value"),
+               names_prefix = "month_",
+               names_sep = "_")
+```
+
+and the data now looks like:
+
+```{r}
+df_long |>  
+  kable(align = "c", digits = 2)
+```
+
+# Summary
+
+These are a few of what I consider the more common reshaping tasks you might be faced with. From time to time you may across a problem that might even require you to reshape in two steps to achieve the result that you want, so there are many different ways that data can present itself to you. What I have shown you here really only scratches the surface with what `pivot_longer()` is capable of. There are several other arguments to the function that you can read about that provide even more advanced pivoting features.
+
+<https://tidyr.tidyverse.org/reference/pivot_longer.html>
+
+An important point I want to mention if you haven't already realised this in looking through the examples, is that **the column names in the wide dataframe you are converting from are integral** to you successfully reshaping data to long format with `pivot_longer()`. If your column names are of poor quality you WILL have problems and you may in fact have to give some time and thought to renaming columns in your dataframe so they will be more amenable to transforming. Aim for consistency in naming patterns across variables and beware of using separators that are the same. For example, the only reason I didn't have more issues with a name like `bp_month_0` was that I stripped out the `month_` using the `names_prefix` argument, otherwise `pivot_longer()` wouldn't know which `_` to split at for the new clinical measure variable names. Had I wanted to retain the full `month_0`, `month_1`, etc as labels in the newly created `month` variable I would have had to rename the variables to something different - e.g. `month0_bp` or `month.0_bp`. So think carefully about the variables you are presented with - they may require some renaming before you do anything else.
+
+In case you're wondering about the reshaping elephant in the room, no we haven't talked today about reshaping in the opposite direction - long to wide. I'll leave that one for another time. In many ways, `pivot_wider()` is complementary to it sister function and if you understand one you'll quickly grasp the other. The primary difficulty in all of this is not so much the functions themselves, but the mental visualisation of the transformation. Once you have a handle on that, how to go about the coding starts to make more sense.

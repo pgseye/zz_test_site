@@ -151,7 +151,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#long-data" id="toc-long-data" class="nav-link" data-scroll-target="#long-data"><span class="header-section-number">2</span> Long Data</a>
   <ul class="collapse">
   <li><a href="#case-1-one-name-column-one-value-column" id="toc-case-1-one-name-column-one-value-column" class="nav-link" data-scroll-target="#case-1-one-name-column-one-value-column"><span class="header-section-number">2.1</span> Case 1: One Name Column, One Value Column</a></li>
+  <li><a href="#case-2-multiple-name-columns-one-value-column" id="toc-case-2-multiple-name-columns-one-value-column" class="nav-link" data-scroll-target="#case-2-multiple-name-columns-one-value-column"><span class="header-section-number">2.2</span> Case 2: Multiple Name Columns, One Value Column</a></li>
+  <li><a href="#case-3-one-name-column-multiple-value-columns" id="toc-case-3-one-name-column-multiple-value-columns" class="nav-link" data-scroll-target="#case-3-one-name-column-multiple-value-columns"><span class="header-section-number">2.3</span> Case 3: One Name Column, Multiple Value Columns</a></li>
   </ul></li>
+  <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary"><span class="header-section-number">3</span> Summary</a></li>
   </ul>
 </nav>
     </div>
@@ -195,7 +198,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>In your day-to-day data analysis work you will probably find yourself at some point needing to <em>reshape</em> data, and this is usually to suit an analytical need. Reshaping is changing the rectangular structure of the columns and rows in your dataset without altering the content. Data comes in two basic shapes: <strong>wide</strong> and <strong>long</strong>.</p>
 <section id="wide-data" class="level1" data-number="1">
 <h1 data-number="1"><span class="header-section-number">1</span> Wide Data</h1>
-<p>I would argue that most data is collected in this format. A defining feature of the <strong>wide</strong> data format is that all measurements collected for a single ‘unit of observation’ occur on the same row.</p>
+<p>I would argue that most data is collected and recorded in this format. A defining feature of the <strong>wide</strong> data format is that all measurements collected for a single ‘unit of observation’ occur on the same row.</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -244,38 +247,38 @@ Note
 <tbody>
 <tr class="odd">
 <td style="text-align: center;">1</td>
-<td style="text-align: center;">143.65</td>
-<td style="text-align: center;">154.95</td>
-<td style="text-align: center;">155.10</td>
-<td style="text-align: center;">109.45</td>
+<td style="text-align: center;">136.79</td>
+<td style="text-align: center;">170.78</td>
+<td style="text-align: center;">130.11</td>
+<td style="text-align: center;">136.40</td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">2</td>
-<td style="text-align: center;">123.28</td>
-<td style="text-align: center;">85.00</td>
-<td style="text-align: center;">120.92</td>
-<td style="text-align: center;">164.22</td>
+<td style="text-align: center;">99.08</td>
+<td style="text-align: center;">110.87</td>
+<td style="text-align: center;">118.15</td>
+<td style="text-align: center;">141.49</td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">3</td>
-<td style="text-align: center;">140.29</td>
-<td style="text-align: center;">128.70</td>
-<td style="text-align: center;">132.46</td>
-<td style="text-align: center;">117.05</td>
+<td style="text-align: center;">126.75</td>
+<td style="text-align: center;">98.83</td>
+<td style="text-align: center;">136.86</td>
+<td style="text-align: center;">129.01</td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">4</td>
-<td style="text-align: center;">104.11</td>
-<td style="text-align: center;">107.97</td>
-<td style="text-align: center;">144.08</td>
-<td style="text-align: center;">122.67</td>
+<td style="text-align: center;">156.07</td>
+<td style="text-align: center;">121.08</td>
+<td style="text-align: center;">148.44</td>
+<td style="text-align: center;">138.46</td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">5</td>
-<td style="text-align: center;">101.72</td>
-<td style="text-align: center;">92.88</td>
-<td style="text-align: center;">113.41</td>
-<td style="text-align: center;">97.71</td>
+<td style="text-align: center;">101.83</td>
+<td style="text-align: center;">114.27</td>
+<td style="text-align: center;">147.84</td>
+<td style="text-align: center;">149.54</td>
 </tr>
 </tbody>
 </table>
@@ -285,7 +288,7 @@ Note
 </section>
 <section id="long-data" class="level1" data-number="2">
 <h1 data-number="2"><span class="header-section-number">2</span> Long Data</h1>
-<p>Data is in long format when the measurements collected for a single unit of observation occur on multiple rows. In effect, they are transposed from going across columns within a single row to down rows within a single column (I will illustrate this below). This is the data format required for many modelling approaches in most statistical software and is the default format for longitudinal or repeated measures data. This is what the same data in long format look like:</p>
+<p>Data is in long format when the measurements collected for a single unit of observation occur on multiple rows. In effect, they are transformed from going across columns within a single row to down rows within a single column (I will illustrate this below). This is the data format required for many modelling approaches in most statistical software and is the default format for longitudinal or repeated measures data. This is what the same data in long format look like:</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -305,122 +308,736 @@ Note
 <tr class="odd">
 <td style="text-align: center;">1</td>
 <td style="text-align: center;">0</td>
-<td style="text-align: center;">143.65</td>
+<td style="text-align: center;">136.79</td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">1</td>
 <td style="text-align: center;">1</td>
-<td style="text-align: center;">154.95</td>
+<td style="text-align: center;">170.78</td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">1</td>
 <td style="text-align: center;">2</td>
-<td style="text-align: center;">155.10</td>
+<td style="text-align: center;">130.11</td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">1</td>
 <td style="text-align: center;">3</td>
-<td style="text-align: center;">109.45</td>
+<td style="text-align: center;">136.40</td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">2</td>
 <td style="text-align: center;">0</td>
-<td style="text-align: center;">123.28</td>
+<td style="text-align: center;">99.08</td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">2</td>
 <td style="text-align: center;">1</td>
-<td style="text-align: center;">85.00</td>
+<td style="text-align: center;">110.87</td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">2</td>
 <td style="text-align: center;">2</td>
-<td style="text-align: center;">120.92</td>
+<td style="text-align: center;">118.15</td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">2</td>
 <td style="text-align: center;">3</td>
-<td style="text-align: center;">164.22</td>
+<td style="text-align: center;">141.49</td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">3</td>
 <td style="text-align: center;">0</td>
-<td style="text-align: center;">140.29</td>
+<td style="text-align: center;">126.75</td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">3</td>
 <td style="text-align: center;">1</td>
-<td style="text-align: center;">128.70</td>
+<td style="text-align: center;">98.83</td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">3</td>
 <td style="text-align: center;">2</td>
-<td style="text-align: center;">132.46</td>
+<td style="text-align: center;">136.86</td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">3</td>
 <td style="text-align: center;">3</td>
-<td style="text-align: center;">117.05</td>
+<td style="text-align: center;">129.01</td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">4</td>
 <td style="text-align: center;">0</td>
-<td style="text-align: center;">104.11</td>
+<td style="text-align: center;">156.07</td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">4</td>
 <td style="text-align: center;">1</td>
-<td style="text-align: center;">107.97</td>
+<td style="text-align: center;">121.08</td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">4</td>
 <td style="text-align: center;">2</td>
-<td style="text-align: center;">144.08</td>
+<td style="text-align: center;">148.44</td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">4</td>
 <td style="text-align: center;">3</td>
-<td style="text-align: center;">122.67</td>
+<td style="text-align: center;">138.46</td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">5</td>
 <td style="text-align: center;">0</td>
-<td style="text-align: center;">101.72</td>
+<td style="text-align: center;">101.83</td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">5</td>
 <td style="text-align: center;">1</td>
-<td style="text-align: center;">92.88</td>
+<td style="text-align: center;">114.27</td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">5</td>
 <td style="text-align: center;">2</td>
-<td style="text-align: center;">113.41</td>
+<td style="text-align: center;">147.84</td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">5</td>
 <td style="text-align: center;">3</td>
-<td style="text-align: center;">97.71</td>
+<td style="text-align: center;">149.54</td>
 </tr>
 </tbody>
 </table>
 </div>
 </div>
 <p>So, what have we done here?</p>
+<p>Enter <code>pivot_longer()</code> from the <code>tidyr</code> package.</p>
+<p>The figure below shows how <code>pivot_longer()</code> has transformed each component of the data from its original format to the new long format. In other words we have <strong>pivoted</strong> the data from wide to long. You will see that where the data for a specific ID originally spanned across multiple columns but within one row, in long format the data for each ID now spans across multiple rows but within one column.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="images/pivot_graphic.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
-<figcaption>Pivot_Longer in Action</figcaption>
+<figcaption>pivot_longer() in Action</figcaption>
 </figure>
 </div>
-<p>Enter <code>pivot_longer()</code> from the <code>tidyr</code> package.</p>
+<p>The basic syntax of <code>pivot_longer()</code> is as follows:</p>
+<p><code>pivot_longer(data, cols, names_to, values_to)</code></p>
+<p>where:</p>
+<ul>
+<li><p><code>data</code>: The data frame or tibble to be reshaped.</p></li>
+<li><p><code>cols</code>: The columns to be transformed from wide to long.</p></li>
+<li><p><code>names_to</code>: The name of the new (long) column that will hold the (currently wide) variable names.</p></li>
+<li><p><code>values_to</code>: The name of the new (long) column that will hold the corresponding (currently wide) values.</p></li>
+</ul>
+<p>That’s basically it. While knowledge of how to write the code is clearly important, It may still seem confusing as to how to actually operationalise it. So let’s go through a few of some of the more common use-case scenarios that might require you to reshape data from wide to long format. As these examples will illustrate, not all wide data is equal and there are certainly some nuances to the coding depending on how the data are recorded and how you want the data to look after pivoting.</p>
 <section id="case-1-one-name-column-one-value-column" class="level2" data-number="2.1">
 <h2 data-number="2.1" class="anchored" data-anchor-id="case-1-one-name-column-one-value-column"><span class="header-section-number">2.1</span> Case 1: One Name Column, One Value Column</h2>
+<p>This is the most common and most straight-forward application of reshaping to long that you might be required to perform. In this case we have multiple value columns in wide format that we want to reshape to one name column and one value column. The good news is that we have already done this in the example above. The code is also shown but just to revisit that briefly for clarity:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>df_long <span class="ot">&lt;-</span> df_wide <span class="sc">|&gt;</span> </span>
+<span id="cb4-2"><a href="#cb4-2"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> month_0<span class="sc">:</span>month_3,</span>
+<span id="cb4-3"><a href="#cb4-3"></a>               <span class="at">names_to =</span> <span class="st">"month"</span>,</span>
+<span id="cb4-4"><a href="#cb4-4"></a>               <span class="at">names_prefix =</span> <span class="st">"month_"</span>,</span>
+<span id="cb4-5"><a href="#cb4-5"></a>               <span class="at">values_to =</span> <span class="st">"bp"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>So we take the <code>df_wide</code> dataframe and ‘pipe’ it to the <code>pivot_longer()</code> function where we specify that we want to take the columns from (and including) <code>month_0</code> to <code>month_3</code>, assigning those column names as category labels in the new <code>month</code> name variable, while also placing each corresponding BP measurement into the new <code>bp</code> value variable. The <code>names_prefix</code> argument is optional but was used here to strip out the somewhat redundant <code>month_</code> text from each column name prior to labelling. You could certainly leave this in if you wanted and the result would then be:</p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: center;">id</th>
+<th style="text-align: center;">month</th>
+<th style="text-align: center;">bp</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">month_0</td>
+<td style="text-align: center;">136.79</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">month_1</td>
+<td style="text-align: center;">170.78</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">month_2</td>
+<td style="text-align: center;">130.11</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">month_3</td>
+<td style="text-align: center;">136.40</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">month_0</td>
+<td style="text-align: center;">99.08</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">month_1</td>
+<td style="text-align: center;">110.87</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">month_2</td>
+<td style="text-align: center;">118.15</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">month_3</td>
+<td style="text-align: center;">141.49</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>But I’m sure you’d agree that the results looks cleaner without all that unnecessary repetition.</p>
+</section>
+<section id="case-2-multiple-name-columns-one-value-column" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="case-2-multiple-name-columns-one-value-column"><span class="header-section-number">2.2</span> Case 2: Multiple Name Columns, One Value Column</h2>
+<p>Let’s now extend this idea a little. Imagine that in addition to BP measurements, subjects also had their weight measured at the same time points (simulated with a mean of <code>70</code> kg and SD <code>15</code> kg). Now we have data that could potentially look like:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>id <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>)</span>
+<span id="cb5-2"><a href="#cb5-2"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">3</span>){</span>
+<span id="cb5-3"><a href="#cb5-3"></a>  var_name_bp <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"month_"</span>,i,<span class="st">"_bp"</span>)</span>
+<span id="cb5-4"><a href="#cb5-4"></a>  <span class="fu">assign</span>(var_name_bp, <span class="fu">rnorm</span>(<span class="dv">5</span>, <span class="dv">130</span>, <span class="dv">20</span>))</span>
+<span id="cb5-5"><a href="#cb5-5"></a>  var_name_wt <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"month_"</span>,i,<span class="st">"_wt"</span>)</span>
+<span id="cb5-6"><a href="#cb5-6"></a>  <span class="fu">assign</span>(var_name_wt, <span class="fu">rnorm</span>(<span class="dv">5</span>, <span class="dv">70</span>, <span class="dv">15</span>))</span>
+<span id="cb5-7"><a href="#cb5-7"></a>}</span>
+<span id="cb5-8"><a href="#cb5-8"></a>df_wide <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">cbind</span>(id, month_0_bp, month_0_wt, month_1_bp, month_1_wt, month_2_bp, month_2_wt, month_3_bp, month_3_wt))</span>
+<span id="cb5-9"><a href="#cb5-9"></a>df_wide <span class="sc">|&gt;</span>  </span>
+<span id="cb5-10"><a href="#cb5-10"></a>  <span class="fu">kable</span>(<span class="at">align =</span> <span class="st">"c"</span>, <span class="at">digits =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<colgroup>
+<col style="width: 4%">
+<col style="width: 12%">
+<col style="width: 12%">
+<col style="width: 12%">
+<col style="width: 12%">
+<col style="width: 12%">
+<col style="width: 12%">
+<col style="width: 12%">
+<col style="width: 12%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: center;">id</th>
+<th style="text-align: center;">month_0_bp</th>
+<th style="text-align: center;">month_0_wt</th>
+<th style="text-align: center;">month_1_bp</th>
+<th style="text-align: center;">month_1_wt</th>
+<th style="text-align: center;">month_2_bp</th>
+<th style="text-align: center;">month_2_wt</th>
+<th style="text-align: center;">month_3_bp</th>
+<th style="text-align: center;">month_3_wt</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">139.56</td>
+<td style="text-align: center;">64.44</td>
+<td style="text-align: center;">142.76</td>
+<td style="text-align: center;">88.21</td>
+<td style="text-align: center;">94.20</td>
+<td style="text-align: center;">31.81</td>
+<td style="text-align: center;">123.68</td>
+<td style="text-align: center;">110.41</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">159.89</td>
+<td style="text-align: center;">58.74</td>
+<td style="text-align: center;">136.44</td>
+<td style="text-align: center;">58.65</td>
+<td style="text-align: center;">137.26</td>
+<td style="text-align: center;">60.98</td>
+<td style="text-align: center;">135.68</td>
+<td style="text-align: center;">56.16</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">118.89</td>
+<td style="text-align: center;">62.49</td>
+<td style="text-align: center;">101.90</td>
+<td style="text-align: center;">56.53</td>
+<td style="text-align: center;">103.91</td>
+<td style="text-align: center;">54.20</td>
+<td style="text-align: center;">129.39</td>
+<td style="text-align: center;">91.74</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">106.44</td>
+<td style="text-align: center;">90.90</td>
+<td style="text-align: center;">138.15</td>
+<td style="text-align: center;">64.54</td>
+<td style="text-align: center;">126.27</td>
+<td style="text-align: center;">73.29</td>
+<td style="text-align: center;">120.39</td>
+<td style="text-align: center;">59.81</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">141.39</td>
+<td style="text-align: center;">74.20</td>
+<td style="text-align: center;">109.42</td>
+<td style="text-align: center;">62.05</td>
+<td style="text-align: center;">114.40</td>
+<td style="text-align: center;">51.03</td>
+<td style="text-align: center;">73.31</td>
+<td style="text-align: center;">82.06</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>What to do here?</p>
+<p>Actually, some thought is required at this point as there are two potential paths you could go down and it all depends on what you want to achieve. <strong>Let’s assume that you want to put all measurement values in one column</strong>. Once you have decided on this final form, the code is not challenging. We will necessarily end up with <strong>two</strong> names columns instead of just one, one for time (month) and one for the all the clinical measures (BP and weight). The main changes to the code are to now supply two new variable names to the <code>names_to</code> argument as well as tell the function how to source the new category labels with the <code>names_sep</code> argument. This will split the currently wide variable names at the second <code>_</code> (after stripping out the redundant <code>month_</code> text) and use the number as the month label and the type of measurement as the clinical measure label.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a>df_long <span class="ot">&lt;-</span> df_wide <span class="sc">|&gt;</span> </span>
+<span id="cb6-2"><a href="#cb6-2"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> month_0_bp<span class="sc">:</span>month_3_wt,</span>
+<span id="cb6-3"><a href="#cb6-3"></a>               <span class="at">names_to =</span> <span class="fu">c</span>(<span class="st">"month"</span>, <span class="st">"clinical_measure"</span>),</span>
+<span id="cb6-4"><a href="#cb6-4"></a>               <span class="at">names_prefix =</span> <span class="st">"month_"</span>,</span>
+<span id="cb6-5"><a href="#cb6-5"></a>               <span class="at">names_sep =</span> <span class="st">"_"</span>,</span>
+<span id="cb6-6"><a href="#cb6-6"></a>               <span class="at">values_to =</span> <span class="st">"value"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>and the data looks like:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>df_long <span class="sc">|&gt;</span>  </span>
+<span id="cb7-2"><a href="#cb7-2"></a>  <span class="fu">kable</span>(<span class="at">align =</span> <span class="st">"c"</span>, <span class="at">digits =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: center;">id</th>
+<th style="text-align: center;">month</th>
+<th style="text-align: center;">clinical_measure</th>
+<th style="text-align: center;">value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">bp</td>
+<td style="text-align: center;">139.56</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">wt</td>
+<td style="text-align: center;">64.44</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">bp</td>
+<td style="text-align: center;">142.76</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">wt</td>
+<td style="text-align: center;">88.21</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">bp</td>
+<td style="text-align: center;">94.20</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">wt</td>
+<td style="text-align: center;">31.81</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">bp</td>
+<td style="text-align: center;">123.68</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">wt</td>
+<td style="text-align: center;">110.41</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">bp</td>
+<td style="text-align: center;">159.89</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">wt</td>
+<td style="text-align: center;">58.74</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">bp</td>
+<td style="text-align: center;">136.44</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">wt</td>
+<td style="text-align: center;">58.65</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">bp</td>
+<td style="text-align: center;">137.26</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">wt</td>
+<td style="text-align: center;">60.98</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">bp</td>
+<td style="text-align: center;">135.68</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">wt</td>
+<td style="text-align: center;">56.16</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">bp</td>
+<td style="text-align: center;">118.89</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">wt</td>
+<td style="text-align: center;">62.49</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">bp</td>
+<td style="text-align: center;">101.90</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">wt</td>
+<td style="text-align: center;">56.53</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">bp</td>
+<td style="text-align: center;">103.91</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">wt</td>
+<td style="text-align: center;">54.20</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">bp</td>
+<td style="text-align: center;">129.39</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">wt</td>
+<td style="text-align: center;">91.74</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">bp</td>
+<td style="text-align: center;">106.44</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">wt</td>
+<td style="text-align: center;">90.90</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">bp</td>
+<td style="text-align: center;">138.15</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">wt</td>
+<td style="text-align: center;">64.54</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">bp</td>
+<td style="text-align: center;">126.27</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">wt</td>
+<td style="text-align: center;">73.29</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">bp</td>
+<td style="text-align: center;">120.39</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">wt</td>
+<td style="text-align: center;">59.81</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">bp</td>
+<td style="text-align: center;">141.39</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">wt</td>
+<td style="text-align: center;">74.20</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">bp</td>
+<td style="text-align: center;">109.42</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">wt</td>
+<td style="text-align: center;">62.05</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">bp</td>
+<td style="text-align: center;">114.40</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">wt</td>
+<td style="text-align: center;">51.03</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">bp</td>
+<td style="text-align: center;">73.31</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">wt</td>
+<td style="text-align: center;">82.06</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>I tend to think of this as a <strong>complete reshaping</strong> to long format.</p>
+</section>
+<section id="case-3-one-name-column-multiple-value-columns" class="level2" data-number="2.3">
+<h2 data-number="2.3" class="anchored" data-anchor-id="case-3-one-name-column-multiple-value-columns"><span class="header-section-number">2.3</span> Case 3: One Name Column, Multiple Value Columns</h2>
+<p>But what if didn’t want to do this and instead wanted the values of BP and weight to appear in their own columns - a <strong>partial reshaping</strong> to long format if you like. To my mind this is probably a more useful long format than what we considered in the last example, although there may be some niche use-case scenarios that require data to be in that format for analysis (they just elude me right now).</p>
+<p><strong>So let’s now assume that you want separate columns of values for each type of measurement</strong>. Now we will end up with <strong>one</strong> name column and <strong>two</strong> value columns - one for BP and one for weight. The general form of the code doesn’t change a lot in this case - the main thing being that we replace “clinical_measure” in the <code>names_to</code> argument with a special term <code>.value</code> which indicates that the pivoted (new) columns will be split by the text after the second <code>_</code> in the currently wide column names - i.e.&nbsp;taking on the value of <code>bp</code> or <code>wt</code> (so it’s not necessary to specify a <code>values_to</code> term this time around). In those two new columns the corresponding measurement values will be placed. The code looks like:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a>df_long <span class="ot">&lt;-</span> df_wide <span class="sc">|&gt;</span> </span>
+<span id="cb8-2"><a href="#cb8-2"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> month_0_bp<span class="sc">:</span>month_3_wt,</span>
+<span id="cb8-3"><a href="#cb8-3"></a>               <span class="at">names_to =</span> <span class="fu">c</span>(<span class="st">"month"</span>, <span class="st">".value"</span>),</span>
+<span id="cb8-4"><a href="#cb8-4"></a>               <span class="at">names_prefix =</span> <span class="st">"month_"</span>,</span>
+<span id="cb8-5"><a href="#cb8-5"></a>               <span class="at">names_sep =</span> <span class="st">"_"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>and the data now looks like:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a>df_long <span class="sc">|&gt;</span>  </span>
+<span id="cb9-2"><a href="#cb9-2"></a>  <span class="fu">kable</span>(<span class="at">align =</span> <span class="st">"c"</span>, <span class="at">digits =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: center;">id</th>
+<th style="text-align: center;">month</th>
+<th style="text-align: center;">bp</th>
+<th style="text-align: center;">wt</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">139.56</td>
+<td style="text-align: center;">64.44</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">142.76</td>
+<td style="text-align: center;">88.21</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">94.20</td>
+<td style="text-align: center;">31.81</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">123.68</td>
+<td style="text-align: center;">110.41</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">159.89</td>
+<td style="text-align: center;">58.74</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">136.44</td>
+<td style="text-align: center;">58.65</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">137.26</td>
+<td style="text-align: center;">60.98</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">135.68</td>
+<td style="text-align: center;">56.16</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">118.89</td>
+<td style="text-align: center;">62.49</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">101.90</td>
+<td style="text-align: center;">56.53</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">103.91</td>
+<td style="text-align: center;">54.20</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">129.39</td>
+<td style="text-align: center;">91.74</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">106.44</td>
+<td style="text-align: center;">90.90</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">138.15</td>
+<td style="text-align: center;">64.54</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">126.27</td>
+<td style="text-align: center;">73.29</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">120.39</td>
+<td style="text-align: center;">59.81</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">141.39</td>
+<td style="text-align: center;">74.20</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">109.42</td>
+<td style="text-align: center;">62.05</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">114.40</td>
+<td style="text-align: center;">51.03</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">73.31</td>
+<td style="text-align: center;">82.06</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+</section>
+<section id="summary" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Summary</h1>
+<p>These are a few of what I consider the more common reshaping tasks you might be faced with. From time to time you may across a problem that might even require you to reshape in two steps to achieve the result that you want, so there are many different ways that data can present itself to you. What I have shown you here really only scratches the surface with what <code>pivot_longer()</code> is capable of. There are several other arguments to the function that you can read about that provide even more advanced pivoting features.</p>
+<p><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html" class="uri">https://tidyr.tidyverse.org/reference/pivot_longer.html</a></p>
+<p>An important point I want to mention if you haven’t already realised this in looking through the examples, is that <strong>the column names in the wide dataframe you are converting from are integral</strong> to you successfully reshaping data to long format with <code>pivot_longer()</code>. If your column names are of poor quality you WILL have problems and you may in fact have to give some time and thought to renaming columns in your dataframe so they will be more amenable to transforming. Aim for consistency in naming patterns across variables and beware of using separators that are the same. For example, the only reason I didn’t have more issues with a name like <code>bp_month_0</code> was that I stripped out the <code>month_</code> using the <code>names_prefix</code> argument, otherwise <code>pivot_longer()</code> wouldn’t know which <code>_</code> to split at for the new clinical measure variable names. Had I wanted to retain the full <code>month_0</code>, <code>month_1</code>, etc as labels in the newly created <code>month</code> variable I would have had to rename the variables to something different - e.g.&nbsp;<code>month0_bp</code> or <code>month.0_bp</code>. So think carefully about the variables you are presented with - they may require some renaming before you do anything else.</p>
+<p>In case you’re wondering about the reshaping elephant in the room, no we haven’t talked today about reshaping in the opposite direction - long to wide. I’ll leave that one for another time. In many ways, <code>pivot_wider()</code> is complementary to it sister function and if you understand one you’ll quickly grasp the other. The primary difficulty in all of this is not so much the functions themselves, but the mental visualisation of the transformation. Once you have a handle on that, how to go about the coding starts to make more sense.</p>
 
 
 <!-- -->
 
-</section>
 </section>
 
 </main> <!-- /main -->
@@ -1010,71 +1627,188 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <input type="hidden" id="giscus-base-theme" value="light">
 <input type="hidden" id="giscus-alt-theme" value="dark"><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
-<div class="sourceCode" id="cb4" data-shortcodes="false"><pre class="sourceCode numberSource markdown number-lines code-with-copy"><code class="sourceCode markdown"><span id="cb4-1"><a href="#cb4-1"></a><span class="co">---</span></span>
-<span id="cb4-2"><a href="#cb4-2"></a><span class="an">title:</span><span class="co"> "Reshaping Data - Think Before you Pivot"</span></span>
-<span id="cb4-3"><a href="#cb4-3"></a><span class="an">date:</span><span class="co"> 2024-06-14</span></span>
-<span id="cb4-4"><a href="#cb4-4"></a><span class="an">categories:</span><span class="co"> [concept, code]</span></span>
-<span id="cb4-5"><a href="#cb4-5"></a><span class="an">description:</span><span class="co"> "Some common-use scenarios for reshaping your data from wide to long format"</span></span>
-<span id="cb4-6"><a href="#cb4-6"></a><span class="co">---</span></span>
-<span id="cb4-7"><a href="#cb4-7"></a></span>
-<span id="cb4-8"><a href="#cb4-8"></a>In your day-to-day data analysis work you will probably find yourself at some point needing to *reshape* data, and this is usually to suit an analytical need. Reshaping is changing the rectangular structure of the columns and rows in your dataset without altering the content. Data comes in two basic shapes: **wide** and **long**.</span>
-<span id="cb4-9"><a href="#cb4-9"></a></span>
-<span id="cb4-10"><a href="#cb4-10"></a><span class="fu"># Wide Data</span></span>
-<span id="cb4-11"><a href="#cb4-11"></a></span>
-<span id="cb4-12"><a href="#cb4-12"></a>I would argue that most data is collected in this format. A defining feature of the **wide** data format is that all measurements collected for a single 'unit of observation' occur on the same row.</span>
-<span id="cb4-13"><a href="#cb4-13"></a></span>
-<span id="cb4-14"><a href="#cb4-14"></a>::: callout-note</span>
-<span id="cb4-15"><a href="#cb4-15"></a>Think of the unit of observation as hierarchical in nature. Typically, the unit of observation is a patient or subject, but it may also be at a higher level - e.g. measurements on eyes of patients; or at a lower level - e.g. measurements on hospitals.</span>
-<span id="cb4-16"><a href="#cb4-16"></a>:::</span>
-<span id="cb4-17"><a href="#cb4-17"></a></span>
-<span id="cb4-18"><a href="#cb4-18"></a>A good example of this is repeated measures for some variable that occur over time. The first column might be an subject ID variable and then additional columns, the value of the measurement over each time point. Let's simulate some data to show this idea.</span>
-<span id="cb4-19"><a href="#cb4-19"></a></span>
-<span id="cb4-22"><a href="#cb4-22"></a><span class="in">```{r}</span></span>
-<span id="cb4-23"><a href="#cb4-23"></a><span class="co">#| message: false</span></span>
-<span id="cb4-24"><a href="#cb4-24"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb4-25"><a href="#cb4-25"></a><span class="fu">library</span>(kableExtra)</span>
-<span id="cb4-26"><a href="#cb4-26"></a>id <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>)</span>
-<span id="cb4-27"><a href="#cb4-27"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">3</span>){</span>
-<span id="cb4-28"><a href="#cb4-28"></a>  var_name <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"month_"</span>,i)</span>
-<span id="cb4-29"><a href="#cb4-29"></a>  <span class="fu">assign</span>(var_name, <span class="fu">rnorm</span>(<span class="dv">5</span>, <span class="dv">130</span>, <span class="dv">20</span>))</span>
-<span id="cb4-30"><a href="#cb4-30"></a>}</span>
-<span id="cb4-31"><a href="#cb4-31"></a>df_wide <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">cbind</span>(id, month_0, month_1, month_2, month_3))</span>
-<span id="cb4-32"><a href="#cb4-32"></a><span class="in">```</span></span>
-<span id="cb4-33"><a href="#cb4-33"></a></span>
-<span id="cb4-34"><a href="#cb4-34"></a>In this simulated dataframe I have created values of some variable - for the sake of the example let's say it's systolic blood pressure (mean <span class="in">`130`</span> mmHg, SD <span class="in">`20`</span> mmHg) for <span class="in">`5`</span> subjects, measured at <span class="in">`4`</span> time points - baseline and then every month for <span class="in">`3`</span> months. The data look like:</span>
-<span id="cb4-35"><a href="#cb4-35"></a></span>
-<span id="cb4-38"><a href="#cb4-38"></a><span class="in">```{r}</span></span>
-<span id="cb4-39"><a href="#cb4-39"></a>df_wide <span class="sc">|&gt;</span> </span>
-<span id="cb4-40"><a href="#cb4-40"></a>  <span class="fu">kable</span>(<span class="at">align =</span> <span class="st">"c"</span>, <span class="at">digits =</span> <span class="dv">2</span>)</span>
-<span id="cb4-41"><a href="#cb4-41"></a><span class="in">```</span></span>
-<span id="cb4-42"><a href="#cb4-42"></a></span>
-<span id="cb4-43"><a href="#cb4-43"></a>This in an intuitive format for collecting and recording data like this, but it doesn't easily lend itself to the various analyses you might want to conduct. Sure, if you were interested in testing for differences in BP at different time points, you could do that with t-tests across relevant columns, but it may mean multiple tests. Indeed, there are more statistically efficient approaches to do this, but first you need to reshape your data into **long** format.</span>
-<span id="cb4-44"><a href="#cb4-44"></a></span>
-<span id="cb4-45"><a href="#cb4-45"></a><span class="fu"># Long Data</span></span>
-<span id="cb4-46"><a href="#cb4-46"></a></span>
-<span id="cb4-47"><a href="#cb4-47"></a>Data is in long format when the measurements collected for a single unit of observation occur on multiple rows. In effect, they are transposed from going across columns within a single row to down rows within a single column (I will illustrate this below). This is the data format required for many modelling approaches in most statistical software and is the default format for longitudinal or repeated measures data. This is what the same data in long format look like:</span>
-<span id="cb4-48"><a href="#cb4-48"></a></span>
-<span id="cb4-51"><a href="#cb4-51"></a><span class="in">```{r}</span></span>
-<span id="cb4-52"><a href="#cb4-52"></a><span class="co">#| echo: FALSE</span></span>
-<span id="cb4-53"><a href="#cb4-53"></a>df_long <span class="ot">&lt;-</span> df_wide <span class="sc">|&gt;</span> </span>
-<span id="cb4-54"><a href="#cb4-54"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> month_0<span class="sc">:</span>month_3,</span>
-<span id="cb4-55"><a href="#cb4-55"></a>               <span class="at">names_to =</span> <span class="st">"month"</span>,</span>
-<span id="cb4-56"><a href="#cb4-56"></a>               <span class="at">names_prefix =</span> <span class="st">"month_"</span>,</span>
-<span id="cb4-57"><a href="#cb4-57"></a>               <span class="at">values_to =</span> <span class="st">"bp"</span>)</span>
-<span id="cb4-58"><a href="#cb4-58"></a><span class="in">```</span></span>
-<span id="cb4-59"><a href="#cb4-59"></a></span>
-<span id="cb4-62"><a href="#cb4-62"></a><span class="in">```{r}</span></span>
-<span id="cb4-63"><a href="#cb4-63"></a>df_long <span class="sc">|&gt;</span>  </span>
-<span id="cb4-64"><a href="#cb4-64"></a>  <span class="fu">kable</span>(<span class="at">align =</span> <span class="st">"c"</span>, <span class="at">digits =</span> <span class="dv">2</span>)</span>
-<span id="cb4-65"><a href="#cb4-65"></a><span class="in">```</span></span>
-<span id="cb4-66"><a href="#cb4-66"></a></span>
-<span id="cb4-67"><a href="#cb4-67"></a>So, what have we done here?</span>
-<span id="cb4-68"><a href="#cb4-68"></a></span>
-<span id="cb4-69"><a href="#cb4-69"></a><span class="al">![Pivot_Longer in Action](images/pivot_graphic.png)</span>{fig-align="center"}</span>
-<span id="cb4-70"><a href="#cb4-70"></a></span>
-<span id="cb4-71"><a href="#cb4-71"></a>Enter <span class="in">`pivot_longer()`</span> from the <span class="in">`tidyr`</span> package.</span>
-<span id="cb4-72"><a href="#cb4-72"></a></span>
-<span id="cb4-73"><a href="#cb4-73"></a><span class="fu">## Case 1: One Name Column, One Value Column</span></span>
+<div class="sourceCode" id="cb10" data-shortcodes="false"><pre class="sourceCode numberSource markdown number-lines code-with-copy"><code class="sourceCode markdown"><span id="cb10-1"><a href="#cb10-1"></a><span class="co">---</span></span>
+<span id="cb10-2"><a href="#cb10-2"></a><span class="an">title:</span><span class="co"> "Reshaping Data - Think Before you Pivot"</span></span>
+<span id="cb10-3"><a href="#cb10-3"></a><span class="an">date:</span><span class="co"> 2024-06-14</span></span>
+<span id="cb10-4"><a href="#cb10-4"></a><span class="an">categories:</span><span class="co"> [concept, code]</span></span>
+<span id="cb10-5"><a href="#cb10-5"></a><span class="an">description:</span><span class="co"> "Some common-use scenarios for reshaping your data from wide to long format"</span></span>
+<span id="cb10-6"><a href="#cb10-6"></a><span class="co">---</span></span>
+<span id="cb10-7"><a href="#cb10-7"></a></span>
+<span id="cb10-8"><a href="#cb10-8"></a>In your day-to-day data analysis work you will probably find yourself at some point needing to *reshape* data, and this is usually to suit an analytical need. Reshaping is changing the rectangular structure of the columns and rows in your dataset without altering the content. Data comes in two basic shapes: **wide** and **long**.</span>
+<span id="cb10-9"><a href="#cb10-9"></a></span>
+<span id="cb10-10"><a href="#cb10-10"></a><span class="fu"># Wide Data</span></span>
+<span id="cb10-11"><a href="#cb10-11"></a></span>
+<span id="cb10-12"><a href="#cb10-12"></a>I would argue that most data is collected and recorded in this format. A defining feature of the **wide** data format is that all measurements collected for a single 'unit of observation' occur on the same row.</span>
+<span id="cb10-13"><a href="#cb10-13"></a></span>
+<span id="cb10-14"><a href="#cb10-14"></a>::: callout-note</span>
+<span id="cb10-15"><a href="#cb10-15"></a>Think of the unit of observation as hierarchical in nature. Typically, the unit of observation is a patient or subject, but it may also be at a higher level - e.g. measurements on eyes of patients; or at a lower level - e.g. measurements on hospitals.</span>
+<span id="cb10-16"><a href="#cb10-16"></a>:::</span>
+<span id="cb10-17"><a href="#cb10-17"></a></span>
+<span id="cb10-18"><a href="#cb10-18"></a>A good example of this is repeated measures for some variable that occur over time. The first column might be an subject ID variable and then additional columns, the value of the measurement over each time point. Let's simulate some data to show this idea.</span>
+<span id="cb10-19"><a href="#cb10-19"></a></span>
+<span id="cb10-22"><a href="#cb10-22"></a><span class="in">```{r}</span></span>
+<span id="cb10-23"><a href="#cb10-23"></a><span class="co">#| message: false</span></span>
+<span id="cb10-24"><a href="#cb10-24"></a><span class="co">#| warning: false</span></span>
+<span id="cb10-25"><a href="#cb10-25"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb10-26"><a href="#cb10-26"></a><span class="fu">library</span>(kableExtra)</span>
+<span id="cb10-27"><a href="#cb10-27"></a>id <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>)</span>
+<span id="cb10-28"><a href="#cb10-28"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">3</span>){</span>
+<span id="cb10-29"><a href="#cb10-29"></a>  var_name <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"month_"</span>,i)</span>
+<span id="cb10-30"><a href="#cb10-30"></a>  <span class="fu">assign</span>(var_name, <span class="fu">rnorm</span>(<span class="dv">5</span>, <span class="dv">130</span>, <span class="dv">20</span>))</span>
+<span id="cb10-31"><a href="#cb10-31"></a>}</span>
+<span id="cb10-32"><a href="#cb10-32"></a>df_wide <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">cbind</span>(id, month_0, month_1, month_2, month_3))</span>
+<span id="cb10-33"><a href="#cb10-33"></a><span class="in">```</span></span>
+<span id="cb10-34"><a href="#cb10-34"></a></span>
+<span id="cb10-35"><a href="#cb10-35"></a>In this simulated dataframe I have created values of some variable - for the sake of the example let's say it's systolic blood pressure (mean <span class="in">`130`</span> mmHg, SD <span class="in">`20`</span> mmHg) for <span class="in">`5`</span> subjects, measured at <span class="in">`4`</span> time points - baseline and then every month for <span class="in">`3`</span> months. The data look like:</span>
+<span id="cb10-36"><a href="#cb10-36"></a></span>
+<span id="cb10-39"><a href="#cb10-39"></a><span class="in">```{r}</span></span>
+<span id="cb10-40"><a href="#cb10-40"></a>df_wide <span class="sc">|&gt;</span> </span>
+<span id="cb10-41"><a href="#cb10-41"></a>  <span class="fu">kable</span>(<span class="at">align =</span> <span class="st">"c"</span>, <span class="at">digits =</span> <span class="dv">2</span>)</span>
+<span id="cb10-42"><a href="#cb10-42"></a><span class="in">```</span></span>
+<span id="cb10-43"><a href="#cb10-43"></a></span>
+<span id="cb10-44"><a href="#cb10-44"></a>This in an intuitive format for collecting and recording data like this, but it doesn't easily lend itself to the various analyses you might want to conduct. Sure, if you were interested in testing for differences in BP at different time points, you could do that with t-tests across relevant columns, but it may mean multiple tests. Indeed, there are more statistically efficient approaches to do this, but first you need to reshape your data into **long** format.</span>
+<span id="cb10-45"><a href="#cb10-45"></a></span>
+<span id="cb10-46"><a href="#cb10-46"></a><span class="fu"># Long Data</span></span>
+<span id="cb10-47"><a href="#cb10-47"></a></span>
+<span id="cb10-48"><a href="#cb10-48"></a>Data is in long format when the measurements collected for a single unit of observation occur on multiple rows. In effect, they are transformed from going across columns within a single row to down rows within a single column (I will illustrate this below). This is the data format required for many modelling approaches in most statistical software and is the default format for longitudinal or repeated measures data. This is what the same data in long format look like:</span>
+<span id="cb10-49"><a href="#cb10-49"></a></span>
+<span id="cb10-52"><a href="#cb10-52"></a><span class="in">```{r}</span></span>
+<span id="cb10-53"><a href="#cb10-53"></a><span class="co">#| echo: FALSE</span></span>
+<span id="cb10-54"><a href="#cb10-54"></a>df_long <span class="ot">&lt;-</span> df_wide <span class="sc">|&gt;</span> </span>
+<span id="cb10-55"><a href="#cb10-55"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> month_0<span class="sc">:</span>month_3,</span>
+<span id="cb10-56"><a href="#cb10-56"></a>               <span class="at">names_to =</span> <span class="st">"month"</span>,</span>
+<span id="cb10-57"><a href="#cb10-57"></a>               <span class="at">names_prefix =</span> <span class="st">"month_"</span>,</span>
+<span id="cb10-58"><a href="#cb10-58"></a>               <span class="at">values_to =</span> <span class="st">"bp"</span>)</span>
+<span id="cb10-59"><a href="#cb10-59"></a><span class="in">```</span></span>
+<span id="cb10-60"><a href="#cb10-60"></a></span>
+<span id="cb10-63"><a href="#cb10-63"></a><span class="in">```{r}</span></span>
+<span id="cb10-64"><a href="#cb10-64"></a>df_long <span class="sc">|&gt;</span>  </span>
+<span id="cb10-65"><a href="#cb10-65"></a>  <span class="fu">kable</span>(<span class="at">align =</span> <span class="st">"c"</span>, <span class="at">digits =</span> <span class="dv">2</span>)</span>
+<span id="cb10-66"><a href="#cb10-66"></a><span class="in">```</span></span>
+<span id="cb10-67"><a href="#cb10-67"></a></span>
+<span id="cb10-68"><a href="#cb10-68"></a>So, what have we done here?</span>
+<span id="cb10-69"><a href="#cb10-69"></a></span>
+<span id="cb10-70"><a href="#cb10-70"></a>Enter <span class="in">`pivot_longer()`</span> from the <span class="in">`tidyr`</span> package.</span>
+<span id="cb10-71"><a href="#cb10-71"></a></span>
+<span id="cb10-72"><a href="#cb10-72"></a>The figure below shows how <span class="in">`pivot_longer()`</span> has transformed each component of the data from its original format to the new long format. In other words we have **pivoted** the data from wide to long. You will see that where the data for a specific ID originally spanned across multiple columns but within one row, in long format the data for each ID now spans across multiple rows but within one column.</span>
+<span id="cb10-73"><a href="#cb10-73"></a></span>
+<span id="cb10-74"><a href="#cb10-74"></a><span class="al">![pivot_longer() in Action](images/pivot_graphic.png)</span>{fig-align="center"}</span>
+<span id="cb10-75"><a href="#cb10-75"></a></span>
+<span id="cb10-76"><a href="#cb10-76"></a>The basic syntax of <span class="in">`pivot_longer()`</span> is as follows:</span>
+<span id="cb10-77"><a href="#cb10-77"></a></span>
+<span id="cb10-78"><a href="#cb10-78"></a><span class="in">`pivot_longer(data, cols, names_to, values_to)`</span></span>
+<span id="cb10-79"><a href="#cb10-79"></a></span>
+<span id="cb10-80"><a href="#cb10-80"></a>where:</span>
+<span id="cb10-81"><a href="#cb10-81"></a></span>
+<span id="cb10-82"><a href="#cb10-82"></a><span class="ss">-   </span><span class="in">`data`</span>: The data frame or tibble to be reshaped.</span>
+<span id="cb10-83"><a href="#cb10-83"></a></span>
+<span id="cb10-84"><a href="#cb10-84"></a><span class="ss">-   </span><span class="in">`cols`</span>: The columns to be transformed from wide to long.</span>
+<span id="cb10-85"><a href="#cb10-85"></a></span>
+<span id="cb10-86"><a href="#cb10-86"></a><span class="ss">-   </span><span class="in">`names_to`</span>: The name of the new (long) column that will hold the (currently wide) variable names.</span>
+<span id="cb10-87"><a href="#cb10-87"></a></span>
+<span id="cb10-88"><a href="#cb10-88"></a><span class="ss">-   </span><span class="in">`values_to`</span>: The name of the new (long) column that will hold the corresponding (currently wide) values.</span>
+<span id="cb10-89"><a href="#cb10-89"></a></span>
+<span id="cb10-90"><a href="#cb10-90"></a>That's basically it. While knowledge of how to write the code is clearly important, It may still seem confusing as to how to actually operationalise it. So let's go through a few of some of the more common use-case scenarios that might require you to reshape data from wide to long format. As these examples will illustrate, not all wide data is equal and there are certainly some nuances to the coding depending on how the data are recorded and how you want the data to look after pivoting.</span>
+<span id="cb10-91"><a href="#cb10-91"></a></span>
+<span id="cb10-92"><a href="#cb10-92"></a><span class="fu">## Case 1: One Name Column, One Value Column</span></span>
+<span id="cb10-93"><a href="#cb10-93"></a></span>
+<span id="cb10-94"><a href="#cb10-94"></a>This is the most common and most straight-forward application of reshaping to long that you might be required to perform. In this case we have multiple value columns in wide format that we want to reshape to one name column and one value column. The good news is that we have already done this in the example above. The code is also shown but just to revisit that briefly for clarity:</span>
+<span id="cb10-95"><a href="#cb10-95"></a></span>
+<span id="cb10-98"><a href="#cb10-98"></a><span class="in">```{r}</span></span>
+<span id="cb10-99"><a href="#cb10-99"></a><span class="co">#| code-fold: false</span></span>
+<span id="cb10-100"><a href="#cb10-100"></a>df_long <span class="ot">&lt;-</span> df_wide <span class="sc">|&gt;</span> </span>
+<span id="cb10-101"><a href="#cb10-101"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> month_0<span class="sc">:</span>month_3,</span>
+<span id="cb10-102"><a href="#cb10-102"></a>               <span class="at">names_to =</span> <span class="st">"month"</span>,</span>
+<span id="cb10-103"><a href="#cb10-103"></a>               <span class="at">names_prefix =</span> <span class="st">"month_"</span>,</span>
+<span id="cb10-104"><a href="#cb10-104"></a>               <span class="at">values_to =</span> <span class="st">"bp"</span>)</span>
+<span id="cb10-105"><a href="#cb10-105"></a><span class="in">```</span></span>
+<span id="cb10-106"><a href="#cb10-106"></a></span>
+<span id="cb10-107"><a href="#cb10-107"></a>So we take the <span class="in">`df_wide`</span> dataframe and 'pipe' it to the <span class="in">`pivot_longer()`</span> function where we specify that we want to take the columns from (and including) <span class="in">`month_0`</span> to <span class="in">`month_3`</span>, assigning those column names as category labels in the new <span class="in">`month`</span> name variable, while also placing each corresponding BP measurement into the new <span class="in">`bp`</span> value variable. The <span class="in">`names_prefix`</span> argument is optional but was used here to strip out the somewhat redundant <span class="in">`month_`</span> text from each column name prior to labelling. You could certainly leave this in if you wanted and the result would then be:</span>
+<span id="cb10-108"><a href="#cb10-108"></a></span>
+<span id="cb10-111"><a href="#cb10-111"></a><span class="in">```{r}</span></span>
+<span id="cb10-112"><a href="#cb10-112"></a><span class="co">#| echo: FALSE</span></span>
+<span id="cb10-113"><a href="#cb10-113"></a>df_wide <span class="sc">|&gt;</span> </span>
+<span id="cb10-114"><a href="#cb10-114"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> month_0<span class="sc">:</span>month_3,</span>
+<span id="cb10-115"><a href="#cb10-115"></a>               <span class="at">names_to =</span> <span class="st">"month"</span>,</span>
+<span id="cb10-116"><a href="#cb10-116"></a>               <span class="at">values_to =</span> <span class="st">"bp"</span>) <span class="sc">|&gt;</span>  </span>
+<span id="cb10-117"><a href="#cb10-117"></a>  <span class="fu">head</span>(<span class="dv">8</span>) <span class="sc">|&gt;</span></span>
+<span id="cb10-118"><a href="#cb10-118"></a>  <span class="fu">kable</span>(<span class="at">align =</span> <span class="st">"c"</span>, <span class="at">digits =</span> <span class="dv">2</span>)</span>
+<span id="cb10-119"><a href="#cb10-119"></a></span>
+<span id="cb10-120"><a href="#cb10-120"></a><span class="in">```</span></span>
+<span id="cb10-121"><a href="#cb10-121"></a></span>
+<span id="cb10-122"><a href="#cb10-122"></a>But I'm sure you'd agree that the results looks cleaner without all that unnecessary repetition.</span>
+<span id="cb10-123"><a href="#cb10-123"></a></span>
+<span id="cb10-124"><a href="#cb10-124"></a><span class="fu">## Case 2: Multiple Name Columns, One Value Column</span></span>
+<span id="cb10-125"><a href="#cb10-125"></a></span>
+<span id="cb10-126"><a href="#cb10-126"></a>Let's now extend this idea a little. Imagine that in addition to BP measurements, subjects also had their weight measured at the same time points (simulated with a mean of <span class="in">`70`</span> kg and SD <span class="in">`15`</span> kg). Now we have data that could potentially look like:</span>
+<span id="cb10-127"><a href="#cb10-127"></a></span>
+<span id="cb10-130"><a href="#cb10-130"></a><span class="in">```{r}</span></span>
+<span id="cb10-131"><a href="#cb10-131"></a>id <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>)</span>
+<span id="cb10-132"><a href="#cb10-132"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">3</span>){</span>
+<span id="cb10-133"><a href="#cb10-133"></a>  var_name_bp <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"month_"</span>,i,<span class="st">"_bp"</span>)</span>
+<span id="cb10-134"><a href="#cb10-134"></a>  <span class="fu">assign</span>(var_name_bp, <span class="fu">rnorm</span>(<span class="dv">5</span>, <span class="dv">130</span>, <span class="dv">20</span>))</span>
+<span id="cb10-135"><a href="#cb10-135"></a>  var_name_wt <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"month_"</span>,i,<span class="st">"_wt"</span>)</span>
+<span id="cb10-136"><a href="#cb10-136"></a>  <span class="fu">assign</span>(var_name_wt, <span class="fu">rnorm</span>(<span class="dv">5</span>, <span class="dv">70</span>, <span class="dv">15</span>))</span>
+<span id="cb10-137"><a href="#cb10-137"></a>}</span>
+<span id="cb10-138"><a href="#cb10-138"></a>df_wide <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">cbind</span>(id, month_0_bp, month_0_wt, month_1_bp, month_1_wt, month_2_bp, month_2_wt, month_3_bp, month_3_wt))</span>
+<span id="cb10-139"><a href="#cb10-139"></a>df_wide <span class="sc">|&gt;</span>  </span>
+<span id="cb10-140"><a href="#cb10-140"></a>  <span class="fu">kable</span>(<span class="at">align =</span> <span class="st">"c"</span>, <span class="at">digits =</span> <span class="dv">2</span>)</span>
+<span id="cb10-141"><a href="#cb10-141"></a><span class="in">```</span></span>
+<span id="cb10-142"><a href="#cb10-142"></a></span>
+<span id="cb10-143"><a href="#cb10-143"></a>What to do here?</span>
+<span id="cb10-144"><a href="#cb10-144"></a></span>
+<span id="cb10-145"><a href="#cb10-145"></a>Actually, some thought is required at this point as there are two potential paths you could go down and it all depends on what you want to achieve. **Let's assume that you want to put all measurement values in one column**. Once you have decided on this final form, the code is not challenging. We will necessarily end up with **two** names columns instead of just one, one for time (month) and one for the all the clinical measures (BP and weight). The main changes to the code are to now supply two new variable names to the <span class="in">`names_to`</span> argument as well as tell the function how to source the new category labels with the <span class="in">`names_sep`</span> argument. This will split the currently wide variable names at the second <span class="in">`_`</span> (after stripping out the redundant <span class="in">`month_`</span> text) and use the number as the month label and the type of measurement as the clinical measure label.</span>
+<span id="cb10-146"><a href="#cb10-146"></a></span>
+<span id="cb10-149"><a href="#cb10-149"></a><span class="in">```{r}</span></span>
+<span id="cb10-150"><a href="#cb10-150"></a><span class="co">#| code-fold: false</span></span>
+<span id="cb10-151"><a href="#cb10-151"></a>df_long <span class="ot">&lt;-</span> df_wide <span class="sc">|&gt;</span> </span>
+<span id="cb10-152"><a href="#cb10-152"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> month_0_bp<span class="sc">:</span>month_3_wt,</span>
+<span id="cb10-153"><a href="#cb10-153"></a>               <span class="at">names_to =</span> <span class="fu">c</span>(<span class="st">"month"</span>, <span class="st">"clinical_measure"</span>),</span>
+<span id="cb10-154"><a href="#cb10-154"></a>               <span class="at">names_prefix =</span> <span class="st">"month_"</span>,</span>
+<span id="cb10-155"><a href="#cb10-155"></a>               <span class="at">names_sep =</span> <span class="st">"_"</span>,</span>
+<span id="cb10-156"><a href="#cb10-156"></a>               <span class="at">values_to =</span> <span class="st">"value"</span>)</span>
+<span id="cb10-157"><a href="#cb10-157"></a><span class="in">```</span></span>
+<span id="cb10-158"><a href="#cb10-158"></a></span>
+<span id="cb10-159"><a href="#cb10-159"></a>and the data looks like:</span>
+<span id="cb10-160"><a href="#cb10-160"></a></span>
+<span id="cb10-163"><a href="#cb10-163"></a><span class="in">```{r}</span></span>
+<span id="cb10-164"><a href="#cb10-164"></a>df_long <span class="sc">|&gt;</span>  </span>
+<span id="cb10-165"><a href="#cb10-165"></a>  <span class="fu">kable</span>(<span class="at">align =</span> <span class="st">"c"</span>, <span class="at">digits =</span> <span class="dv">2</span>)</span>
+<span id="cb10-166"><a href="#cb10-166"></a><span class="in">```</span></span>
+<span id="cb10-167"><a href="#cb10-167"></a></span>
+<span id="cb10-168"><a href="#cb10-168"></a>I tend to think of this as a **complete reshaping** to long format.</span>
+<span id="cb10-169"><a href="#cb10-169"></a></span>
+<span id="cb10-170"><a href="#cb10-170"></a><span class="fu">## Case 3: One Name Column, Multiple Value Columns</span></span>
+<span id="cb10-171"><a href="#cb10-171"></a></span>
+<span id="cb10-172"><a href="#cb10-172"></a>But what if didn’t want to do this and instead wanted the values of BP and weight to appear in their own columns - a **partial reshaping** to long format if you like. To my mind this is probably a more useful long format than what we considered in the last example, although there may be some niche use-case scenarios that require data to be in that format for analysis (they just elude me right now).</span>
+<span id="cb10-173"><a href="#cb10-173"></a></span>
+<span id="cb10-174"><a href="#cb10-174"></a>**So let's now assume that you want separate columns of values for each type of measurement**. Now we will end up with **one** name column and **two** value columns - one for BP and one for weight. The general form of the code doesn't change a lot in this case - the main thing being that we replace "clinical_measure" in the <span class="in">`names_to`</span> argument with a special term <span class="in">`.value`</span> which indicates that the pivoted (new) columns will be split by the text after the second <span class="in">`_`</span> in the currently wide column names - i.e. taking on the value of <span class="in">`bp`</span> or <span class="in">`wt`</span> (so it's not necessary to specify a <span class="in">`values_to`</span> term this time around). In those two new columns the corresponding measurement values will be placed. The code looks like:</span>
+<span id="cb10-175"><a href="#cb10-175"></a></span>
+<span id="cb10-178"><a href="#cb10-178"></a><span class="in">```{r}</span></span>
+<span id="cb10-179"><a href="#cb10-179"></a><span class="co">#| code-fold: false</span></span>
+<span id="cb10-180"><a href="#cb10-180"></a>df_long <span class="ot">&lt;-</span> df_wide <span class="sc">|&gt;</span> </span>
+<span id="cb10-181"><a href="#cb10-181"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> month_0_bp<span class="sc">:</span>month_3_wt,</span>
+<span id="cb10-182"><a href="#cb10-182"></a>               <span class="at">names_to =</span> <span class="fu">c</span>(<span class="st">"month"</span>, <span class="st">".value"</span>),</span>
+<span id="cb10-183"><a href="#cb10-183"></a>               <span class="at">names_prefix =</span> <span class="st">"month_"</span>,</span>
+<span id="cb10-184"><a href="#cb10-184"></a>               <span class="at">names_sep =</span> <span class="st">"_"</span>)</span>
+<span id="cb10-185"><a href="#cb10-185"></a><span class="in">```</span></span>
+<span id="cb10-186"><a href="#cb10-186"></a></span>
+<span id="cb10-187"><a href="#cb10-187"></a>and the data now looks like:</span>
+<span id="cb10-188"><a href="#cb10-188"></a></span>
+<span id="cb10-191"><a href="#cb10-191"></a><span class="in">```{r}</span></span>
+<span id="cb10-192"><a href="#cb10-192"></a>df_long <span class="sc">|&gt;</span>  </span>
+<span id="cb10-193"><a href="#cb10-193"></a>  <span class="fu">kable</span>(<span class="at">align =</span> <span class="st">"c"</span>, <span class="at">digits =</span> <span class="dv">2</span>)</span>
+<span id="cb10-194"><a href="#cb10-194"></a><span class="in">```</span></span>
+<span id="cb10-195"><a href="#cb10-195"></a></span>
+<span id="cb10-196"><a href="#cb10-196"></a><span class="fu"># Summary</span></span>
+<span id="cb10-197"><a href="#cb10-197"></a></span>
+<span id="cb10-198"><a href="#cb10-198"></a>These are a few of what I consider the more common reshaping tasks you might be faced with. From time to time you may across a problem that might even require you to reshape in two steps to achieve the result that you want, so there are many different ways that data can present itself to you. What I have shown you here really only scratches the surface with what <span class="in">`pivot_longer()`</span> is capable of. There are several other arguments to the function that you can read about that provide even more advanced pivoting features.</span>
+<span id="cb10-199"><a href="#cb10-199"></a></span>
+<span id="cb10-200"><a href="#cb10-200"></a><span class="ot">&lt;https://tidyr.tidyverse.org/reference/pivot_longer.html&gt;</span></span>
+<span id="cb10-201"><a href="#cb10-201"></a></span>
+<span id="cb10-202"><a href="#cb10-202"></a>An important point I want to mention if you haven't already realised this in looking through the examples, is that **the column names in the wide dataframe you are converting from are integral** to you successfully reshaping data to long format with <span class="in">`pivot_longer()`</span>. If your column names are of poor quality you WILL have problems and you may in fact have to give some time and thought to renaming columns in your dataframe so they will be more amenable to transforming. Aim for consistency in naming patterns across variables and beware of using separators that are the same. For example, the only reason I didn't have more issues with a name like <span class="in">`bp_month_0`</span> was that I stripped out the <span class="in">`month_`</span> using the <span class="in">`names_prefix`</span> argument, otherwise <span class="in">`pivot_longer()`</span> wouldn't know which <span class="in">`_`</span> to split at for the new clinical measure variable names. Had I wanted to retain the full <span class="in">`month_0`</span>, <span class="in">`month_1`</span>, etc as labels in the newly created <span class="in">`month`</span> variable I would have had to rename the variables to something different - e.g. <span class="in">`month0_bp`</span> or <span class="in">`month.0_bp`</span>. So think carefully about the variables you are presented with - they may require some renaming before you do anything else.</span>
+<span id="cb10-203"><a href="#cb10-203"></a></span>
+<span id="cb10-204"><a href="#cb10-204"></a>In case you're wondering about the reshaping elephant in the room, no we haven't talked today about reshaping in the opposite direction - long to wide. I'll leave that one for another time. In many ways, <span class="in">`pivot_wider()`</span> is complementary to it sister function and if you understand one you'll quickly grasp the other. The primary difficulty in all of this is not so much the functions themselves, but the mental visualisation of the transformation. Once you have a handle on that, how to go about the coding starts to make more sense.</span>
 </code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
