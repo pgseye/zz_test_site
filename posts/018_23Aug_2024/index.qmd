@@ -1,0 +1,51 @@
+---
+title: "Biostats Book Club"
+date: 2024-08-23
+categories: [resources]
+image: "biostats_book_club.jpeg"
+description: "Rule # 1. You do not talk about Biostats Book Club."
+---
+
+# AI - Garbage in, garbage out (but still fun)
+
+I was playing around with AI image creation this week and asked Microsoft Bing to create an image with 'biostatistics book club' as a prompt - this is what it came up with:
+
+![](images/biostats_book_club.jpeg){fig-align="center"}
+
+Hmmm - who would have ever thought talking about biostatistics could be so interesting.
+
+Then, for even more fun, I asked Bing to create another image using 'biostatistics fight club' as a prompt and it gave me this:
+
+![](images/biostats_fight_club.jpeg){fig-align="center"}
+
+Yep, just what I imagined a bunch of pugilistic stats-nerds to look like.
+
+# Some Biostats Books Recommendations
+
+Anyways, I have significantly digressed! The point of the post this week was to draw your attention to some biostatistics textbooks that I have referred to a lot over the years and that I keep in hardcopy on a nearby shelf and also as digital editions. The physical versions are well-worn, especially the first that I'm going to recommend. All four of these are pitched with more 'applied' rather than 'theoretical' biostatistics in mind (my eyes start to glaze over when I see too many formulae on a page) and at a predominantly introductory level - although some certainly delve into more advanced concepts as well. If you are interested in having a good basic biostatistics reference (or two), than maybe take a peek at some of these.
+
+## Essential Medical Statistics
+
+![](images/essential_medical_statistics.jpg){fig-align="center" width="223"}
+
+I can't recommend this book enough. It's now over 20 years old but that doesn't mean it's dated - the 'essentials' of statistics, well, haven't really changed. Kirkwood's book explains statistical concepts in such a clear and concise manner that it makes (for me at least), understanding them much, much easier. It strikes a good balance in covering all the important ideas in enough depth while still maintaining a relative lay language style.
+
+## Intuitive Biostatistics
+
+![](images/intuitive_biostatistics.jpg){fig-align="center" width="183"}
+
+The author of Intuitive Biostatistics is also the brains behind the `Prism` statistical software. You'll be pleased to know there are almost no formulae written amongst its pages and I think a reasonable summary of the authors intentions is to provide a 'common-sense' treatment of statistical ideas. The book is littered with teaching examples as well as sections on 'Q & A's' and 'Common Mistakes' and their potential solutions. Get the latest edition.
+
+## R for Data Science
+
+![](images/r4ds.jpg){fig-align="center" width="200"}
+
+if you are one of the 'cool kids' and use the `tidyverse` approach to coding in `R`, then this is probably worthwhile having. There is a free [online](https://r4ds.hadley.nz) version as well. R for Data Science is predominantly aimed at data-wrangling and preparing your data for analysis - `tidyverse` style. I don't consider myself a great statistical programmer, so I have found some elements of this a little difficult, but the more basic stuff is really useful (and coding should be a daily journey of self-improvement anyway).
+
+## The R book
+
+![](images/the_r_book.jpg){fig-align="center" width="239"}
+
+The R Book differs from R for Data Science in that, yes it's a book about coding in `R`, but the focus isn't just on data-wrangling. This book will give you almost any bit of code to run nearly any statistical procedure in `R` that you could imagine. In that sense it's also a worthwhile reference. Mind you, as a result of the breadth of material it covers, this is a BIG book!
+
+I hope you might these helpful in your statistical learning.
