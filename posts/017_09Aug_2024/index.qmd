@@ -1,0 +1,55 @@
+---
+title: "tidylog - Console Messaging in R"
+date: 2024-08-09
+categories: [code]
+image: "R_small.jpeg"
+description: "Finally get some feedback about what your data manipulations are actually doing."
+---
+
+Today's post is really quite short (no thanks needed). It's really to point out a super-handy little package that you should load at the beginning of every one of your `R` scripts (but only useful if you're a `tidyverse` user).
+
+The package is called `tidylog` and it's designed to provide immediate feedback about what the data manipulations you make with `dplyr` and `tidyr` functions (e.g. `filter`, `select`,`mutate`, `group_by`, the various `join` functions, etc) are actually doing to your datasets.
+
+To my mind this should be built into `R`, as this kind of operational feedback is taken for granted by `Stata` users. But I guess that's the whole point of `R` being open-source and community-driven in terms of ad-hoc improvements in functionality.
+
+I don't think there's really much for me to add that the package author hasn't already said [here](https://github.com/elbersb/tidylog). So please have a look.
+
+But to end I will show you a quick before and after. Let's use the inbuilt `nycflights13` dataset to illustrate what output is returned if you run a bunch of data-wrangling functions.
+
+Without `tidylog`:
+
+```{r}
+#| message: false 
+library(nycflights13)
+library(tidyverse)
+dat <- flights |>  
+ select(year:day, hour, origin, dest, tailnum, carrier) |> 
+ mutate(month = if_else(nchar(month) == 1, paste0("0",month), as.character(month)),
+ day = if_else(nchar(day) == 1, paste0("0",day), as.character(day))) |>  
+ unite("date", year:day, sep = "/", remove = T) |> 
+ mutate(date = lubridate::ymd(date)) |> 
+ filter(hour >= 8) |> 
+ anti_join(planes, by = "tailnum") |> 
+ count(tailnum, sort = TRUE) 
+```
+
+Nada. Thanks for nothing `R`!
+
+With `tidylog`:
+
+```{r}
+suppressMessages(library(tidylog))
+dat <- flights |>  
+ select(year:day, hour, origin, dest, tailnum, carrier) |> 
+ mutate(month = if_else(nchar(month) == 1, paste0("0",month), as.character(month)),
+ day = if_else(nchar(day) == 1, paste0("0",day), as.character(day))) |>  
+ unite("date", year:day, sep = "/", remove = T) |> 
+ mutate(date = lubridate::ymd(date)) |> 
+ filter(hour >= 8) |> 
+ anti_join(planes, by = "tailnum") |> 
+ count(tailnum, sort = TRUE) 
+```
+
+Nice!
+
+Till next time - Happy analysing!
