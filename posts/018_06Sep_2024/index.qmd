@@ -1,6 +1,6 @@
 ---
 title: "Biostats Book Club"
-date: 2024-08-23
+date: 2024-09-06
 categories: [resources]
 image: "biostats_book_club.jpeg"
 description: "Rule # 1. You do not talk about Biostats Book Club."
@@ -48,4 +48,4 @@ if you are one of the 'cool kids' and use the `tidyverse` approach to coding in 
 
 The R Book differs from R for Data Science in that, yes it's a book about coding in `R`, but the focus isn't just on data-wrangling. This book will give you almost any bit of code to run nearly any statistical procedure in `R` that you could imagine. In that sense it's also a worthwhile reference. Mind you, as a result of the breadth of material it covers, this is a BIG book!
 
-I hope you might these helpful in your statistical learning.
+I hope you find these helpful in your statistical learning.

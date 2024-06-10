@@ -1,6 +1,6 @@
 ---
 title: "Logarithms and Why They're Important in Statistics"
-date: 2024-07-26
+date: 2024-08-09
 categories: [code, concept, visualisation]
 #image: "R_small.jpeg"
 description: "Having to deal with logarithms may send a shiver down your spine, but they're not as hard as you may think"

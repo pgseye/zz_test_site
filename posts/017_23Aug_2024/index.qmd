@@ -1,6 +1,6 @@
 ---
 title: "tidylog - Console Messaging in R"
-date: 2024-08-09
+date: 2024-08-23
 categories: [code]
 image: "R_small.jpeg"
 description: "Finally get some feedback about what your data manipulations are actually doing."

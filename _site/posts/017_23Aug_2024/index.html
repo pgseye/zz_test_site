@@ -7,9 +7,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="dcterms.date" content="2024-08-23">
-<meta name="description" content="Rule # 1. You do not talk about Biostats Book Club.">
+<meta name="description" content="Finally get some feedback about what your data manipulations are actually doing.">
 
-<title>Test Site 2 - Biostats Book Club</title>
+<title>Test Site 2 - tidylog - Console Messaging in R</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -143,35 +143,22 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <!-- sidebar -->
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">On this page</h2>
-   
-  <ul>
-  <li><a href="#ai---garbage-in-garbage-out-but-still-fun" id="toc-ai---garbage-in-garbage-out-but-still-fun" class="nav-link active" data-scroll-target="#ai---garbage-in-garbage-out-but-still-fun"><span class="header-section-number">1</span> AI - Garbage in, garbage out (but still fun)</a></li>
-  <li><a href="#some-biostats-books-recommendations" id="toc-some-biostats-books-recommendations" class="nav-link" data-scroll-target="#some-biostats-books-recommendations"><span class="header-section-number">2</span> Some Biostats Books Recommendations</a>
-  <ul class="collapse">
-  <li><a href="#essential-medical-statistics" id="toc-essential-medical-statistics" class="nav-link" data-scroll-target="#essential-medical-statistics"><span class="header-section-number">2.1</span> Essential Medical Statistics</a></li>
-  <li><a href="#intuitive-biostatistics" id="toc-intuitive-biostatistics" class="nav-link" data-scroll-target="#intuitive-biostatistics"><span class="header-section-number">2.2</span> Intuitive Biostatistics</a></li>
-  <li><a href="#r-for-data-science" id="toc-r-for-data-science" class="nav-link" data-scroll-target="#r-for-data-science"><span class="header-section-number">2.3</span> R for Data Science</a></li>
-  <li><a href="#the-r-book" id="toc-the-r-book" class="nav-link" data-scroll-target="#the-r-book"><span class="header-section-number">2.4</span> The R book</a></li>
-  </ul></li>
-  </ul>
-</nav>
+        
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<div class="quarto-title-block"><div><h1 class="title">Biostats Book Club</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
+<div class="quarto-title-block"><div><h1 class="title">tidylog - Console Messaging in R</h1><button type="button" class="btn code-tools-button dropdown-toggle" id="quarto-code-tools-menu" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi"></i> Code</button><ul class="dropdown-menu dropdown-menu-end" aria-labelelledby="quarto-code-tools-menu"><li><a id="quarto-show-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Show All Code</a></li><li><a id="quarto-hide-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Hide All Code</a></li><li><hr class="dropdown-divider"></li><li><a id="quarto-view-source" class="dropdown-item" href="javascript:void(0)" role="button">View Source</a></li></ul></div></div>
   <div class="quarto-categories">
-    <div class="quarto-category">resources</div>
+    <div class="quarto-category">code</div>
   </div>
   </div>
 
 <div>
   <div class="description">
-    Rule # 1. You do not talk about Biostats Book Club.
+    Finally get some feedback about what your data manipulations are actually doing.
   </div>
 </div>
 
@@ -194,68 +181,87 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<section id="ai---garbage-in-garbage-out-but-still-fun" class="level1" data-number="1">
-<h1 data-number="1"><span class="header-section-number">1</span> AI - Garbage in, garbage out (but still fun)</h1>
-<p>I was playing around with AI image creation this week and asked Microsoft Bing to create an image with ‘biostatistics book club’ as a prompt - this is what it came up with:</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="images/biostats_book_club.jpeg" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
-</figure>
+<p>Today’s post is really quite short (no thanks needed). It’s really to point out a super-handy little package that you should load at the beginning of every one of your <code>R</code> scripts (but only useful if you’re a <code>tidyverse</code> user).</p>
+<p>The package is called <code>tidylog</code> and it’s designed to provide immediate feedback about what the data manipulations you make with <code>dplyr</code> and <code>tidyr</code> functions (e.g.&nbsp;<code>filter</code>, <code>select</code>,<code>mutate</code>, <code>group_by</code>, the various <code>join</code> functions, etc) are actually doing to your datasets.</p>
+<p>To my mind this should be built into <code>R</code>, as this kind of operational feedback is taken for granted by <code>Stata</code> users. But I guess that’s the whole point of <code>R</code> being open-source and community-driven in terms of ad-hoc improvements in functionality.</p>
+<p>I don’t think there’s really much for me to add that the package author hasn’t already said <a href="https://github.com/elbersb/tidylog">here</a>. So please have a look.</p>
+<p>But to end I will show you a quick before and after. Let’s use the inbuilt <code>nycflights13</code> dataset to illustrate what output is returned if you run a bunch of data-wrangling functions.</p>
+<p>Without <code>tidylog</code>:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">library</span>(nycflights13)</span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-3"><a href="#cb1-3"></a>dat <span class="ot">&lt;-</span> flights <span class="sc">|&gt;</span>  </span>
+<span id="cb1-4"><a href="#cb1-4"></a> <span class="fu">select</span>(year<span class="sc">:</span>day, hour, origin, dest, tailnum, carrier) <span class="sc">|&gt;</span> </span>
+<span id="cb1-5"><a href="#cb1-5"></a> <span class="fu">mutate</span>(<span class="at">month =</span> <span class="fu">if_else</span>(<span class="fu">nchar</span>(month) <span class="sc">==</span> <span class="dv">1</span>, <span class="fu">paste0</span>(<span class="st">"0"</span>,month), <span class="fu">as.character</span>(month)),</span>
+<span id="cb1-6"><a href="#cb1-6"></a> <span class="at">day =</span> <span class="fu">if_else</span>(<span class="fu">nchar</span>(day) <span class="sc">==</span> <span class="dv">1</span>, <span class="fu">paste0</span>(<span class="st">"0"</span>,day), <span class="fu">as.character</span>(day))) <span class="sc">|&gt;</span>  </span>
+<span id="cb1-7"><a href="#cb1-7"></a> <span class="fu">unite</span>(<span class="st">"date"</span>, year<span class="sc">:</span>day, <span class="at">sep =</span> <span class="st">"/"</span>, <span class="at">remove =</span> T) <span class="sc">|&gt;</span> </span>
+<span id="cb1-8"><a href="#cb1-8"></a> <span class="fu">mutate</span>(<span class="at">date =</span> lubridate<span class="sc">::</span><span class="fu">ymd</span>(date)) <span class="sc">|&gt;</span> </span>
+<span id="cb1-9"><a href="#cb1-9"></a> <span class="fu">filter</span>(hour <span class="sc">&gt;=</span> <span class="dv">8</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb1-10"><a href="#cb1-10"></a> <span class="fu">anti_join</span>(planes, <span class="at">by =</span> <span class="st">"tailnum"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb1-11"><a href="#cb1-11"></a> <span class="fu">count</span>(tailnum, <span class="at">sort =</span> <span class="cn">TRUE</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 </div>
-<p>Hmmm - who would have ever thought talking about biostatistics could be so interesting.</p>
-<p>Then, for even more fun, I asked Bing to create another image using ‘biostatistics fight club’ as a prompt and it gave me this:</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="images/biostats_fight_club.jpeg" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
-</figure>
+<p>Nada. Thanks for nothing <code>R</code>!</p>
+<p>With <code>tidylog</code>:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="fu">suppressMessages</span>(<span class="fu">library</span>(tidylog))</span>
+<span id="cb2-2"><a href="#cb2-2"></a>dat <span class="ot">&lt;-</span> flights <span class="sc">|&gt;</span>  </span>
+<span id="cb2-3"><a href="#cb2-3"></a> <span class="fu">select</span>(year<span class="sc">:</span>day, hour, origin, dest, tailnum, carrier) <span class="sc">|&gt;</span> </span>
+<span id="cb2-4"><a href="#cb2-4"></a> <span class="fu">mutate</span>(<span class="at">month =</span> <span class="fu">if_else</span>(<span class="fu">nchar</span>(month) <span class="sc">==</span> <span class="dv">1</span>, <span class="fu">paste0</span>(<span class="st">"0"</span>,month), <span class="fu">as.character</span>(month)),</span>
+<span id="cb2-5"><a href="#cb2-5"></a> <span class="at">day =</span> <span class="fu">if_else</span>(<span class="fu">nchar</span>(day) <span class="sc">==</span> <span class="dv">1</span>, <span class="fu">paste0</span>(<span class="st">"0"</span>,day), <span class="fu">as.character</span>(day))) <span class="sc">|&gt;</span>  </span>
+<span id="cb2-6"><a href="#cb2-6"></a> <span class="fu">unite</span>(<span class="st">"date"</span>, year<span class="sc">:</span>day, <span class="at">sep =</span> <span class="st">"/"</span>, <span class="at">remove =</span> T) <span class="sc">|&gt;</span> </span>
+<span id="cb2-7"><a href="#cb2-7"></a> <span class="fu">mutate</span>(<span class="at">date =</span> lubridate<span class="sc">::</span><span class="fu">ymd</span>(date)) <span class="sc">|&gt;</span> </span>
+<span id="cb2-8"><a href="#cb2-8"></a> <span class="fu">filter</span>(hour <span class="sc">&gt;=</span> <span class="dv">8</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb2-9"><a href="#cb2-9"></a> <span class="fu">anti_join</span>(planes, <span class="at">by =</span> <span class="st">"tailnum"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb2-10"><a href="#cb2-10"></a> <span class="fu">count</span>(tailnum, <span class="at">sort =</span> <span class="cn">TRUE</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>select: dropped 11 variables (dep_time, sched_dep_time, dep_delay, arr_time, sched_arr_time, …)</code></pre>
 </div>
-<p>Yep, just what I imagined a bunch of pugilistic stats-nerds to look like.</p>
-</section>
-<section id="some-biostats-books-recommendations" class="level1" data-number="2">
-<h1 data-number="2"><span class="header-section-number">2</span> Some Biostats Books Recommendations</h1>
-<p>Anyways, I have significantly digressed! The point of the post this week was to draw your attention to some biostatistics textbooks that I have referred to a lot over the years and that I keep in hardcopy on a nearby shelf and also as digital editions. The physical versions are well-worn, especially the first that I’m going to recommend. All four of these are pitched with more ‘applied’ rather than ‘theoretical’ biostatistics in mind (my eyes start to glaze over when I see too many formulae on a page) and at a predominantly introductory level - although some certainly delve into more advanced concepts as well. If you are interested in having a good basic biostatistics reference (or two), than maybe take a peek at some of these.</p>
-<section id="essential-medical-statistics" class="level2" data-number="2.1">
-<h2 data-number="2.1" class="anchored" data-anchor-id="essential-medical-statistics"><span class="header-section-number">2.1</span> Essential Medical Statistics</h2>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="images/essential_medical_statistics.jpg" class="img-fluid quarto-figure quarto-figure-center figure-img" width="223"></p>
-</figure>
+<div class="cell-output cell-output-stderr">
+<pre><code>mutate: converted 'month' from integer to character (0 new NA)</code></pre>
 </div>
-<p>I can’t recommend this book enough. It’s now over 20 years old but that doesn’t mean it’s dated - the ‘essentials’ of statistics, well, haven’t really changed. Kirkwood’s book explains statistical concepts in such a clear and concise manner that it makes (for me at least), understanding them much, much easier. It strikes a good balance in covering all the important ideas in enough depth while still maintaining a relative lay language style.</p>
-</section>
-<section id="intuitive-biostatistics" class="level2" data-number="2.2">
-<h2 data-number="2.2" class="anchored" data-anchor-id="intuitive-biostatistics"><span class="header-section-number">2.2</span> Intuitive Biostatistics</h2>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="images/intuitive_biostatistics.jpg" class="img-fluid quarto-figure quarto-figure-center figure-img" width="183"></p>
-</figure>
+<div class="cell-output cell-output-stderr">
+<pre><code>        converted 'day' from integer to character (0 new NA)</code></pre>
 </div>
-<p>The author of Intuitive Biostatistics is also the brains behind the <code>Prism</code> statistical software. You’ll be pleased to know there are almost no formulae written amongst its pages and I think a reasonable summary of the authors intentions is to provide a ‘common-sense’ treatment of statistical ideas. The book is littered with teaching examples as well as sections on ‘Q &amp; A’s’ and ‘Common Mistakes’ and their potential solutions. Get the latest edition.</p>
-</section>
-<section id="r-for-data-science" class="level2" data-number="2.3">
-<h2 data-number="2.3" class="anchored" data-anchor-id="r-for-data-science"><span class="header-section-number">2.3</span> R for Data Science</h2>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="images/r4ds.jpg" class="img-fluid quarto-figure quarto-figure-center figure-img" width="200"></p>
-</figure>
+<div class="cell-output cell-output-stderr">
+<pre><code>mutate: converted 'date' from character to Date (0 new NA)</code></pre>
 </div>
-<p>if you are one of the ‘cool kids’ and use the <code>tidyverse</code> approach to coding in <code>R</code>, then this is probably worthwhile having. There is a free <a href="https://r4ds.hadley.nz">online</a> version as well. R for Data Science is predominantly aimed at data-wrangling and preparing your data for analysis - <code>tidyverse</code> style. I don’t consider myself a great statistical programmer, so I have found some elements of this a little difficult, but the more basic stuff is really useful (and coding should be a daily journey of self-improvement anyway).</p>
-</section>
-<section id="the-r-book" class="level2" data-number="2.4">
-<h2 data-number="2.4" class="anchored" data-anchor-id="the-r-book"><span class="header-section-number">2.4</span> The R book</h2>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="images/the_r_book.jpg" class="img-fluid quarto-figure quarto-figure-center figure-img" width="239"></p>
-</figure>
+<div class="cell-output cell-output-stderr">
+<pre><code>filter: removed 50,726 rows (15%), 286,050 rows remaining</code></pre>
 </div>
-<p>The R Book differs from R for Data Science in that, yes it’s a book about coding in <code>R</code>, but the focus isn’t just on data-wrangling. This book will give you almost any bit of code to run nearly any statistical procedure in <code>R</code> that you could imagine. In that sense it’s also a worthwhile reference. Mind you, as a result of the breadth of material it covers, this is a BIG book!</p>
-<p>I hope you find these helpful in your statistical learning.</p>
+<div class="cell-output cell-output-stderr">
+<pre><code>anti_join: added no columns</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>           &gt; rows only in x    45,008</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>           &gt; rows only in y  (     39)</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>           &gt; matched rows    (241,042)</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>           &gt;                 =========</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>           &gt; rows total        45,008</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>count: now 716 rows and 2 columns, ungrouped</code></pre>
+</div>
+</div>
+<p>Nice!</p>
+<p>Till next time - Happy analysing!</p>
 
 
 <!-- -->
 
-</section>
-</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -844,57 +850,62 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <input type="hidden" id="giscus-base-theme" value="light">
 <input type="hidden" id="giscus-alt-theme" value="dark"><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
-<div class="sourceCode" id="cb1" data-shortcodes="false"><pre class="sourceCode numberSource markdown number-lines code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1"></a><span class="co">---</span></span>
-<span id="cb1-2"><a href="#cb1-2"></a><span class="an">title:</span><span class="co"> "Biostats Book Club"</span></span>
-<span id="cb1-3"><a href="#cb1-3"></a><span class="an">date:</span><span class="co"> 2024-08-23</span></span>
-<span id="cb1-4"><a href="#cb1-4"></a><span class="an">categories:</span><span class="co"> [resources]</span></span>
-<span id="cb1-5"><a href="#cb1-5"></a><span class="an">image:</span><span class="co"> "biostats_book_club.jpeg"</span></span>
-<span id="cb1-6"><a href="#cb1-6"></a><span class="an">description:</span><span class="co"> "Rule # 1. You do not talk about Biostats Book Club."</span></span>
-<span id="cb1-7"><a href="#cb1-7"></a><span class="co">---</span></span>
-<span id="cb1-8"><a href="#cb1-8"></a></span>
-<span id="cb1-9"><a href="#cb1-9"></a><span class="fu"># AI - Garbage in, garbage out (but still fun)</span></span>
-<span id="cb1-10"><a href="#cb1-10"></a></span>
-<span id="cb1-11"><a href="#cb1-11"></a>I was playing around with AI image creation this week and asked Microsoft Bing to create an image with 'biostatistics book club' as a prompt - this is what it came up with:</span>
-<span id="cb1-12"><a href="#cb1-12"></a></span>
-<span id="cb1-13"><a href="#cb1-13"></a><span class="al">![](images/biostats_book_club.jpeg)</span>{fig-align="center"}</span>
-<span id="cb1-14"><a href="#cb1-14"></a></span>
-<span id="cb1-15"><a href="#cb1-15"></a>Hmmm - who would have ever thought talking about biostatistics could be so interesting.</span>
-<span id="cb1-16"><a href="#cb1-16"></a></span>
-<span id="cb1-17"><a href="#cb1-17"></a>Then, for even more fun, I asked Bing to create another image using 'biostatistics fight club' as a prompt and it gave me this:</span>
-<span id="cb1-18"><a href="#cb1-18"></a></span>
-<span id="cb1-19"><a href="#cb1-19"></a><span class="al">![](images/biostats_fight_club.jpeg)</span>{fig-align="center"}</span>
-<span id="cb1-20"><a href="#cb1-20"></a></span>
-<span id="cb1-21"><a href="#cb1-21"></a>Yep, just what I imagined a bunch of pugilistic stats-nerds to look like.</span>
-<span id="cb1-22"><a href="#cb1-22"></a></span>
-<span id="cb1-23"><a href="#cb1-23"></a><span class="fu"># Some Biostats Books Recommendations</span></span>
-<span id="cb1-24"><a href="#cb1-24"></a></span>
-<span id="cb1-25"><a href="#cb1-25"></a>Anyways, I have significantly digressed! The point of the post this week was to draw your attention to some biostatistics textbooks that I have referred to a lot over the years and that I keep in hardcopy on a nearby shelf and also as digital editions. The physical versions are well-worn, especially the first that I'm going to recommend. All four of these are pitched with more 'applied' rather than 'theoretical' biostatistics in mind (my eyes start to glaze over when I see too many formulae on a page) and at a predominantly introductory level - although some certainly delve into more advanced concepts as well. If you are interested in having a good basic biostatistics reference (or two), than maybe take a peek at some of these.</span>
-<span id="cb1-26"><a href="#cb1-26"></a></span>
-<span id="cb1-27"><a href="#cb1-27"></a><span class="fu">## Essential Medical Statistics</span></span>
-<span id="cb1-28"><a href="#cb1-28"></a></span>
-<span id="cb1-29"><a href="#cb1-29"></a><span class="al">![](images/essential_medical_statistics.jpg)</span>{fig-align="center" width="223"}</span>
-<span id="cb1-30"><a href="#cb1-30"></a></span>
-<span id="cb1-31"><a href="#cb1-31"></a>I can't recommend this book enough. It's now over 20 years old but that doesn't mean it's dated - the 'essentials' of statistics, well, haven't really changed. Kirkwood's book explains statistical concepts in such a clear and concise manner that it makes (for me at least), understanding them much, much easier. It strikes a good balance in covering all the important ideas in enough depth while still maintaining a relative lay language style.</span>
-<span id="cb1-32"><a href="#cb1-32"></a></span>
-<span id="cb1-33"><a href="#cb1-33"></a><span class="fu">## Intuitive Biostatistics</span></span>
-<span id="cb1-34"><a href="#cb1-34"></a></span>
-<span id="cb1-35"><a href="#cb1-35"></a><span class="al">![](images/intuitive_biostatistics.jpg)</span>{fig-align="center" width="183"}</span>
-<span id="cb1-36"><a href="#cb1-36"></a></span>
-<span id="cb1-37"><a href="#cb1-37"></a>The author of Intuitive Biostatistics is also the brains behind the <span class="in">`Prism`</span> statistical software. You'll be pleased to know there are almost no formulae written amongst its pages and I think a reasonable summary of the authors intentions is to provide a 'common-sense' treatment of statistical ideas. The book is littered with teaching examples as well as sections on 'Q &amp; A's' and 'Common Mistakes' and their potential solutions. Get the latest edition.</span>
-<span id="cb1-38"><a href="#cb1-38"></a></span>
-<span id="cb1-39"><a href="#cb1-39"></a><span class="fu">## R for Data Science</span></span>
-<span id="cb1-40"><a href="#cb1-40"></a></span>
-<span id="cb1-41"><a href="#cb1-41"></a><span class="al">![](images/r4ds.jpg)</span>{fig-align="center" width="200"}</span>
-<span id="cb1-42"><a href="#cb1-42"></a></span>
-<span id="cb1-43"><a href="#cb1-43"></a>if you are one of the 'cool kids' and use the <span class="in">`tidyverse`</span> approach to coding in <span class="in">`R`</span>, then this is probably worthwhile having. There is a free <span class="co">[</span><span class="ot">online</span><span class="co">](https://r4ds.hadley.nz)</span> version as well. R for Data Science is predominantly aimed at data-wrangling and preparing your data for analysis - <span class="in">`tidyverse`</span> style. I don't consider myself a great statistical programmer, so I have found some elements of this a little difficult, but the more basic stuff is really useful (and coding should be a daily journey of self-improvement anyway).</span>
-<span id="cb1-44"><a href="#cb1-44"></a></span>
-<span id="cb1-45"><a href="#cb1-45"></a><span class="fu">## The R book</span></span>
-<span id="cb1-46"><a href="#cb1-46"></a></span>
-<span id="cb1-47"><a href="#cb1-47"></a><span class="al">![](images/the_r_book.jpg)</span>{fig-align="center" width="239"}</span>
-<span id="cb1-48"><a href="#cb1-48"></a></span>
-<span id="cb1-49"><a href="#cb1-49"></a>The R Book differs from R for Data Science in that, yes it's a book about coding in <span class="in">`R`</span>, but the focus isn't just on data-wrangling. This book will give you almost any bit of code to run nearly any statistical procedure in <span class="in">`R`</span> that you could imagine. In that sense it's also a worthwhile reference. Mind you, as a result of the breadth of material it covers, this is a BIG book!</span>
-<span id="cb1-50"><a href="#cb1-50"></a></span>
-<span id="cb1-51"><a href="#cb1-51"></a>I hope you find these helpful in your statistical learning.</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb15" data-shortcodes="false"><pre class="sourceCode numberSource markdown number-lines code-with-copy"><code class="sourceCode markdown"><span id="cb15-1"><a href="#cb15-1"></a><span class="co">---</span></span>
+<span id="cb15-2"><a href="#cb15-2"></a><span class="an">title:</span><span class="co"> "tidylog - Console Messaging in R"</span></span>
+<span id="cb15-3"><a href="#cb15-3"></a><span class="an">date:</span><span class="co"> 2024-08-23</span></span>
+<span id="cb15-4"><a href="#cb15-4"></a><span class="an">categories:</span><span class="co"> [code]</span></span>
+<span id="cb15-5"><a href="#cb15-5"></a><span class="an">image:</span><span class="co"> "R_small.jpeg"</span></span>
+<span id="cb15-6"><a href="#cb15-6"></a><span class="an">description:</span><span class="co"> "Finally get some feedback about what your data manipulations are actually doing."</span></span>
+<span id="cb15-7"><a href="#cb15-7"></a><span class="co">---</span></span>
+<span id="cb15-8"><a href="#cb15-8"></a></span>
+<span id="cb15-9"><a href="#cb15-9"></a>Today's post is really quite short (no thanks needed). It's really to point out a super-handy little package that you should load at the beginning of every one of your <span class="in">`R`</span> scripts (but only useful if you're a <span class="in">`tidyverse`</span> user).</span>
+<span id="cb15-10"><a href="#cb15-10"></a></span>
+<span id="cb15-11"><a href="#cb15-11"></a>The package is called <span class="in">`tidylog`</span> and it's designed to provide immediate feedback about what the data manipulations you make with <span class="in">`dplyr`</span> and <span class="in">`tidyr`</span> functions (e.g. <span class="in">`filter`</span>, <span class="in">`select`</span>,<span class="in">`mutate`</span>, <span class="in">`group_by`</span>, the various <span class="in">`join`</span> functions, etc) are actually doing to your datasets.</span>
+<span id="cb15-12"><a href="#cb15-12"></a></span>
+<span id="cb15-13"><a href="#cb15-13"></a>To my mind this should be built into <span class="in">`R`</span>, as this kind of operational feedback is taken for granted by <span class="in">`Stata`</span> users. But I guess that's the whole point of <span class="in">`R`</span> being open-source and community-driven in terms of ad-hoc improvements in functionality.</span>
+<span id="cb15-14"><a href="#cb15-14"></a></span>
+<span id="cb15-15"><a href="#cb15-15"></a>I don't think there's really much for me to add that the package author hasn't already said <span class="co">[</span><span class="ot">here</span><span class="co">](https://github.com/elbersb/tidylog)</span>. So please have a look.</span>
+<span id="cb15-16"><a href="#cb15-16"></a></span>
+<span id="cb15-17"><a href="#cb15-17"></a>But to end I will show you a quick before and after. Let's use the inbuilt <span class="in">`nycflights13`</span> dataset to illustrate what output is returned if you run a bunch of data-wrangling functions.</span>
+<span id="cb15-18"><a href="#cb15-18"></a></span>
+<span id="cb15-19"><a href="#cb15-19"></a>Without <span class="in">`tidylog`</span>:</span>
+<span id="cb15-20"><a href="#cb15-20"></a></span>
+<span id="cb15-23"><a href="#cb15-23"></a><span class="in">```{r}</span></span>
+<span id="cb15-24"><a href="#cb15-24"></a><span class="co">#| message: false </span></span>
+<span id="cb15-25"><a href="#cb15-25"></a><span class="fu">library</span>(nycflights13)</span>
+<span id="cb15-26"><a href="#cb15-26"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb15-27"><a href="#cb15-27"></a>dat <span class="ot">&lt;-</span> flights <span class="sc">|&gt;</span>  </span>
+<span id="cb15-28"><a href="#cb15-28"></a> <span class="fu">select</span>(year<span class="sc">:</span>day, hour, origin, dest, tailnum, carrier) <span class="sc">|&gt;</span> </span>
+<span id="cb15-29"><a href="#cb15-29"></a> <span class="fu">mutate</span>(<span class="at">month =</span> <span class="fu">if_else</span>(<span class="fu">nchar</span>(month) <span class="sc">==</span> <span class="dv">1</span>, <span class="fu">paste0</span>(<span class="st">"0"</span>,month), <span class="fu">as.character</span>(month)),</span>
+<span id="cb15-30"><a href="#cb15-30"></a> <span class="at">day =</span> <span class="fu">if_else</span>(<span class="fu">nchar</span>(day) <span class="sc">==</span> <span class="dv">1</span>, <span class="fu">paste0</span>(<span class="st">"0"</span>,day), <span class="fu">as.character</span>(day))) <span class="sc">|&gt;</span>  </span>
+<span id="cb15-31"><a href="#cb15-31"></a> <span class="fu">unite</span>(<span class="st">"date"</span>, year<span class="sc">:</span>day, <span class="at">sep =</span> <span class="st">"/"</span>, <span class="at">remove =</span> T) <span class="sc">|&gt;</span> </span>
+<span id="cb15-32"><a href="#cb15-32"></a> <span class="fu">mutate</span>(<span class="at">date =</span> lubridate<span class="sc">::</span><span class="fu">ymd</span>(date)) <span class="sc">|&gt;</span> </span>
+<span id="cb15-33"><a href="#cb15-33"></a> <span class="fu">filter</span>(hour <span class="sc">&gt;=</span> <span class="dv">8</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb15-34"><a href="#cb15-34"></a> <span class="fu">anti_join</span>(planes, <span class="at">by =</span> <span class="st">"tailnum"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb15-35"><a href="#cb15-35"></a> <span class="fu">count</span>(tailnum, <span class="at">sort =</span> <span class="cn">TRUE</span>) </span>
+<span id="cb15-36"><a href="#cb15-36"></a><span class="in">```</span></span>
+<span id="cb15-37"><a href="#cb15-37"></a></span>
+<span id="cb15-38"><a href="#cb15-38"></a>Nada. Thanks for nothing <span class="in">`R`</span>!</span>
+<span id="cb15-39"><a href="#cb15-39"></a></span>
+<span id="cb15-40"><a href="#cb15-40"></a>With <span class="in">`tidylog`</span>:</span>
+<span id="cb15-41"><a href="#cb15-41"></a></span>
+<span id="cb15-44"><a href="#cb15-44"></a><span class="in">```{r}</span></span>
+<span id="cb15-45"><a href="#cb15-45"></a><span class="fu">suppressMessages</span>(<span class="fu">library</span>(tidylog))</span>
+<span id="cb15-46"><a href="#cb15-46"></a>dat <span class="ot">&lt;-</span> flights <span class="sc">|&gt;</span>  </span>
+<span id="cb15-47"><a href="#cb15-47"></a> <span class="fu">select</span>(year<span class="sc">:</span>day, hour, origin, dest, tailnum, carrier) <span class="sc">|&gt;</span> </span>
+<span id="cb15-48"><a href="#cb15-48"></a> <span class="fu">mutate</span>(<span class="at">month =</span> <span class="fu">if_else</span>(<span class="fu">nchar</span>(month) <span class="sc">==</span> <span class="dv">1</span>, <span class="fu">paste0</span>(<span class="st">"0"</span>,month), <span class="fu">as.character</span>(month)),</span>
+<span id="cb15-49"><a href="#cb15-49"></a> <span class="at">day =</span> <span class="fu">if_else</span>(<span class="fu">nchar</span>(day) <span class="sc">==</span> <span class="dv">1</span>, <span class="fu">paste0</span>(<span class="st">"0"</span>,day), <span class="fu">as.character</span>(day))) <span class="sc">|&gt;</span>  </span>
+<span id="cb15-50"><a href="#cb15-50"></a> <span class="fu">unite</span>(<span class="st">"date"</span>, year<span class="sc">:</span>day, <span class="at">sep =</span> <span class="st">"/"</span>, <span class="at">remove =</span> T) <span class="sc">|&gt;</span> </span>
+<span id="cb15-51"><a href="#cb15-51"></a> <span class="fu">mutate</span>(<span class="at">date =</span> lubridate<span class="sc">::</span><span class="fu">ymd</span>(date)) <span class="sc">|&gt;</span> </span>
+<span id="cb15-52"><a href="#cb15-52"></a> <span class="fu">filter</span>(hour <span class="sc">&gt;=</span> <span class="dv">8</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb15-53"><a href="#cb15-53"></a> <span class="fu">anti_join</span>(planes, <span class="at">by =</span> <span class="st">"tailnum"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb15-54"><a href="#cb15-54"></a> <span class="fu">count</span>(tailnum, <span class="at">sort =</span> <span class="cn">TRUE</span>) </span>
+<span id="cb15-55"><a href="#cb15-55"></a><span class="in">```</span></span>
+<span id="cb15-56"><a href="#cb15-56"></a></span>
+<span id="cb15-57"><a href="#cb15-57"></a>Nice!</span>
+<span id="cb15-58"><a href="#cb15-58"></a></span>
+<span id="cb15-59"><a href="#cb15-59"></a>Till next time - Happy analysing!</span>
+</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 
