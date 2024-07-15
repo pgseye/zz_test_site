@@ -1,7 +1,7 @@
 ---
 title: "Biostats Book Club"
 date: 2024-09-06
-categories: [resources]
+categories: [fun, resources]
 image: "biostats_book_club.jpeg"
 description: "Rule # 1. You do not talk about Biostats Book Club."
 ---

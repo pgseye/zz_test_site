@@ -19,7 +19,7 @@ format:
     code-line-numbers: true
     code-copy: true
     toc: true
-    toc-depth: 3
+    toc-depth: 4
     number-sections: true
     df-print: kable
     fontsize: 1.1em
