@@ -1,0 +1,11 @@
+---
+title: "Paul Sanfilippo"
+image: profile.jpg
+about:
+  template: jolla
+format:
+  html:
+    code-tools: false
+---
+
+I am an applied biostatistician currently assisting researchers working in the field of multiple sclerosis research at Monash University. I like playing with data, my miniature poodle and my family - not necessarily in that order.

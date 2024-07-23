@@ -6,8 +6,11 @@ website:
   navbar:
     search: true
     right:
+      - text: About
+        href: about.qmd
       - text: All Posts
         href: index.qmd
+
 
 format:
   html:
