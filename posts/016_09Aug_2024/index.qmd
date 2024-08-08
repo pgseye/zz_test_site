@@ -155,16 +155,16 @@ ggplot(df, aes(x, y)) +
   geom_line(linewidth = 1, colour = "deepskyblue") +
   scale_x_continuous(limits = c(0, 10), breaks = seq(0, 10, by = 1)) +
   scale_y_continuous(limits = c(1, 1050), breaks = c(1,2,4,8,16,32,64,128,256,512,1024)) +
-  geom_segment(aes(x = 0, y = 64, xend = 6, yend = 64), linewidth = 0.5, color = "red", linetype = "dashed") +
-  geom_segment(aes(x = 6, y = 1, xend = 6, yend = 64), linewidth = 0.5, color = "red", linetype = "dashed") +
-  geom_segment(aes(x = 0, y = 128, xend = 7, yend = 128), linewidth = 0.5, color = "red", linetype = "dashed") +
-  geom_segment(aes(x = 7, y = 1, xend = 7, yend = 128), linewidth = 0.5, color = "red", linetype = "dashed") +
+  annotate("segment", x = 0, y = 64, xend = 6, yend = 64, linewidth = 0.5, color = "red", linetype = "dashed") +
+  annotate("segment", x = 6, y = 1, xend = 6, yend = 64, linewidth = 0.5, color = "red", linetype = "dashed") +
+  annotate("segment", x = 0, y = 128, xend = 7, yend = 128, linewidth = 0.5, color = "red", linetype = "dashed") +
+  annotate("segment", x = 7, y = 1, xend = 7, yend = 128, linewidth = 0.5, color = "red", linetype = "dashed") +
   geom_rect(aes(xmin = 0, xmax = 7, ymin = 64, ymax = 128), fill = "red", alpha = 0.02) +
   geom_rect(aes(xmin = 6, xmax = 7, ymin = 1, ymax = 64), fill = "red", alpha = 0.02) +
-  geom_segment(aes(x = 0, y = 256, xend = 8, yend = 256), linewidth = 0.5, color = "red", linetype = "dashed") +
-  geom_segment(aes(x = 8, y = 1, xend = 8, yend = 256), linewidth = 0.5, color = "red", linetype = "dashed") +
-  geom_segment(aes(x = 0, y = 512, xend = 9, yend = 512), linewidth = 0.5, color = "red", linetype = "dashed") +
-  geom_segment(aes(x = 9, y = 1, xend = 9, yend = 512), linewidth = 0.5, color = "red", linetype = "dashed") +
+  annotate("segment", x = 0, y = 256, xend = 8, yend = 256, linewidth = 0.5, color = "red", linetype = "dashed") +
+  annotate("segment", x = 8, y = 1, xend = 8, yend = 256, linewidth = 0.5, color = "red", linetype = "dashed") +
+  annotate("segment", x = 0, y = 512, xend = 9, yend = 512, linewidth = 0.5, color = "red", linetype = "dashed") +
+  annotate("segment", x = 9, y = 1, xend = 9, yend = 512, linewidth = 0.5, color = "red", linetype = "dashed") +
   geom_rect(aes(xmin = 0, xmax = 9, ymin = 256, ymax = 512), fill = "red", alpha = 0.02) +
   geom_rect(aes(xmin = 8, xmax = 9, ymin = 1, ymax = 256), fill = "red", alpha = 0.02) +
   theme_bw(base_size = 30)
@@ -191,16 +191,16 @@ ggplot(df, aes(x, y)) +
   geom_line(linewidth = 1, colour = "deepskyblue") +
   scale_x_continuous(limits = c(0, 10), breaks = seq(0, 10, by = 1)) +
   scale_y_continuous(trans = "log2", breaks = c(1,2,4,8,16,32,64,128,256,512,1024)) +
-  geom_segment(aes(x = 0, y = 64, xend = 6, yend = 64), linewidth = 0.5, color = "red", linetype = "dashed") +
-  geom_segment(aes(x = 6, y = 1, xend = 6, yend = 64), linewidth = 0.5, color = "red", linetype = "dashed") +
-  geom_segment(aes(x = 0, y = 128, xend = 7, yend = 128), linewidth = 0.5, color = "red", linetype = "dashed") +
-  geom_segment(aes(x = 7, y = 1, xend = 7, yend = 128), linewidth = 0.5, color = "red", linetype = "dashed") +
+  annotate("segment", x = 0, y = 64, xend = 6, yend = 64, linewidth = 0.5, color = "red", linetype = "dashed") +
+  annotate("segment", x = 6, y = 1, xend = 6, yend = 64, linewidth = 0.5, color = "red", linetype = "dashed") +
+  annotate("segment", x = 0, y = 128, xend = 7, yend = 128, linewidth = 0.5, color = "red", linetype = "dashed") +
+  annotate("segment", x = 7, y = 1, xend = 7, yend = 128, linewidth = 0.5, color = "red", linetype = "dashed") +
   geom_rect(aes(xmin = 0, xmax = 7, ymin = 64, ymax = 128), fill = "red", alpha = 0.02) +
   geom_rect(aes(xmin = 6, xmax = 7, ymin = 1, ymax = 64), fill = "red", alpha = 0.02) +
-  geom_segment(aes(x = 0, y = 256, xend = 8, yend = 256), linewidth = 0.5, color = "red", linetype = "dashed") +
-  geom_segment(aes(x = 8, y = 1, xend = 8, yend = 256), linewidth = 0.5, color = "red", linetype = "dashed") +
-  geom_segment(aes(x = 0, y = 512, xend = 9, yend = 512), linewidth = 0.5, color = "red", linetype = "dashed") +
-  geom_segment(aes(x = 9, y = 1, xend = 9, yend = 512), linewidth = 0.5, color = "red", linetype = "dashed") +
+  annotate("segment", x = 0, y = 256, xend = 8, yend = 256, linewidth = 0.5, color = "red", linetype = "dashed") +
+  annotate("segment", x = 8, y = 1, xend = 8, yend = 256, linewidth = 0.5, color = "red", linetype = "dashed") +
+  annotate("segment", x = 0, y = 512, xend = 9, yend = 512, linewidth = 0.5, color = "red", linetype = "dashed") +
+  annotate("segment", x = 9, y = 1, xend = 9, yend = 512, linewidth = 0.5, color = "red", linetype = "dashed") +
   geom_rect(aes(xmin = 0, xmax = 9, ymin = 256, ymax = 512), fill = "red", alpha = 0.02) +
   geom_rect(aes(xmin = 8, xmax = 9, ymin = 1, ymax = 256), fill = "red", alpha = 0.02) +
   theme_bw(base_size = 30)
@@ -217,16 +217,16 @@ ggplot(df, aes(x, y)) +
   scale_y_continuous(trans = log2_trans(),
     breaks = c(1,2,4,8,16,32,64,128,256,512,1024),
     labels = trans_format("log2", math_format(2^.x))) +
-  geom_segment(aes(x = 0, y = 64, xend = 6, yend = 64), linewidth = 0.5, color = "red", linetype = "dashed") +
-  geom_segment(aes(x = 6, y = 1, xend = 6, yend = 64), linewidth = 0.5, color = "red", linetype = "dashed") +
-  geom_segment(aes(x = 0, y = 128, xend = 7, yend = 128), linewidth = 0.5, color = "red", linetype = "dashed") +
-  geom_segment(aes(x = 7, y = 1, xend = 7, yend = 128), linewidth = 0.5, color = "red", linetype = "dashed") +
+  annotate("segment", x = 0, y = 64, xend = 6, yend = 64, linewidth = 0.5, color = "red", linetype = "dashed") +
+  annotate("segment", x = 6, y = 1, xend = 6, yend = 64, linewidth = 0.5, color = "red", linetype = "dashed") +
+  annotate("segment", x = 0, y = 128, xend = 7, yend = 128, linewidth = 0.5, color = "red", linetype = "dashed") +
+  annotate("segment", x = 7, y = 1, xend = 7, yend = 128, linewidth = 0.5, color = "red", linetype = "dashed") +
   geom_rect(aes(xmin = 0, xmax = 7, ymin = 64, ymax = 128), fill = "red", alpha = 0.02) +
   geom_rect(aes(xmin = 6, xmax = 7, ymin = 1, ymax = 64), fill = "red", alpha = 0.02) +
-  geom_segment(aes(x = 0, y = 256, xend = 8, yend = 256), linewidth = 0.5, color = "red", linetype = "dashed") +
-  geom_segment(aes(x = 8, y = 1, xend = 8, yend = 256), linewidth = 0.5, color = "red", linetype = "dashed") +
-  geom_segment(aes(x = 0, y = 512, xend = 9, yend = 512), linewidth = 0.5, color = "red", linetype = "dashed") +
-  geom_segment(aes(x = 9, y = 1, xend = 9, yend = 512), linewidth = 0.5, color = "red", linetype = "dashed") +
+  annotate("segment", x = 0, y = 256, xend = 8, yend = 256, linewidth = 0.5, color = "red", linetype = "dashed") +
+  annotate("segment", x = 8, y = 1, xend = 8, yend = 256, linewidth = 0.5, color = "red", linetype = "dashed") +
+  annotate("segment", x = 0, y = 512, xend = 9, yend = 512, linewidth = 0.5, color = "red", linetype = "dashed") +
+  annotate("segment", x = 9, y = 1, xend = 9, yend = 512, linewidth = 0.5, color = "red", linetype = "dashed") +
   geom_rect(aes(xmin = 0, xmax = 9, ymin = 256, ymax = 512), fill = "red", alpha = 0.02) +
   geom_rect(aes(xmin = 8, xmax = 9, ymin = 1, ymax = 256), fill = "red", alpha = 0.02) +
   theme_bw(base_size = 30)
@@ -242,23 +242,23 @@ $$2^{5} \approx e^{3.46} \approx 10^{1.51} \approx 32$$
 # Here I have performed the log-transformation of Y on-the-fly, within the ggplot call, but you can also do this by explicitly creating a new log-transformed variable in the dataset
 p1 <- ggplot(df, aes(x, y = log2(y))) + 
   geom_line(linewidth = 1, colour = "deepskyblue") +
-  geom_segment(aes(x = 5, y = 0, xend = 5, yend = 5), linewidth = 0.5, color = "red", linetype = "dashed") +
-  geom_segment(aes(x = 0, y = 5, xend = 5, yend = 5), linewidth = 0.5, color = "red", linetype = "dashed") +
+  annotate("segment", x = 5, y = 0, xend = 5, yend = 5, linewidth = 0.5, color = "red", linetype = "dashed") +
+  annotate("segment", x = 0, y = 5, xend = 5, yend = 5, linewidth = 0.5, color = "red", linetype = "dashed") +
   scale_x_continuous(limits = c(0, 10), breaks = seq(0, 10, by = 1)) +
   scale_y_continuous(limits = c(0, 10), breaks = c(0,2,4,6,8,10)) +
   annotate(geom = "text", x = 0.8, y = 5.26, label = "5.00", color="red", size = 8) +
   theme_bw(base_size = 20)
 p2 <- ggplot(df, aes(x, y = log(y))) + 
   geom_line(linewidth = 1, colour = "deepskyblue") +
-  geom_segment(aes(x = 5, y = 0, xend = 5, yend = 3.46), linewidth = 0.5, color = "red", linetype = "dashed") +
-  geom_segment(aes(x = 0, y = 3.46, xend = 5, yend = 3.46), linewidth = 0.5, color = "red", linetype = "dashed") +
+  annotate("segment", x = 5, y = 0, xend = 5, yend = 3.46, linewidth = 0.5, color = "red", linetype = "dashed") +
+  annotate("segment", x = 0, y = 3.46, xend = 5, yend = 3.46, linewidth = 0.5, color = "red", linetype = "dashed") +
   scale_x_continuous(limits = c(0, 10), breaks = seq(0, 10, by = 1)) +
   annotate(geom = "text", x = 0.8, y = 3.65, label = "3.46", color="red", size = 8) +
   theme_bw(base_size = 20)
 p3 <- ggplot(df, aes(x, y = log10(y))) + 
   geom_line(linewidth = 1, colour = "deepskyblue") +
-  geom_segment(aes(x = 5, y = 0, xend = 5, yend = 1.51), linewidth = 0.5, color = "red", linetype = "dashed") +
-  geom_segment(aes(x = 0, y = 1.51, xend = 5, yend = 1.51), linewidth = 0.5, color = "red", linetype = "dashed") +
+  annotate("segment", x = 5, y = 0, xend = 5, yend = 1.51, linewidth = 0.5, color = "red", linetype = "dashed") +
+  annotate("segment", x = 0, y = 1.51, xend = 5, yend = 1.51, linewidth = 0.5, color = "red", linetype = "dashed") +
   scale_x_continuous(limits = c(0, 10), breaks = seq(0, 10, by = 1)) +
   annotate(geom = "text", x = 0.8, y = 1.6, label = "1.51", color="red", size = 8) +
   theme_bw(base_size = 20)
