@@ -1,6 +1,6 @@
 ---
 title: "Epi. 101 Lesson - Confounding"
-date: 2024-09-20
+date: 2024-10-04
 categories: [analysis, code, concept, modelling]
 #image: ""
 description: "Confounding - how statistical adjustment relates to stratification."
@@ -470,7 +470,7 @@ If there is neither confounding nor effect modification, the crude estimate of a
 
 ### Only Confounding Present
 
-If there is only confounding, the stratum-specific measures of association will be similar to one another, but they will be different from the overall crude estimate (by ~ 10% or more). In this situation, one can use CMH methods to calculate a weighted estimate and p-value, or even easier is to run a statistical model including the confounder as just another covariate. i.e. (in `R`)
+If there is only confounding, the stratum-specific measures of association will be similar to one another, but they will be different from the overall crude estimate (by \~ 10% or more). In this situation, one can use CMH methods to calculate a weighted estimate and p-value, or even easier is to run a statistical model including the confounder as just another covariate. i.e. (in `R`)
 
 `mod1 <- lm(outcome ~ exposure + confounder, data = dat)`
 
@@ -494,4 +494,4 @@ If the p-value is significant you can conclude that the interaction term increas
 
 ## The End!
 
-Another post that has gone on longer than I had anticipated - there is much more I could talk about on the topic but my goal is not to make you fall asleep on your keyboard. Hopefully this has helped to make the concept of confounding just that little bit clearer in your mind. Until next time...  
+Another post that has gone on longer than I had anticipated - there is much more I could talk about on the topic but my goal is not to make you fall asleep on your keyboard. Hopefully this has helped to make the concept of confounding just that little bit clearer in your mind. Until next time...

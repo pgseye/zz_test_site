@@ -1,6 +1,6 @@
 ---
 title: "Breaking Free From 'The Cult of P'"
-date: 2024-10-04
+date: 2024-10-18
 categories: [concept, fun]
 #image: ""
 description: "A reminder not to hang all your hopes and dreams on one insignificant number (see what I did there)"
@@ -61,6 +61,6 @@ Now, I have used my own subtle variation on the terminology over the years and r
 
 If I had a dollar for every time a research student has sent me results that contain p-values between `0.045` and `0.05` and reported that to `3` decimal places, I'd be a little less poor than I am now. Seriously, there is no need to do this. Please adhere to the following reporting guide and don't try to put lipstick on a pig by suggesting that your p-value of `0.049` is any different to `0.05.`
 
-![](images/p-value reporting.png){fig-align="center"}
+![](images/p-value%20reporting.png){fig-align="center"}
 
 These are a couple of small changes we can make in our research reporting practice that will help to break our self-imposed binds to the p-value gods. Until next time...
