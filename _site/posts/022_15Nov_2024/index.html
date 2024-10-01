@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="dcterms.date" content="2024-11-15">
-<meta name="description" content="A general philosophy on making your code more efficient">
+<meta name="description" content="A general philosophy on making your code more efficient.">
 
 <title>Test Site 2 - R Programming - Try for DRY</title>
 <style>
@@ -147,14 +147,38 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <!-- sidebar -->
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#the-data" id="toc-the-data" class="nav-link active" data-scroll-target="#the-data"><span class="header-section-number">1</span> The Data</a></li>
+  <li><a href="#breaking-the-task-down-into-steps" id="toc-breaking-the-task-down-into-steps" class="nav-link" data-scroll-target="#breaking-the-task-down-into-steps"><span class="header-section-number">2</span> Breaking The Task Down Into Steps</a>
+  <ul>
+  <li><a href="#step-1" id="toc-step-1" class="nav-link" data-scroll-target="#step-1"><span class="header-section-number">2.1</span> Step 1</a></li>
+  <li><a href="#step-2" id="toc-step-2" class="nav-link" data-scroll-target="#step-2"><span class="header-section-number">2.2</span> Step 2</a></li>
+  <li><a href="#step-3" id="toc-step-3" class="nav-link" data-scroll-target="#step-3"><span class="header-section-number">2.3</span> Step 3</a></li>
+  </ul></li>
+  <li><a href="#coding-approaches" id="toc-coding-approaches" class="nav-link" data-scroll-target="#coding-approaches"><span class="header-section-number">3</span> Coding Approaches</a>
+  <ul>
+  <li><a href="#not-dry" id="toc-not-dry" class="nav-link" data-scroll-target="#not-dry"><span class="header-section-number">3.1</span> Not DRY</a></li>
+  <li><a href="#becoming-dry" id="toc-becoming-dry" class="nav-link" data-scroll-target="#becoming-dry"><span class="header-section-number">3.2</span> Becoming DRY</a>
+  <ul class="collapse">
+  <li><a href="#write-a-function" id="toc-write-a-function" class="nav-link" data-scroll-target="#write-a-function"><span class="header-section-number">3.2.1</span> Write a function</a></li>
+  <li><a href="#recycle-that-function" id="toc-recycle-that-function" class="nav-link" data-scroll-target="#recycle-that-function"><span class="header-section-number">3.2.2</span> Recycle that function</a></li>
+  <li><a href="#function-for-loop" id="toc-function-for-loop" class="nav-link" data-scroll-target="#function-for-loop"><span class="header-section-number">3.2.3</span> Function + for-loop</a></li>
+  <li><a href="#function-purrrmap" id="toc-function-purrrmap" class="nav-link" data-scroll-target="#function-purrrmap"><span class="header-section-number">3.2.4</span> Function + purrr::map</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary"><span class="header-section-number">4</span> Summary</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<div class="quarto-title-block"><div><h1 class="title">R Programming - Try for DRY</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
+<div class="quarto-title-block"><div><h1 class="title">R Programming - Try for DRY</h1><button type="button" class="btn code-tools-button dropdown-toggle" id="quarto-code-tools-menu" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi"></i> Code</button><ul class="dropdown-menu dropdown-menu-end" aria-labelelledby="quarto-code-tools-menu"><li><a id="quarto-show-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Show All Code</a></li><li><a id="quarto-hide-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Hide All Code</a></li><li><hr class="dropdown-divider"></li><li><a id="quarto-view-source" class="dropdown-item" href="javascript:void(0)" role="button">View Source</a></li></ul></div></div>
   <div class="quarto-categories">
     <div class="quarto-category">code</div>
     <div class="quarto-category">concept</div>
@@ -163,7 +187,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <div>
   <div class="description">
-    A general philosophy on making your code more efficient
+    A general philosophy on making your code more efficient.
   </div>
 </div>
 
@@ -186,11 +210,1806 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p>gg</p>
+<p>Let’s face it - we could all become better <code>R</code> coders. Although I have been using <code>R</code> for quite a few years, there is still so much I could learn to make my code-writing life easier. The problem is that I consider myself a statistician before a programmer, and if I’m going to spend some time in learning something new, I tend to focus more on the statistics side of the job, rather than the syntax. A side-effect of this is that while I can no doubt code, I don’t think I code as efficiently as I could. Rather, I think I have become somewhat of a ‘lazy’ coder. What do I mean by that? Well, I can always write code to get achieve a result - there’s no issue with that - but I find that I can repeat myself a lot. And I tend to do that because, in the moment I think that’s easier than investing a little more time to work out a way to avoid that repetition. Consequently, I find that I may save time initially but this sometimes comes back to bite me later, when I discover either an error or am requested to update the existing code. Doing either of these things means that I have to change every bit of duplicated code, instead of doing it (ideally) just once.</p>
+<p>So this is where the idea of <strong>DRY</strong> (Don’t Repeat Yourself) comes in. <a href="https://en.wikipedia.org/wiki/Don%27t_repeat_yourself">DRY</a> is a general principle in software development, but applies equally in coding in <code>R</code>. Undoubtedly the most common realisation of the DRY principle in coding is the creation of a function for re-used logic. This is summed up in the book <a href="https://r4ds.hadley.nz/functions">R for Data Science</a> as:</p>
+<p>“A good rule of thumb is to consider writing a function whenever you’ve copied and pasted a block of code more than twice (i.e.&nbsp;you now have three copies of the same code).”</p>
+<p>In providing some foundation for how one might become more DRY in their daily work, I’m going to share with you some thoughts for how I approached a recent coding problem I was presented with (indulge my use of the acronym in this way). This will be somewhat of a holistic overview - I am going to focus less on the detail of the actual code and more on the thought process of taking the overall task and formulating a way to break that task down into smaller steps that can then be operated on in a way which avoids all of that nasty repetition.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Of course, there are many, many ways to achieve a coding goal in <code>R</code> and I do not consider what I am presenting to necessarily be the best way. These are, but some approaches of many…</p>
+</div>
+</div>
+<section id="the-data" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> The Data</h1>
+<p>A small subset of the data we are going to work on is shown below.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="fu">library</span>(kableExtra)</span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="co"># Read in data</span></span>
+<span id="cb1-4"><a href="#cb1-4"></a>dat <span class="ot">&lt;-</span>  <span class="fu">structure</span>(<span class="fu">list</span>(</span>
+<span id="cb1-5"><a href="#cb1-5"></a>  <span class="at">id =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>, </span>
+<span id="cb1-6"><a href="#cb1-6"></a>  <span class="at">var_1 =</span> <span class="fu">c</span>(<span class="st">"1,1,1,1"</span>, <span class="st">"1,1,1,1"</span>, <span class="st">"0,0,0,0"</span>, <span class="st">"1,1,1,1"</span>, <span class="st">"1,1,1,-11000"</span>), </span>
+<span id="cb1-7"><a href="#cb1-7"></a>  <span class="at">var_2 =</span> <span class="fu">c</span>(<span class="st">"0,8,0,0"</span>, <span class="st">"0,0,0,0"</span>, <span class="st">"-13000,-13000,-13000,-13000"</span>, <span class="st">"0,0,0,0"</span>, <span class="st">"0,0,20,-13000"</span>), </span>
+<span id="cb1-8"><a href="#cb1-8"></a>  <span class="at">var_3 =</span> <span class="fu">c</span>(<span class="st">"0,0,0,0"</span>, <span class="st">"0,0,1,2"</span>, <span class="st">"-13000,-13000,-13000,-13000"</span>, <span class="st">"0,0,0,0"</span>, <span class="st">"0,0,0,-13000"</span>), </span>
+<span id="cb1-9"><a href="#cb1-9"></a>  <span class="at">var_4 =</span> <span class="fu">c</span>(<span class="st">"38,30,38,30"</span>, <span class="st">"24,34,28,30"</span>, <span class="st">"-13000,-13000,-13000,-13000"</span>, <span class="st">"50,60,60,61"</span>, <span class="st">"40,16,20,-13000"</span>), </span>
+<span id="cb1-10"><a href="#cb1-10"></a>  <span class="at">var_5 =</span> <span class="fu">c</span>(<span class="st">"2,4,1,3"</span>, <span class="st">"1,1,1,3"</span>, <span class="st">"-13000,-13000,-13000,-13000"</span>, <span class="st">"0,3,3,0"</span>, <span class="st">"4,6,7,-13000"</span>), </span>
+<span id="cb1-11"><a href="#cb1-11"></a>  <span class="at">var_6 =</span> <span class="fu">c</span>(<span class="st">"4,10,1,1"</span>, <span class="st">"1,2,1,3"</span>, <span class="st">"-13000,-13000,-13000,-13000"</span>, <span class="st">"0,1,0,0"</span>, <span class="st">"6,8,4,-13000"</span>)), </span>
+<span id="cb1-12"><a href="#cb1-12"></a>  <span class="at">row.names =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>, <span class="at">class =</span> <span class="st">"data.frame"</span>)</span>
+<span id="cb1-13"><a href="#cb1-13"></a>dat <span class="sc">|&gt;</span> </span>
+<span id="cb1-14"><a href="#cb1-14"></a>  <span class="fu">kable</span>(<span class="at">align =</span> <span class="st">"c"</span>, <span class="at">digits =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<colgroup>
+<col style="width: 2%">
+<col style="width: 8%">
+<col style="width: 17%">
+<col style="width: 17%">
+<col style="width: 17%">
+<col style="width: 17%">
+<col style="width: 17%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: center;">id</th>
+<th style="text-align: center;">var_1</th>
+<th style="text-align: center;">var_2</th>
+<th style="text-align: center;">var_3</th>
+<th style="text-align: center;">var_4</th>
+<th style="text-align: center;">var_5</th>
+<th style="text-align: center;">var_6</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1,1,1,1</td>
+<td style="text-align: center;">0,8,0,0</td>
+<td style="text-align: center;">0,0,0,0</td>
+<td style="text-align: center;">38,30,38,30</td>
+<td style="text-align: center;">2,4,1,3</td>
+<td style="text-align: center;">4,10,1,1</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">1,1,1,1</td>
+<td style="text-align: center;">0,0,0,0</td>
+<td style="text-align: center;">0,0,1,2</td>
+<td style="text-align: center;">24,34,28,30</td>
+<td style="text-align: center;">1,1,1,3</td>
+<td style="text-align: center;">1,2,1,3</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">0,0,0,0</td>
+<td style="text-align: center;">-13000,-13000,-13000,-13000</td>
+<td style="text-align: center;">-13000,-13000,-13000,-13000</td>
+<td style="text-align: center;">-13000,-13000,-13000,-13000</td>
+<td style="text-align: center;">-13000,-13000,-13000,-13000</td>
+<td style="text-align: center;">-13000,-13000,-13000,-13000</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">1,1,1,1</td>
+<td style="text-align: center;">0,0,0,0</td>
+<td style="text-align: center;">0,0,0,0</td>
+<td style="text-align: center;">50,60,60,61</td>
+<td style="text-align: center;">0,3,3,0</td>
+<td style="text-align: center;">0,1,0,0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">1,1,1,-11000</td>
+<td style="text-align: center;">0,0,20,-13000</td>
+<td style="text-align: center;">0,0,0,-13000</td>
+<td style="text-align: center;">40,16,20,-13000</td>
+<td style="text-align: center;">4,6,7,-13000</td>
+<td style="text-align: center;">6,8,4,-13000</td>
+</tr>
+</tbody>
+</table>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="fu">glimpse</span>(dat)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 5
+Columns: 7
+$ id    &lt;int&gt; 1, 2, 3, 4, 5
+$ var_1 &lt;chr&gt; "1,1,1,1", "1,1,1,1", "0,0,0,0", "1,1,1,1", "1,1,1,-11000"
+$ var_2 &lt;chr&gt; "0,8,0,0", "0,0,0,0", "-13000,-13000,-13000,-13000", "0,0,0,0", …
+$ var_3 &lt;chr&gt; "0,0,0,0", "0,0,1,2", "-13000,-13000,-13000,-13000", "0,0,0,0", …
+$ var_4 &lt;chr&gt; "38,30,38,30", "24,34,28,30", "-13000,-13000,-13000,-13000", "50…
+$ var_5 &lt;chr&gt; "2,4,1,3", "1,1,1,3", "-13000,-13000,-13000,-13000", "0,3,3,0", …
+$ var_6 &lt;chr&gt; "4,10,1,1", "1,2,1,3", "-13000,-13000,-13000,-13000", "0,1,0,0",…</code></pre>
+</div>
+</div>
+<p><br></p>
+<p>So what do we have here?</p>
+<p>There are <code>7</code> columns and the first is simply an <code>id</code> variable. The remaining <code>6</code> variables are labelled <code>var_1</code>:<code>var_6</code> and each contain a ‘string’ of numbers in each cell. These represent longitudinal measurements for <code>6</code> different quantities at <code>4</code> different time points - baseline, and 3, 6 and 12 months. So, Subject <code>2</code> has recorded measurements of <code>24</code>, <code>34</code>, <code>28</code> and <code>30</code> at baseline, 3, 6 and 12 months, respectively. Each variable is recorded in character format, so <code>R</code> does not yet recognise these as numbers. You can hopefully appreciate that presenting data in this format is not really ideal (somewhat painful in fact) and that we’ve got a bit of work to do to make this analysis-ready.</p>
+</section>
+<section id="breaking-the-task-down-into-steps" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Breaking The Task Down Into Steps</h1>
+<p>So what is the actual task that we need to perform on these data, to make them analysis-ready?</p>
+<p>Basically, we want to convert the existing dataframe into long format, so that each cell contains only one value and the longitudinal measures appear on successive rows. In other words, we want the following:</p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: center;">id</th>
+<th style="text-align: center;">timepoint</th>
+<th style="text-align: center;">var_1</th>
+<th style="text-align: center;">var_2</th>
+<th style="text-align: center;">var_3</th>
+<th style="text-align: center;">var_4</th>
+<th style="text-align: center;">var_5</th>
+<th style="text-align: center;">var_6</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">base</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">38</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">4</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">3mo</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">8</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">30</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">10</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">6mo</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">38</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">12mo</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">30</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">base</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">24</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">3mo</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">34</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">6mo</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">28</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">12mo</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">30</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">base</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3mo</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">6mo</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">12mo</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">base</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">50</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">3mo</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">60</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">6mo</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">60</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">12mo</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">61</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">base</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">40</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">6</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">3mo</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">16</td>
+<td style="text-align: center;">6</td>
+<td style="text-align: center;">8</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">6mo</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">20</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">20</td>
+<td style="text-align: center;">7</td>
+<td style="text-align: center;">4</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">12mo</td>
+<td style="text-align: center;">-11000</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><br></p>
+<p>Before rushing head-long into coding up an approach, let’s take a little time to think about what steps we might take to accomplish this goal. What are some self-contained data manipulations we can extract out of the task to make the task seem less imposing, when we subsequently string those manipulations together.</p>
+<section id="step-1" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="step-1"><span class="header-section-number">2.1</span> Step 1</h2>
+<p>Well the most obvious first thing we could do is to split each column that contains multiple values into multiple columns each containing one value. <code>separate_wider_delim()</code> is a <code>tidyr</code> function that will allow us to do that and the code and output when applied to <code>var_1</code> is shown below (note that we would need to repeat this for every variable).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>temp <span class="ot">&lt;-</span>  dat <span class="sc">|&gt;</span> </span>
+<span id="cb4-2"><a href="#cb4-2"></a>  <span class="fu">select</span>(id, var_1) <span class="sc">|&gt;</span> </span>
+<span id="cb4-3"><a href="#cb4-3"></a>  <span class="fu">separate_wider_delim</span>(var_1, <span class="st">","</span>, <span class="at">too_few =</span> <span class="st">"align_start"</span>,</span>
+<span id="cb4-4"><a href="#cb4-4"></a>                       <span class="at">names =</span> <span class="fu">c</span>(<span class="st">"var_1_base"</span>, <span class="st">"var_1_3mo"</span>, <span class="st">"var_1_6mo"</span>, <span class="st">"var_1_12mo"</span>))</span>
+<span id="cb4-5"><a href="#cb4-5"></a>temp <span class="sc">|&gt;</span> </span>
+<span id="cb4-6"><a href="#cb4-6"></a>  <span class="fu">kable</span>(<span class="at">align =</span> <span class="st">"c"</span>, <span class="at">digits =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: center;">id</th>
+<th style="text-align: center;">var_1_base</th>
+<th style="text-align: center;">var_1_3mo</th>
+<th style="text-align: center;">var_1_6mo</th>
+<th style="text-align: center;">var_1_12mo</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">-11000</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>That seems to have worked quite well - we now have each value in its own cell!</p>
+</section>
+<section id="step-2" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="step-2"><span class="header-section-number">2.2</span> Step 2</h2>
+<p>Now that we’ve found a way to split a column, we can take that output and convert it to long format. We can use <code>pivot_longer</code> to do that very easily (note that we would need to repeat this for every variable).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>temp_long <span class="ot">&lt;-</span>  temp <span class="sc">|&gt;</span> </span>
+<span id="cb5-2"><a href="#cb5-2"></a>  <span class="fu">pivot_longer</span>(<span class="dv">2</span><span class="sc">:</span><span class="dv">5</span>,</span>
+<span id="cb5-3"><a href="#cb5-3"></a>               <span class="at">names_to =</span> <span class="st">"timepoint"</span>,</span>
+<span id="cb5-4"><a href="#cb5-4"></a>               <span class="at">values_to =</span> <span class="st">"var_1"</span>,</span>
+<span id="cb5-5"><a href="#cb5-5"></a>               <span class="at">names_prefix =</span> <span class="st">"var_1_"</span>)</span>
+<span id="cb5-6"><a href="#cb5-6"></a>temp_long <span class="sc">|&gt;</span> </span>
+<span id="cb5-7"><a href="#cb5-7"></a>  <span class="fu">kable</span>(<span class="at">align =</span> <span class="st">"c"</span>, <span class="at">digits =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: center;">id</th>
+<th style="text-align: center;">timepoint</th>
+<th style="text-align: center;">var_1</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">base</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">3mo</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">6mo</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">12mo</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">base</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">3mo</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">6mo</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">12mo</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">base</td>
+<td style="text-align: center;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3mo</td>
+<td style="text-align: center;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">6mo</td>
+<td style="text-align: center;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">12mo</td>
+<td style="text-align: center;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">base</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">3mo</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">6mo</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">12mo</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">base</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">3mo</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">6mo</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">12mo</td>
+<td style="text-align: center;">-11000</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="step-3" class="level2" data-number="2.3">
+<h2 data-number="2.3" class="anchored" data-anchor-id="step-3"><span class="header-section-number">2.3</span> Step 3</h2>
+<p>Really, we’re nearly there. All that’s left to do at this point is to join the resulting columns together from performing Steps 1 and 2 on each of the remaining variables in the dataset. There are multiple ways you can do that in <code>R</code>.</p>
+</section>
+</section>
+<section id="coding-approaches" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Coding Approaches</h1>
+<p>Now that we have some basic idea of the steps that we need to take, let’s consider some different coding approaches that we might use to perform the task at hand. All of these will give the same end result.</p>
+<section id="not-dry" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="not-dry"><span class="header-section-number">3.1</span> Not DRY</h2>
+<p>In this approach we are going to incorporate the above <code>3</code> steps into a single workflow. In doing this we will create <code>6</code> temporary dataframes to store the converted contents of each original variable. We will then join the resulting dataframes together. We can actually make this a little more succinct by combining Steps 1 and 2 in a single call, but even so, this approach leads to a LOT of repetition - <code>55</code> <strong>lines of code</strong> to be exact.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a><span class="co"># Create individual dataframes with each original column split into multiple columns and converted to long format</span></span>
+<span id="cb6-2"><a href="#cb6-2"></a>temp1 <span class="ot">&lt;-</span>  dat <span class="sc">|&gt;</span> </span>
+<span id="cb6-3"><a href="#cb6-3"></a>  <span class="fu">select</span>(id, var_1) <span class="sc">|&gt;</span> </span>
+<span id="cb6-4"><a href="#cb6-4"></a>  <span class="fu">separate_wider_delim</span>(var_1, <span class="st">","</span>, <span class="at">too_few =</span> <span class="st">"align_start"</span>,</span>
+<span id="cb6-5"><a href="#cb6-5"></a>                       <span class="at">names =</span> <span class="fu">c</span>(<span class="st">"var_1_base"</span>, <span class="st">"var_1_3mo"</span>, <span class="st">"var_1_6mo"</span>, <span class="st">"var_1_12mo"</span>)) <span class="sc">|&gt;</span> </span>
+<span id="cb6-6"><a href="#cb6-6"></a>  <span class="fu">pivot_longer</span>(<span class="dv">2</span><span class="sc">:</span><span class="dv">5</span>,</span>
+<span id="cb6-7"><a href="#cb6-7"></a>               <span class="at">names_to =</span> <span class="st">"timepoint"</span>,</span>
+<span id="cb6-8"><a href="#cb6-8"></a>               <span class="at">values_to =</span> <span class="st">"var_1"</span>,</span>
+<span id="cb6-9"><a href="#cb6-9"></a>               <span class="at">names_prefix =</span> <span class="st">"var_1_"</span>)</span>
+<span id="cb6-10"><a href="#cb6-10"></a>temp2 <span class="ot">&lt;-</span>  dat <span class="sc">|&gt;</span> </span>
+<span id="cb6-11"><a href="#cb6-11"></a>  <span class="fu">select</span>(id, var_2) <span class="sc">|&gt;</span> </span>
+<span id="cb6-12"><a href="#cb6-12"></a>  <span class="fu">separate_wider_delim</span>(var_2, <span class="st">","</span>, <span class="at">too_few =</span> <span class="st">"align_start"</span>,</span>
+<span id="cb6-13"><a href="#cb6-13"></a>                       <span class="at">names =</span> <span class="fu">c</span>(<span class="st">"var_2_base"</span>, <span class="st">"var_2_3mo"</span>, <span class="st">"var_2_6mo"</span>, <span class="st">"var_2_12mo"</span>)) <span class="sc">|&gt;</span> </span>
+<span id="cb6-14"><a href="#cb6-14"></a>  <span class="fu">pivot_longer</span>(<span class="dv">2</span><span class="sc">:</span><span class="dv">5</span>,</span>
+<span id="cb6-15"><a href="#cb6-15"></a>               <span class="at">names_to =</span> <span class="st">"timepoint"</span>,</span>
+<span id="cb6-16"><a href="#cb6-16"></a>               <span class="at">values_to =</span> <span class="st">"var_2"</span>,</span>
+<span id="cb6-17"><a href="#cb6-17"></a>               <span class="at">names_prefix =</span> <span class="st">"var_2_"</span>)</span>
+<span id="cb6-18"><a href="#cb6-18"></a>temp3 <span class="ot">&lt;-</span>  dat <span class="sc">|&gt;</span> </span>
+<span id="cb6-19"><a href="#cb6-19"></a>  <span class="fu">select</span>(id, var_3) <span class="sc">|&gt;</span> </span>
+<span id="cb6-20"><a href="#cb6-20"></a>  <span class="fu">separate_wider_delim</span>(var_3, <span class="st">","</span>, <span class="at">too_few =</span> <span class="st">"align_start"</span>,</span>
+<span id="cb6-21"><a href="#cb6-21"></a>                       <span class="at">names =</span> <span class="fu">c</span>(<span class="st">"var_3_base"</span>, <span class="st">"var_3_3mo"</span>, <span class="st">"var_3_6mo"</span>, <span class="st">"var_3_12mo"</span>)) <span class="sc">|&gt;</span> </span>
+<span id="cb6-22"><a href="#cb6-22"></a>  <span class="fu">pivot_longer</span>(<span class="dv">2</span><span class="sc">:</span><span class="dv">5</span>,</span>
+<span id="cb6-23"><a href="#cb6-23"></a>               <span class="at">names_to =</span> <span class="st">"timepoint"</span>,</span>
+<span id="cb6-24"><a href="#cb6-24"></a>               <span class="at">values_to =</span> <span class="st">"var_3"</span>,</span>
+<span id="cb6-25"><a href="#cb6-25"></a>               <span class="at">names_prefix =</span> <span class="st">"var_3_"</span>)</span>
+<span id="cb6-26"><a href="#cb6-26"></a>temp4 <span class="ot">&lt;-</span>  dat <span class="sc">|&gt;</span> </span>
+<span id="cb6-27"><a href="#cb6-27"></a>  <span class="fu">select</span>(id, var_4) <span class="sc">|&gt;</span> </span>
+<span id="cb6-28"><a href="#cb6-28"></a>  <span class="fu">separate_wider_delim</span>(var_4, <span class="st">","</span>, <span class="at">too_few =</span> <span class="st">"align_start"</span>,</span>
+<span id="cb6-29"><a href="#cb6-29"></a>                       <span class="at">names =</span> <span class="fu">c</span>(<span class="st">"var_4_base"</span>, <span class="st">"var_4_3mo"</span>, <span class="st">"var_4_6mo"</span>, <span class="st">"var_4_12mo"</span>)) <span class="sc">|&gt;</span> </span>
+<span id="cb6-30"><a href="#cb6-30"></a>  <span class="fu">pivot_longer</span>(<span class="dv">2</span><span class="sc">:</span><span class="dv">5</span>,</span>
+<span id="cb6-31"><a href="#cb6-31"></a>               <span class="at">names_to =</span> <span class="st">"timepoint"</span>,</span>
+<span id="cb6-32"><a href="#cb6-32"></a>               <span class="at">values_to =</span> <span class="st">"var_4"</span>,</span>
+<span id="cb6-33"><a href="#cb6-33"></a>               <span class="at">names_prefix =</span> <span class="st">"var_4_"</span>)</span>
+<span id="cb6-34"><a href="#cb6-34"></a>temp5 <span class="ot">&lt;-</span>  dat <span class="sc">|&gt;</span> </span>
+<span id="cb6-35"><a href="#cb6-35"></a>  <span class="fu">select</span>(id, var_5) <span class="sc">|&gt;</span> </span>
+<span id="cb6-36"><a href="#cb6-36"></a>  <span class="fu">separate_wider_delim</span>(var_5, <span class="st">","</span>, <span class="at">too_few =</span> <span class="st">"align_start"</span>,</span>
+<span id="cb6-37"><a href="#cb6-37"></a>                       <span class="at">names =</span> <span class="fu">c</span>(<span class="st">"var_5_base"</span>, <span class="st">"var_5_3mo"</span>, <span class="st">"var_5_6mo"</span>, <span class="st">"var_5_12mo"</span>)) <span class="sc">|&gt;</span> </span>
+<span id="cb6-38"><a href="#cb6-38"></a>  <span class="fu">pivot_longer</span>(<span class="dv">2</span><span class="sc">:</span><span class="dv">5</span>,</span>
+<span id="cb6-39"><a href="#cb6-39"></a>               <span class="at">names_to =</span> <span class="st">"timepoint"</span>,</span>
+<span id="cb6-40"><a href="#cb6-40"></a>               <span class="at">values_to =</span> <span class="st">"var_5"</span>,</span>
+<span id="cb6-41"><a href="#cb6-41"></a>               <span class="at">names_prefix =</span> <span class="st">"var_5_"</span>)</span>
+<span id="cb6-42"><a href="#cb6-42"></a>temp6 <span class="ot">&lt;-</span>  dat <span class="sc">|&gt;</span> </span>
+<span id="cb6-43"><a href="#cb6-43"></a>  <span class="fu">select</span>(id, var_6) <span class="sc">|&gt;</span> </span>
+<span id="cb6-44"><a href="#cb6-44"></a>  <span class="fu">separate_wider_delim</span>(var_6, <span class="st">","</span>, <span class="at">too_few =</span> <span class="st">"align_start"</span>,</span>
+<span id="cb6-45"><a href="#cb6-45"></a>                       <span class="at">names =</span> <span class="fu">c</span>(<span class="st">"var_6_base"</span>, <span class="st">"var_6_3mo"</span>, <span class="st">"var_6_6mo"</span>, <span class="st">"var_6_12mo"</span>)) <span class="sc">|&gt;</span> </span>
+<span id="cb6-46"><a href="#cb6-46"></a>  <span class="fu">pivot_longer</span>(<span class="dv">2</span><span class="sc">:</span><span class="dv">5</span>,</span>
+<span id="cb6-47"><a href="#cb6-47"></a>               <span class="at">names_to =</span> <span class="st">"timepoint"</span>,</span>
+<span id="cb6-48"><a href="#cb6-48"></a>               <span class="at">values_to =</span> <span class="st">"var_6"</span>,</span>
+<span id="cb6-49"><a href="#cb6-49"></a>               <span class="at">names_prefix =</span> <span class="st">"var_6_"</span>)</span>
+<span id="cb6-50"><a href="#cb6-50"></a><span class="co"># Merge all dataframes together</span></span>
+<span id="cb6-51"><a href="#cb6-51"></a>dat_converted <span class="ot">&lt;-</span>  <span class="fu">left_join</span>(temp1, temp2)</span>
+<span id="cb6-52"><a href="#cb6-52"></a>dat_converted <span class="ot">&lt;-</span>  <span class="fu">left_join</span>(dat_converted, temp3)</span>
+<span id="cb6-53"><a href="#cb6-53"></a>dat_converted <span class="ot">&lt;-</span>  <span class="fu">left_join</span>(dat_converted, temp4)</span>
+<span id="cb6-54"><a href="#cb6-54"></a>dat_converted <span class="ot">&lt;-</span>  <span class="fu">left_join</span>(dat_converted, temp5)</span>
+<span id="cb6-55"><a href="#cb6-55"></a>dat_converted <span class="ot">&lt;-</span>  <span class="fu">left_join</span>(dat_converted, temp6)</span>
+<span id="cb6-56"><a href="#cb6-56"></a>dat_converted <span class="sc">|&gt;</span> </span>
+<span id="cb6-57"><a href="#cb6-57"></a>  <span class="fu">kable</span>(<span class="at">align =</span> <span class="st">"c"</span>, <span class="at">digits =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: center;">id</th>
+<th style="text-align: center;">timepoint</th>
+<th style="text-align: center;">var_1</th>
+<th style="text-align: center;">var_2</th>
+<th style="text-align: center;">var_3</th>
+<th style="text-align: center;">var_4</th>
+<th style="text-align: center;">var_5</th>
+<th style="text-align: center;">var_6</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">base</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">38</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">4</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">3mo</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">8</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">30</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">10</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">6mo</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">38</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">12mo</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">30</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">base</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">24</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">3mo</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">34</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">6mo</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">28</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">12mo</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">30</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">base</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3mo</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">6mo</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">12mo</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">base</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">50</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">3mo</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">60</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">6mo</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">60</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">12mo</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">61</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">base</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">40</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">6</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">3mo</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">16</td>
+<td style="text-align: center;">6</td>
+<td style="text-align: center;">8</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">6mo</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">20</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">20</td>
+<td style="text-align: center;">7</td>
+<td style="text-align: center;">4</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">12mo</td>
+<td style="text-align: center;">-11000</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><br></p>
+<p>What’s wrong with this approach? Nothing, really. The main criticism is that in creating each temporary dataframe we are copying and pasting the relevant code block <code>5</code> times. We then need to change the names of variables in the copies - each block has <code>8</code> places that a variable name appears, so that means <code>40</code> changes across the workflow. That’s a lot of places where we could potentially make an error by simply hitting the wrong key. But even if you don’t make mistakes, consider the all too common scenario where an updated dataset is sent to you at a later date for re-analysis. Sometimes, variable names are inadvertently changed between datasets - that also means many changes in your code.</p>
+<p>There must be more robust approaches to this task.</p>
+</section>
+<section id="becoming-dry" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="becoming-dry"><span class="header-section-number">3.2</span> Becoming DRY</h2>
+<p>Whatever approach we take from here, there should be one coding concept that we incorporate as a foundational commonality - and that is the function. I’m not going to teach you how to write functions here - there are plenty of resources online and <a href="https://r4ds.hadley.nz/functions">R for Data Science</a> is a good place to start.</p>
+<section id="write-a-function" class="level3" data-number="3.2.1">
+<h3 data-number="3.2.1" class="anchored" data-anchor-id="write-a-function"><span class="header-section-number">3.2.1</span> Write a function</h3>
+<p>A function is a good way to encapsulate some code that you might want to use more than once. We know what code we want to re-use - it’s essentially the following block, but we want to generalise it to be usable with any of the <code>6</code> variables in the original dataframe, not just <code>var_1</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>temp1 <span class="ot">&lt;-</span>  dat <span class="sc">|&gt;</span> </span>
+<span id="cb7-2"><a href="#cb7-2"></a>  <span class="fu">select</span>(id, var_1) <span class="sc">|&gt;</span> </span>
+<span id="cb7-3"><a href="#cb7-3"></a>  <span class="fu">separate_wider_delim</span>(var_1, <span class="st">","</span>, <span class="at">too_few =</span> <span class="st">"align_start"</span>,</span>
+<span id="cb7-4"><a href="#cb7-4"></a>                       <span class="at">names =</span> <span class="fu">c</span>(<span class="st">"var_1_base"</span>, <span class="st">"var_1_3mo"</span>, <span class="st">"var_1_6mo"</span>, <span class="st">"var_1_12mo"</span>)) <span class="sc">|&gt;</span> </span>
+<span id="cb7-5"><a href="#cb7-5"></a>  <span class="fu">pivot_longer</span>(<span class="dv">2</span><span class="sc">:</span><span class="dv">5</span>,</span>
+<span id="cb7-6"><a href="#cb7-6"></a>               <span class="at">names_to =</span> <span class="st">"timepoint"</span>,</span>
+<span id="cb7-7"><a href="#cb7-7"></a>               <span class="at">values_to =</span> <span class="st">"var_1"</span>,</span>
+<span id="cb7-8"><a href="#cb7-8"></a>               <span class="at">names_prefix =</span> <span class="st">"var_1_"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><br></p>
+<p>One version of that code block wrapped up in a function - which I’ve called <code>split_to_long()</code> - is shown below.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a>split_to_long <span class="ot">&lt;-</span>  <span class="cf">function</span>(col){</span>
+<span id="cb8-2"><a href="#cb8-2"></a>  i <span class="ot">&lt;-</span>  <span class="fu">substr</span>(col, <span class="dv">5</span>, <span class="dv">5</span>)</span>
+<span id="cb8-3"><a href="#cb8-3"></a>  temp <span class="ot">&lt;-</span>  dat <span class="sc">|&gt;</span></span>
+<span id="cb8-4"><a href="#cb8-4"></a>    <span class="fu">select</span>(id, <span class="fu">all_of</span>(col)) <span class="sc">|&gt;</span></span>
+<span id="cb8-5"><a href="#cb8-5"></a>    <span class="fu">separate_wider_delim</span>(<span class="fu">all_of</span>(col), </span>
+<span id="cb8-6"><a href="#cb8-6"></a>                         <span class="st">","</span>, </span>
+<span id="cb8-7"><a href="#cb8-7"></a>                         <span class="at">too_few =</span> <span class="st">"align_start"</span>, </span>
+<span id="cb8-8"><a href="#cb8-8"></a>                         <span class="at">names =</span> <span class="fu">c</span>(<span class="fu">paste0</span>(col,<span class="st">"_"</span>, <span class="fu">c</span>(<span class="st">"base"</span>, <span class="st">"3mo"</span>, <span class="st">"6mo"</span>, <span class="st">"12mo"</span>)))) <span class="sc">|&gt;</span></span>
+<span id="cb8-9"><a href="#cb8-9"></a>    <span class="fu">pivot_longer</span>(<span class="dv">2</span><span class="sc">:</span><span class="dv">5</span>,</span>
+<span id="cb8-10"><a href="#cb8-10"></a>                 <span class="at">names_to =</span> <span class="st">"timepoint"</span>,</span>
+<span id="cb8-11"><a href="#cb8-11"></a>                 <span class="at">values_to =</span> <span class="fu">paste0</span>(<span class="st">"var_"</span>, i),</span>
+<span id="cb8-12"><a href="#cb8-12"></a>                 <span class="at">names_prefix =</span> <span class="fu">paste0</span>(<span class="st">"var_"</span>, i, <span class="st">"_"</span>))</span>
+<span id="cb8-13"><a href="#cb8-13"></a>  <span class="cf">if</span> (i <span class="sc">&gt;</span> <span class="dv">1</span>){</span>
+<span id="cb8-14"><a href="#cb8-14"></a>    temp <span class="ot">&lt;-</span>  temp[<span class="dv">3</span>]</span>
+<span id="cb8-15"><a href="#cb8-15"></a>  }</span>
+<span id="cb8-16"><a href="#cb8-16"></a>  temp</span>
+<span id="cb8-17"><a href="#cb8-17"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><br></p>
+<p>What does <code>split_to_long()</code> do?</p>
+<ul>
+<li><p>Line 1 declares the function and specifies the single argument it accepts - <code>col</code> (i.e.&nbsp;the name of the column we are interested in splitting and reshaping).</p></li>
+<li><p>Line 2 gets the variable number belonging to <code>col</code> and assigns it to <code>i</code>. This works here because all variable names follow the same format with the number being at the 5th position in the name.</p></li>
+<li><p>Lines 3 - 12 take the original dataframe and selects out two variables - the <code>id</code> variable and <code>col</code>. It then splits and reshapes <code>col</code> into long format and saves it to <code>temp</code> - a dataframe.</p></li>
+<li><p>Lines 13 - 15 tell the function that for any variable other than the first, we don’t need to retain the <code>id</code> and <code>timepoint</code> variables when creating <code>temp</code>.</p></li>
+<li><p>Line 16 ‘returns’ <code>temp</code>. This is essential to ensure the function captures the result of interest.</p></li>
+</ul>
+<p>Hooray!</p>
+<p>We now have a function which is generalisable to any column of the original dataframe. If we call <code>split_to_long("var_1")</code>, we get:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a><span class="fu">split_to_long</span>(<span class="st">"var_1"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb9-2"><a href="#cb9-2"></a>  <span class="fu">kable</span>(<span class="at">align =</span> <span class="st">"c"</span>, <span class="at">digits =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: center;">id</th>
+<th style="text-align: center;">timepoint</th>
+<th style="text-align: center;">var_1</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">base</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">3mo</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">6mo</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">12mo</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">base</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">3mo</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">6mo</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">12mo</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">base</td>
+<td style="text-align: center;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3mo</td>
+<td style="text-align: center;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">6mo</td>
+<td style="text-align: center;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">12mo</td>
+<td style="text-align: center;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">base</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">3mo</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">6mo</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">12mo</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">base</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">3mo</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">6mo</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">12mo</td>
+<td style="text-align: center;">-11000</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><br></p>
+<p>Similarly, we could call <code>split_to_long("var_6")</code>, and get:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a><span class="fu">split_to_long</span>(<span class="st">"var_6"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb10-2"><a href="#cb10-2"></a>  <span class="fu">kable</span>(<span class="at">align =</span> <span class="st">"c"</span>, <span class="at">digits =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: center;">var_6</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">4</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">10</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">3</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">-13000</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">-13000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">-13000</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">-13000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">6</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">8</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">4</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">-13000</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><br></p>
+<p>Remember that in this case we asked the function not to keep the <code>id</code> and <code>timeline</code> variables.</p>
+<p>The important point to take away from this is that in each case, we have reduced the code from <code>8</code> lines to just <code>1</code> line, and been able to produce the same result.</p>
+</section>
+<section id="recycle-that-function" class="level3" data-number="3.2.2">
+<h3 data-number="3.2.2" class="anchored" data-anchor-id="recycle-that-function"><span class="header-section-number">3.2.2</span> Recycle that function</h3>
+<p>At this juncture, you may be thinking that we’ve done all we can do to be DRY and the only thing left is to call our function on every column in our original dataset. Well, yes, that would work as advertised.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a>dat_converted <span class="ot">&lt;-</span>  <span class="fu">cbind</span>(</span>
+<span id="cb11-2"><a href="#cb11-2"></a>  <span class="fu">split_to_long</span>(<span class="st">"var_1"</span>),</span>
+<span id="cb11-3"><a href="#cb11-3"></a>  <span class="fu">split_to_long</span>(<span class="st">"var_2"</span>),</span>
+<span id="cb11-4"><a href="#cb11-4"></a>  <span class="fu">split_to_long</span>(<span class="st">"var_3"</span>),</span>
+<span id="cb11-5"><a href="#cb11-5"></a>  <span class="fu">split_to_long</span>(<span class="st">"var_4"</span>),</span>
+<span id="cb11-6"><a href="#cb11-6"></a>  <span class="fu">split_to_long</span>(<span class="st">"var_5"</span>),</span>
+<span id="cb11-7"><a href="#cb11-7"></a>  <span class="fu">split_to_long</span>(<span class="st">"var_6"</span>))</span>
+<span id="cb11-8"><a href="#cb11-8"></a>dat_converted <span class="sc">|&gt;</span> </span>
+<span id="cb11-9"><a href="#cb11-9"></a>  <span class="fu">kable</span>(<span class="at">align =</span> <span class="st">"c"</span>, <span class="at">digits =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: center;">id</th>
+<th style="text-align: center;">timepoint</th>
+<th style="text-align: center;">var_1</th>
+<th style="text-align: center;">var_2</th>
+<th style="text-align: center;">var_3</th>
+<th style="text-align: center;">var_4</th>
+<th style="text-align: center;">var_5</th>
+<th style="text-align: center;">var_6</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">base</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">38</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">4</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">3mo</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">8</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">30</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">10</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">6mo</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">38</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">12mo</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">30</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">base</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">24</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">3mo</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">34</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">6mo</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">28</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">12mo</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">30</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">base</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3mo</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">6mo</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">12mo</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">base</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">50</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">3mo</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">60</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">6mo</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">60</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">12mo</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">61</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">base</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">40</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">6</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">3mo</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">16</td>
+<td style="text-align: center;">6</td>
+<td style="text-align: center;">8</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">6mo</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">20</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">20</td>
+<td style="text-align: center;">7</td>
+<td style="text-align: center;">4</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">12mo</td>
+<td style="text-align: center;">-11000</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><br></p>
+<p>But do you notice that we have inadvertently written code that is again repetitive? It might not seem like much, but we’ve called <code>split_to_long()</code> <code>6</code> times - one for each column that we want to convert. Is there a way to be even more DRY than this? Well it turns out that there is, and the general idea is that we will <strong>take our function and iterate over the columns in the data frame</strong>. In other words, automatically apply the function without having to manually type the function out multiple times. There are two primary ways to do this - let’s consider them now.</p>
+</section>
+<section id="function-for-loop" class="level3" data-number="3.2.3">
+<h3 data-number="3.2.3" class="anchored" data-anchor-id="function-for-loop"><span class="header-section-number">3.2.3</span> Function + for-loop</h3>
+<p>The for-loop is one of the main control-flow constructs in almost any programming language, including <code>R</code>. It can be used to iterate over a group of objects (e.g.&nbsp;a vector, a list, a dataframe), applying the same manipulations to each object. In our specific case we are going to use a for-loop to iterate over the variable columns of our original dataframe. The for-loop I have written is fairly simple - the basic idea is to cycle over each of the relevant variables, applying our function to each variable in term. A dataframe is created and appended to in each cycle.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a>dat_converted <span class="ot">&lt;-</span>  <span class="fu">data.frame</span>(<span class="fu">matrix</span>(<span class="at">ncol =</span> <span class="dv">0</span>, <span class="at">nrow =</span> <span class="dv">20</span>))</span>
+<span id="cb12-2"><a href="#cb12-2"></a><span class="cf">for</span> (name <span class="cf">in</span> <span class="fu">names</span>(dat[<span class="dv">2</span><span class="sc">:</span><span class="dv">7</span>])){</span>
+<span id="cb12-3"><a href="#cb12-3"></a>  dat_converted <span class="ot">&lt;-</span>  <span class="fu">cbind</span>(dat_converted, <span class="fu">split_to_long</span>(name))</span>
+<span id="cb12-4"><a href="#cb12-4"></a>}</span>
+<span id="cb12-5"><a href="#cb12-5"></a>dat_converted <span class="sc">|&gt;</span> </span>
+<span id="cb12-6"><a href="#cb12-6"></a>  <span class="fu">kable</span>(<span class="at">align =</span> <span class="st">"c"</span>, <span class="at">digits =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: center;">id</th>
+<th style="text-align: center;">timepoint</th>
+<th style="text-align: center;">var_1</th>
+<th style="text-align: center;">var_2</th>
+<th style="text-align: center;">var_3</th>
+<th style="text-align: center;">var_4</th>
+<th style="text-align: center;">var_5</th>
+<th style="text-align: center;">var_6</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">base</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">38</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">4</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">3mo</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">8</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">30</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">10</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">6mo</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">38</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">12mo</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">30</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">base</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">24</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">3mo</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">34</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">6mo</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">28</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">12mo</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">30</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">base</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3mo</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">6mo</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">12mo</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">base</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">50</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">3mo</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">60</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">6mo</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">60</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">12mo</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">61</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">base</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">40</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">6</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">3mo</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">16</td>
+<td style="text-align: center;">6</td>
+<td style="text-align: center;">8</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">6mo</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">20</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">20</td>
+<td style="text-align: center;">7</td>
+<td style="text-align: center;">4</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">12mo</td>
+<td style="text-align: center;">-11000</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><br></p>
+<p>Again, this gives us the desired result and combined with our function, this approach uses <code>21</code> <strong>lines of code</strong>, and importantly there is no repetition.</p>
+</section>
+<section id="function-purrrmap" class="level3" data-number="3.2.4">
+<h3 data-number="3.2.4" class="anchored" data-anchor-id="function-purrrmap"><span class="header-section-number">3.2.4</span> Function + purrr::map</h3>
+<p>The <code>map</code> family of functions within the <a href="https://purrr.tidyverse.org"><code>purrr</code></a> package are the <code>tidyverse</code> answer to base <code>R</code>s <a href="https://rpubs.com/Richard_h/888425"><code>apply</code></a> family of functions. They essentially do the same thing, but <code>map</code> tend to be more <a href="https://purrr.tidyverse.org/articles/base.html">consistent</a> in their application, and are of course, designed for use with other <code>tidyverse</code> functions.</p>
+<p>At its core, <code>R</code> is a <strong>functional programming language</strong>, which essentially means that it lends itself to using functions to solve complex problems. In this way it has the ability “<a href="https://r4ds.had.co.nz/iteration.html?q=for%20loop#for-loops-vs.-functionals">to wrap up for loops in a function, and call that function instead of using the for loop directly</a>”. In the current context, we could then imagine a way to replace our for-loop with another function - i.e.&nbsp;we could feed our function to another function that does the job of the for-loop. Why would you do this? Well, it is usually the case that <code>map</code> (or <code>apply</code>) not only requires less code to achieve the same result, but makes your code more readable, opens your code to parallelisation, and is slightly faster than a comparable for-loop (it’s a misconception that for-loops are slow if you set them up correctly - e.g.&nbsp;you should always pre-allocate a vector length rather than growing the vector in the loop).</p>
+<p>Here we use the <code>map</code> function to apply our <code>split_to_long</code> function to each variable in the original dataframe. Because map returns a list, we take one extra step to reformat the list to a dataframe with <code>list_cbind()</code>. This approach uses <code>19</code> <strong>lines of code</strong>, and again, importantly, there is no repetition.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a>dat_converted <span class="ot">&lt;-</span>  <span class="fu">map</span>(<span class="fu">names</span>(dat)[<span class="dv">2</span><span class="sc">:</span><span class="dv">7</span>], split_to_long) <span class="sc">|&gt;</span> </span>
+<span id="cb13-2"><a href="#cb13-2"></a>  <span class="fu">list_cbind</span>()</span>
+<span id="cb13-3"><a href="#cb13-3"></a>dat_converted <span class="sc">|&gt;</span> </span>
+<span id="cb13-4"><a href="#cb13-4"></a>  <span class="fu">kable</span>(<span class="at">align =</span> <span class="st">"c"</span>, <span class="at">digits =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: center;">id</th>
+<th style="text-align: center;">timepoint</th>
+<th style="text-align: center;">var_1</th>
+<th style="text-align: center;">var_2</th>
+<th style="text-align: center;">var_3</th>
+<th style="text-align: center;">var_4</th>
+<th style="text-align: center;">var_5</th>
+<th style="text-align: center;">var_6</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">base</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">38</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">4</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">3mo</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">8</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">30</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">10</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">6mo</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">38</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">12mo</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">30</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">base</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">24</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">3mo</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">34</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">6mo</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">28</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">12mo</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">30</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">base</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3mo</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">6mo</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">12mo</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">base</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">50</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">3mo</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">60</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">6mo</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">60</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">12mo</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">61</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">base</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">40</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">6</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">3mo</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">16</td>
+<td style="text-align: center;">6</td>
+<td style="text-align: center;">8</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">6mo</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">20</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">20</td>
+<td style="text-align: center;">7</td>
+<td style="text-align: center;">4</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">12mo</td>
+<td style="text-align: center;">-11000</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+<td style="text-align: center;">-13000</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+</section>
+</section>
+<section id="summary" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Summary</h1>
+<p>Before wrapping up, let’s rehash the coding expenditure in each of our three main approaches to solving this problem:</p>
+<p>Not DRY - <code>55</code> lines of code.</p>
+<p>Function + for-loop - <code>21</code> lines of code.</p>
+<p>Function + purrr::map - <code>19</code> lines of code.</p>
+<p>I hope this post has given you some ideas about how you might be able to streamline your <code>R</code> code. The main takeaway from this is that when presented with a coding problem, think about the big picture first. Then give some thought to how we can break that larger task into smaller steps - those steps can usually be conceptualised as one or more functions, which we can then use to iterate over some component of our data.</p>
+<p>Improving our coding knowledge is something we should be aiming to do on a regular basis and after writing this post my aim is to ‘try for DRY’ as much as possible in all of my future <code>R</code> interactions. Until next time…</p>
 
 
 <!-- -->
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -779,15 +2598,352 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <input type="hidden" id="giscus-base-theme" value="light">
 <input type="hidden" id="giscus-alt-theme" value="dark"><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
-<div class="sourceCode" id="cb1" data-shortcodes="false"><pre class="sourceCode numberSource markdown number-lines code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1"></a><span class="co">---</span></span>
-<span id="cb1-2"><a href="#cb1-2"></a><span class="an">title:</span><span class="co"> "R Programming - Try for DRY"</span></span>
-<span id="cb1-3"><a href="#cb1-3"></a><span class="an">date:</span><span class="co"> 2024-11-15</span></span>
-<span id="cb1-4"><a href="#cb1-4"></a><span class="an">categories:</span><span class="co"> [code, concept]</span></span>
-<span id="cb1-5"><a href="#cb1-5"></a><span class="an">image:</span><span class="co"> "R_small.jpeg"</span></span>
-<span id="cb1-6"><a href="#cb1-6"></a><span class="an">description:</span><span class="co"> "A general philosophy on making your code more efficient"</span></span>
-<span id="cb1-7"><a href="#cb1-7"></a><span class="co">---</span></span>
-<span id="cb1-8"><a href="#cb1-8"></a></span>
-<span id="cb1-9"><a href="#cb1-9"></a>gg</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb14" data-shortcodes="false"><pre class="sourceCode numberSource markdown number-lines code-with-copy"><code class="sourceCode markdown"><span id="cb14-1"><a href="#cb14-1"></a><span class="co">---</span></span>
+<span id="cb14-2"><a href="#cb14-2"></a><span class="an">title:</span><span class="co"> "R Programming - Try for DRY"</span></span>
+<span id="cb14-3"><a href="#cb14-3"></a><span class="an">date:</span><span class="co"> 2024-11-15</span></span>
+<span id="cb14-4"><a href="#cb14-4"></a><span class="an">categories:</span><span class="co"> [code, concept]</span></span>
+<span id="cb14-5"><a href="#cb14-5"></a><span class="an">image:</span><span class="co"> "R_small.jpeg"</span></span>
+<span id="cb14-6"><a href="#cb14-6"></a><span class="an">description:</span><span class="co"> "A general philosophy on making your code more efficient."</span></span>
+<span id="cb14-7"><a href="#cb14-7"></a><span class="co">---</span></span>
+<span id="cb14-8"><a href="#cb14-8"></a></span>
+<span id="cb14-9"><a href="#cb14-9"></a>Let's face it - we could all become better <span class="in">`R`</span> coders. Although I have been using <span class="in">`R`</span> for quite a few years, there is still so much I could learn to make my code-writing life easier. The problem is that I consider myself a statistician before a programmer, and if I'm going to spend some time in learning something new, I tend to focus more on the statistics side of the job, rather than the syntax. A side-effect of this is that while I can no doubt code, I don't think I code as efficiently as I could. Rather, I think I have become somewhat of a 'lazy' coder. What do I mean by that? Well, I can always write code to get achieve a result - there's no issue with that - but I find that I can repeat myself a lot. And I tend to do that because, in the moment I think that's easier than investing a little more time to work out a way to avoid that repetition. Consequently, I find that I may save time initially but this sometimes comes back to bite me later, when I discover either an error or am requested to update the existing code. Doing either of these things means that I have to change every bit of duplicated code, instead of doing it (ideally) just once.</span>
+<span id="cb14-10"><a href="#cb14-10"></a></span>
+<span id="cb14-11"><a href="#cb14-11"></a>So this is where the idea of **DRY** (Don't Repeat Yourself) comes in. <span class="co">[</span><span class="ot">DRY</span><span class="co">](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself)</span> is a general principle in software development, but applies equally in coding in <span class="in">`R`</span>. Undoubtedly the most common realisation of the DRY principle in coding is the creation of a function for re-used logic. This is summed up in the book <span class="co">[</span><span class="ot">R for Data Science</span><span class="co">](https://r4ds.hadley.nz/functions)</span> as:</span>
+<span id="cb14-12"><a href="#cb14-12"></a></span>
+<span id="cb14-13"><a href="#cb14-13"></a>"A good rule of thumb is to consider writing a function whenever you’ve copied and pasted a block of code more than twice (i.e. you now have three copies of the same code)."</span>
+<span id="cb14-14"><a href="#cb14-14"></a></span>
+<span id="cb14-15"><a href="#cb14-15"></a>In providing some foundation for how one might become more DRY in their daily work, I'm going to share with you some thoughts for how I approached a recent coding problem I was presented with (indulge my use of the acronym in this way). This will be somewhat of a holistic overview - I am going to focus less on the detail of the actual code and more on the thought process of taking the overall task and formulating a way to break that task down into smaller steps that can then be operated on in a way which avoids all of that nasty repetition.</span>
+<span id="cb14-16"><a href="#cb14-16"></a></span>
+<span id="cb14-17"><a href="#cb14-17"></a>::: callout-note</span>
+<span id="cb14-18"><a href="#cb14-18"></a>Of course, there are many, many ways to achieve a coding goal in <span class="in">`R`</span> and I do not consider what I am presenting to necessarily be the best way. These are, but some approaches of many...</span>
+<span id="cb14-19"><a href="#cb14-19"></a>:::</span>
+<span id="cb14-20"><a href="#cb14-20"></a></span>
+<span id="cb14-21"><a href="#cb14-21"></a><span class="fu"># The Data</span></span>
+<span id="cb14-22"><a href="#cb14-22"></a></span>
+<span id="cb14-23"><a href="#cb14-23"></a>A small subset of the data we are going to work on is shown below.</span>
+<span id="cb14-24"><a href="#cb14-24"></a></span>
+<span id="cb14-25"><a href="#cb14-25"></a><span class="in">```{r message = F}</span></span>
+<span id="cb14-26"><a href="#cb14-26"></a><span class="in">library(tidyverse)</span></span>
+<span id="cb14-27"><a href="#cb14-27"></a><span class="in">library(kableExtra)</span></span>
+<span id="cb14-28"><a href="#cb14-28"></a><span class="in"># Read in data</span></span>
+<span id="cb14-29"><a href="#cb14-29"></a><span class="in">dat &lt;-  structure(list(</span></span>
+<span id="cb14-30"><a href="#cb14-30"></a><span class="in">  id = 1:5, </span></span>
+<span id="cb14-31"><a href="#cb14-31"></a><span class="in">  var_1 = c("1,1,1,1", "1,1,1,1", "0,0,0,0", "1,1,1,1", "1,1,1,-11000"), </span></span>
+<span id="cb14-32"><a href="#cb14-32"></a><span class="in">  var_2 = c("0,8,0,0", "0,0,0,0", "-13000,-13000,-13000,-13000", "0,0,0,0", "0,0,20,-13000"), </span></span>
+<span id="cb14-33"><a href="#cb14-33"></a><span class="in">  var_3 = c("0,0,0,0", "0,0,1,2", "-13000,-13000,-13000,-13000", "0,0,0,0", "0,0,0,-13000"), </span></span>
+<span id="cb14-34"><a href="#cb14-34"></a><span class="in">  var_4 = c("38,30,38,30", "24,34,28,30", "-13000,-13000,-13000,-13000", "50,60,60,61", "40,16,20,-13000"), </span></span>
+<span id="cb14-35"><a href="#cb14-35"></a><span class="in">  var_5 = c("2,4,1,3", "1,1,1,3", "-13000,-13000,-13000,-13000", "0,3,3,0", "4,6,7,-13000"), </span></span>
+<span id="cb14-36"><a href="#cb14-36"></a><span class="in">  var_6 = c("4,10,1,1", "1,2,1,3", "-13000,-13000,-13000,-13000", "0,1,0,0", "6,8,4,-13000")), </span></span>
+<span id="cb14-37"><a href="#cb14-37"></a><span class="in">  row.names = 1:5, class = "data.frame")</span></span>
+<span id="cb14-38"><a href="#cb14-38"></a><span class="in">dat |&gt; </span></span>
+<span id="cb14-39"><a href="#cb14-39"></a><span class="in">  kable(align = "c", digits = 2)</span></span>
+<span id="cb14-40"><a href="#cb14-40"></a><span class="in">glimpse(dat)</span></span>
+<span id="cb14-41"><a href="#cb14-41"></a><span class="in">```</span></span>
+<span id="cb14-42"><a href="#cb14-42"></a></span>
+<span id="cb14-43"><a href="#cb14-43"></a>&lt;br&gt;</span>
+<span id="cb14-44"><a href="#cb14-44"></a></span>
+<span id="cb14-45"><a href="#cb14-45"></a>So what do we have here?</span>
+<span id="cb14-46"><a href="#cb14-46"></a></span>
+<span id="cb14-47"><a href="#cb14-47"></a>There are <span class="in">`7`</span> columns and the first is simply an <span class="in">`id`</span> variable. The remaining <span class="in">`6`</span> variables are labelled <span class="in">`var_1`</span>:<span class="in">`var_6`</span> and each contain a 'string' of numbers in each cell. These represent longitudinal measurements for <span class="in">`6`</span> different quantities at <span class="in">`4`</span> different time points - baseline, and 3, 6 and 12 months. So, Subject <span class="in">`2`</span> has recorded measurements of <span class="in">`24`</span>, <span class="in">`34`</span>, <span class="in">`28`</span> and <span class="in">`30`</span> at baseline, 3, 6 and 12 months, respectively. Each variable is recorded in character format, so <span class="in">`R`</span> does not yet recognise these as numbers. You can hopefully appreciate that presenting data in this format is not really ideal (somewhat painful in fact) and that we've got a bit of work to do to make this analysis-ready.</span>
+<span id="cb14-48"><a href="#cb14-48"></a></span>
+<span id="cb14-49"><a href="#cb14-49"></a><span class="fu"># Breaking The Task Down Into Steps</span></span>
+<span id="cb14-50"><a href="#cb14-50"></a></span>
+<span id="cb14-51"><a href="#cb14-51"></a>So what is the actual task that we need to perform on these data, to make them analysis-ready?</span>
+<span id="cb14-52"><a href="#cb14-52"></a></span>
+<span id="cb14-53"><a href="#cb14-53"></a>Basically, we want to convert the existing dataframe into long format, so that each cell contains only one value and the longitudinal measures appear on successive rows. In other words, we want the following:</span>
+<span id="cb14-54"><a href="#cb14-54"></a></span>
+<span id="cb14-57"><a href="#cb14-57"></a><span class="in">```{r}</span></span>
+<span id="cb14-58"><a href="#cb14-58"></a><span class="co">#| echo: false</span></span>
+<span id="cb14-59"><a href="#cb14-59"></a>split_to_long <span class="ot">&lt;-</span>  <span class="cf">function</span>(col){</span>
+<span id="cb14-60"><a href="#cb14-60"></a>  i <span class="ot">&lt;-</span>  <span class="fu">substr</span>(col, <span class="dv">5</span>, <span class="dv">5</span>)</span>
+<span id="cb14-61"><a href="#cb14-61"></a>  temp <span class="ot">&lt;-</span>  dat <span class="sc">|&gt;</span></span>
+<span id="cb14-62"><a href="#cb14-62"></a>    <span class="fu">select</span>(<span class="st">"id"</span>, <span class="fu">all_of</span>(col)) <span class="sc">|&gt;</span></span>
+<span id="cb14-63"><a href="#cb14-63"></a>    <span class="fu">separate_wider_delim</span>(<span class="fu">all_of</span>(col), </span>
+<span id="cb14-64"><a href="#cb14-64"></a>                         <span class="st">","</span>, </span>
+<span id="cb14-65"><a href="#cb14-65"></a>                         <span class="at">too_few =</span> <span class="st">"align_start"</span>, </span>
+<span id="cb14-66"><a href="#cb14-66"></a>                         <span class="at">names =</span> <span class="fu">c</span>(<span class="fu">paste0</span>(col,<span class="st">"_"</span>, <span class="fu">c</span>(<span class="st">"base"</span>, <span class="st">"3mo"</span>, <span class="st">"6mo"</span>, <span class="st">"12mo"</span>)))) <span class="sc">|&gt;</span></span>
+<span id="cb14-67"><a href="#cb14-67"></a>    <span class="fu">pivot_longer</span>(<span class="dv">2</span><span class="sc">:</span><span class="dv">5</span>,</span>
+<span id="cb14-68"><a href="#cb14-68"></a>                 <span class="at">names_to =</span> <span class="st">"timepoint"</span>,</span>
+<span id="cb14-69"><a href="#cb14-69"></a>                 <span class="at">values_to =</span> <span class="fu">paste0</span>(<span class="st">"var_"</span>, i),</span>
+<span id="cb14-70"><a href="#cb14-70"></a>                 <span class="at">names_prefix =</span> <span class="fu">paste0</span>(<span class="st">"var_"</span>, i, <span class="st">"_"</span>))</span>
+<span id="cb14-71"><a href="#cb14-71"></a>  <span class="cf">if</span> (i <span class="sc">&gt;</span> <span class="dv">1</span>){</span>
+<span id="cb14-72"><a href="#cb14-72"></a>    temp <span class="ot">&lt;-</span>  temp[<span class="dv">3</span>]</span>
+<span id="cb14-73"><a href="#cb14-73"></a>  }</span>
+<span id="cb14-74"><a href="#cb14-74"></a>  temp</span>
+<span id="cb14-75"><a href="#cb14-75"></a>}</span>
+<span id="cb14-76"><a href="#cb14-76"></a><span class="fu">map</span>(<span class="fu">names</span>(dat)[<span class="dv">2</span><span class="sc">:</span><span class="dv">7</span>], split_to_long) <span class="sc">|&gt;</span> </span>
+<span id="cb14-77"><a href="#cb14-77"></a>  <span class="fu">list_cbind</span>()  <span class="sc">|&gt;</span> </span>
+<span id="cb14-78"><a href="#cb14-78"></a>  <span class="fu">kable</span>(<span class="at">align =</span> <span class="st">"c"</span>, <span class="at">digits =</span> <span class="dv">2</span>)</span>
+<span id="cb14-79"><a href="#cb14-79"></a><span class="in">```</span></span>
+<span id="cb14-80"><a href="#cb14-80"></a></span>
+<span id="cb14-81"><a href="#cb14-81"></a>&lt;br&gt;</span>
+<span id="cb14-82"><a href="#cb14-82"></a></span>
+<span id="cb14-83"><a href="#cb14-83"></a>Before rushing head-long into coding up an approach, let's take a little time to think about what steps we might take to accomplish this goal. What are some self-contained data manipulations we can extract out of the task to make the task seem less imposing, when we subsequently string those manipulations together.</span>
+<span id="cb14-84"><a href="#cb14-84"></a></span>
+<span id="cb14-85"><a href="#cb14-85"></a><span class="fu">## Step 1</span></span>
+<span id="cb14-86"><a href="#cb14-86"></a></span>
+<span id="cb14-87"><a href="#cb14-87"></a>Well the most obvious first thing we could do is to split each column that contains multiple values into multiple columns each containing one value. <span class="in">`separate_wider_delim()`</span> is a <span class="in">`tidyr`</span> function that will allow us to do that and the code and output when applied to <span class="in">`var_1`</span> is shown below (note that we would need to repeat this for every variable).</span>
+<span id="cb14-88"><a href="#cb14-88"></a></span>
+<span id="cb14-89"><a href="#cb14-89"></a><span class="in">```{r message = F}</span></span>
+<span id="cb14-90"><a href="#cb14-90"></a><span class="in">#| code-fold: false</span></span>
+<span id="cb14-91"><a href="#cb14-91"></a><span class="in">temp &lt;-  dat |&gt; </span></span>
+<span id="cb14-92"><a href="#cb14-92"></a><span class="in">  select(id, var_1) |&gt; </span></span>
+<span id="cb14-93"><a href="#cb14-93"></a><span class="in">  separate_wider_delim(var_1, ",", too_few = "align_start",</span></span>
+<span id="cb14-94"><a href="#cb14-94"></a><span class="in">                       names = c("var_1_base", "var_1_3mo", "var_1_6mo", "var_1_12mo"))</span></span>
+<span id="cb14-95"><a href="#cb14-95"></a><span class="in">temp |&gt; </span></span>
+<span id="cb14-96"><a href="#cb14-96"></a><span class="in">  kable(align = "c", digits = 2)</span></span>
+<span id="cb14-97"><a href="#cb14-97"></a><span class="in">```</span></span>
+<span id="cb14-98"><a href="#cb14-98"></a></span>
+<span id="cb14-99"><a href="#cb14-99"></a>That seems to have worked quite well - we now have each value in its own cell!</span>
+<span id="cb14-100"><a href="#cb14-100"></a></span>
+<span id="cb14-101"><a href="#cb14-101"></a><span class="fu">## Step 2</span></span>
+<span id="cb14-102"><a href="#cb14-102"></a></span>
+<span id="cb14-103"><a href="#cb14-103"></a>Now that we've found a way to split a column, we can take that output and convert it to long format. We can use <span class="in">`pivot_longer`</span> to do that very easily (note that we would need to repeat this for every variable).</span>
+<span id="cb14-104"><a href="#cb14-104"></a></span>
+<span id="cb14-105"><a href="#cb14-105"></a><span class="in">```{r message = F}</span></span>
+<span id="cb14-106"><a href="#cb14-106"></a><span class="in">#| code-fold: false</span></span>
+<span id="cb14-107"><a href="#cb14-107"></a><span class="in">temp_long &lt;-  temp |&gt; </span></span>
+<span id="cb14-108"><a href="#cb14-108"></a><span class="in">  pivot_longer(2:5,</span></span>
+<span id="cb14-109"><a href="#cb14-109"></a><span class="in">               names_to = "timepoint",</span></span>
+<span id="cb14-110"><a href="#cb14-110"></a><span class="in">               values_to = "var_1",</span></span>
+<span id="cb14-111"><a href="#cb14-111"></a><span class="in">               names_prefix = "var_1_")</span></span>
+<span id="cb14-112"><a href="#cb14-112"></a><span class="in">temp_long |&gt; </span></span>
+<span id="cb14-113"><a href="#cb14-113"></a><span class="in">  kable(align = "c", digits = 2)</span></span>
+<span id="cb14-114"><a href="#cb14-114"></a><span class="in">```</span></span>
+<span id="cb14-115"><a href="#cb14-115"></a></span>
+<span id="cb14-116"><a href="#cb14-116"></a><span class="fu">## Step 3</span></span>
+<span id="cb14-117"><a href="#cb14-117"></a></span>
+<span id="cb14-118"><a href="#cb14-118"></a>Really, we're nearly there. All that's left to do at this point is to join the resulting columns together from performing Steps 1 and 2 on each of the remaining variables in the dataset. There are multiple ways you can do that in <span class="in">`R`</span>.</span>
+<span id="cb14-119"><a href="#cb14-119"></a></span>
+<span id="cb14-120"><a href="#cb14-120"></a><span class="fu"># Coding Approaches</span></span>
+<span id="cb14-121"><a href="#cb14-121"></a></span>
+<span id="cb14-122"><a href="#cb14-122"></a>Now that we have some basic idea of the steps that we need to take, let's consider some different coding approaches that we might use to perform the task at hand. All of these will give the same end result.</span>
+<span id="cb14-123"><a href="#cb14-123"></a></span>
+<span id="cb14-124"><a href="#cb14-124"></a><span class="fu">## Not DRY</span></span>
+<span id="cb14-125"><a href="#cb14-125"></a></span>
+<span id="cb14-126"><a href="#cb14-126"></a>In this approach we are going to incorporate the above <span class="in">`3`</span> steps into a single workflow. In doing this we will create <span class="in">`6`</span> temporary dataframes to store the converted contents of each original variable. We will then join the resulting dataframes together. We can actually make this a little more succinct by combining Steps 1 and 2 in a single call, but even so, this approach leads to a LOT of repetition - <span class="in">`55`</span> **lines of code** to be exact.</span>
+<span id="cb14-127"><a href="#cb14-127"></a></span>
+<span id="cb14-128"><a href="#cb14-128"></a><span class="in">```{r message = F}</span></span>
+<span id="cb14-129"><a href="#cb14-129"></a><span class="in">#| code-fold: false</span></span>
+<span id="cb14-130"><a href="#cb14-130"></a><span class="in"># Create individual dataframes with each original column split into multiple columns and converted to long format</span></span>
+<span id="cb14-131"><a href="#cb14-131"></a><span class="in">temp1 &lt;-  dat |&gt; </span></span>
+<span id="cb14-132"><a href="#cb14-132"></a><span class="in">  select(id, var_1) |&gt; </span></span>
+<span id="cb14-133"><a href="#cb14-133"></a><span class="in">  separate_wider_delim(var_1, ",", too_few = "align_start",</span></span>
+<span id="cb14-134"><a href="#cb14-134"></a><span class="in">                       names = c("var_1_base", "var_1_3mo", "var_1_6mo", "var_1_12mo")) |&gt; </span></span>
+<span id="cb14-135"><a href="#cb14-135"></a><span class="in">  pivot_longer(2:5,</span></span>
+<span id="cb14-136"><a href="#cb14-136"></a><span class="in">               names_to = "timepoint",</span></span>
+<span id="cb14-137"><a href="#cb14-137"></a><span class="in">               values_to = "var_1",</span></span>
+<span id="cb14-138"><a href="#cb14-138"></a><span class="in">               names_prefix = "var_1_")</span></span>
+<span id="cb14-139"><a href="#cb14-139"></a><span class="in">temp2 &lt;-  dat |&gt; </span></span>
+<span id="cb14-140"><a href="#cb14-140"></a><span class="in">  select(id, var_2) |&gt; </span></span>
+<span id="cb14-141"><a href="#cb14-141"></a><span class="in">  separate_wider_delim(var_2, ",", too_few = "align_start",</span></span>
+<span id="cb14-142"><a href="#cb14-142"></a><span class="in">                       names = c("var_2_base", "var_2_3mo", "var_2_6mo", "var_2_12mo")) |&gt; </span></span>
+<span id="cb14-143"><a href="#cb14-143"></a><span class="in">  pivot_longer(2:5,</span></span>
+<span id="cb14-144"><a href="#cb14-144"></a><span class="in">               names_to = "timepoint",</span></span>
+<span id="cb14-145"><a href="#cb14-145"></a><span class="in">               values_to = "var_2",</span></span>
+<span id="cb14-146"><a href="#cb14-146"></a><span class="in">               names_prefix = "var_2_")</span></span>
+<span id="cb14-147"><a href="#cb14-147"></a><span class="in">temp3 &lt;-  dat |&gt; </span></span>
+<span id="cb14-148"><a href="#cb14-148"></a><span class="in">  select(id, var_3) |&gt; </span></span>
+<span id="cb14-149"><a href="#cb14-149"></a><span class="in">  separate_wider_delim(var_3, ",", too_few = "align_start",</span></span>
+<span id="cb14-150"><a href="#cb14-150"></a><span class="in">                       names = c("var_3_base", "var_3_3mo", "var_3_6mo", "var_3_12mo")) |&gt; </span></span>
+<span id="cb14-151"><a href="#cb14-151"></a><span class="in">  pivot_longer(2:5,</span></span>
+<span id="cb14-152"><a href="#cb14-152"></a><span class="in">               names_to = "timepoint",</span></span>
+<span id="cb14-153"><a href="#cb14-153"></a><span class="in">               values_to = "var_3",</span></span>
+<span id="cb14-154"><a href="#cb14-154"></a><span class="in">               names_prefix = "var_3_")</span></span>
+<span id="cb14-155"><a href="#cb14-155"></a><span class="in">temp4 &lt;-  dat |&gt; </span></span>
+<span id="cb14-156"><a href="#cb14-156"></a><span class="in">  select(id, var_4) |&gt; </span></span>
+<span id="cb14-157"><a href="#cb14-157"></a><span class="in">  separate_wider_delim(var_4, ",", too_few = "align_start",</span></span>
+<span id="cb14-158"><a href="#cb14-158"></a><span class="in">                       names = c("var_4_base", "var_4_3mo", "var_4_6mo", "var_4_12mo")) |&gt; </span></span>
+<span id="cb14-159"><a href="#cb14-159"></a><span class="in">  pivot_longer(2:5,</span></span>
+<span id="cb14-160"><a href="#cb14-160"></a><span class="in">               names_to = "timepoint",</span></span>
+<span id="cb14-161"><a href="#cb14-161"></a><span class="in">               values_to = "var_4",</span></span>
+<span id="cb14-162"><a href="#cb14-162"></a><span class="in">               names_prefix = "var_4_")</span></span>
+<span id="cb14-163"><a href="#cb14-163"></a><span class="in">temp5 &lt;-  dat |&gt; </span></span>
+<span id="cb14-164"><a href="#cb14-164"></a><span class="in">  select(id, var_5) |&gt; </span></span>
+<span id="cb14-165"><a href="#cb14-165"></a><span class="in">  separate_wider_delim(var_5, ",", too_few = "align_start",</span></span>
+<span id="cb14-166"><a href="#cb14-166"></a><span class="in">                       names = c("var_5_base", "var_5_3mo", "var_5_6mo", "var_5_12mo")) |&gt; </span></span>
+<span id="cb14-167"><a href="#cb14-167"></a><span class="in">  pivot_longer(2:5,</span></span>
+<span id="cb14-168"><a href="#cb14-168"></a><span class="in">               names_to = "timepoint",</span></span>
+<span id="cb14-169"><a href="#cb14-169"></a><span class="in">               values_to = "var_5",</span></span>
+<span id="cb14-170"><a href="#cb14-170"></a><span class="in">               names_prefix = "var_5_")</span></span>
+<span id="cb14-171"><a href="#cb14-171"></a><span class="in">temp6 &lt;-  dat |&gt; </span></span>
+<span id="cb14-172"><a href="#cb14-172"></a><span class="in">  select(id, var_6) |&gt; </span></span>
+<span id="cb14-173"><a href="#cb14-173"></a><span class="in">  separate_wider_delim(var_6, ",", too_few = "align_start",</span></span>
+<span id="cb14-174"><a href="#cb14-174"></a><span class="in">                       names = c("var_6_base", "var_6_3mo", "var_6_6mo", "var_6_12mo")) |&gt; </span></span>
+<span id="cb14-175"><a href="#cb14-175"></a><span class="in">  pivot_longer(2:5,</span></span>
+<span id="cb14-176"><a href="#cb14-176"></a><span class="in">               names_to = "timepoint",</span></span>
+<span id="cb14-177"><a href="#cb14-177"></a><span class="in">               values_to = "var_6",</span></span>
+<span id="cb14-178"><a href="#cb14-178"></a><span class="in">               names_prefix = "var_6_")</span></span>
+<span id="cb14-179"><a href="#cb14-179"></a><span class="in"># Merge all dataframes together</span></span>
+<span id="cb14-180"><a href="#cb14-180"></a><span class="in">dat_converted &lt;-  left_join(temp1, temp2)</span></span>
+<span id="cb14-181"><a href="#cb14-181"></a><span class="in">dat_converted &lt;-  left_join(dat_converted, temp3)</span></span>
+<span id="cb14-182"><a href="#cb14-182"></a><span class="in">dat_converted &lt;-  left_join(dat_converted, temp4)</span></span>
+<span id="cb14-183"><a href="#cb14-183"></a><span class="in">dat_converted &lt;-  left_join(dat_converted, temp5)</span></span>
+<span id="cb14-184"><a href="#cb14-184"></a><span class="in">dat_converted &lt;-  left_join(dat_converted, temp6)</span></span>
+<span id="cb14-185"><a href="#cb14-185"></a><span class="in">dat_converted |&gt; </span></span>
+<span id="cb14-186"><a href="#cb14-186"></a><span class="in">  kable(align = "c", digits = 2)</span></span>
+<span id="cb14-187"><a href="#cb14-187"></a><span class="in">```</span></span>
+<span id="cb14-188"><a href="#cb14-188"></a></span>
+<span id="cb14-189"><a href="#cb14-189"></a>&lt;br&gt;</span>
+<span id="cb14-190"><a href="#cb14-190"></a></span>
+<span id="cb14-191"><a href="#cb14-191"></a>What's wrong with this approach? Nothing, really. The main criticism is that in creating each temporary dataframe we are copying and pasting the relevant code block <span class="in">`5`</span> times. We then need to change the names of variables in the copies - each block has <span class="in">`8`</span> places that a variable name appears, so that means <span class="in">`40`</span> changes across the workflow. That's a lot of places where we could potentially make an error by simply hitting the wrong key. But even if you don't make mistakes, consider the all too common scenario where an updated dataset is sent to you at a later date for re-analysis. Sometimes, variable names are inadvertently changed between datasets - that also means many changes in your code.</span>
+<span id="cb14-192"><a href="#cb14-192"></a></span>
+<span id="cb14-193"><a href="#cb14-193"></a>There must be more robust approaches to this task.</span>
+<span id="cb14-194"><a href="#cb14-194"></a></span>
+<span id="cb14-195"><a href="#cb14-195"></a><span class="fu">## Becoming DRY</span></span>
+<span id="cb14-196"><a href="#cb14-196"></a></span>
+<span id="cb14-197"><a href="#cb14-197"></a>Whatever approach we take from here, there should be one coding concept that we incorporate as a foundational commonality - and that is the function. I'm not going to teach you how to write functions here - there are plenty of resources online and <span class="co">[</span><span class="ot">R for Data Science</span><span class="co">](https://r4ds.hadley.nz/functions)</span> is a good place to start.</span>
+<span id="cb14-198"><a href="#cb14-198"></a></span>
+<span id="cb14-199"><a href="#cb14-199"></a><span class="fu">### Write a function</span></span>
+<span id="cb14-200"><a href="#cb14-200"></a></span>
+<span id="cb14-201"><a href="#cb14-201"></a>A function is a good way to encapsulate some code that you might want to use more than once. We know what code we want to re-use - it's essentially the following block, but we want to generalise it to be usable with any of the <span class="in">`6`</span> variables in the original dataframe, not just <span class="in">`var_1`</span>.</span>
+<span id="cb14-202"><a href="#cb14-202"></a></span>
+<span id="cb14-205"><a href="#cb14-205"></a><span class="in">```{r}</span></span>
+<span id="cb14-206"><a href="#cb14-206"></a><span class="co">#| code-fold: false</span></span>
+<span id="cb14-207"><a href="#cb14-207"></a><span class="co">#| eval: false</span></span>
+<span id="cb14-208"><a href="#cb14-208"></a>temp1 <span class="ot">&lt;-</span>  dat <span class="sc">|&gt;</span> </span>
+<span id="cb14-209"><a href="#cb14-209"></a>  <span class="fu">select</span>(id, var_1) <span class="sc">|&gt;</span> </span>
+<span id="cb14-210"><a href="#cb14-210"></a>  <span class="fu">separate_wider_delim</span>(var_1, <span class="st">","</span>, <span class="at">too_few =</span> <span class="st">"align_start"</span>,</span>
+<span id="cb14-211"><a href="#cb14-211"></a>                       <span class="at">names =</span> <span class="fu">c</span>(<span class="st">"var_1_base"</span>, <span class="st">"var_1_3mo"</span>, <span class="st">"var_1_6mo"</span>, <span class="st">"var_1_12mo"</span>)) <span class="sc">|&gt;</span> </span>
+<span id="cb14-212"><a href="#cb14-212"></a>  <span class="fu">pivot_longer</span>(<span class="dv">2</span><span class="sc">:</span><span class="dv">5</span>,</span>
+<span id="cb14-213"><a href="#cb14-213"></a>               <span class="at">names_to =</span> <span class="st">"timepoint"</span>,</span>
+<span id="cb14-214"><a href="#cb14-214"></a>               <span class="at">values_to =</span> <span class="st">"var_1"</span>,</span>
+<span id="cb14-215"><a href="#cb14-215"></a>               <span class="at">names_prefix =</span> <span class="st">"var_1_"</span>)</span>
+<span id="cb14-216"><a href="#cb14-216"></a><span class="in">```</span></span>
+<span id="cb14-217"><a href="#cb14-217"></a></span>
+<span id="cb14-218"><a href="#cb14-218"></a>&lt;br&gt;</span>
+<span id="cb14-219"><a href="#cb14-219"></a></span>
+<span id="cb14-220"><a href="#cb14-220"></a>One version of that code block wrapped up in a function - which I've called <span class="in">`split_to_long()`</span> - is shown below.</span>
+<span id="cb14-221"><a href="#cb14-221"></a></span>
+<span id="cb14-224"><a href="#cb14-224"></a><span class="in">```{r}</span></span>
+<span id="cb14-225"><a href="#cb14-225"></a><span class="co">#| code-fold: false</span></span>
+<span id="cb14-226"><a href="#cb14-226"></a>split_to_long <span class="ot">&lt;-</span>  <span class="cf">function</span>(col){</span>
+<span id="cb14-227"><a href="#cb14-227"></a>  i <span class="ot">&lt;-</span>  <span class="fu">substr</span>(col, <span class="dv">5</span>, <span class="dv">5</span>)</span>
+<span id="cb14-228"><a href="#cb14-228"></a>  temp <span class="ot">&lt;-</span>  dat <span class="sc">|&gt;</span></span>
+<span id="cb14-229"><a href="#cb14-229"></a>    <span class="fu">select</span>(id, <span class="fu">all_of</span>(col)) <span class="sc">|&gt;</span></span>
+<span id="cb14-230"><a href="#cb14-230"></a>    <span class="fu">separate_wider_delim</span>(<span class="fu">all_of</span>(col), </span>
+<span id="cb14-231"><a href="#cb14-231"></a>                         <span class="st">","</span>, </span>
+<span id="cb14-232"><a href="#cb14-232"></a>                         <span class="at">too_few =</span> <span class="st">"align_start"</span>, </span>
+<span id="cb14-233"><a href="#cb14-233"></a>                         <span class="at">names =</span> <span class="fu">c</span>(<span class="fu">paste0</span>(col,<span class="st">"_"</span>, <span class="fu">c</span>(<span class="st">"base"</span>, <span class="st">"3mo"</span>, <span class="st">"6mo"</span>, <span class="st">"12mo"</span>)))) <span class="sc">|&gt;</span></span>
+<span id="cb14-234"><a href="#cb14-234"></a>    <span class="fu">pivot_longer</span>(<span class="dv">2</span><span class="sc">:</span><span class="dv">5</span>,</span>
+<span id="cb14-235"><a href="#cb14-235"></a>                 <span class="at">names_to =</span> <span class="st">"timepoint"</span>,</span>
+<span id="cb14-236"><a href="#cb14-236"></a>                 <span class="at">values_to =</span> <span class="fu">paste0</span>(<span class="st">"var_"</span>, i),</span>
+<span id="cb14-237"><a href="#cb14-237"></a>                 <span class="at">names_prefix =</span> <span class="fu">paste0</span>(<span class="st">"var_"</span>, i, <span class="st">"_"</span>))</span>
+<span id="cb14-238"><a href="#cb14-238"></a>  <span class="cf">if</span> (i <span class="sc">&gt;</span> <span class="dv">1</span>){</span>
+<span id="cb14-239"><a href="#cb14-239"></a>    temp <span class="ot">&lt;-</span>  temp[<span class="dv">3</span>]</span>
+<span id="cb14-240"><a href="#cb14-240"></a>  }</span>
+<span id="cb14-241"><a href="#cb14-241"></a>  temp</span>
+<span id="cb14-242"><a href="#cb14-242"></a>}</span>
+<span id="cb14-243"><a href="#cb14-243"></a><span class="in">```</span></span>
+<span id="cb14-244"><a href="#cb14-244"></a></span>
+<span id="cb14-245"><a href="#cb14-245"></a>&lt;br&gt;</span>
+<span id="cb14-246"><a href="#cb14-246"></a></span>
+<span id="cb14-247"><a href="#cb14-247"></a>What does <span class="in">`split_to_long()`</span> do?</span>
+<span id="cb14-248"><a href="#cb14-248"></a></span>
+<span id="cb14-249"><a href="#cb14-249"></a><span class="ss">-   </span>Line 1 declares the function and specifies the single argument it accepts - <span class="in">`col`</span> (i.e. the name of the column we are interested in splitting and reshaping).</span>
+<span id="cb14-250"><a href="#cb14-250"></a></span>
+<span id="cb14-251"><a href="#cb14-251"></a><span class="ss">-   </span>Line 2 gets the variable number belonging to <span class="in">`col`</span> and assigns it to <span class="in">`i`</span>. This works here because all variable names follow the same format with the number being at the 5th position in the name.</span>
+<span id="cb14-252"><a href="#cb14-252"></a></span>
+<span id="cb14-253"><a href="#cb14-253"></a><span class="ss">-   </span>Lines 3 - 12 take the original dataframe and selects out two variables - the <span class="in">`id`</span> variable and <span class="in">`col`</span>. It then splits and reshapes <span class="in">`col`</span> into long format and saves it to <span class="in">`temp`</span> - a dataframe.</span>
+<span id="cb14-254"><a href="#cb14-254"></a></span>
+<span id="cb14-255"><a href="#cb14-255"></a><span class="ss">-   </span>Lines 13 - 15 tell the function that for any variable other than the first, we don't need to retain the <span class="in">`id`</span> and <span class="in">`timepoint`</span> variables when creating <span class="in">`temp`</span>.</span>
+<span id="cb14-256"><a href="#cb14-256"></a></span>
+<span id="cb14-257"><a href="#cb14-257"></a><span class="ss">-   </span>Line 16 'returns' <span class="in">`temp`</span>. This is essential to ensure the function captures the result of interest.</span>
+<span id="cb14-258"><a href="#cb14-258"></a></span>
+<span id="cb14-259"><a href="#cb14-259"></a>Hooray!</span>
+<span id="cb14-260"><a href="#cb14-260"></a></span>
+<span id="cb14-261"><a href="#cb14-261"></a>We now have a function which is generalisable to any column of the original dataframe. If we call <span class="in">`split_to_long("var_1")`</span>, we get:</span>
+<span id="cb14-262"><a href="#cb14-262"></a></span>
+<span id="cb14-265"><a href="#cb14-265"></a><span class="in">```{r}</span></span>
+<span id="cb14-266"><a href="#cb14-266"></a><span class="fu">split_to_long</span>(<span class="st">"var_1"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb14-267"><a href="#cb14-267"></a>  <span class="fu">kable</span>(<span class="at">align =</span> <span class="st">"c"</span>, <span class="at">digits =</span> <span class="dv">2</span>)</span>
+<span id="cb14-268"><a href="#cb14-268"></a><span class="in">```</span></span>
+<span id="cb14-269"><a href="#cb14-269"></a></span>
+<span id="cb14-270"><a href="#cb14-270"></a>&lt;br&gt;</span>
+<span id="cb14-271"><a href="#cb14-271"></a></span>
+<span id="cb14-272"><a href="#cb14-272"></a>Similarly, we could call <span class="in">`split_to_long("var_6")`</span>, and get:</span>
+<span id="cb14-273"><a href="#cb14-273"></a></span>
+<span id="cb14-276"><a href="#cb14-276"></a><span class="in">```{r}</span></span>
+<span id="cb14-277"><a href="#cb14-277"></a><span class="fu">split_to_long</span>(<span class="st">"var_6"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb14-278"><a href="#cb14-278"></a>  <span class="fu">kable</span>(<span class="at">align =</span> <span class="st">"c"</span>, <span class="at">digits =</span> <span class="dv">2</span>)</span>
+<span id="cb14-279"><a href="#cb14-279"></a><span class="in">```</span></span>
+<span id="cb14-280"><a href="#cb14-280"></a></span>
+<span id="cb14-281"><a href="#cb14-281"></a>&lt;br&gt;</span>
+<span id="cb14-282"><a href="#cb14-282"></a></span>
+<span id="cb14-283"><a href="#cb14-283"></a>Remember that in this case we asked the function not to keep the <span class="in">`id`</span> and <span class="in">`timeline`</span> variables.</span>
+<span id="cb14-284"><a href="#cb14-284"></a></span>
+<span id="cb14-285"><a href="#cb14-285"></a>The important point to take away from this is that in each case, we have reduced the code from <span class="in">`8`</span> lines to just <span class="in">`1`</span> line, and been able to produce the same result.</span>
+<span id="cb14-286"><a href="#cb14-286"></a></span>
+<span id="cb14-287"><a href="#cb14-287"></a><span class="fu">### Recycle that function</span></span>
+<span id="cb14-288"><a href="#cb14-288"></a></span>
+<span id="cb14-289"><a href="#cb14-289"></a>At this juncture, you may be thinking that we've done all we can do to be DRY and the only thing left is to call our function on every column in our original dataset. Well, yes, that would work as advertised.</span>
+<span id="cb14-290"><a href="#cb14-290"></a></span>
+<span id="cb14-293"><a href="#cb14-293"></a><span class="in">```{r}</span></span>
+<span id="cb14-294"><a href="#cb14-294"></a><span class="co">#| code-fold: false</span></span>
+<span id="cb14-295"><a href="#cb14-295"></a>dat_converted <span class="ot">&lt;-</span>  <span class="fu">cbind</span>(</span>
+<span id="cb14-296"><a href="#cb14-296"></a>  <span class="fu">split_to_long</span>(<span class="st">"var_1"</span>),</span>
+<span id="cb14-297"><a href="#cb14-297"></a>  <span class="fu">split_to_long</span>(<span class="st">"var_2"</span>),</span>
+<span id="cb14-298"><a href="#cb14-298"></a>  <span class="fu">split_to_long</span>(<span class="st">"var_3"</span>),</span>
+<span id="cb14-299"><a href="#cb14-299"></a>  <span class="fu">split_to_long</span>(<span class="st">"var_4"</span>),</span>
+<span id="cb14-300"><a href="#cb14-300"></a>  <span class="fu">split_to_long</span>(<span class="st">"var_5"</span>),</span>
+<span id="cb14-301"><a href="#cb14-301"></a>  <span class="fu">split_to_long</span>(<span class="st">"var_6"</span>))</span>
+<span id="cb14-302"><a href="#cb14-302"></a>dat_converted <span class="sc">|&gt;</span> </span>
+<span id="cb14-303"><a href="#cb14-303"></a>  <span class="fu">kable</span>(<span class="at">align =</span> <span class="st">"c"</span>, <span class="at">digits =</span> <span class="dv">2</span>)</span>
+<span id="cb14-304"><a href="#cb14-304"></a><span class="in">```</span></span>
+<span id="cb14-305"><a href="#cb14-305"></a></span>
+<span id="cb14-306"><a href="#cb14-306"></a>&lt;br&gt;</span>
+<span id="cb14-307"><a href="#cb14-307"></a></span>
+<span id="cb14-308"><a href="#cb14-308"></a>But do you notice that we have inadvertently written code that is again repetitive? It might not seem like much, but we've called <span class="in">`split_to_long()`</span> <span class="in">`6`</span> times - one for each column that we want to convert. Is there a way to be even more DRY than this? Well it turns out that there is, and the general idea is that we will **take our function and iterate over the columns in the data frame**. In other words, automatically apply the function without having to manually type the function out multiple times. There are two primary ways to do this - let's consider them now.</span>
+<span id="cb14-309"><a href="#cb14-309"></a></span>
+<span id="cb14-310"><a href="#cb14-310"></a><span class="fu">### Function + for-loop</span></span>
+<span id="cb14-311"><a href="#cb14-311"></a></span>
+<span id="cb14-312"><a href="#cb14-312"></a>The for-loop is one of the main control-flow constructs in almost any programming language, including <span class="in">`R`</span>. It can be used to iterate over a group of objects (e.g. a vector, a list, a dataframe), applying the same manipulations to each object. In our specific case we are going to use a for-loop to iterate over the variable columns of our original dataframe. The for-loop I have written is fairly simple - the basic idea is to cycle over each of the relevant variables, applying our function to each variable in term. A dataframe is created and appended to in each cycle.</span>
+<span id="cb14-313"><a href="#cb14-313"></a></span>
+<span id="cb14-316"><a href="#cb14-316"></a><span class="in">```{r}</span></span>
+<span id="cb14-317"><a href="#cb14-317"></a><span class="co">#| code-fold: false</span></span>
+<span id="cb14-318"><a href="#cb14-318"></a>dat_converted <span class="ot">&lt;-</span>  <span class="fu">data.frame</span>(<span class="fu">matrix</span>(<span class="at">ncol =</span> <span class="dv">0</span>, <span class="at">nrow =</span> <span class="dv">20</span>))</span>
+<span id="cb14-319"><a href="#cb14-319"></a><span class="cf">for</span> (name <span class="cf">in</span> <span class="fu">names</span>(dat[<span class="dv">2</span><span class="sc">:</span><span class="dv">7</span>])){</span>
+<span id="cb14-320"><a href="#cb14-320"></a>  dat_converted <span class="ot">&lt;-</span>  <span class="fu">cbind</span>(dat_converted, <span class="fu">split_to_long</span>(name))</span>
+<span id="cb14-321"><a href="#cb14-321"></a>}</span>
+<span id="cb14-322"><a href="#cb14-322"></a>dat_converted <span class="sc">|&gt;</span> </span>
+<span id="cb14-323"><a href="#cb14-323"></a>  <span class="fu">kable</span>(<span class="at">align =</span> <span class="st">"c"</span>, <span class="at">digits =</span> <span class="dv">2</span>)</span>
+<span id="cb14-324"><a href="#cb14-324"></a><span class="in">```</span></span>
+<span id="cb14-325"><a href="#cb14-325"></a></span>
+<span id="cb14-326"><a href="#cb14-326"></a>&lt;br&gt;</span>
+<span id="cb14-327"><a href="#cb14-327"></a></span>
+<span id="cb14-328"><a href="#cb14-328"></a>Again, this gives us the desired result and combined with our function, this approach uses <span class="in">`21`</span> **lines of code**, and importantly there is no repetition.</span>
+<span id="cb14-329"><a href="#cb14-329"></a></span>
+<span id="cb14-330"><a href="#cb14-330"></a><span class="fu">### Function + purrr::map</span></span>
+<span id="cb14-331"><a href="#cb14-331"></a></span>
+<span id="cb14-332"><a href="#cb14-332"></a>The <span class="in">`map`</span> family of functions within the <span class="co">[</span><span class="ot">`purrr`</span><span class="co">](https://purrr.tidyverse.org)</span> package are the <span class="in">`tidyverse`</span> answer to base <span class="in">`R`</span>s <span class="co">[</span><span class="ot">`apply`</span><span class="co">](https://rpubs.com/Richard_h/888425)</span> family of functions. They essentially do the same thing, but <span class="in">`map`</span> tend to be more <span class="co">[</span><span class="ot">consistent</span><span class="co">](https://purrr.tidyverse.org/articles/base.html)</span> in their application, and are of course, designed for use with other <span class="in">`tidyverse`</span> functions.</span>
+<span id="cb14-333"><a href="#cb14-333"></a></span>
+<span id="cb14-334"><a href="#cb14-334"></a>At its core, <span class="in">`R`</span> is a **functional programming language**, which essentially means that it lends itself to using functions to solve complex problems. In this way it has the ability "<span class="co">[</span><span class="ot">to wrap up for loops in a function, and call that function instead of using the for loop directly</span><span class="co">](https://r4ds.had.co.nz/iteration.html?q=for%20loop#for-loops-vs.-functionals)</span>". In the current context, we could then imagine a way to replace our for-loop with another function - i.e. we could feed our function to another function that does the job of the for-loop. Why would you do this? Well, it is usually the case that <span class="in">`map`</span> (or <span class="in">`apply`</span>) not only requires less code to achieve the same result, but makes your code more readable, opens your code to parallelisation, and is slightly faster than a comparable for-loop (it's a misconception that for-loops are slow if you set them up correctly - e.g. you should always pre-allocate a vector length rather than growing the vector in the loop).</span>
+<span id="cb14-335"><a href="#cb14-335"></a></span>
+<span id="cb14-336"><a href="#cb14-336"></a>Here we use the <span class="in">`map`</span> function to apply our <span class="in">`split_to_long`</span> function to each variable in the original dataframe. Because map returns a list, we take one extra step to reformat the list to a dataframe with <span class="in">`list_cbind()`</span>. This approach uses <span class="in">`19`</span> **lines of code**, and again, importantly, there is no repetition.</span>
+<span id="cb14-337"><a href="#cb14-337"></a></span>
+<span id="cb14-340"><a href="#cb14-340"></a><span class="in">```{r}</span></span>
+<span id="cb14-341"><a href="#cb14-341"></a><span class="co">#| code-fold: false</span></span>
+<span id="cb14-342"><a href="#cb14-342"></a>dat_converted <span class="ot">&lt;-</span>  <span class="fu">map</span>(<span class="fu">names</span>(dat)[<span class="dv">2</span><span class="sc">:</span><span class="dv">7</span>], split_to_long) <span class="sc">|&gt;</span> </span>
+<span id="cb14-343"><a href="#cb14-343"></a>  <span class="fu">list_cbind</span>()</span>
+<span id="cb14-344"><a href="#cb14-344"></a>dat_converted <span class="sc">|&gt;</span> </span>
+<span id="cb14-345"><a href="#cb14-345"></a>  <span class="fu">kable</span>(<span class="at">align =</span> <span class="st">"c"</span>, <span class="at">digits =</span> <span class="dv">2</span>)</span>
+<span id="cb14-346"><a href="#cb14-346"></a><span class="in">```</span></span>
+<span id="cb14-347"><a href="#cb14-347"></a></span>
+<span id="cb14-348"><a href="#cb14-348"></a><span class="fu"># Summary</span></span>
+<span id="cb14-349"><a href="#cb14-349"></a></span>
+<span id="cb14-350"><a href="#cb14-350"></a>Before wrapping up, let's rehash the coding expenditure in each of our three main approaches to solving this problem:</span>
+<span id="cb14-351"><a href="#cb14-351"></a></span>
+<span id="cb14-352"><a href="#cb14-352"></a>Not DRY               - <span class="in">`55`</span> lines of code. </span>
+<span id="cb14-353"><a href="#cb14-353"></a></span>
+<span id="cb14-354"><a href="#cb14-354"></a>Function + for-loop   - <span class="in">`21`</span> lines of code. </span>
+<span id="cb14-355"><a href="#cb14-355"></a></span>
+<span id="cb14-356"><a href="#cb14-356"></a>Function + purrr::map - <span class="in">`19`</span> lines of code. </span>
+<span id="cb14-357"><a href="#cb14-357"></a></span>
+<span id="cb14-358"><a href="#cb14-358"></a></span>
+<span id="cb14-359"><a href="#cb14-359"></a>I hope this post has given you some ideas about how you might be able to streamline your <span class="in">`R`</span> code. The main takeaway from this is that when presented with a coding problem, think about the big picture first. Then give some thought to how we can break that larger task into smaller steps - those steps can usually be conceptualised as one or more functions, which we can then use to iterate over some component of our data. </span>
+<span id="cb14-360"><a href="#cb14-360"></a></span>
+<span id="cb14-361"><a href="#cb14-361"></a>Improving our coding knowledge is something we should be aiming to do on a regular basis and after writing this post my aim is to 'try for DRY' as much as possible in all of my future <span class="in">`R`</span> interactions. Until next time...</span>
+</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 
