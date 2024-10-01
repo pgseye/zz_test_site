@@ -1,0 +1,9 @@
+---
+title: "R Programming - Try for DRY"
+date: 2024-11-15
+categories: [code, concept]
+#image: "R_small.jpeg"
+description: "A general philosophy on making your code more efficient"
+---
+
+gg
