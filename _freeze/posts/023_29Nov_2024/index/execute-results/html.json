@@ -1,0 +1,19 @@
+{
+  "hash": "c2b7a3e4a4113b09d267cd87000a96f1",
+  "result": {
+    "engine": "knitr",
+    "markdown": "---\ntitle: \"On the 12th Day of Christmas, a Statistician Sent to Me...\"\nsubtitle: \"Riley, R. D., Cole, T. J., Deeks, J., Kirkham, J. J., Morris, J., Perera, R. et al. (2022). On the 12th Day of Christmas, a Statistician Sent to Me. BMJ, 379, e072883.\"\nformat:\n  revealjs: \n    transition: slide\n    theme: simple\n    highlight-style: kate\n    embed-resources: true # can't have self-contained if wanting to use chalkboard\n    #chalkboard: true # can’t use chalkboard if wanting self-contained\n    fontsize: 1em\n    progress: true\n    code-copy: true\n    code-fold: false\n    code-link: true\n    scrollable: true\n    code-overflow: scroll\n    multiplex: false\ncss: styles.css\ntitle-slide-attributes: \n    data-notes: \"\"\ndate: 2024-11-15\ncategories: [code, concept]\nimage: \"R_small.jpeg\"\ndescription: \"A general philosophy on making your code more efficient.\"\n---\n\n::: {.cell}\n\n:::\n\n\n## On the first day of Christmas, a statistician sent to me:\n\n### Clarify the Research Question\n\n::: notes\nShmueli, G. (2010). To Explain or to Predict. Statistical Science, 25(3), 289-310.\n:::\n\n-   What is your research question?\n\n-   What are your hypotheses and aims?\n\n-   Is your research meant to :\n\n    -   Describe\n\n        -   Focus on descriptive (i.e. summary), rather than inferential statistics.\n\n    -   Explain\n\n        -   Associations.\n\n        -   Causation.\n\n        -   Modelling and inferential statistics.\n\n    -   Predict\n\n        -   Predict outcome from set of covariates.\n\n        -   Focus on maximising predictive power at expense of explanation.\n\n        -   Modelling ± inferential statistics.\n\n-   What is the outcome (described statistically as the 'estimand')?\n\n-   Does knowing the outcome address your research question.\n\n    -   i.e. is the answer aligned with the question?\n\n------------------------------------------------------------------------\n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {
+      "include-after-body": [
+        "\n<script>\n  // htmlwidgets need to know to resize themselves when slides are shown/hidden.\n  // Fire the \"slideenter\" event (handled by htmlwidgets.js) when the current\n  // slide changes (different for each slide format).\n  (function () {\n    // dispatch for htmlwidgets\n    function fireSlideEnter() {\n      const event = window.document.createEvent(\"Event\");\n      event.initEvent(\"slideenter\", true, true);\n      window.document.dispatchEvent(event);\n    }\n\n    function fireSlideChanged(previousSlide, currentSlide) {\n      fireSlideEnter();\n\n      // dispatch for shiny\n      if (window.jQuery) {\n        if (previousSlide) {\n          window.jQuery(previousSlide).trigger(\"hidden\");\n        }\n        if (currentSlide) {\n          window.jQuery(currentSlide).trigger(\"shown\");\n        }\n      }\n    }\n\n    // hookup for slidy\n    if (window.w3c_slidy) {\n      window.w3c_slidy.add_observer(function (slide_num) {\n        // slide_num starts at position 1\n        fireSlideChanged(null, w3c_slidy.slides[slide_num - 1]);\n      });\n    }\n\n  })();\n</script>\n\n"
+      ]
+    },
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

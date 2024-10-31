@@ -333,13 +333,12 @@ dat_converted |>
 
 Before wrapping up, let's rehash the coding expenditure in each of our three main approaches to solving this problem:
 
-Not DRY               - `55` lines of code. 
+Not DRY - `55` lines of code.
 
-Function + for-loop   - `21` lines of code. 
+Function + for-loop - `21` lines of code.
 
-Function + purrr::map - `19` lines of code. 
+Function + purrr::map - `19` lines of code.
 
-
-I hope this post has given you some ideas about how you might be able to streamline your `R` code. The main takeaway from this is that when presented with a coding problem, think about the big picture first. Then give some thought to how we can break that larger task into smaller steps - those steps can usually be conceptualised as one or more functions, which we can then use to iterate over some component of our data. 
+I hope this post has given you some ideas about how you might be able to streamline your `R` code. The main takeaway from this is that when presented with a coding problem, think about the big picture first. Then give some thought to how we can break that larger task into smaller steps - those steps can usually be conceptualised as one or more functions, which we can then use to iterate over some component of our data.
 
 Improving our coding knowledge is something we should be aiming to do on a regular basis and after writing this post my aim is to 'try for DRY' as much as possible in all of my future `R` interactions. Until next time...

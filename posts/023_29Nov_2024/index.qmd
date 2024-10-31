@@ -1,0 +1,39 @@
+---
+title: "On the 12th Day of Christmas, a Statistician Sent to Me..."
+date: 2024-11-29
+categories: [fun]
+image: "images/image.jpg"
+description: ""
+---
+
+<br>
+
+For the last post of this year,
+
+Here's some Xmas-themed researcher cheer,
+
+Each 'day' is a statistical pearl,
+
+For your next manuscript give them a whirl,
+
+Take heed of the 12 recommendations made,
+
+And you will make my life a lot easier.
+
+<br>
+
+Hmm, I just realised that last line might not completely rhyme - I'll work on something better, but in the meantime please accept that as a placeholder...
+
+In your downtime over the upcoming break I can thoroughly recommend a read of the following 2022 BMJ Christmas edition paper:
+
+[On the 12th Day of Christmas, a Statistician Sent to Me . . .](https://www.bmj.com/content/379/bmj-2022-072883)
+
+Being not only aware of, but proactive about these common statistical faux pas will, I believe, help you in your chances of future successful submissions - as well as becoming better clinical researchers.
+
+The slides I used in recent lab meetings relating to this talk are included below.
+
+Merry Xmas and Happy New Year to all! See you in 2025.
+
+(BTW - the home page image was created in ChatGPT with the prompt "Create a christmas-themed image of a statistician wearing a santa hat". I guess you get what you ask for...)
+
+{{< revealjs "2024.3_Nov_Stats_Club_no_notes.html" >}}
