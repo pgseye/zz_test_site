@@ -1,0 +1,202 @@
+---
+title: "Missing Data and Multiple Imputation for Dummies (Part 1)"
+date: 2025-02-07
+categories: [code, concept, analysis]
+#image: "images/image.jpg"
+description: "The core concepts and a simple example to get you up and running with MI in your next analysis."
+---
+
+Welcome back to Stats Tips 2025!
+
+We're going to hit the ground running today given you should all be revitalised from a hopefully restful break, and talk about a pervasive problem in data analyses that can be quite frustrating to deal with - missing data. But don't fret! There is a solution and we'll talk about that as well - multiple imputation. However, as a single post I fear the lengthy nature of what we need to cover on this topic will cause you to fall back asleep face-first into your morning porridge, so I'm going to split this over two posts. This week we'll focus on the missing data problem itself and in the next post I will then go on to introduce multiple imputation and provide a practical example of its application.
+
+# Background
+
+I can recall only a handful of times that I've had a fully intact dataset and those have been from relatively small clinical trials with great efforts expended to ensure patients are followed up. All bets tend to be off with observational data - missing data are a fact of life in clinical research.
+
+Consequently, I think we either just take that fact for granted and assume the default position of doing nothing, believing nothing **should** be done, or, being aware of the missingness we do have, elect to sweep the problem under the carpet and hope that no-one notices. Either way, the problem is that missing data can directly affect the validity of our results. I don't think I am saying anything controversial then when I suggest that not only should we **not** ignore the missingness in our data, but we should be completely transparent about it, ensuring we quantify it and report it, preferably at the individual variable level. Unfortunately, unless things have changed in the decade since the publication of [this](https://bmcmedresmethodol.biomedcentral.com/articles/10.1186/1471-2288-12-96) paper, it doesn't appear that this is being done with acceptable frequency.
+
+So, in these posts I want to talk about what we can actually do about missingness, given that we are likely to have it in our next dataset. Before we get to that though, I think it's important to first introduce the theoretical mechanisms by which missingness can occur, because if you read anything in the missing data literature, you will come across these terms. A forewarning, though, the nomenclature is confusing (I find at least), so don't get worried if the individual terms don't imbue you with an intuitive sense of what is happening in your data. Be aware that the definitions exist and endeavour to have a basic understanding of what they mean. But also know that we are actually somewhat limited in our ability to identify the specific mechanism in the first place (I'll explain why a little later).
+
+# Missing Data Mechanisms
+
+The classical missing data taxonomy was conceived by [Rubin](https://www.jstor.org/stable/2335739) in 1976 and consists of three categories:
+
+-   Missing Completely at Random (MCAR)
+
+-   Missing at Random (MAR)
+
+-   Missing Not at Random (MNAR)
+
+In the following discussion it is helpful to think about the various mechanisms in the context of "unobserved" or "unknown" variables and "observed" or "known" variables. When we impute data, using the chained equation approach to multiple imputation at least, we do so in a modelling framework. We use data that we have (i.e. observed/known data) to predict or impute, data that we don't have (i.e. unobserved/unknown data). Thus, when we have missingness on some variable (be it an outcome OR predictor in our own data), we consider it unobserved/unknown and equate that with the outcome in a statistical model. In the same vein, variables that might be helpful in imputing that missingness are considered observed/known and we equate those with the predictor/s in a statistical model.
+
+Just keep in mind not to confuse these ideas with what may be a distinct outcome and predictor/s in your own data. For the express purposes of imputation, an outcome variable in your dataset may serve as an observed/known variable for some other variable, and similarly, a predictor variable in your dataset may be an unobserved/unknown variable requiring imputation. (Hopefully that is not too confusing!)
+
+## Missing Completely at Random (MCAR)
+
+Data are considered to be Missing Completely at Random (MCAR) if the probability of a missing value neither depends on any observed or unobserved data. Let's consider an example where we survey individuals about their bodyweight and sex (amongst other questions). In this case missingness on bodyweight would be considered MCAR if some individuals just didn't see that particular question. Participants with missing data are then a simple random subsample of all available participants, independent of whether they were male or female, obese or non-obese. As a result, the exclusion of such individuals from any analyses maintains the representativeness of the original sample and aside from compromising power, does not bias the results.
+
+Unfortunately, MCAR is both the most restrictive and most unrealistic mechanism to assume one's data obeys.
+
+## Missing at Random (MAR)
+
+Data are considered to be Missing at Random (MAR) if the probability of a missing value depends (or is conditional) on observed data, and within categories of the observed data, the distribution of missing and non-missing values is the same (i.e. MCAR within categories). Confusing, I know, but let me try and solidify this idea using the example above. In this context, missingness on bodyweight would be considered MAR if:
+
+1.  Females, in general, were less willing to reveal their bodyweight than males (i.e. missingness is dependent on sex).
+
+2.  Furthermore, if we looked at males and females separately, and **if** we knew the missing bodyweight values, we should find similar average observed and unobserved (missing) bodyweight values (i.e. MCAR *within* categories).
+
+Now, we can test for the first assumption, but we can't really test for the second - because we don't know what we don't know. I will give you an example of this shortly.
+
+The assumptions underpinning the MAR mechanism are more general and more realistic than those for MCAR. If data are MCAR than they are also considered MAR, and therefore most modern missing data methods generally start from the MAR assumption.
+
+## Missing Not at Random (MNAR)
+
+Data are considered to be Missing Not at Random (MNAR) if the probability of a missing value depends on unobserved data. In other words, the probability of missingness is related to the missing values themselves (had we been able to actually observe them). In the context of our example, missingness on bodyweight would be considered MNAR if heavier individuals, in general, were less willing to reveal their bodyweight than lighter individuals (i.e. missingness is dependent on bodyweight itself).
+
+MNAR is the most complex missing data mechanism to deal with, and there really is no good solution to the problem, because as is the case for the second MAR assumption described above - we simply don't know what we don't know. MNAR is also referred to as "non-ignorable" because the missing data mechanism itself has to be modelled if you assume your data fall into this category - pattern mixture models are typically employed for this purpose. In contrast, MCAR and MAR mechanisms are both considered "ignorable" because we don't have to include any information about the missingness itself when we make these assumptions about our data.
+
+# Diagnosing the Missingness Mechanism
+
+So now that you're fully armed with the knowledge of what the various mechanisms mean for your data - "how do I identify which mechanism I have at play?" - you rightly ask. Unfortunately, as with many questions in statistics, there is no easy answer to this. What I can tell you is that diagnosing missingness is more about what mechanism you **don't** have rather than what mechanism you potentially **do**. In other words, we can't really be certain that our missing data are MCAR, for example, but instead we can say that our missing data are not MAR, but could be MCAR *or* MNAR. Similarly, we can't really be 100% certain that our missing data are MAR, but instead we can say that our missing data are not MCAR, but could be MAR **or** MNAR. Do you note the recurring fly in the ointment here? The fact that we usually can't observe the missing data means we can never easily rule out MNAR as a potential cause.
+
+OK, you say - please stop hurting my brain and just tell me what to do. Well, there is a formal test of the MCAR assumption called Little's test and it's [available](https://search.r-project.org/CRAN/refmans/misty/html/na.test.html) in the `misty` package in `R`. This test is multivariate in nature, so it examines the entire dataset in one fell swoop. The alternative 'manual' way is to create dummy variables indicating missingness on any particular variable and look for associations between this and other variables. Let me use a relatively simple simulation to try and illustrate this second method in action.
+
+## Simulating MAR data
+
+The idea of this simulation is to show you how one would hypothetically test the null hypothesis that missingness on a particular variable were MCAR. If the test were statistically significant, that would provide evidence against the null and allow us to say that the missingness were (at least) **not** MCAR. To deduce the mechanism beyond that requires knowledge of the missing values themselves - which, with being simulated data, we are lucky enough to have. So we can actually take the diagnostic exercise to its conclusion with these fake data.
+
+### Simulation
+
+For this example, I will simulate `100` observations, making males, on average, `5` kg heavier than females. I will then create a missingness indicator variable such that the probability of missingness is \~ `12%` for males and `73%` for females (i.e. as per above - females, in general, were less willing to reveal their bodyweight than males). The first `20` rows of the resulting dataframe look like:
+
+```{r}
+#| message: false
+#| warning: false
+library(tidyverse)
+library(kableExtra)
+library(gtsummary)
+
+# Simulation
+n <- 100                   # set number of obs to simulate
+set.seed(1234)             # set seed for reproducibility
+sex <-  rbinom(n, 1, 0.5)  # generate sex variable ~ 50% females (0) and 50% males (1)
+# Generate bodyweight from regression model based on additive effect of sex - on average, males are 5 kg heavier than females
+bodyweight <-  5 + 5 * sex + rnorm(n, 0, 1)
+# Now, let's create some missingness in bodyweight at random (where the missingness in bodyweight depends on sex)
+# To do this we will leave the actual bodyweight values intact (as we will need them later) and create a separate missing variable to indicate which values would be absent in a real dataset.
+# The model intercept and coefficient have been selected so that the probability of missingness will be ~ 12% for males and ~ 73% for females
+logodds_missing <-  1 - 3 * sex                      
+odds_missing <-  exp(logodds_missing)               # calculate odds of missingness
+prob_missing  <-  odds_missing/(1 + odds_missing)   # calculate probability of missingness
+# Assemble dataframe
+dat <-  data.frame(sex = factor(sex, levels = c("0", "1"), labels = c("females", "males")),
+                   bodyweight = bodyweight,
+                   odds_missing = odds_missing,
+                   prob_missing = prob_missing,
+                   missing = factor(rbinom(n, 1, prob_missing), levels = c("0", "1"), labels = c("no", "yes")))
+head(dat, 20) |> 
+  kable(align = "c", digits = 2)
+```
+
+Now, let's check that we recover the original estimates that we specified; both the intercept and coefficient for sex should be about `5`.
+
+```{r}
+# Check that we recover the original coefficients:
+lm(bodyweight ~ sex , data = dat) |> 
+  tbl_regression(intercept = TRUE)
+```
+
+That's good - we are on track. Finally let's check that the simulated missing values are in proportion with what we asked.
+
+```{r}
+# Check expected missing proportions with tabulation
+table(round(dat$prob, 2), dat$missing)
+round(0.12*45, 0) # gives expectation 5/45 males with missingness
+round(0.73*55, 0) # gives expectation 40/55 females with missingness
+```
+
+We expected about `5` males and `40` females to have missing values and ended up with `10` and `38`, respectively. Closer for females than males but that's the nature of random sampling.
+
+### Step 1 - Test whether missingness depends on sex
+
+In assessing the MCAR assumption, the first step we can take is to simply regress the missingness indicator on sex. This provides a statistical test for whether missing values in bodyweight depend on sex. Note that we don't need the missing values themselves as this point in the diagnostic process. The logistic regression model results give:
+
+```{r}
+glm(missing ~ sex, data = dat, family = "binomial") |> 
+  tbl_regression(intercept = TRUE, exp = TRUE) |> 
+  modify_caption("**Missing (outcome) vs Sex (predictor)**")
+```
+
+This suggests that there is an \~ `87%` reduction in the odds of missingness for males relative to be females and this is statistically significant at the `5%` level. Knowing this piece of information **rules out MCAR** as the mechanism for missingness in our bodyweight variable and we can now say that MAR or MNAR causes are potential culprits. With real-world data we would normally stop at this point, as we don't have any more information to go on. But as alluded to earlier, given these are simulated data, we know the actual missing values and can therefore continue our forensic investigations.
+
+### Step 2 - Test whether missingness depends on bodyweight **within** each category of sex
+
+::: callout-important
+Remember, this is generally considered an untestable assumption as we typically don't have these data.
+:::
+
+To perform this test we will regress bodyweight on the missingness indicator for males and females, separately, using a standard linear regression approach.
+
+```{r}
+# Females
+lm(bodyweight ~ missing, data = subset(dat, sex == "females")) |> 
+  tbl_regression() |> 
+  modify_caption("**Females**")
+# Males
+lm(bodyweight ~ missing, data = subset(dat, sex == "males")) |> 
+  tbl_regression() |> 
+  modify_caption("**Males**")
+```
+
+The coefficient for missingness is not statistically significant in either subgroup which lends weight to our assertion that the missingness in bodyweight has a potential MAR cause. It's always helpful to visualise the data as well, so let's do that by making some boxplots:
+
+```{r}
+#| message: false
+#| warning: false
+# Boxplots of distributions by sex
+ggplot(dat, aes(x = sex, y = bodyweight, fill = missing)) +
+  geom_boxplot() +
+  geom_dotplot(binaxis = 'y', stackdir = 'center', dotsize = 0.5, position = position_dodge(0.75)) +
+  theme_bw(base_size = 20)
+```
+
+I will wrap up this section with the suggestion that there's actually a more succinct (if not slightly more complex), equivalent approach that integrates both Steps 1 and 2 within a single model framework. Here we modify the model slightly to include an interaction term between the missingness indicator and sex (but again this requires knowledge of the missing values).
+
+```{r}
+lm(bodyweight ~ missing * sex, data = dat) |> 
+  tbl_regression() |> 
+  modify_caption("**Interaction Model**")
+```
+
+In this framework we can cut straight to the chase in the expectation that if the MAR assumption were true for these data, than the statistical tests for both the coefficients on missingness and the interaction between missingness and sex would not be statistically significant - in other words there would be no evidence against the null hypotheses that both of these coefficients were zero (i.e. they are probably zero!)
+
+# Approaches to Handling Missing Data in Your Analysis
+
+We've talked a lot about the theory of missing data mechanisms. But let's now consider the applied side of the coin - what can we actually do about the problem?
+
+## Complete Case Analysis (CCA) \[AKA - Listwise Deletion\]
+
+This is the default solution that we all use, even when we don't realise we're choosing to use it, and that's because our software tools make the decision on our behalf. Essentially, observations in our dataset that contain missingness in any variables involved in an analysis are discarded. So, if you are running a regression model with `9` predictors and an individual has a missing value on one of those predictors, all of that individuals data will be ignored (i.e. they will be dropped from the analysis). It's important then to consider here how the pattern of missingness across both observations (rows) and variables (columns) can affect the amount of data discarded and the subsequent power. For example, if you were to have `10` missing values, you would be much better off having one individual missing all `10` values than `10` individuals missing each of one `1` different value on the `10` different variables specified in the model. In the former case, your sample size decreases by `1`, whereas in the latter it decreases by `10`.
+
+CCA is only considered to produce unbiased results when the assumption of MCAR holds. When the amount of missing data is small (say less than `5%`) than it may not matter all that much even if we assume incorrectly, but with larger amounts of missingness it may be prudent to consider an alternative method in attempting to deal with the problem. This [paper](https://www.annualreviews.org/content/journals/10.1146/annurev.psych.58.110405.085530) goes into some of these issues in more detail and is certainly worth a read.
+
+## Single Imputation Methods
+
+Another relatively quick fix is to impute the missing values with some single "fixed" value - typically the mean or median is used. Unfortunately, while single imputation methods solve the problem of information wastefulness and loss of power, they produce potentially more biased results. Consequently CCA is still regarded as a better choice in handling missingness between the two.
+
+## Multiple Imputation (MI)
+
+I will end today's post by introducing the idea of multiple imputation. There is no doubt that this approach requires more work on the analyst's part than the other two options, but the rewards are likely worth it. In contrast to single imputation where we consider the substituted value "fixed", MI uses the distribution of the observed data to estimate multiple possible "placeholder" values. Ultimately, this allows us to account for the uncertainty around the true value, and obtain approximately unbiased estimates (under the assumption of MAR).
+
+MI can be thought of in broad terms as a three-step procedure:
+
+1.  Multiple plausible "complete" versions of the original incomplete dataset are created by sampling values based on a statistical model that accurately describes the data (plus a random error component).
+2.  Each imputed dataset is analysed using standard statistical methods, resulting in multiple (*m)* parameter estimates (due only to the differences in the imputed values).
+3.  The estimates are pooled in an overall statistical analysis in which the uncertainty in the imputed missing values are incorporated in the standard errors and significance tests.
+
+In this last step, the *m* parameter estimates are pooled, by simply averaging them, into one estimate, and the variance of the estimate calculated. The estimate pooling by simple averaging is the conceptually simple part. How we arrive at the variance of that estimate is the part that may be a bit more complex to grasp. In computing the overall variance, "within" and "between" variance estimates need to be combined. The within-variance represents the usual "noise" in an estimate (within a dataset) that is always present independent of whether one is peforming MI or not. The between-variance, however, represents the variance in an estimate (across datasets) and addresses how much uncertainty is due to the "guessing" done to fill in the missing values during the MI procedure.
+
+As mentioned above, under the right conditions, the pooled estimates are unbiased and have the correct statistical properties. It's for this reason (in addition to others) that MI is widely regarded as the gold standard method for handling missing data in clinical research.
+
+And I think that's a good place to take a pause and let you catch your breath. Next time I will introduce MI to you by way of example, so hopefully that will be a little less dry than what we have discussed (but needed to discuss), today. Do stay tuned...

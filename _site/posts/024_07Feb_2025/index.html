@@ -1,0 +1,3895 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.549">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="dcterms.date" content="2025-02-07">
+<meta name="description" content="The core concepts and a simple example to get you up and running with MI in your next analysis.">
+
+<title>Test Site 2 - Missing Data and Multiple Imputation for Dummies (Part 1)</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Test Site 2</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html"> 
+<span class="menu-text">About</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html"> 
+<span class="menu-text">All Posts</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+          <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#background" id="toc-background" class="nav-link active" data-scroll-target="#background"><span class="header-section-number">1</span> Background</a></li>
+  <li><a href="#missing-data-mechanisms" id="toc-missing-data-mechanisms" class="nav-link" data-scroll-target="#missing-data-mechanisms"><span class="header-section-number">2</span> Missing Data Mechanisms</a>
+  <ul>
+  <li><a href="#missing-completely-at-random-mcar" id="toc-missing-completely-at-random-mcar" class="nav-link" data-scroll-target="#missing-completely-at-random-mcar"><span class="header-section-number">2.1</span> Missing Completely at Random (MCAR)</a></li>
+  <li><a href="#missing-at-random-mar" id="toc-missing-at-random-mar" class="nav-link" data-scroll-target="#missing-at-random-mar"><span class="header-section-number">2.2</span> Missing at Random (MAR)</a></li>
+  <li><a href="#missing-not-at-random-mnar" id="toc-missing-not-at-random-mnar" class="nav-link" data-scroll-target="#missing-not-at-random-mnar"><span class="header-section-number">2.3</span> Missing Not at Random (MNAR)</a></li>
+  </ul></li>
+  <li><a href="#diagnosing-the-missingness-mechanism" id="toc-diagnosing-the-missingness-mechanism" class="nav-link" data-scroll-target="#diagnosing-the-missingness-mechanism"><span class="header-section-number">3</span> Diagnosing the Missingness Mechanism</a>
+  <ul>
+  <li><a href="#simulating-mar-data" id="toc-simulating-mar-data" class="nav-link" data-scroll-target="#simulating-mar-data"><span class="header-section-number">3.1</span> Simulating MAR data</a>
+  <ul class="collapse">
+  <li><a href="#simulation" id="toc-simulation" class="nav-link" data-scroll-target="#simulation"><span class="header-section-number">3.1.1</span> Simulation</a></li>
+  <li><a href="#step-1---test-whether-missingness-depends-on-sex" id="toc-step-1---test-whether-missingness-depends-on-sex" class="nav-link" data-scroll-target="#step-1---test-whether-missingness-depends-on-sex"><span class="header-section-number">3.1.2</span> Step 1 - Test whether missingness depends on sex</a></li>
+  <li><a href="#step-2---test-whether-missingness-depends-on-bodyweight-within-each-category-of-sex" id="toc-step-2---test-whether-missingness-depends-on-bodyweight-within-each-category-of-sex" class="nav-link" data-scroll-target="#step-2---test-whether-missingness-depends-on-bodyweight-within-each-category-of-sex"><span class="header-section-number">3.1.3</span> Step 2 - Test whether missingness depends on bodyweight <strong>within</strong> each category of sex</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#approaches-to-handling-missing-data-in-your-analysis" id="toc-approaches-to-handling-missing-data-in-your-analysis" class="nav-link" data-scroll-target="#approaches-to-handling-missing-data-in-your-analysis"><span class="header-section-number">4</span> Approaches to Handling Missing Data in Your Analysis</a>
+  <ul>
+  <li><a href="#complete-case-analysis-cca-aka---listwise-deletion" id="toc-complete-case-analysis-cca-aka---listwise-deletion" class="nav-link" data-scroll-target="#complete-case-analysis-cca-aka---listwise-deletion"><span class="header-section-number">4.1</span> Complete Case Analysis (CCA) [AKA - Listwise Deletion]</a></li>
+  <li><a href="#single-imputation-methods" id="toc-single-imputation-methods" class="nav-link" data-scroll-target="#single-imputation-methods"><span class="header-section-number">4.2</span> Single Imputation Methods</a></li>
+  <li><a href="#multiple-imputation-mi" id="toc-multiple-imputation-mi" class="nav-link" data-scroll-target="#multiple-imputation-mi"><span class="header-section-number">4.3</span> Multiple Imputation (MI)</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<div class="quarto-title-block"><div><h1 class="title">Missing Data and Multiple Imputation for Dummies (Part 1)</h1><button type="button" class="btn code-tools-button dropdown-toggle" id="quarto-code-tools-menu" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi"></i> Code</button><ul class="dropdown-menu dropdown-menu-end" aria-labelelledby="quarto-code-tools-menu"><li><a id="quarto-show-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Show All Code</a></li><li><a id="quarto-hide-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Hide All Code</a></li><li><hr class="dropdown-divider"></li><li><a id="quarto-view-source" class="dropdown-item" href="javascript:void(0)" role="button">View Source</a></li></ul></div></div>
+  <div class="quarto-categories">
+    <div class="quarto-category">code</div>
+    <div class="quarto-category">concept</div>
+    <div class="quarto-category">analysis</div>
+  </div>
+  </div>
+
+<div>
+  <div class="description">
+    The core concepts and a simple example to get you up and running with MI in your next analysis.
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">February 7, 2025</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>Welcome back to Stats Tips 2025!</p>
+<p>We’re going to hit the ground running today given you should all be revitalised from a hopefully restful break, and talk about a pervasive problem in data analyses that can be quite frustrating to deal with - missing data. But don’t fret! There is a solution and we’ll talk about that as well - multiple imputation. However, as a single post I fear the lengthy nature of what we need to cover on this topic will cause you to fall back asleep face-first into your morning porridge, so I’m going to split this over two posts. This week we’ll focus on the missing data problem itself and in the next post I will then go on to introduce multiple imputation and provide a practical example of its application.</p>
+<section id="background" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Background</h1>
+<p>I can recall only a handful of times that I’ve had a fully intact dataset and those have been from relatively small clinical trials with great efforts expended to ensure patients are followed up. All bets tend to be off with observational data - missing data are a fact of life in clinical research.</p>
+<p>Consequently, I think we either just take that fact for granted and assume the default position of doing nothing, believing nothing <strong>should</strong> be done, or, being aware of the missingness we do have, elect to sweep the problem under the carpet and hope that no-one notices. Either way, the problem is that missing data can directly affect the validity of our results. I don’t think I am saying anything controversial then when I suggest that not only should we <strong>not</strong> ignore the missingness in our data, but we should be completely transparent about it, ensuring we quantify it and report it, preferably at the individual variable level. Unfortunately, unless things have changed in the decade since the publication of <a href="https://bmcmedresmethodol.biomedcentral.com/articles/10.1186/1471-2288-12-96">this</a> paper, it doesn’t appear that this is being done with acceptable frequency.</p>
+<p>So, in these posts I want to talk about what we can actually do about missingness, given that we are likely to have it in our next dataset. Before we get to that though, I think it’s important to first introduce the theoretical mechanisms by which missingness can occur, because if you read anything in the missing data literature, you will come across these terms. A forewarning, though, the nomenclature is confusing (I find at least), so don’t get worried if the individual terms don’t imbue you with an intuitive sense of what is happening in your data. Be aware that the definitions exist and endeavour to have a basic understanding of what they mean. But also know that we are actually somewhat limited in our ability to identify the specific mechanism in the first place (I’ll explain why a little later).</p>
+</section>
+<section id="missing-data-mechanisms" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Missing Data Mechanisms</h1>
+<p>The classical missing data taxonomy was conceived by <a href="https://www.jstor.org/stable/2335739">Rubin</a> in 1976 and consists of three categories:</p>
+<ul>
+<li><p>Missing Completely at Random (MCAR)</p></li>
+<li><p>Missing at Random (MAR)</p></li>
+<li><p>Missing Not at Random (MNAR)</p></li>
+</ul>
+<p>In the following discussion it is helpful to think about the various mechanisms in the context of “unobserved” or “unknown” variables and “observed” or “known” variables. When we impute data, using the chained equation approach to multiple imputation at least, we do so in a modelling framework. We use data that we have (i.e.&nbsp;observed/known data) to predict or impute, data that we don’t have (i.e.&nbsp;unobserved/unknown data). Thus, when we have missingness on some variable (be it an outcome OR predictor in our own data), we consider it unobserved/unknown and equate that with the outcome in a statistical model. In the same vein, variables that might be helpful in imputing that missingness are considered observed/known and we equate those with the predictor/s in a statistical model.</p>
+<p>Just keep in mind not to confuse these ideas with what may be a distinct outcome and predictor/s in your own data. For the express purposes of imputation, an outcome variable in your dataset may serve as an observed/known variable for some other variable, and similarly, a predictor variable in your dataset may be an unobserved/unknown variable requiring imputation. (Hopefully that is not too confusing!)</p>
+<section id="missing-completely-at-random-mcar" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="missing-completely-at-random-mcar"><span class="header-section-number">2.1</span> Missing Completely at Random (MCAR)</h2>
+<p>Data are considered to be Missing Completely at Random (MCAR) if the probability of a missing value neither depends on any observed or unobserved data. Let’s consider an example where we survey individuals about their bodyweight and sex (amongst other questions). In this case missingness on bodyweight would be considered MCAR if some individuals just didn’t see that particular question. Participants with missing data are then a simple random subsample of all available participants, independent of whether they were male or female, obese or non-obese. As a result, the exclusion of such individuals from any analyses maintains the representativeness of the original sample and aside from compromising power, does not bias the results.</p>
+<p>Unfortunately, MCAR is both the most restrictive and most unrealistic mechanism to assume one’s data obeys.</p>
+</section>
+<section id="missing-at-random-mar" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="missing-at-random-mar"><span class="header-section-number">2.2</span> Missing at Random (MAR)</h2>
+<p>Data are considered to be Missing at Random (MAR) if the probability of a missing value depends (or is conditional) on observed data, and within categories of the observed data, the distribution of missing and non-missing values is the same (i.e.&nbsp;MCAR within categories). Confusing, I know, but let me try and solidify this idea using the example above. In this context, missingness on bodyweight would be considered MAR if:</p>
+<ol type="1">
+<li><p>Females, in general, were less willing to reveal their bodyweight than males (i.e.&nbsp;missingness is dependent on sex).</p></li>
+<li><p>Furthermore, if we looked at males and females separately, and <strong>if</strong> we knew the missing bodyweight values, we should find similar average observed and unobserved (missing) bodyweight values (i.e.&nbsp;MCAR <em>within</em> categories).</p></li>
+</ol>
+<p>Now, we can test for the first assumption, but we can’t really test for the second - because we don’t know what we don’t know. I will give you an example of this shortly.</p>
+<p>The assumptions underpinning the MAR mechanism are more general and more realistic than those for MCAR. If data are MCAR than they are also considered MAR, and therefore most modern missing data methods generally start from the MAR assumption.</p>
+</section>
+<section id="missing-not-at-random-mnar" class="level2" data-number="2.3">
+<h2 data-number="2.3" class="anchored" data-anchor-id="missing-not-at-random-mnar"><span class="header-section-number">2.3</span> Missing Not at Random (MNAR)</h2>
+<p>Data are considered to be Missing Not at Random (MNAR) if the probability of a missing value depends on unobserved data. In other words, the probability of missingness is related to the missing values themselves (had we been able to actually observe them). In the context of our example, missingness on bodyweight would be considered MNAR if heavier individuals, in general, were less willing to reveal their bodyweight than lighter individuals (i.e.&nbsp;missingness is dependent on bodyweight itself).</p>
+<p>MNAR is the most complex missing data mechanism to deal with, and there really is no good solution to the problem, because as is the case for the second MAR assumption described above - we simply don’t know what we don’t know. MNAR is also referred to as “non-ignorable” because the missing data mechanism itself has to be modelled if you assume your data fall into this category - pattern mixture models are typically employed for this purpose. In contrast, MCAR and MAR mechanisms are both considered “ignorable” because we don’t have to include any information about the missingness itself when we make these assumptions about our data.</p>
+</section>
+</section>
+<section id="diagnosing-the-missingness-mechanism" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Diagnosing the Missingness Mechanism</h1>
+<p>So now that you’re fully armed with the knowledge of what the various mechanisms mean for your data - “how do I identify which mechanism I have at play?” - you rightly ask. Unfortunately, as with many questions in statistics, there is no easy answer to this. What I can tell you is that diagnosing missingness is more about what mechanism you <strong>don’t</strong> have rather than what mechanism you potentially <strong>do</strong>. In other words, we can’t really be certain that our missing data are MCAR, for example, but instead we can say that our missing data are not MAR, but could be MCAR <em>or</em> MNAR. Similarly, we can’t really be 100% certain that our missing data are MAR, but instead we can say that our missing data are not MCAR, but could be MAR <strong>or</strong> MNAR. Do you note the recurring fly in the ointment here? The fact that we usually can’t observe the missing data means we can never easily rule out MNAR as a potential cause.</p>
+<p>OK, you say - please stop hurting my brain and just tell me what to do. Well, there is a formal test of the MCAR assumption called Little’s test and it’s <a href="https://search.r-project.org/CRAN/refmans/misty/html/na.test.html">available</a> in the <code>misty</code> package in <code>R</code>. This test is multivariate in nature, so it examines the entire dataset in one fell swoop. The alternative ‘manual’ way is to create dummy variables indicating missingness on any particular variable and look for associations between this and other variables. Let me use a relatively simple simulation to try and illustrate this second method in action.</p>
+<section id="simulating-mar-data" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="simulating-mar-data"><span class="header-section-number">3.1</span> Simulating MAR data</h2>
+<p>The idea of this simulation is to show you how one would hypothetically test the null hypothesis that missingness on a particular variable were MCAR. If the test were statistically significant, that would provide evidence against the null and allow us to say that the missingness were (at least) <strong>not</strong> MCAR. To deduce the mechanism beyond that requires knowledge of the missing values themselves - which, with being simulated data, we are lucky enough to have. So we can actually take the diagnostic exercise to its conclusion with these fake data.</p>
+<section id="simulation" class="level3" data-number="3.1.1">
+<h3 data-number="3.1.1" class="anchored" data-anchor-id="simulation"><span class="header-section-number">3.1.1</span> Simulation</h3>
+<p>For this example, I will simulate <code>100</code> observations, making males, on average, <code>5</code> kg heavier than females. I will then create a missingness indicator variable such that the probability of missingness is ~ <code>12%</code> for males and <code>73%</code> for females (i.e.&nbsp;as per above - females, in general, were less willing to reveal their bodyweight than males). The first <code>20</code> rows of the resulting dataframe look like:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="fu">library</span>(kableExtra)</span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="fu">library</span>(gtsummary)</span>
+<span id="cb1-4"><a href="#cb1-4"></a></span>
+<span id="cb1-5"><a href="#cb1-5"></a><span class="co"># Simulation</span></span>
+<span id="cb1-6"><a href="#cb1-6"></a>n <span class="ot">&lt;-</span> <span class="dv">100</span>                   <span class="co"># set number of obs to simulate</span></span>
+<span id="cb1-7"><a href="#cb1-7"></a><span class="fu">set.seed</span>(<span class="dv">1234</span>)             <span class="co"># set seed for reproducibility</span></span>
+<span id="cb1-8"><a href="#cb1-8"></a>sex <span class="ot">&lt;-</span>  <span class="fu">rbinom</span>(n, <span class="dv">1</span>, <span class="fl">0.5</span>)  <span class="co"># generate sex variable ~ 50% females (0) and 50% males (1)</span></span>
+<span id="cb1-9"><a href="#cb1-9"></a><span class="co"># Generate bodyweight from regression model based on additive effect of sex - on average, males are 5 kg heavier than females</span></span>
+<span id="cb1-10"><a href="#cb1-10"></a>bodyweight <span class="ot">&lt;-</span>  <span class="dv">5</span> <span class="sc">+</span> <span class="dv">5</span> <span class="sc">*</span> sex <span class="sc">+</span> <span class="fu">rnorm</span>(n, <span class="dv">0</span>, <span class="dv">1</span>)</span>
+<span id="cb1-11"><a href="#cb1-11"></a><span class="co"># Now, let's create some missingness in bodyweight at random (where the missingness in bodyweight depends on sex)</span></span>
+<span id="cb1-12"><a href="#cb1-12"></a><span class="co"># To do this we will leave the actual bodyweight values intact (as we will need them later) and create a separate missing variable to indicate which values would be absent in a real dataset.</span></span>
+<span id="cb1-13"><a href="#cb1-13"></a><span class="co"># The model intercept and coefficient have been selected so that the probability of missingness will be ~ 12% for males and ~ 73% for females</span></span>
+<span id="cb1-14"><a href="#cb1-14"></a>logodds_missing <span class="ot">&lt;-</span>  <span class="dv">1</span> <span class="sc">-</span> <span class="dv">3</span> <span class="sc">*</span> sex                      </span>
+<span id="cb1-15"><a href="#cb1-15"></a>odds_missing <span class="ot">&lt;-</span>  <span class="fu">exp</span>(logodds_missing)               <span class="co"># calculate odds of missingness</span></span>
+<span id="cb1-16"><a href="#cb1-16"></a>prob_missing  <span class="ot">&lt;-</span>  odds_missing<span class="sc">/</span>(<span class="dv">1</span> <span class="sc">+</span> odds_missing)   <span class="co"># calculate probability of missingness</span></span>
+<span id="cb1-17"><a href="#cb1-17"></a><span class="co"># Assemble dataframe</span></span>
+<span id="cb1-18"><a href="#cb1-18"></a>dat <span class="ot">&lt;-</span>  <span class="fu">data.frame</span>(<span class="at">sex =</span> <span class="fu">factor</span>(sex, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"0"</span>, <span class="st">"1"</span>), <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"females"</span>, <span class="st">"males"</span>)),</span>
+<span id="cb1-19"><a href="#cb1-19"></a>                   <span class="at">bodyweight =</span> bodyweight,</span>
+<span id="cb1-20"><a href="#cb1-20"></a>                   <span class="at">odds_missing =</span> odds_missing,</span>
+<span id="cb1-21"><a href="#cb1-21"></a>                   <span class="at">prob_missing =</span> prob_missing,</span>
+<span id="cb1-22"><a href="#cb1-22"></a>                   <span class="at">missing =</span> <span class="fu">factor</span>(<span class="fu">rbinom</span>(n, <span class="dv">1</span>, prob_missing), <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"0"</span>, <span class="st">"1"</span>), <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"no"</span>, <span class="st">"yes"</span>)))</span>
+<span id="cb1-23"><a href="#cb1-23"></a><span class="fu">head</span>(dat, <span class="dv">20</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb1-24"><a href="#cb1-24"></a>  <span class="fu">kable</span>(<span class="at">align =</span> <span class="st">"c"</span>, <span class="at">digits =</span> <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: center;">sex</th>
+<th style="text-align: center;">bodyweight</th>
+<th style="text-align: center;">odds_missing</th>
+<th style="text-align: center;">prob_missing</th>
+<th style="text-align: center;">missing</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">females</td>
+<td style="text-align: center;">3.19</td>
+<td style="text-align: center;">2.72</td>
+<td style="text-align: center;">0.73</td>
+<td style="text-align: center;">yes</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">males</td>
+<td style="text-align: center;">9.42</td>
+<td style="text-align: center;">0.14</td>
+<td style="text-align: center;">0.12</td>
+<td style="text-align: center;">yes</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">males</td>
+<td style="text-align: center;">8.89</td>
+<td style="text-align: center;">0.14</td>
+<td style="text-align: center;">0.12</td>
+<td style="text-align: center;">no</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">males</td>
+<td style="text-align: center;">8.99</td>
+<td style="text-align: center;">0.14</td>
+<td style="text-align: center;">0.12</td>
+<td style="text-align: center;">no</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">males</td>
+<td style="text-align: center;">9.84</td>
+<td style="text-align: center;">0.14</td>
+<td style="text-align: center;">0.12</td>
+<td style="text-align: center;">yes</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">males</td>
+<td style="text-align: center;">10.56</td>
+<td style="text-align: center;">0.14</td>
+<td style="text-align: center;">0.12</td>
+<td style="text-align: center;">no</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">females</td>
+<td style="text-align: center;">6.65</td>
+<td style="text-align: center;">2.72</td>
+<td style="text-align: center;">0.73</td>
+<td style="text-align: center;">yes</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">females</td>
+<td style="text-align: center;">4.23</td>
+<td style="text-align: center;">2.72</td>
+<td style="text-align: center;">0.73</td>
+<td style="text-align: center;">no</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">males</td>
+<td style="text-align: center;">11.61</td>
+<td style="text-align: center;">0.14</td>
+<td style="text-align: center;">0.12</td>
+<td style="text-align: center;">no</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">males</td>
+<td style="text-align: center;">8.84</td>
+<td style="text-align: center;">0.14</td>
+<td style="text-align: center;">0.12</td>
+<td style="text-align: center;">no</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">males</td>
+<td style="text-align: center;">10.66</td>
+<td style="text-align: center;">0.14</td>
+<td style="text-align: center;">0.12</td>
+<td style="text-align: center;">yes</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">males</td>
+<td style="text-align: center;">12.55</td>
+<td style="text-align: center;">0.14</td>
+<td style="text-align: center;">0.12</td>
+<td style="text-align: center;">no</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">females</td>
+<td style="text-align: center;">4.97</td>
+<td style="text-align: center;">2.72</td>
+<td style="text-align: center;">0.73</td>
+<td style="text-align: center;">yes</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">males</td>
+<td style="text-align: center;">9.33</td>
+<td style="text-align: center;">0.14</td>
+<td style="text-align: center;">0.12</td>
+<td style="text-align: center;">no</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">females</td>
+<td style="text-align: center;">4.99</td>
+<td style="text-align: center;">2.72</td>
+<td style="text-align: center;">0.73</td>
+<td style="text-align: center;">yes</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">males</td>
+<td style="text-align: center;">11.78</td>
+<td style="text-align: center;">0.14</td>
+<td style="text-align: center;">0.12</td>
+<td style="text-align: center;">no</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">females</td>
+<td style="text-align: center;">3.86</td>
+<td style="text-align: center;">2.72</td>
+<td style="text-align: center;">0.73</td>
+<td style="text-align: center;">yes</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">females</td>
+<td style="text-align: center;">6.37</td>
+<td style="text-align: center;">2.72</td>
+<td style="text-align: center;">0.73</td>
+<td style="text-align: center;">yes</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">females</td>
+<td style="text-align: center;">6.33</td>
+<td style="text-align: center;">2.72</td>
+<td style="text-align: center;">0.73</td>
+<td style="text-align: center;">yes</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">females</td>
+<td style="text-align: center;">5.34</td>
+<td style="text-align: center;">2.72</td>
+<td style="text-align: center;">0.73</td>
+<td style="text-align: center;">no</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Now, let’s check that we recover the original estimates that we specified; both the intercept and coefficient for sex should be about <code>5</code>.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="co"># Check that we recover the original coefficients:</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a><span class="fu">lm</span>(bodyweight <span class="sc">~</span> sex , <span class="at">data =</span> dat) <span class="sc">|&gt;</span> </span>
+<span id="cb2-3"><a href="#cb2-3"></a>  <span class="fu">tbl_regression</span>(<span class="at">intercept =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div id="nimwoszjma" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#nimwoszjma table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#nimwoszjma thead, #nimwoszjma tbody, #nimwoszjma tfoot, #nimwoszjma tr, #nimwoszjma td, #nimwoszjma th {
+  border-style: none;
+}
+
+#nimwoszjma p {
+  margin: 0;
+  padding: 0;
+}
+
+#nimwoszjma .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#nimwoszjma .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#nimwoszjma .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#nimwoszjma .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#nimwoszjma .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#nimwoszjma .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#nimwoszjma .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#nimwoszjma .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#nimwoszjma .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#nimwoszjma .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#nimwoszjma .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#nimwoszjma .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#nimwoszjma .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#nimwoszjma .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#nimwoszjma .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#nimwoszjma .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#nimwoszjma .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#nimwoszjma .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#nimwoszjma .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#nimwoszjma .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#nimwoszjma .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#nimwoszjma .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#nimwoszjma .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#nimwoszjma .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#nimwoszjma .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#nimwoszjma .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#nimwoszjma .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#nimwoszjma .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#nimwoszjma .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#nimwoszjma .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#nimwoszjma .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#nimwoszjma .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#nimwoszjma .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#nimwoszjma .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#nimwoszjma .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#nimwoszjma .gt_left {
+  text-align: left;
+}
+
+#nimwoszjma .gt_center {
+  text-align: center;
+}
+
+#nimwoszjma .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#nimwoszjma .gt_font_normal {
+  font-weight: normal;
+}
+
+#nimwoszjma .gt_font_bold {
+  font-weight: bold;
+}
+
+#nimwoszjma .gt_font_italic {
+  font-style: italic;
+}
+
+#nimwoszjma .gt_super {
+  font-size: 65%;
+}
+
+#nimwoszjma .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#nimwoszjma .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#nimwoszjma .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#nimwoszjma .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#nimwoszjma .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#nimwoszjma .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#nimwoszjma .gt_indent_5 {
+  text-indent: 25px;
+}
+</style>
+
+<table class="gt_table table table-sm table-striped small" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header gt_col_headings">
+<th id="<strong>Characteristic</strong>" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col"><strong>Characteristic</strong></th>
+<th id="<strong>Beta</strong>" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col"><strong>Beta</strong></th>
+<th id="<strong>95% CI</strong><span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;&quot;><sup>1</sup></span>" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col"><strong>95% CI</strong><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>1</sup></span></th>
+<th id="<strong>p-value</strong>" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col"><strong>p-value</strong></th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_left" headers="label">(Intercept)</td>
+<td class="gt_row gt_center" headers="estimate">5.0</td>
+<td class="gt_row gt_center" headers="ci">4.8, 5.3</td>
+<td class="gt_row gt_center" headers="p.value">&lt;0.001</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="label">sex</td>
+<td class="gt_row gt_center" headers="estimate"><br>
+</td>
+<td class="gt_row gt_center" headers="ci"><br>
+</td>
+<td class="gt_row gt_center" headers="p.value"><br>
+</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="label">&nbsp;&nbsp;&nbsp;&nbsp;females</td>
+<td class="gt_row gt_center" headers="estimate">—</td>
+<td class="gt_row gt_center" headers="ci">—</td>
+<td class="gt_row gt_center" headers="p.value"><br>
+</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="label">&nbsp;&nbsp;&nbsp;&nbsp;males</td>
+<td class="gt_row gt_center" headers="estimate">5.1</td>
+<td class="gt_row gt_center" headers="ci">4.7, 5.5</td>
+<td class="gt_row gt_center" headers="p.value">&lt;0.001</td>
+</tr>
+</tbody><tfoot class="gt_footnotes">
+<tr class="odd">
+<td colspan="4" class="gt_footnote"><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>1</sup></span> CI = Confidence Interval</td>
+</tr>
+</tfoot>
+
+</table>
+
+</div>
+</div>
+</div>
+<p>That’s good - we are on track. Finally let’s check that the simulated missing values are in proportion with what we asked.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="co"># Check expected missing proportions with tabulation</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a><span class="fu">table</span>(<span class="fu">round</span>(dat<span class="sc">$</span>prob, <span class="dv">2</span>), dat<span class="sc">$</span>missing)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>      
+       no yes
+  0.12 35  10
+  0.73 17  38</code></pre>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="fu">round</span>(<span class="fl">0.12</span><span class="sc">*</span><span class="dv">45</span>, <span class="dv">0</span>) <span class="co"># gives expectation 5/45 males with missingness</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 5</code></pre>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a><span class="fu">round</span>(<span class="fl">0.73</span><span class="sc">*</span><span class="dv">55</span>, <span class="dv">0</span>) <span class="co"># gives expectation 40/55 females with missingness</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 40</code></pre>
+</div>
+</div>
+<p>We expected about <code>5</code> males and <code>40</code> females to have missing values and ended up with <code>10</code> and <code>38</code>, respectively. Closer for females than males but that’s the nature of random sampling.</p>
+</section>
+<section id="step-1---test-whether-missingness-depends-on-sex" class="level3" data-number="3.1.2">
+<h3 data-number="3.1.2" class="anchored" data-anchor-id="step-1---test-whether-missingness-depends-on-sex"><span class="header-section-number">3.1.2</span> Step 1 - Test whether missingness depends on sex</h3>
+<p>In assessing the MCAR assumption, the first step we can take is to simply regress the missingness indicator on sex. This provides a statistical test for whether missing values in bodyweight depend on sex. Note that we don’t need the missing values themselves as this point in the diagnostic process. The logistic regression model results give:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a><span class="fu">glm</span>(missing <span class="sc">~</span> sex, <span class="at">data =</span> dat, <span class="at">family =</span> <span class="st">"binomial"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb9-2"><a href="#cb9-2"></a>  <span class="fu">tbl_regression</span>(<span class="at">intercept =</span> <span class="cn">TRUE</span>, <span class="at">exp =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb9-3"><a href="#cb9-3"></a>  <span class="fu">modify_caption</span>(<span class="st">"**Missing (outcome) vs Sex (predictor)**"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div id="kcvkjjrzcd" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#kcvkjjrzcd table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#kcvkjjrzcd thead, #kcvkjjrzcd tbody, #kcvkjjrzcd tfoot, #kcvkjjrzcd tr, #kcvkjjrzcd td, #kcvkjjrzcd th {
+  border-style: none;
+}
+
+#kcvkjjrzcd p {
+  margin: 0;
+  padding: 0;
+}
+
+#kcvkjjrzcd .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#kcvkjjrzcd .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#kcvkjjrzcd .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#kcvkjjrzcd .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#kcvkjjrzcd .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#kcvkjjrzcd .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#kcvkjjrzcd .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#kcvkjjrzcd .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#kcvkjjrzcd .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#kcvkjjrzcd .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#kcvkjjrzcd .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#kcvkjjrzcd .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#kcvkjjrzcd .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#kcvkjjrzcd .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#kcvkjjrzcd .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#kcvkjjrzcd .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#kcvkjjrzcd .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#kcvkjjrzcd .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#kcvkjjrzcd .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#kcvkjjrzcd .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#kcvkjjrzcd .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#kcvkjjrzcd .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#kcvkjjrzcd .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#kcvkjjrzcd .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#kcvkjjrzcd .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#kcvkjjrzcd .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#kcvkjjrzcd .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#kcvkjjrzcd .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#kcvkjjrzcd .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#kcvkjjrzcd .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#kcvkjjrzcd .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#kcvkjjrzcd .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#kcvkjjrzcd .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#kcvkjjrzcd .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#kcvkjjrzcd .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#kcvkjjrzcd .gt_left {
+  text-align: left;
+}
+
+#kcvkjjrzcd .gt_center {
+  text-align: center;
+}
+
+#kcvkjjrzcd .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#kcvkjjrzcd .gt_font_normal {
+  font-weight: normal;
+}
+
+#kcvkjjrzcd .gt_font_bold {
+  font-weight: bold;
+}
+
+#kcvkjjrzcd .gt_font_italic {
+  font-style: italic;
+}
+
+#kcvkjjrzcd .gt_super {
+  font-size: 65%;
+}
+
+#kcvkjjrzcd .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#kcvkjjrzcd .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#kcvkjjrzcd .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#kcvkjjrzcd .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#kcvkjjrzcd .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#kcvkjjrzcd .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#kcvkjjrzcd .gt_indent_5 {
+  text-indent: 25px;
+}
+</style>
+
+<table class="gt_table table table-sm table-striped small" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+<caption><strong>Missing (outcome) vs Sex (predictor)</strong></caption>
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header gt_col_headings">
+<th id="<strong>Characteristic</strong>" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col"><strong>Characteristic</strong></th>
+<th id="<strong>OR</strong><span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;&quot;><sup>1</sup></span>" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col"><strong>OR</strong><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>1</sup></span></th>
+<th id="<strong>95% CI</strong><span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;&quot;><sup>1</sup></span>" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col"><strong>95% CI</strong><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>1</sup></span></th>
+<th id="<strong>p-value</strong>" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col"><strong>p-value</strong></th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_left" headers="label">(Intercept)</td>
+<td class="gt_row gt_center" headers="estimate">2.24</td>
+<td class="gt_row gt_center" headers="ci">1.28, 4.06</td>
+<td class="gt_row gt_center" headers="p.value">0.006</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="label">sex</td>
+<td class="gt_row gt_center" headers="estimate"><br>
+</td>
+<td class="gt_row gt_center" headers="ci"><br>
+</td>
+<td class="gt_row gt_center" headers="p.value"><br>
+</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="label">&nbsp;&nbsp;&nbsp;&nbsp;females</td>
+<td class="gt_row gt_center" headers="estimate">—</td>
+<td class="gt_row gt_center" headers="ci">—</td>
+<td class="gt_row gt_center" headers="p.value"><br>
+</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="label">&nbsp;&nbsp;&nbsp;&nbsp;males</td>
+<td class="gt_row gt_center" headers="estimate">0.13</td>
+<td class="gt_row gt_center" headers="ci">0.05, 0.31</td>
+<td class="gt_row gt_center" headers="p.value">&lt;0.001</td>
+</tr>
+</tbody><tfoot class="gt_footnotes">
+<tr class="odd">
+<td colspan="4" class="gt_footnote"><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>1</sup></span> OR = Odds Ratio, CI = Confidence Interval</td>
+</tr>
+</tfoot>
+
+</table>
+
+</div>
+</div>
+</div>
+<p>This suggests that there is an ~ <code>87%</code> reduction in the odds of missingness for males relative to be females and this is statistically significant at the <code>5%</code> level. Knowing this piece of information <strong>rules out MCAR</strong> as the mechanism for missingness in our bodyweight variable and we can now say that MAR or MNAR causes are potential culprits. With real-world data we would normally stop at this point, as we don’t have any more information to go on. But as alluded to earlier, given these are simulated data, we know the actual missing values and can therefore continue our forensic investigations.</p>
+</section>
+<section id="step-2---test-whether-missingness-depends-on-bodyweight-within-each-category-of-sex" class="level3" data-number="3.1.3">
+<h3 data-number="3.1.3" class="anchored" data-anchor-id="step-2---test-whether-missingness-depends-on-bodyweight-within-each-category-of-sex"><span class="header-section-number">3.1.3</span> Step 2 - Test whether missingness depends on bodyweight <strong>within</strong> each category of sex</h3>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Remember, this is generally considered an untestable assumption as we typically don’t have these data.</p>
+</div>
+</div>
+<p>To perform this test we will regress bodyweight on the missingness indicator for males and females, separately, using a standard linear regression approach.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a><span class="co"># Females</span></span>
+<span id="cb10-2"><a href="#cb10-2"></a><span class="fu">lm</span>(bodyweight <span class="sc">~</span> missing, <span class="at">data =</span> <span class="fu">subset</span>(dat, sex <span class="sc">==</span> <span class="st">"females"</span>)) <span class="sc">|&gt;</span> </span>
+<span id="cb10-3"><a href="#cb10-3"></a>  <span class="fu">tbl_regression</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb10-4"><a href="#cb10-4"></a>  <span class="fu">modify_caption</span>(<span class="st">"**Females**"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div id="aukzzgwett" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#aukzzgwett table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#aukzzgwett thead, #aukzzgwett tbody, #aukzzgwett tfoot, #aukzzgwett tr, #aukzzgwett td, #aukzzgwett th {
+  border-style: none;
+}
+
+#aukzzgwett p {
+  margin: 0;
+  padding: 0;
+}
+
+#aukzzgwett .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#aukzzgwett .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#aukzzgwett .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#aukzzgwett .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#aukzzgwett .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#aukzzgwett .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#aukzzgwett .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#aukzzgwett .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#aukzzgwett .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#aukzzgwett .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#aukzzgwett .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#aukzzgwett .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#aukzzgwett .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#aukzzgwett .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#aukzzgwett .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#aukzzgwett .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#aukzzgwett .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#aukzzgwett .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#aukzzgwett .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#aukzzgwett .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#aukzzgwett .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#aukzzgwett .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#aukzzgwett .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#aukzzgwett .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#aukzzgwett .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#aukzzgwett .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#aukzzgwett .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#aukzzgwett .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#aukzzgwett .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#aukzzgwett .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#aukzzgwett .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#aukzzgwett .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#aukzzgwett .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#aukzzgwett .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#aukzzgwett .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#aukzzgwett .gt_left {
+  text-align: left;
+}
+
+#aukzzgwett .gt_center {
+  text-align: center;
+}
+
+#aukzzgwett .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#aukzzgwett .gt_font_normal {
+  font-weight: normal;
+}
+
+#aukzzgwett .gt_font_bold {
+  font-weight: bold;
+}
+
+#aukzzgwett .gt_font_italic {
+  font-style: italic;
+}
+
+#aukzzgwett .gt_super {
+  font-size: 65%;
+}
+
+#aukzzgwett .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#aukzzgwett .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#aukzzgwett .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#aukzzgwett .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#aukzzgwett .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#aukzzgwett .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#aukzzgwett .gt_indent_5 {
+  text-indent: 25px;
+}
+</style>
+
+<table class="gt_table table table-sm table-striped small" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+<caption><strong>Females</strong></caption>
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header gt_col_headings">
+<th id="<strong>Characteristic</strong>" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col"><strong>Characteristic</strong></th>
+<th id="<strong>Beta</strong>" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col"><strong>Beta</strong></th>
+<th id="<strong>95% CI</strong><span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;&quot;><sup>1</sup></span>" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col"><strong>95% CI</strong><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>1</sup></span></th>
+<th id="<strong>p-value</strong>" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col"><strong>p-value</strong></th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_left" headers="label">missing</td>
+<td class="gt_row gt_center" headers="estimate"><br>
+</td>
+<td class="gt_row gt_center" headers="ci"><br>
+</td>
+<td class="gt_row gt_center" headers="p.value"><br>
+</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="label">&nbsp;&nbsp;&nbsp;&nbsp;no</td>
+<td class="gt_row gt_center" headers="estimate">—</td>
+<td class="gt_row gt_center" headers="ci">—</td>
+<td class="gt_row gt_center" headers="p.value"><br>
+</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="label">&nbsp;&nbsp;&nbsp;&nbsp;yes</td>
+<td class="gt_row gt_center" headers="estimate">0.04</td>
+<td class="gt_row gt_center" headers="ci">-0.56, 0.63</td>
+<td class="gt_row gt_center" headers="p.value">&gt;0.9</td>
+</tr>
+</tbody><tfoot class="gt_footnotes">
+<tr class="even">
+<td colspan="4" class="gt_footnote"><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>1</sup></span> CI = Confidence Interval</td>
+</tr>
+</tfoot>
+
+</table>
+
+</div>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a><span class="co"># Males</span></span>
+<span id="cb11-2"><a href="#cb11-2"></a><span class="fu">lm</span>(bodyweight <span class="sc">~</span> missing, <span class="at">data =</span> <span class="fu">subset</span>(dat, sex <span class="sc">==</span> <span class="st">"males"</span>)) <span class="sc">|&gt;</span> </span>
+<span id="cb11-3"><a href="#cb11-3"></a>  <span class="fu">tbl_regression</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb11-4"><a href="#cb11-4"></a>  <span class="fu">modify_caption</span>(<span class="st">"**Males**"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div id="mniekvybze" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#mniekvybze table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#mniekvybze thead, #mniekvybze tbody, #mniekvybze tfoot, #mniekvybze tr, #mniekvybze td, #mniekvybze th {
+  border-style: none;
+}
+
+#mniekvybze p {
+  margin: 0;
+  padding: 0;
+}
+
+#mniekvybze .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#mniekvybze .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#mniekvybze .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#mniekvybze .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#mniekvybze .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#mniekvybze .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#mniekvybze .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#mniekvybze .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#mniekvybze .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#mniekvybze .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#mniekvybze .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#mniekvybze .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#mniekvybze .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#mniekvybze .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#mniekvybze .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#mniekvybze .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#mniekvybze .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#mniekvybze .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#mniekvybze .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#mniekvybze .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#mniekvybze .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#mniekvybze .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#mniekvybze .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#mniekvybze .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#mniekvybze .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#mniekvybze .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#mniekvybze .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#mniekvybze .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#mniekvybze .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#mniekvybze .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#mniekvybze .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#mniekvybze .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#mniekvybze .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#mniekvybze .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#mniekvybze .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#mniekvybze .gt_left {
+  text-align: left;
+}
+
+#mniekvybze .gt_center {
+  text-align: center;
+}
+
+#mniekvybze .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#mniekvybze .gt_font_normal {
+  font-weight: normal;
+}
+
+#mniekvybze .gt_font_bold {
+  font-weight: bold;
+}
+
+#mniekvybze .gt_font_italic {
+  font-style: italic;
+}
+
+#mniekvybze .gt_super {
+  font-size: 65%;
+}
+
+#mniekvybze .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#mniekvybze .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#mniekvybze .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#mniekvybze .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#mniekvybze .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#mniekvybze .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#mniekvybze .gt_indent_5 {
+  text-indent: 25px;
+}
+</style>
+
+<table class="gt_table table table-sm table-striped small" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+<caption><strong>Males</strong></caption>
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header gt_col_headings">
+<th id="<strong>Characteristic</strong>" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col"><strong>Characteristic</strong></th>
+<th id="<strong>Beta</strong>" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col"><strong>Beta</strong></th>
+<th id="<strong>95% CI</strong><span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;&quot;><sup>1</sup></span>" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col"><strong>95% CI</strong><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>1</sup></span></th>
+<th id="<strong>p-value</strong>" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col"><strong>p-value</strong></th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_left" headers="label">missing</td>
+<td class="gt_row gt_center" headers="estimate"><br>
+</td>
+<td class="gt_row gt_center" headers="ci"><br>
+</td>
+<td class="gt_row gt_center" headers="p.value"><br>
+</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="label">&nbsp;&nbsp;&nbsp;&nbsp;no</td>
+<td class="gt_row gt_center" headers="estimate">—</td>
+<td class="gt_row gt_center" headers="ci">—</td>
+<td class="gt_row gt_center" headers="p.value"><br>
+</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="label">&nbsp;&nbsp;&nbsp;&nbsp;yes</td>
+<td class="gt_row gt_center" headers="estimate">0.02</td>
+<td class="gt_row gt_center" headers="ci">-0.63, 0.67</td>
+<td class="gt_row gt_center" headers="p.value">&gt;0.9</td>
+</tr>
+</tbody><tfoot class="gt_footnotes">
+<tr class="even">
+<td colspan="4" class="gt_footnote"><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>1</sup></span> CI = Confidence Interval</td>
+</tr>
+</tfoot>
+
+</table>
+
+</div>
+</div>
+</div>
+<p>The coefficient for missingness is not statistically significant in either subgroup which lends weight to our assertion that the missingness in bodyweight has a potential MAR cause. It’s always helpful to visualise the data as well, so let’s do that by making some boxplots:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a><span class="co"># Boxplots of distributions by sex</span></span>
+<span id="cb12-2"><a href="#cb12-2"></a><span class="fu">ggplot</span>(dat, <span class="fu">aes</span>(<span class="at">x =</span> sex, <span class="at">y =</span> bodyweight, <span class="at">fill =</span> missing)) <span class="sc">+</span></span>
+<span id="cb12-3"><a href="#cb12-3"></a>  <span class="fu">geom_boxplot</span>() <span class="sc">+</span></span>
+<span id="cb12-4"><a href="#cb12-4"></a>  <span class="fu">geom_dotplot</span>(<span class="at">binaxis =</span> <span class="st">'y'</span>, <span class="at">stackdir =</span> <span class="st">'center'</span>, <span class="at">dotsize =</span> <span class="fl">0.5</span>, <span class="at">position =</span> <span class="fu">position_dodge</span>(<span class="fl">0.75</span>)) <span class="sc">+</span></span>
+<span id="cb12-5"><a href="#cb12-5"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">20</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="1152"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>I will wrap up this section with the suggestion that there’s actually a more succinct (if not slightly more complex), equivalent approach that integrates both Steps 1 and 2 within a single model framework. Here we modify the model slightly to include an interaction term between the missingness indicator and sex (but again this requires knowledge of the missing values).</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a><span class="fu">lm</span>(bodyweight <span class="sc">~</span> missing <span class="sc">*</span> sex, <span class="at">data =</span> dat) <span class="sc">|&gt;</span> </span>
+<span id="cb13-2"><a href="#cb13-2"></a>  <span class="fu">tbl_regression</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb13-3"><a href="#cb13-3"></a>  <span class="fu">modify_caption</span>(<span class="st">"**Interaction Model**"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div id="jiupsdazgm" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#jiupsdazgm table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#jiupsdazgm thead, #jiupsdazgm tbody, #jiupsdazgm tfoot, #jiupsdazgm tr, #jiupsdazgm td, #jiupsdazgm th {
+  border-style: none;
+}
+
+#jiupsdazgm p {
+  margin: 0;
+  padding: 0;
+}
+
+#jiupsdazgm .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#jiupsdazgm .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#jiupsdazgm .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#jiupsdazgm .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#jiupsdazgm .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#jiupsdazgm .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#jiupsdazgm .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#jiupsdazgm .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#jiupsdazgm .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#jiupsdazgm .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#jiupsdazgm .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#jiupsdazgm .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#jiupsdazgm .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#jiupsdazgm .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#jiupsdazgm .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#jiupsdazgm .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#jiupsdazgm .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#jiupsdazgm .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#jiupsdazgm .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#jiupsdazgm .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#jiupsdazgm .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#jiupsdazgm .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#jiupsdazgm .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#jiupsdazgm .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#jiupsdazgm .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#jiupsdazgm .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#jiupsdazgm .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#jiupsdazgm .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#jiupsdazgm .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#jiupsdazgm .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#jiupsdazgm .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#jiupsdazgm .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#jiupsdazgm .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#jiupsdazgm .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#jiupsdazgm .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#jiupsdazgm .gt_left {
+  text-align: left;
+}
+
+#jiupsdazgm .gt_center {
+  text-align: center;
+}
+
+#jiupsdazgm .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#jiupsdazgm .gt_font_normal {
+  font-weight: normal;
+}
+
+#jiupsdazgm .gt_font_bold {
+  font-weight: bold;
+}
+
+#jiupsdazgm .gt_font_italic {
+  font-style: italic;
+}
+
+#jiupsdazgm .gt_super {
+  font-size: 65%;
+}
+
+#jiupsdazgm .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#jiupsdazgm .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#jiupsdazgm .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#jiupsdazgm .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#jiupsdazgm .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#jiupsdazgm .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#jiupsdazgm .gt_indent_5 {
+  text-indent: 25px;
+}
+</style>
+
+<table class="gt_table table table-sm table-striped small" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+<caption><strong>Interaction Model</strong></caption>
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header gt_col_headings">
+<th id="<strong>Characteristic</strong>" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col"><strong>Characteristic</strong></th>
+<th id="<strong>Beta</strong>" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col"><strong>Beta</strong></th>
+<th id="<strong>95% CI</strong><span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;&quot;><sup>1</sup></span>" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col"><strong>95% CI</strong><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>1</sup></span></th>
+<th id="<strong>p-value</strong>" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col"><strong>p-value</strong></th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_left" headers="label">missing</td>
+<td class="gt_row gt_center" headers="estimate"><br>
+</td>
+<td class="gt_row gt_center" headers="ci"><br>
+</td>
+<td class="gt_row gt_center" headers="p.value"><br>
+</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="label">&nbsp;&nbsp;&nbsp;&nbsp;no</td>
+<td class="gt_row gt_center" headers="estimate">—</td>
+<td class="gt_row gt_center" headers="ci">—</td>
+<td class="gt_row gt_center" headers="p.value"><br>
+</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="label">&nbsp;&nbsp;&nbsp;&nbsp;yes</td>
+<td class="gt_row gt_center" headers="estimate">0.04</td>
+<td class="gt_row gt_center" headers="ci">-0.52, 0.59</td>
+<td class="gt_row gt_center" headers="p.value">0.9</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="label">sex</td>
+<td class="gt_row gt_center" headers="estimate"><br>
+</td>
+<td class="gt_row gt_center" headers="ci"><br>
+</td>
+<td class="gt_row gt_center" headers="p.value"><br>
+</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="label">&nbsp;&nbsp;&nbsp;&nbsp;females</td>
+<td class="gt_row gt_center" headers="estimate">—</td>
+<td class="gt_row gt_center" headers="ci">—</td>
+<td class="gt_row gt_center" headers="p.value"><br>
+</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="label">&nbsp;&nbsp;&nbsp;&nbsp;males</td>
+<td class="gt_row gt_center" headers="estimate">5.1</td>
+<td class="gt_row gt_center" headers="ci">4.5, 5.7</td>
+<td class="gt_row gt_center" headers="p.value">&lt;0.001</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="label">missing * sex</td>
+<td class="gt_row gt_center" headers="estimate"><br>
+</td>
+<td class="gt_row gt_center" headers="ci"><br>
+</td>
+<td class="gt_row gt_center" headers="p.value"><br>
+</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="label">&nbsp;&nbsp;&nbsp;&nbsp;yes * males</td>
+<td class="gt_row gt_center" headers="estimate">-0.02</td>
+<td class="gt_row gt_center" headers="ci">-0.90, 0.87</td>
+<td class="gt_row gt_center" headers="p.value">&gt;0.9</td>
+</tr>
+</tbody><tfoot class="gt_footnotes">
+<tr class="odd">
+<td colspan="4" class="gt_footnote"><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>1</sup></span> CI = Confidence Interval</td>
+</tr>
+</tfoot>
+
+</table>
+
+</div>
+</div>
+</div>
+<p>In this framework we can cut straight to the chase in the expectation that if the MAR assumption were true for these data, than the statistical tests for both the coefficients on missingness and the interaction between missingness and sex would not be statistically significant - in other words there would be no evidence against the null hypotheses that both of these coefficients were zero (i.e.&nbsp;they are probably zero!)</p>
+</section>
+</section>
+</section>
+<section id="approaches-to-handling-missing-data-in-your-analysis" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Approaches to Handling Missing Data in Your Analysis</h1>
+<p>We’ve talked a lot about the theory of missing data mechanisms. But let’s now consider the applied side of the coin - what can we actually do about the problem?</p>
+<section id="complete-case-analysis-cca-aka---listwise-deletion" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="complete-case-analysis-cca-aka---listwise-deletion"><span class="header-section-number">4.1</span> Complete Case Analysis (CCA) [AKA - Listwise Deletion]</h2>
+<p>This is the default solution that we all use, even when we don’t realise we’re choosing to use it, and that’s because our software tools make the decision on our behalf. Essentially, observations in our dataset that contain missingness in any variables involved in an analysis are discarded. So, if you are running a regression model with <code>9</code> predictors and an individual has a missing value on one of those predictors, all of that individuals data will be ignored (i.e.&nbsp;they will be dropped from the analysis). It’s important then to consider here how the pattern of missingness across both observations (rows) and variables (columns) can affect the amount of data discarded and the subsequent power. For example, if you were to have <code>10</code> missing values, you would be much better off having one individual missing all <code>10</code> values than <code>10</code> individuals missing each of one <code>1</code> different value on the <code>10</code> different variables specified in the model. In the former case, your sample size decreases by <code>1</code>, whereas in the latter it decreases by <code>10</code>.</p>
+<p>CCA is only considered to produce unbiased results when the assumption of MCAR holds. When the amount of missing data is small (say less than <code>5%</code>) than it may not matter all that much even if we assume incorrectly, but with larger amounts of missingness it may be prudent to consider an alternative method in attempting to deal with the problem. This <a href="https://www.annualreviews.org/content/journals/10.1146/annurev.psych.58.110405.085530">paper</a> goes into some of these issues in more detail and is certainly worth a read.</p>
+</section>
+<section id="single-imputation-methods" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="single-imputation-methods"><span class="header-section-number">4.2</span> Single Imputation Methods</h2>
+<p>Another relatively quick fix is to impute the missing values with some single “fixed” value - typically the mean or median is used. Unfortunately, while single imputation methods solve the problem of information wastefulness and loss of power, they produce potentially more biased results. Consequently CCA is still regarded as a better choice in handling missingness between the two.</p>
+</section>
+<section id="multiple-imputation-mi" class="level2" data-number="4.3">
+<h2 data-number="4.3" class="anchored" data-anchor-id="multiple-imputation-mi"><span class="header-section-number">4.3</span> Multiple Imputation (MI)</h2>
+<p>I will end today’s post by introducing the idea of multiple imputation. There is no doubt that this approach requires more work on the analyst’s part than the other two options, but the rewards are likely worth it. In contrast to single imputation where we consider the substituted value “fixed”, MI uses the distribution of the observed data to estimate multiple possible “placeholder” values. Ultimately, this allows us to account for the uncertainty around the true value, and obtain approximately unbiased estimates (under the assumption of MAR).</p>
+<p>MI can be thought of in broad terms as a three-step procedure:</p>
+<ol type="1">
+<li>Multiple plausible “complete” versions of the original incomplete dataset are created by sampling values based on a statistical model that accurately describes the data (plus a random error component).</li>
+<li>Each imputed dataset is analysed using standard statistical methods, resulting in multiple (<em>m)</em> parameter estimates (due only to the differences in the imputed values).</li>
+<li>The estimates are pooled in an overall statistical analysis in which the uncertainty in the imputed missing values are incorporated in the standard errors and significance tests.</li>
+</ol>
+<p>In this last step, the <em>m</em> parameter estimates are pooled, by simply averaging them, into one estimate, and the variance of the estimate calculated. The estimate pooling by simple averaging is the conceptually simple part. How we arrive at the variance of that estimate is the part that may be a bit more complex to grasp. In computing the overall variance, “within” and “between” variance estimates need to be combined. The within-variance represents the usual “noise” in an estimate (within a dataset) that is always present independent of whether one is peforming MI or not. The between-variance, however, represents the variance in an estimate (across datasets) and addresses how much uncertainty is due to the “guessing” done to fill in the missing values during the MI procedure.</p>
+<p>As mentioned above, under the right conditions, the pooled estimates are unbiased and have the correct statistical properties. It’s for this reason (in addition to others) that MI is widely regarded as the gold standard method for handling missing data in clinical research.</p>
+<p>And I think that’s a good place to take a pause and let you catch your breath. Next time I will introduce MI to you by way of example, so hopefully that will be a little less dry than what we have discussed (but needed to discuss), today. Do stay tuned…</p>
+
+
+<!-- -->
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+    const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+    const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+    let newTheme = '';
+    if(darkModeDefault) {
+      newTheme = isAlternate ? baseTheme : alternateTheme;
+    } else {
+      newTheme = isAlternate ? alternateTheme : baseTheme;
+    }
+    const changeGiscusTheme = () => {
+      // From: https://github.com/giscus/giscus/issues/336
+      const sendMessage = (message) => {
+        const iframe = document.querySelector('iframe.giscus-frame');
+        if (!iframe) return;
+        iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+      }
+      sendMessage({
+        setConfig: {
+          theme: newTheme
+        }
+      });
+    }
+    const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+    if (isGiscussLoaded) {
+      changeGiscusTheme();
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  const darkModeDefault = false;
+  let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+    toggleGiscusIfUsed(toAlternate, darkModeDefault);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  const viewSource = window.document.getElementById('quarto-view-source') ||
+                     window.document.getElementById('quarto-code-tools-source');
+  if (viewSource) {
+    const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+    viewSource.addEventListener("click", function(e) {
+      if (sourceUrl) {
+        // rstudio viewer pane
+        if (/\bcapabilities=\b/.test(window.location)) {
+          window.open(sourceUrl);
+        } else {
+          window.location.href = sourceUrl;
+        }
+      } else {
+        const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+        modal.show();
+      }
+      return false;
+    });
+  }
+  function toggleCodeHandler(show) {
+    return function(e) {
+      const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
+      for (let i=0; i<detailsSrc.length; i++) {
+        const details = detailsSrc[i].parentElement;
+        if (show) {
+          details.open = true;
+        } else {
+          details.removeAttribute("open");
+        }
+      }
+      const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
+      const fromCls = show ? "hidden" : "unhidden";
+      const toCls = show ? "unhidden" : "hidden";
+      for (let i=0; i<cellCodeDivs.length; i++) {
+        const codeDiv = cellCodeDivs[i];
+        if (codeDiv.classList.contains(fromCls)) {
+          codeDiv.classList.remove(fromCls);
+          codeDiv.classList.add(toCls);
+        } 
+      }
+      return false;
+    }
+  }
+  const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+  if (hideAllCode) {
+    hideAllCode.addEventListener("click", toggleCodeHandler(false));
+  }
+  const showAllCode = window.document.getElementById("quarto-show-all-code");
+  if (showAllCode) {
+    showAllCode.addEventListener("click", toggleCodeHandler(true));
+  }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<script src="https://giscus.app/client.js" data-repo="pgseye/Weekly_Stats_Tips" data-repo-id="R_kgDOKvfOfQ" data-category="General" data-category-id="DIC_kwDOKvfOfc4CbFWq" data-mapping="title" data-reactions-enabled="1" data-emit-metadata="0" data-input-position="top" data-theme="light" data-lang="en" crossorigin="anonymous" async="">
+</script>
+<input type="hidden" id="giscus-base-theme" value="light">
+<input type="hidden" id="giscus-alt-theme" value="dark"><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="sourceCode" id="cb14" data-shortcodes="false"><pre class="sourceCode numberSource markdown number-lines code-with-copy"><code class="sourceCode markdown"><span id="cb14-1"><a href="#cb14-1"></a><span class="co">---</span></span>
+<span id="cb14-2"><a href="#cb14-2"></a><span class="an">title:</span><span class="co"> "Missing Data and Multiple Imputation for Dummies (Part 1)"</span></span>
+<span id="cb14-3"><a href="#cb14-3"></a><span class="an">date:</span><span class="co"> 2025-02-07</span></span>
+<span id="cb14-4"><a href="#cb14-4"></a><span class="an">categories:</span><span class="co"> [code, concept, analysis]</span></span>
+<span id="cb14-5"><a href="#cb14-5"></a><span class="co">#image: "images/image.jpg"</span></span>
+<span id="cb14-6"><a href="#cb14-6"></a><span class="an">description:</span><span class="co"> "The core concepts and a simple example to get you up and running with MI in your next analysis."</span></span>
+<span id="cb14-7"><a href="#cb14-7"></a><span class="co">---</span></span>
+<span id="cb14-8"><a href="#cb14-8"></a></span>
+<span id="cb14-9"><a href="#cb14-9"></a>Welcome back to Stats Tips 2025!</span>
+<span id="cb14-10"><a href="#cb14-10"></a></span>
+<span id="cb14-11"><a href="#cb14-11"></a>We're going to hit the ground running today given you should all be revitalised from a hopefully restful break, and talk about a pervasive problem in data analyses that can be quite frustrating to deal with - missing data. But don't fret! There is a solution and we'll talk about that as well - multiple imputation. However, as a single post I fear the lengthy nature of what we need to cover on this topic will cause you to fall back asleep face-first into your morning porridge, so I'm going to split this over two posts. This week we'll focus on the missing data problem itself and in the next post I will then go on to introduce multiple imputation and provide a practical example of its application.</span>
+<span id="cb14-12"><a href="#cb14-12"></a></span>
+<span id="cb14-13"><a href="#cb14-13"></a><span class="fu"># Background</span></span>
+<span id="cb14-14"><a href="#cb14-14"></a></span>
+<span id="cb14-15"><a href="#cb14-15"></a>I can recall only a handful of times that I've had a fully intact dataset and those have been from relatively small clinical trials with great efforts expended to ensure patients are followed up. All bets tend to be off with observational data - missing data are a fact of life in clinical research.</span>
+<span id="cb14-16"><a href="#cb14-16"></a></span>
+<span id="cb14-17"><a href="#cb14-17"></a>Consequently, I think we either just take that fact for granted and assume the default position of doing nothing, believing nothing **should** be done, or, being aware of the missingness we do have, elect to sweep the problem under the carpet and hope that no-one notices. Either way, the problem is that missing data can directly affect the validity of our results. I don't think I am saying anything controversial then when I suggest that not only should we **not** ignore the missingness in our data, but we should be completely transparent about it, ensuring we quantify it and report it, preferably at the individual variable level. Unfortunately, unless things have changed in the decade since the publication of <span class="co">[</span><span class="ot">this</span><span class="co">](https://bmcmedresmethodol.biomedcentral.com/articles/10.1186/1471-2288-12-96)</span> paper, it doesn't appear that this is being done with acceptable frequency.</span>
+<span id="cb14-18"><a href="#cb14-18"></a></span>
+<span id="cb14-19"><a href="#cb14-19"></a>So, in these posts I want to talk about what we can actually do about missingness, given that we are likely to have it in our next dataset. Before we get to that though, I think it's important to first introduce the theoretical mechanisms by which missingness can occur, because if you read anything in the missing data literature, you will come across these terms. A forewarning, though, the nomenclature is confusing (I find at least), so don't get worried if the individual terms don't imbue you with an intuitive sense of what is happening in your data. Be aware that the definitions exist and endeavour to have a basic understanding of what they mean. But also know that we are actually somewhat limited in our ability to identify the specific mechanism in the first place (I'll explain why a little later).</span>
+<span id="cb14-20"><a href="#cb14-20"></a></span>
+<span id="cb14-21"><a href="#cb14-21"></a><span class="fu"># Missing Data Mechanisms</span></span>
+<span id="cb14-22"><a href="#cb14-22"></a></span>
+<span id="cb14-23"><a href="#cb14-23"></a>The classical missing data taxonomy was conceived by <span class="co">[</span><span class="ot">Rubin</span><span class="co">](https://www.jstor.org/stable/2335739)</span> in 1976 and consists of three categories:</span>
+<span id="cb14-24"><a href="#cb14-24"></a></span>
+<span id="cb14-25"><a href="#cb14-25"></a><span class="ss">-   </span>Missing Completely at Random (MCAR)</span>
+<span id="cb14-26"><a href="#cb14-26"></a></span>
+<span id="cb14-27"><a href="#cb14-27"></a><span class="ss">-   </span>Missing at Random (MAR)</span>
+<span id="cb14-28"><a href="#cb14-28"></a></span>
+<span id="cb14-29"><a href="#cb14-29"></a><span class="ss">-   </span>Missing Not at Random (MNAR)</span>
+<span id="cb14-30"><a href="#cb14-30"></a></span>
+<span id="cb14-31"><a href="#cb14-31"></a>In the following discussion it is helpful to think about the various mechanisms in the context of "unobserved" or "unknown" variables and "observed" or "known" variables. When we impute data, using the chained equation approach to multiple imputation at least, we do so in a modelling framework. We use data that we have (i.e. observed/known data) to predict or impute, data that we don't have (i.e. unobserved/unknown data). Thus, when we have missingness on some variable (be it an outcome OR predictor in our own data), we consider it unobserved/unknown and equate that with the outcome in a statistical model. In the same vein, variables that might be helpful in imputing that missingness are considered observed/known and we equate those with the predictor/s in a statistical model.</span>
+<span id="cb14-32"><a href="#cb14-32"></a></span>
+<span id="cb14-33"><a href="#cb14-33"></a>Just keep in mind not to confuse these ideas with what may be a distinct outcome and predictor/s in your own data. For the express purposes of imputation, an outcome variable in your dataset may serve as an observed/known variable for some other variable, and similarly, a predictor variable in your dataset may be an unobserved/unknown variable requiring imputation. (Hopefully that is not too confusing!)</span>
+<span id="cb14-34"><a href="#cb14-34"></a></span>
+<span id="cb14-35"><a href="#cb14-35"></a><span class="fu">## Missing Completely at Random (MCAR)</span></span>
+<span id="cb14-36"><a href="#cb14-36"></a></span>
+<span id="cb14-37"><a href="#cb14-37"></a>Data are considered to be Missing Completely at Random (MCAR) if the probability of a missing value neither depends on any observed or unobserved data. Let's consider an example where we survey individuals about their bodyweight and sex (amongst other questions). In this case missingness on bodyweight would be considered MCAR if some individuals just didn't see that particular question. Participants with missing data are then a simple random subsample of all available participants, independent of whether they were male or female, obese or non-obese. As a result, the exclusion of such individuals from any analyses maintains the representativeness of the original sample and aside from compromising power, does not bias the results.</span>
+<span id="cb14-38"><a href="#cb14-38"></a></span>
+<span id="cb14-39"><a href="#cb14-39"></a>Unfortunately, MCAR is both the most restrictive and most unrealistic mechanism to assume one's data obeys.</span>
+<span id="cb14-40"><a href="#cb14-40"></a></span>
+<span id="cb14-41"><a href="#cb14-41"></a><span class="fu">## Missing at Random (MAR)</span></span>
+<span id="cb14-42"><a href="#cb14-42"></a></span>
+<span id="cb14-43"><a href="#cb14-43"></a>Data are considered to be Missing at Random (MAR) if the probability of a missing value depends (or is conditional) on observed data, and within categories of the observed data, the distribution of missing and non-missing values is the same (i.e. MCAR within categories). Confusing, I know, but let me try and solidify this idea using the example above. In this context, missingness on bodyweight would be considered MAR if:</span>
+<span id="cb14-44"><a href="#cb14-44"></a></span>
+<span id="cb14-45"><a href="#cb14-45"></a><span class="ss">1.  </span>Females, in general, were less willing to reveal their bodyweight than males (i.e. missingness is dependent on sex).</span>
+<span id="cb14-46"><a href="#cb14-46"></a></span>
+<span id="cb14-47"><a href="#cb14-47"></a><span class="ss">2.  </span>Furthermore, if we looked at males and females separately, and **if** we knew the missing bodyweight values, we should find similar average observed and unobserved (missing) bodyweight values (i.e. MCAR *within* categories).</span>
+<span id="cb14-48"><a href="#cb14-48"></a></span>
+<span id="cb14-49"><a href="#cb14-49"></a>Now, we can test for the first assumption, but we can't really test for the second - because we don't know what we don't know. I will give you an example of this shortly.</span>
+<span id="cb14-50"><a href="#cb14-50"></a></span>
+<span id="cb14-51"><a href="#cb14-51"></a>The assumptions underpinning the MAR mechanism are more general and more realistic than those for MCAR. If data are MCAR than they are also considered MAR, and therefore most modern missing data methods generally start from the MAR assumption.</span>
+<span id="cb14-52"><a href="#cb14-52"></a></span>
+<span id="cb14-53"><a href="#cb14-53"></a><span class="fu">## Missing Not at Random (MNAR)</span></span>
+<span id="cb14-54"><a href="#cb14-54"></a></span>
+<span id="cb14-55"><a href="#cb14-55"></a>Data are considered to be Missing Not at Random (MNAR) if the probability of a missing value depends on unobserved data. In other words, the probability of missingness is related to the missing values themselves (had we been able to actually observe them). In the context of our example, missingness on bodyweight would be considered MNAR if heavier individuals, in general, were less willing to reveal their bodyweight than lighter individuals (i.e. missingness is dependent on bodyweight itself).</span>
+<span id="cb14-56"><a href="#cb14-56"></a></span>
+<span id="cb14-57"><a href="#cb14-57"></a>MNAR is the most complex missing data mechanism to deal with, and there really is no good solution to the problem, because as is the case for the second MAR assumption described above - we simply don't know what we don't know. MNAR is also referred to as "non-ignorable" because the missing data mechanism itself has to be modelled if you assume your data fall into this category - pattern mixture models are typically employed for this purpose. In contrast, MCAR and MAR mechanisms are both considered "ignorable" because we don't have to include any information about the missingness itself when we make these assumptions about our data.</span>
+<span id="cb14-58"><a href="#cb14-58"></a></span>
+<span id="cb14-59"><a href="#cb14-59"></a><span class="fu"># Diagnosing the Missingness Mechanism</span></span>
+<span id="cb14-60"><a href="#cb14-60"></a></span>
+<span id="cb14-61"><a href="#cb14-61"></a>So now that you're fully armed with the knowledge of what the various mechanisms mean for your data - "how do I identify which mechanism I have at play?" - you rightly ask. Unfortunately, as with many questions in statistics, there is no easy answer to this. What I can tell you is that diagnosing missingness is more about what mechanism you **don't** have rather than what mechanism you potentially **do**. In other words, we can't really be certain that our missing data are MCAR, for example, but instead we can say that our missing data are not MAR, but could be MCAR *or* MNAR. Similarly, we can't really be 100% certain that our missing data are MAR, but instead we can say that our missing data are not MCAR, but could be MAR **or** MNAR. Do you note the recurring fly in the ointment here? The fact that we usually can't observe the missing data means we can never easily rule out MNAR as a potential cause.</span>
+<span id="cb14-62"><a href="#cb14-62"></a></span>
+<span id="cb14-63"><a href="#cb14-63"></a>OK, you say - please stop hurting my brain and just tell me what to do. Well, there is a formal test of the MCAR assumption called Little's test and it's <span class="co">[</span><span class="ot">available</span><span class="co">](https://search.r-project.org/CRAN/refmans/misty/html/na.test.html)</span> in the <span class="in">`misty`</span> package in <span class="in">`R`</span>. This test is multivariate in nature, so it examines the entire dataset in one fell swoop. The alternative 'manual' way is to create dummy variables indicating missingness on any particular variable and look for associations between this and other variables. Let me use a relatively simple simulation to try and illustrate this second method in action.</span>
+<span id="cb14-64"><a href="#cb14-64"></a></span>
+<span id="cb14-65"><a href="#cb14-65"></a><span class="fu">## Simulating MAR data</span></span>
+<span id="cb14-66"><a href="#cb14-66"></a></span>
+<span id="cb14-67"><a href="#cb14-67"></a>The idea of this simulation is to show you how one would hypothetically test the null hypothesis that missingness on a particular variable were MCAR. If the test were statistically significant, that would provide evidence against the null and allow us to say that the missingness were (at least) **not** MCAR. To deduce the mechanism beyond that requires knowledge of the missing values themselves - which, with being simulated data, we are lucky enough to have. So we can actually take the diagnostic exercise to its conclusion with these fake data.</span>
+<span id="cb14-68"><a href="#cb14-68"></a></span>
+<span id="cb14-69"><a href="#cb14-69"></a><span class="fu">### Simulation</span></span>
+<span id="cb14-70"><a href="#cb14-70"></a></span>
+<span id="cb14-71"><a href="#cb14-71"></a>For this example, I will simulate <span class="in">`100`</span> observations, making males, on average, <span class="in">`5`</span> kg heavier than females. I will then create a missingness indicator variable such that the probability of missingness is \~ <span class="in">`12%`</span> for males and <span class="in">`73%`</span> for females (i.e. as per above - females, in general, were less willing to reveal their bodyweight than males). The first <span class="in">`20`</span> rows of the resulting dataframe look like:</span>
+<span id="cb14-72"><a href="#cb14-72"></a></span>
+<span id="cb14-75"><a href="#cb14-75"></a><span class="in">```{r}</span></span>
+<span id="cb14-76"><a href="#cb14-76"></a><span class="co">#| message: false</span></span>
+<span id="cb14-77"><a href="#cb14-77"></a><span class="co">#| warning: false</span></span>
+<span id="cb14-78"><a href="#cb14-78"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb14-79"><a href="#cb14-79"></a><span class="fu">library</span>(kableExtra)</span>
+<span id="cb14-80"><a href="#cb14-80"></a><span class="fu">library</span>(gtsummary)</span>
+<span id="cb14-81"><a href="#cb14-81"></a></span>
+<span id="cb14-82"><a href="#cb14-82"></a><span class="co"># Simulation</span></span>
+<span id="cb14-83"><a href="#cb14-83"></a>n <span class="ot">&lt;-</span> <span class="dv">100</span>                   <span class="co"># set number of obs to simulate</span></span>
+<span id="cb14-84"><a href="#cb14-84"></a><span class="fu">set.seed</span>(<span class="dv">1234</span>)             <span class="co"># set seed for reproducibility</span></span>
+<span id="cb14-85"><a href="#cb14-85"></a>sex <span class="ot">&lt;-</span>  <span class="fu">rbinom</span>(n, <span class="dv">1</span>, <span class="fl">0.5</span>)  <span class="co"># generate sex variable ~ 50% females (0) and 50% males (1)</span></span>
+<span id="cb14-86"><a href="#cb14-86"></a><span class="co"># Generate bodyweight from regression model based on additive effect of sex - on average, males are 5 kg heavier than females</span></span>
+<span id="cb14-87"><a href="#cb14-87"></a>bodyweight <span class="ot">&lt;-</span>  <span class="dv">5</span> <span class="sc">+</span> <span class="dv">5</span> <span class="sc">*</span> sex <span class="sc">+</span> <span class="fu">rnorm</span>(n, <span class="dv">0</span>, <span class="dv">1</span>)</span>
+<span id="cb14-88"><a href="#cb14-88"></a><span class="co"># Now, let's create some missingness in bodyweight at random (where the missingness in bodyweight depends on sex)</span></span>
+<span id="cb14-89"><a href="#cb14-89"></a><span class="co"># To do this we will leave the actual bodyweight values intact (as we will need them later) and create a separate missing variable to indicate which values would be absent in a real dataset.</span></span>
+<span id="cb14-90"><a href="#cb14-90"></a><span class="co"># The model intercept and coefficient have been selected so that the probability of missingness will be ~ 12% for males and ~ 73% for females</span></span>
+<span id="cb14-91"><a href="#cb14-91"></a>logodds_missing <span class="ot">&lt;-</span>  <span class="dv">1</span> <span class="sc">-</span> <span class="dv">3</span> <span class="sc">*</span> sex                      </span>
+<span id="cb14-92"><a href="#cb14-92"></a>odds_missing <span class="ot">&lt;-</span>  <span class="fu">exp</span>(logodds_missing)               <span class="co"># calculate odds of missingness</span></span>
+<span id="cb14-93"><a href="#cb14-93"></a>prob_missing  <span class="ot">&lt;-</span>  odds_missing<span class="sc">/</span>(<span class="dv">1</span> <span class="sc">+</span> odds_missing)   <span class="co"># calculate probability of missingness</span></span>
+<span id="cb14-94"><a href="#cb14-94"></a><span class="co"># Assemble dataframe</span></span>
+<span id="cb14-95"><a href="#cb14-95"></a>dat <span class="ot">&lt;-</span>  <span class="fu">data.frame</span>(<span class="at">sex =</span> <span class="fu">factor</span>(sex, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"0"</span>, <span class="st">"1"</span>), <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"females"</span>, <span class="st">"males"</span>)),</span>
+<span id="cb14-96"><a href="#cb14-96"></a>                   <span class="at">bodyweight =</span> bodyweight,</span>
+<span id="cb14-97"><a href="#cb14-97"></a>                   <span class="at">odds_missing =</span> odds_missing,</span>
+<span id="cb14-98"><a href="#cb14-98"></a>                   <span class="at">prob_missing =</span> prob_missing,</span>
+<span id="cb14-99"><a href="#cb14-99"></a>                   <span class="at">missing =</span> <span class="fu">factor</span>(<span class="fu">rbinom</span>(n, <span class="dv">1</span>, prob_missing), <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"0"</span>, <span class="st">"1"</span>), <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"no"</span>, <span class="st">"yes"</span>)))</span>
+<span id="cb14-100"><a href="#cb14-100"></a><span class="fu">head</span>(dat, <span class="dv">20</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb14-101"><a href="#cb14-101"></a>  <span class="fu">kable</span>(<span class="at">align =</span> <span class="st">"c"</span>, <span class="at">digits =</span> <span class="dv">2</span>)</span>
+<span id="cb14-102"><a href="#cb14-102"></a><span class="in">```</span></span>
+<span id="cb14-103"><a href="#cb14-103"></a></span>
+<span id="cb14-104"><a href="#cb14-104"></a>Now, let's check that we recover the original estimates that we specified; both the intercept and coefficient for sex should be about <span class="in">`5`</span>.</span>
+<span id="cb14-105"><a href="#cb14-105"></a></span>
+<span id="cb14-108"><a href="#cb14-108"></a><span class="in">```{r}</span></span>
+<span id="cb14-109"><a href="#cb14-109"></a><span class="co"># Check that we recover the original coefficients:</span></span>
+<span id="cb14-110"><a href="#cb14-110"></a><span class="fu">lm</span>(bodyweight <span class="sc">~</span> sex , <span class="at">data =</span> dat) <span class="sc">|&gt;</span> </span>
+<span id="cb14-111"><a href="#cb14-111"></a>  <span class="fu">tbl_regression</span>(<span class="at">intercept =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb14-112"><a href="#cb14-112"></a><span class="in">```</span></span>
+<span id="cb14-113"><a href="#cb14-113"></a></span>
+<span id="cb14-114"><a href="#cb14-114"></a>That's good - we are on track. Finally let's check that the simulated missing values are in proportion with what we asked.</span>
+<span id="cb14-115"><a href="#cb14-115"></a></span>
+<span id="cb14-118"><a href="#cb14-118"></a><span class="in">```{r}</span></span>
+<span id="cb14-119"><a href="#cb14-119"></a><span class="co"># Check expected missing proportions with tabulation</span></span>
+<span id="cb14-120"><a href="#cb14-120"></a><span class="fu">table</span>(<span class="fu">round</span>(dat<span class="sc">$</span>prob, <span class="dv">2</span>), dat<span class="sc">$</span>missing)</span>
+<span id="cb14-121"><a href="#cb14-121"></a><span class="fu">round</span>(<span class="fl">0.12</span><span class="sc">*</span><span class="dv">45</span>, <span class="dv">0</span>) <span class="co"># gives expectation 5/45 males with missingness</span></span>
+<span id="cb14-122"><a href="#cb14-122"></a><span class="fu">round</span>(<span class="fl">0.73</span><span class="sc">*</span><span class="dv">55</span>, <span class="dv">0</span>) <span class="co"># gives expectation 40/55 females with missingness</span></span>
+<span id="cb14-123"><a href="#cb14-123"></a><span class="in">```</span></span>
+<span id="cb14-124"><a href="#cb14-124"></a></span>
+<span id="cb14-125"><a href="#cb14-125"></a>We expected about <span class="in">`5`</span> males and <span class="in">`40`</span> females to have missing values and ended up with <span class="in">`10`</span> and <span class="in">`38`</span>, respectively. Closer for females than males but that's the nature of random sampling.</span>
+<span id="cb14-126"><a href="#cb14-126"></a></span>
+<span id="cb14-127"><a href="#cb14-127"></a><span class="fu">### Step 1 - Test whether missingness depends on sex</span></span>
+<span id="cb14-128"><a href="#cb14-128"></a></span>
+<span id="cb14-129"><a href="#cb14-129"></a>In assessing the MCAR assumption, the first step we can take is to simply regress the missingness indicator on sex. This provides a statistical test for whether missing values in bodyweight depend on sex. Note that we don't need the missing values themselves as this point in the diagnostic process. The logistic regression model results give:</span>
+<span id="cb14-130"><a href="#cb14-130"></a></span>
+<span id="cb14-133"><a href="#cb14-133"></a><span class="in">```{r}</span></span>
+<span id="cb14-134"><a href="#cb14-134"></a><span class="fu">glm</span>(missing <span class="sc">~</span> sex, <span class="at">data =</span> dat, <span class="at">family =</span> <span class="st">"binomial"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb14-135"><a href="#cb14-135"></a>  <span class="fu">tbl_regression</span>(<span class="at">intercept =</span> <span class="cn">TRUE</span>, <span class="at">exp =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb14-136"><a href="#cb14-136"></a>  <span class="fu">modify_caption</span>(<span class="st">"**Missing (outcome) vs Sex (predictor)**"</span>)</span>
+<span id="cb14-137"><a href="#cb14-137"></a><span class="in">```</span></span>
+<span id="cb14-138"><a href="#cb14-138"></a></span>
+<span id="cb14-139"><a href="#cb14-139"></a>This suggests that there is an \~ <span class="in">`87%`</span> reduction in the odds of missingness for males relative to be females and this is statistically significant at the <span class="in">`5%`</span> level. Knowing this piece of information **rules out MCAR** as the mechanism for missingness in our bodyweight variable and we can now say that MAR or MNAR causes are potential culprits. With real-world data we would normally stop at this point, as we don't have any more information to go on. But as alluded to earlier, given these are simulated data, we know the actual missing values and can therefore continue our forensic investigations.</span>
+<span id="cb14-140"><a href="#cb14-140"></a></span>
+<span id="cb14-141"><a href="#cb14-141"></a><span class="fu">### Step 2 - Test whether missingness depends on bodyweight **within** each category of sex</span></span>
+<span id="cb14-142"><a href="#cb14-142"></a></span>
+<span id="cb14-143"><a href="#cb14-143"></a>::: callout-important</span>
+<span id="cb14-144"><a href="#cb14-144"></a>Remember, this is generally considered an untestable assumption as we typically don't have these data.</span>
+<span id="cb14-145"><a href="#cb14-145"></a>:::</span>
+<span id="cb14-146"><a href="#cb14-146"></a></span>
+<span id="cb14-147"><a href="#cb14-147"></a>To perform this test we will regress bodyweight on the missingness indicator for males and females, separately, using a standard linear regression approach.</span>
+<span id="cb14-148"><a href="#cb14-148"></a></span>
+<span id="cb14-151"><a href="#cb14-151"></a><span class="in">```{r}</span></span>
+<span id="cb14-152"><a href="#cb14-152"></a><span class="co"># Females</span></span>
+<span id="cb14-153"><a href="#cb14-153"></a><span class="fu">lm</span>(bodyweight <span class="sc">~</span> missing, <span class="at">data =</span> <span class="fu">subset</span>(dat, sex <span class="sc">==</span> <span class="st">"females"</span>)) <span class="sc">|&gt;</span> </span>
+<span id="cb14-154"><a href="#cb14-154"></a>  <span class="fu">tbl_regression</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb14-155"><a href="#cb14-155"></a>  <span class="fu">modify_caption</span>(<span class="st">"**Females**"</span>)</span>
+<span id="cb14-156"><a href="#cb14-156"></a><span class="co"># Males</span></span>
+<span id="cb14-157"><a href="#cb14-157"></a><span class="fu">lm</span>(bodyweight <span class="sc">~</span> missing, <span class="at">data =</span> <span class="fu">subset</span>(dat, sex <span class="sc">==</span> <span class="st">"males"</span>)) <span class="sc">|&gt;</span> </span>
+<span id="cb14-158"><a href="#cb14-158"></a>  <span class="fu">tbl_regression</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb14-159"><a href="#cb14-159"></a>  <span class="fu">modify_caption</span>(<span class="st">"**Males**"</span>)</span>
+<span id="cb14-160"><a href="#cb14-160"></a><span class="in">```</span></span>
+<span id="cb14-161"><a href="#cb14-161"></a></span>
+<span id="cb14-162"><a href="#cb14-162"></a>The coefficient for missingness is not statistically significant in either subgroup which lends weight to our assertion that the missingness in bodyweight has a potential MAR cause. It's always helpful to visualise the data as well, so let's do that by making some boxplots:</span>
+<span id="cb14-163"><a href="#cb14-163"></a></span>
+<span id="cb14-166"><a href="#cb14-166"></a><span class="in">```{r}</span></span>
+<span id="cb14-167"><a href="#cb14-167"></a><span class="co">#| message: false</span></span>
+<span id="cb14-168"><a href="#cb14-168"></a><span class="co">#| warning: false</span></span>
+<span id="cb14-169"><a href="#cb14-169"></a><span class="co"># Boxplots of distributions by sex</span></span>
+<span id="cb14-170"><a href="#cb14-170"></a><span class="fu">ggplot</span>(dat, <span class="fu">aes</span>(<span class="at">x =</span> sex, <span class="at">y =</span> bodyweight, <span class="at">fill =</span> missing)) <span class="sc">+</span></span>
+<span id="cb14-171"><a href="#cb14-171"></a>  <span class="fu">geom_boxplot</span>() <span class="sc">+</span></span>
+<span id="cb14-172"><a href="#cb14-172"></a>  <span class="fu">geom_dotplot</span>(<span class="at">binaxis =</span> <span class="st">'y'</span>, <span class="at">stackdir =</span> <span class="st">'center'</span>, <span class="at">dotsize =</span> <span class="fl">0.5</span>, <span class="at">position =</span> <span class="fu">position_dodge</span>(<span class="fl">0.75</span>)) <span class="sc">+</span></span>
+<span id="cb14-173"><a href="#cb14-173"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">20</span>)</span>
+<span id="cb14-174"><a href="#cb14-174"></a><span class="in">```</span></span>
+<span id="cb14-175"><a href="#cb14-175"></a></span>
+<span id="cb14-176"><a href="#cb14-176"></a>I will wrap up this section with the suggestion that there's actually a more succinct (if not slightly more complex), equivalent approach that integrates both Steps 1 and 2 within a single model framework. Here we modify the model slightly to include an interaction term between the missingness indicator and sex (but again this requires knowledge of the missing values).</span>
+<span id="cb14-177"><a href="#cb14-177"></a></span>
+<span id="cb14-180"><a href="#cb14-180"></a><span class="in">```{r}</span></span>
+<span id="cb14-181"><a href="#cb14-181"></a><span class="fu">lm</span>(bodyweight <span class="sc">~</span> missing <span class="sc">*</span> sex, <span class="at">data =</span> dat) <span class="sc">|&gt;</span> </span>
+<span id="cb14-182"><a href="#cb14-182"></a>  <span class="fu">tbl_regression</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb14-183"><a href="#cb14-183"></a>  <span class="fu">modify_caption</span>(<span class="st">"**Interaction Model**"</span>)</span>
+<span id="cb14-184"><a href="#cb14-184"></a><span class="in">```</span></span>
+<span id="cb14-185"><a href="#cb14-185"></a></span>
+<span id="cb14-186"><a href="#cb14-186"></a>In this framework we can cut straight to the chase in the expectation that if the MAR assumption were true for these data, than the statistical tests for both the coefficients on missingness and the interaction between missingness and sex would not be statistically significant - in other words there would be no evidence against the null hypotheses that both of these coefficients were zero (i.e. they are probably zero!)</span>
+<span id="cb14-187"><a href="#cb14-187"></a></span>
+<span id="cb14-188"><a href="#cb14-188"></a><span class="fu"># Approaches to Handling Missing Data in Your Analysis</span></span>
+<span id="cb14-189"><a href="#cb14-189"></a></span>
+<span id="cb14-190"><a href="#cb14-190"></a>We've talked a lot about the theory of missing data mechanisms. But let's now consider the applied side of the coin - what can we actually do about the problem?</span>
+<span id="cb14-191"><a href="#cb14-191"></a></span>
+<span id="cb14-192"><a href="#cb14-192"></a><span class="fu">## Complete Case Analysis (CCA) \[AKA - Listwise Deletion\]</span></span>
+<span id="cb14-193"><a href="#cb14-193"></a></span>
+<span id="cb14-194"><a href="#cb14-194"></a>This is the default solution that we all use, even when we don't realise we're choosing to use it, and that's because our software tools make the decision on our behalf. Essentially, observations in our dataset that contain missingness in any variables involved in an analysis are discarded. So, if you are running a regression model with <span class="in">`9`</span> predictors and an individual has a missing value on one of those predictors, all of that individuals data will be ignored (i.e. they will be dropped from the analysis). It's important then to consider here how the pattern of missingness across both observations (rows) and variables (columns) can affect the amount of data discarded and the subsequent power. For example, if you were to have <span class="in">`10`</span> missing values, you would be much better off having one individual missing all <span class="in">`10`</span> values than <span class="in">`10`</span> individuals missing each of one <span class="in">`1`</span> different value on the <span class="in">`10`</span> different variables specified in the model. In the former case, your sample size decreases by <span class="in">`1`</span>, whereas in the latter it decreases by <span class="in">`10`</span>.</span>
+<span id="cb14-195"><a href="#cb14-195"></a></span>
+<span id="cb14-196"><a href="#cb14-196"></a>CCA is only considered to produce unbiased results when the assumption of MCAR holds. When the amount of missing data is small (say less than <span class="in">`5%`</span>) than it may not matter all that much even if we assume incorrectly, but with larger amounts of missingness it may be prudent to consider an alternative method in attempting to deal with the problem. This <span class="co">[</span><span class="ot">paper</span><span class="co">](https://www.annualreviews.org/content/journals/10.1146/annurev.psych.58.110405.085530)</span> goes into some of these issues in more detail and is certainly worth a read.</span>
+<span id="cb14-197"><a href="#cb14-197"></a></span>
+<span id="cb14-198"><a href="#cb14-198"></a><span class="fu">## Single Imputation Methods</span></span>
+<span id="cb14-199"><a href="#cb14-199"></a></span>
+<span id="cb14-200"><a href="#cb14-200"></a>Another relatively quick fix is to impute the missing values with some single "fixed" value - typically the mean or median is used. Unfortunately, while single imputation methods solve the problem of information wastefulness and loss of power, they produce potentially more biased results. Consequently CCA is still regarded as a better choice in handling missingness between the two.</span>
+<span id="cb14-201"><a href="#cb14-201"></a></span>
+<span id="cb14-202"><a href="#cb14-202"></a><span class="fu">## Multiple Imputation (MI)</span></span>
+<span id="cb14-203"><a href="#cb14-203"></a></span>
+<span id="cb14-204"><a href="#cb14-204"></a>I will end today's post by introducing the idea of multiple imputation. There is no doubt that this approach requires more work on the analyst's part than the other two options, but the rewards are likely worth it. In contrast to single imputation where we consider the substituted value "fixed", MI uses the distribution of the observed data to estimate multiple possible "placeholder" values. Ultimately, this allows us to account for the uncertainty around the true value, and obtain approximately unbiased estimates (under the assumption of MAR).</span>
+<span id="cb14-205"><a href="#cb14-205"></a></span>
+<span id="cb14-206"><a href="#cb14-206"></a>MI can be thought of in broad terms as a three-step procedure:</span>
+<span id="cb14-207"><a href="#cb14-207"></a></span>
+<span id="cb14-208"><a href="#cb14-208"></a><span class="ss">1.  </span>Multiple plausible "complete" versions of the original incomplete dataset are created by sampling values based on a statistical model that accurately describes the data (plus a random error component).</span>
+<span id="cb14-209"><a href="#cb14-209"></a><span class="ss">2.  </span>Each imputed dataset is analysed using standard statistical methods, resulting in multiple (*m)* parameter estimates (due only to the differences in the imputed values).</span>
+<span id="cb14-210"><a href="#cb14-210"></a><span class="ss">3.  </span>The estimates are pooled in an overall statistical analysis in which the uncertainty in the imputed missing values are incorporated in the standard errors and significance tests.</span>
+<span id="cb14-211"><a href="#cb14-211"></a></span>
+<span id="cb14-212"><a href="#cb14-212"></a>In this last step, the *m* parameter estimates are pooled, by simply averaging them, into one estimate, and the variance of the estimate calculated. The estimate pooling by simple averaging is the conceptually simple part. How we arrive at the variance of that estimate is the part that may be a bit more complex to grasp. In computing the overall variance, "within" and "between" variance estimates need to be combined. The within-variance represents the usual "noise" in an estimate (within a dataset) that is always present independent of whether one is peforming MI or not. The between-variance, however, represents the variance in an estimate (across datasets) and addresses how much uncertainty is due to the "guessing" done to fill in the missing values during the MI procedure.</span>
+<span id="cb14-213"><a href="#cb14-213"></a></span>
+<span id="cb14-214"><a href="#cb14-214"></a>As mentioned above, under the right conditions, the pooled estimates are unbiased and have the correct statistical properties. It's for this reason (in addition to others) that MI is widely regarded as the gold standard method for handling missing data in clinical research.</span>
+<span id="cb14-215"><a href="#cb14-215"></a></span>
+<span id="cb14-216"><a href="#cb14-216"></a>And I think that's a good place to take a pause and let you catch your breath. Next time I will introduce MI to you by way of example, so hopefully that will be a little less dry than what we have discussed (but needed to discuss), today. Do stay tuned...</span>
+</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div></div></div></div></div>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
