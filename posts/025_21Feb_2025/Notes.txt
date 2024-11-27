@@ -1,0 +1,13 @@
+- For the cover image, use something generated from mice (example missing data patterns)
+- I have multiple websites set up in a tab group (MI Blog) in Safari with good info on MI. Also look at:
+"Multiple imputation by chained equations: what is it and how does it work?" - Bookends
+"Rebutting Existing Misconceptions About Multiple Imputation as a Method for Handling Missing Data" - Bookends
+"Multiple Imputation using R Sarah R Haile (sarah.haile@uzh.ch) Version 1.0 of October 1, 2019" - DTP3
+"Multiple Imputation and its Application" p13 - Textbook
+
+I think my general approach is:
+- Discuss concepts of MCAR, MAR and NMAR using sex and bodyweight.
+- Discuss complete case analysis and what we tend to use by default (unbiased under MCAR).
+- Try and simulate a simple model with age, sex and bodyweight as variables. Simulate MAR between sex and bodyweight. Then show how a logistic regression will be significant for missingness ~ sex (indicating MAR or NMAR), but it should NOT be significant for missingness ~ bodyweight WITHIN each sex (see page 14 of the above textbook - "within categories of sex, bodyweight is MCAR"). Could also show that missingness is MCAR with age as these should be independent. (I think I have done this in the accompanying 'simulation.R' script.)
+- Show an MI procedure using the dummy dataset.
+- Discuss why MI isn't being used more and that it should be used more.
