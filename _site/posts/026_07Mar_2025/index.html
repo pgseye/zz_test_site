@@ -1,0 +1,1111 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.549">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="dcterms.date" content="2025-03-07">
+<meta name="description" content="Work smarter, not harder.">
+
+<title>Test Site 2 - janitor - Your local R handypackage</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Test Site 2</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html"> 
+<span class="menu-text">About</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html"> 
+<span class="menu-text">All Posts</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+          <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#clean_names" id="toc-clean_names" class="nav-link active" data-scroll-target="#clean_names"><span class="header-section-number">1</span> clean_names()</a></li>
+  <li><a href="#tabyl" id="toc-tabyl" class="nav-link" data-scroll-target="#tabyl"><span class="header-section-number">2</span> tabyl()</a>
+  <ul>
+  <li><a href="#one-way-tabulation" id="toc-one-way-tabulation" class="nav-link" data-scroll-target="#one-way-tabulation"><span class="header-section-number">2.1</span> One-way Tabulation</a></li>
+  <li><a href="#two-way-tabulation" id="toc-two-way-tabulation" class="nav-link" data-scroll-target="#two-way-tabulation"><span class="header-section-number">2.2</span> Two-way Tabulation</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<div class="quarto-title-block"><div><h1 class="title">janitor - Your local R handypackage</h1><button type="button" class="btn code-tools-button dropdown-toggle" id="quarto-code-tools-menu" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi"></i> Code</button><ul class="dropdown-menu dropdown-menu-end" aria-labelelledby="quarto-code-tools-menu"><li><a id="quarto-show-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Show All Code</a></li><li><a id="quarto-hide-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Hide All Code</a></li><li><hr class="dropdown-divider"></li><li><a id="quarto-view-source" class="dropdown-item" href="javascript:void(0)" role="button">View Source</a></li></ul></div></div>
+  <div class="quarto-categories">
+    <div class="quarto-category">code</div>
+  </div>
+  </div>
+
+<div>
+  <div class="description">
+    Work smarter, not harder.
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">March 7, 2025</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>A (fairly) short post today. I want to introduce you to a great little <code>R</code> package that I load in every one of my scripts, because I never know when I might need to use it. <code>janitor</code> contains several functions, but there are two primary ones that I want to draw your attention to - <code>clean_names</code> and <code>tabyl</code>.</p>
+<section id="clean_names" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> clean_names()</h1>
+<p>If you have control over the names of the variables in your dataset, can I please implore you to adopt one of the two recommended naming conventions - <strong>camelCase</strong> or <strong>snake_case</strong>. I prefer the latter for its readability, so I would suggest that one if you don’t have a preference. A somewhat frustrating (and completely avoidable) issue that I sometimes have to deal with when being sent a dataset, is to spend time renaming variables. White spaces in variable names are by biggest bugbear, but the inclusion of symbols, the capitalisation of some letters, and the use of repeated identical names, follow closely behind. <code>R</code> doesn’t like any of this.</p>
+<p>If proactive measures aren’t possible, we can use <code>clean_names</code> in a reactive manner. I will use the same example provided by the package author in their <a href="https://cran.r-project.org/web/packages/janitor/vignettes/janitor.html#clean-dataframe-names-with-clean_names">vignette</a> to illustrate how useful <code>clean_names</code> can be. Let’s say we receive a spreadsheet that we import into our <code>R</code> workspace with the following column names:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="fu">library</span>(janitor)</span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="co"># Create a data.frame with dirty names</span></span>
+<span id="cb1-4"><a href="#cb1-4"></a>test_df <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(<span class="fu">matrix</span>(<span class="at">ncol =</span> <span class="dv">6</span>))</span>
+<span id="cb1-5"><a href="#cb1-5"></a><span class="fu">names</span>(test_df) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"firstName"</span>, <span class="st">"ábc@!*"</span>, <span class="st">"% successful (2009)"</span>,</span>
+<span id="cb1-6"><a href="#cb1-6"></a>                    <span class="st">"REPEAT VALUE"</span>, <span class="st">"REPEAT VALUE"</span>, <span class="st">""</span>)</span>
+<span id="cb1-7"><a href="#cb1-7"></a><span class="fu">names</span>(test_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "firstName"           "ábc@!*"              "% successful (2009)"
+[4] "REPEAT VALUE"        "REPEAT VALUE"        ""                   </code></pre>
+</div>
+</div>
+<p>Horrible!</p>
+<p>Fixing this, however, is as simple as running <code>clean_names</code> (snake_case is the default) on the dataframe:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>test_df <span class="ot">&lt;-</span>  <span class="fu">clean_names</span>(test_df)</span>
+<span id="cb3-2"><a href="#cb3-2"></a><span class="fu">names</span>(test_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "first_name"              "abc"                    
+[3] "percent_successful_2009" "repeat_value"           
+[5] "repeat_value_2"          "x"                      </code></pre>
+</div>
+</div>
+<p>Beautiful!</p>
+<p>There is some customisation available within the function and I would encourage you to check that out too.</p>
+</section>
+<section id="tabyl" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> tabyl()</h1>
+<p><code>R</code>’s base <code>table()</code> command gets the job done, but I dare anyone to say it does it nicely. Having some experience with <code>Stata</code>, its equivalent <code>tabulate</code> command provides the readability/presentability luxury of a Rolls-Royce compared to <code>table()</code>’s cramped and bland version of a Datsun Sunny 120Y (the car my good friend drove us around in while we were at Uni BTW - as I said, it gets the job done!)</p>
+<p>Let me give you an example. We’ll use the Star Wars dataset that comes with the <code>dplyr</code> package. We’re interested in first tabulating the categories of <strong>eye colour</strong> in humans, and then after that, cross-tabulating <strong>eye-colour</strong> with <strong>gender</strong>.</p>
+<section id="one-way-tabulation" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="one-way-tabulation"><span class="header-section-number">2.1</span> One-way Tabulation</h2>
+<p>Base <code>R</code>’s tabulation of <strong>eye-colour</strong> gives:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="co"># Load data</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a>humans <span class="ot">&lt;-</span> starwars <span class="sc">|&gt;</span> </span>
+<span id="cb5-3"><a href="#cb5-3"></a>  <span class="fu">filter</span>(species <span class="sc">==</span> <span class="st">"Human"</span>)</span>
+<span id="cb5-4"><a href="#cb5-4"></a><span class="co"># Base R table</span></span>
+<span id="cb5-5"><a href="#cb5-5"></a><span class="fu">table</span>(humans<span class="sc">$</span>eye_color)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+     blue blue-gray     brown      dark     hazel   unknown    yellow 
+       12         1        16         1         2         1         2 </code></pre>
+</div>
+</div>
+<p>You can imagine that with a factor that contains more categories, the listing starts to spill out over another row (sometimes more) in your console. It’s just not pleasant to quickly look at and interpret. In comparison, in its most basic call, <code>tabyl()</code> gives:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>humans <span class="sc">|&gt;</span> </span>
+<span id="cb7-2"><a href="#cb7-2"></a>  <span class="fu">tabyl</span>(eye_color, <span class="at">show_na =</span> T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 7 × 3
+  eye_color     n percent
+  &lt;chr&gt;     &lt;int&gt;   &lt;dbl&gt;
+1 blue         12  0.343 
+2 blue-gray     1  0.0286
+3 brown        16  0.457 
+4 dark          1  0.0286
+5 hazel         2  0.0571
+6 unknown       1  0.0286
+7 yellow        2  0.0571</code></pre>
+</div>
+</div>
+<p>It prints in a much more readable column format, and provides percentages, as well as frequencies, by default.</p>
+<p>To save keystrokes, I have written a function for myself with a few further embellishments - marginal totals as well as makeshift borders (note you will need to have installed the <code>knitr</code> package if you want to use this). My aim with this and the subsequent function I am going to share with you was to emulate <code>Stata</code>’s <code>tabulate</code> command as much as possible.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a>tab1 <span class="ot">&lt;-</span> <span class="cf">function</span>(<span class="at">df =</span> dat, var, <span class="at">show.miss =</span> T) {</span>
+<span id="cb9-2"><a href="#cb9-2"></a>  df <span class="sc">|&gt;</span> </span>
+<span id="cb9-3"><a href="#cb9-3"></a>    <span class="fu">tabyl</span>({{var}}, <span class="at">show_na =</span> show.miss) <span class="sc">|&gt;</span> </span>
+<span id="cb9-4"><a href="#cb9-4"></a>    <span class="fu">adorn_totals</span>(<span class="st">"row"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb9-5"><a href="#cb9-5"></a>    <span class="fu">adorn_pct_formatting</span>(<span class="at">rounding =</span> <span class="st">"half up"</span>, <span class="at">digits =</span> <span class="dv">2</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb9-6"><a href="#cb9-6"></a>    knitr<span class="sc">::</span><span class="fu">kable</span>()</span>
+<span id="cb9-7"><a href="#cb9-7"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Then, with a simple <code>tab1(humans, eye_color, show.miss = T)</code> I can get:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a><span class="fu">tab1</span>(humans, eye_color, T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="quarto-figure quarto-figure-left">
+<figure class="figure">
+<p><img src="images/tab1.png" class="quarto-figure quarto-figure-left figure-img" height="230"></p>
+</figure>
+</div>
+<p>The <code>show.miss = T</code> will include any missing data as a separate category. You can set this to <code>F</code> if you prefer.</p>
+</section>
+<section id="two-way-tabulation" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="two-way-tabulation"><span class="header-section-number">2.2</span> Two-way Tabulation</h2>
+<p>Let’s extend the example further by now cross-tabulating <strong>eye-colour</strong> with <strong>gender</strong>. The Base <code>R</code> version gives:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a><span class="fu">table</span>(humans<span class="sc">$</span>eye_color, humans<span class="sc">$</span>gender)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>           
+            feminine masculine
+  blue             3         9
+  blue-gray        0         1
+  brown            4        12
+  dark             0         1
+  hazel            1         1
+  unknown          1         0
+  yellow           0         2</code></pre>
+</div>
+</div>
+<p>This is actually more readable than the one-way tabulation. In comparison, <code>tabyl()</code> produces:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a>humans <span class="sc">|&gt;</span></span>
+<span id="cb13-2"><a href="#cb13-2"></a>  <span class="fu">tabyl</span>(eye_color, gender, <span class="at">show_na =</span> T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 7 × 3
+  eye_color feminine masculine
+  &lt;chr&gt;        &lt;dbl&gt;     &lt;dbl&gt;
+1 blue             3         9
+2 blue-gray        0         1
+3 brown            4        12
+4 dark             0         1
+5 hazel            1         1
+6 unknown          1         0
+7 yellow           0         2</code></pre>
+</div>
+</div>
+<p>In its default state, not that different I agree. However, to save some time, and also include a couple of useful additional summaries, I have written myself a function for cross-tabulations as well. Again, I have customised this to my liking, by including marginal totals and bordering. Note that as I have specified row percentages, the marginal row totals all add up to <code>100%</code>.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1"></a>tab2 <span class="ot">&lt;-</span> <span class="cf">function</span>(<span class="at">df =</span> dat, var1, var2, <span class="at">show.miss =</span> T) {</span>
+<span id="cb15-2"><a href="#cb15-2"></a>  df <span class="sc">|&gt;</span></span>
+<span id="cb15-3"><a href="#cb15-3"></a>    <span class="fu">tabyl</span>({{var1}}, {{var2}}, <span class="at">show_na =</span> show.miss) <span class="sc">|&gt;</span></span>
+<span id="cb15-4"><a href="#cb15-4"></a>    <span class="fu">adorn_totals</span>(<span class="st">"row"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb15-5"><a href="#cb15-5"></a>    <span class="fu">adorn_totals</span>(<span class="st">"col"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb15-6"><a href="#cb15-6"></a>    <span class="fu">adorn_percentages</span>(<span class="st">"row"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb15-7"><a href="#cb15-7"></a>    <span class="fu">adorn_pct_formatting</span>(<span class="at">rounding =</span> <span class="st">"half up"</span>, <span class="at">digits =</span> <span class="dv">2</span>) <span class="sc">|&gt;</span></span>
+<span id="cb15-8"><a href="#cb15-8"></a>    <span class="fu">adorn_ns</span>() <span class="sc">|&gt;</span></span>
+<span id="cb15-9"><a href="#cb15-9"></a>    knitr<span class="sc">::</span><span class="fu">kable</span>()</span>
+<span id="cb15-10"><a href="#cb15-10"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Now I simply type <code>tab2(humans, eye_color, gender, show.miss = T)</code> to get:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1"></a><span class="fu">tab2</span>(humans, eye_color, gender, <span class="at">show.miss =</span> T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="quarto-figure quarto-figure-left">
+<figure class="figure">
+<p><img src="images/tab2.png" class="quarto-figure quarto-figure-left figure-img" height="230"></p>
+</figure>
+</div>
+<p>I better stop there. How is it that my ‘short’ posts even somehow become long? Until next time…</p>
+
+
+<!-- -->
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+    const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+    const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+    let newTheme = '';
+    if(darkModeDefault) {
+      newTheme = isAlternate ? baseTheme : alternateTheme;
+    } else {
+      newTheme = isAlternate ? alternateTheme : baseTheme;
+    }
+    const changeGiscusTheme = () => {
+      // From: https://github.com/giscus/giscus/issues/336
+      const sendMessage = (message) => {
+        const iframe = document.querySelector('iframe.giscus-frame');
+        if (!iframe) return;
+        iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+      }
+      sendMessage({
+        setConfig: {
+          theme: newTheme
+        }
+      });
+    }
+    const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+    if (isGiscussLoaded) {
+      changeGiscusTheme();
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  const darkModeDefault = false;
+  let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+    toggleGiscusIfUsed(toAlternate, darkModeDefault);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  const viewSource = window.document.getElementById('quarto-view-source') ||
+                     window.document.getElementById('quarto-code-tools-source');
+  if (viewSource) {
+    const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+    viewSource.addEventListener("click", function(e) {
+      if (sourceUrl) {
+        // rstudio viewer pane
+        if (/\bcapabilities=\b/.test(window.location)) {
+          window.open(sourceUrl);
+        } else {
+          window.location.href = sourceUrl;
+        }
+      } else {
+        const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+        modal.show();
+      }
+      return false;
+    });
+  }
+  function toggleCodeHandler(show) {
+    return function(e) {
+      const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
+      for (let i=0; i<detailsSrc.length; i++) {
+        const details = detailsSrc[i].parentElement;
+        if (show) {
+          details.open = true;
+        } else {
+          details.removeAttribute("open");
+        }
+      }
+      const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
+      const fromCls = show ? "hidden" : "unhidden";
+      const toCls = show ? "unhidden" : "hidden";
+      for (let i=0; i<cellCodeDivs.length; i++) {
+        const codeDiv = cellCodeDivs[i];
+        if (codeDiv.classList.contains(fromCls)) {
+          codeDiv.classList.remove(fromCls);
+          codeDiv.classList.add(toCls);
+        } 
+      }
+      return false;
+    }
+  }
+  const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+  if (hideAllCode) {
+    hideAllCode.addEventListener("click", toggleCodeHandler(false));
+  }
+  const showAllCode = window.document.getElementById("quarto-show-all-code");
+  if (showAllCode) {
+    showAllCode.addEventListener("click", toggleCodeHandler(true));
+  }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<script src="https://giscus.app/client.js" data-repo="pgseye/Weekly_Stats_Tips" data-repo-id="R_kgDOKvfOfQ" data-category="General" data-category-id="DIC_kwDOKvfOfc4CbFWq" data-mapping="title" data-reactions-enabled="1" data-emit-metadata="0" data-input-position="top" data-theme="light" data-lang="en" crossorigin="anonymous" async="">
+</script>
+<input type="hidden" id="giscus-base-theme" value="light">
+<input type="hidden" id="giscus-alt-theme" value="dark"><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="sourceCode" id="cb17" data-shortcodes="false"><pre class="sourceCode numberSource markdown number-lines code-with-copy"><code class="sourceCode markdown"><span id="cb17-1"><a href="#cb17-1"></a><span class="co">---</span></span>
+<span id="cb17-2"><a href="#cb17-2"></a><span class="an">title:</span><span class="co"> "janitor - Your local R handypackage"</span></span>
+<span id="cb17-3"><a href="#cb17-3"></a><span class="an">date:</span><span class="co"> 2025-03-07</span></span>
+<span id="cb17-4"><a href="#cb17-4"></a><span class="an">categories:</span><span class="co"> [code]</span></span>
+<span id="cb17-5"><a href="#cb17-5"></a><span class="an">image:</span><span class="co"> "R_small.jpeg"</span></span>
+<span id="cb17-6"><a href="#cb17-6"></a><span class="an">description:</span><span class="co"> "Work smarter, not harder."</span></span>
+<span id="cb17-7"><a href="#cb17-7"></a><span class="an">format:</span><span class="co"> </span></span>
+<span id="cb17-8"><a href="#cb17-8"></a><span class="co">   html:</span></span>
+<span id="cb17-9"><a href="#cb17-9"></a><span class="co">     df-print: tibble</span></span>
+<span id="cb17-10"><a href="#cb17-10"></a><span class="co">---</span></span>
+<span id="cb17-11"><a href="#cb17-11"></a></span>
+<span id="cb17-12"><a href="#cb17-12"></a>A (fairly) short post today. I want to introduce you to a great little <span class="in">`R`</span> package that I load in every one of my scripts, because I never know when I might need to use it. <span class="in">`janitor`</span> contains several functions, but there are two primary ones that I want to draw your attention to - <span class="in">`clean_names`</span> and <span class="in">`tabyl`</span>.</span>
+<span id="cb17-13"><a href="#cb17-13"></a></span>
+<span id="cb17-14"><a href="#cb17-14"></a><span class="fu"># clean_names()</span></span>
+<span id="cb17-15"><a href="#cb17-15"></a></span>
+<span id="cb17-16"><a href="#cb17-16"></a>If you have control over the names of the variables in your dataset, can I please implore you to adopt one of the two recommended naming conventions - **camelCase** or **snake_case**. I prefer the latter for its readability, so I would suggest that one if you don't have a preference. A somewhat frustrating (and completely avoidable) issue that I sometimes have to deal with when being sent a dataset, is to spend time renaming variables. White spaces in variable names are by biggest bugbear, but the inclusion of symbols, the capitalisation of some letters, and the use of repeated identical names, follow closely behind. <span class="in">`R`</span> doesn't like any of this.</span>
+<span id="cb17-17"><a href="#cb17-17"></a></span>
+<span id="cb17-18"><a href="#cb17-18"></a>If proactive measures aren't possible, we can use <span class="in">`clean_names`</span> in a reactive manner. I will use the same example provided by the package author in their <span class="co">[</span><span class="ot">vignette</span><span class="co">](https://cran.r-project.org/web/packages/janitor/vignettes/janitor.html#clean-dataframe-names-with-clean_names)</span> to illustrate how useful <span class="in">`clean_names`</span> can be. Let's say we receive a spreadsheet that we import into our <span class="in">`R`</span> workspace with the following column names:</span>
+<span id="cb17-19"><a href="#cb17-19"></a></span>
+<span id="cb17-22"><a href="#cb17-22"></a><span class="in">```{r}</span></span>
+<span id="cb17-23"><a href="#cb17-23"></a><span class="co">#| message: false</span></span>
+<span id="cb17-24"><a href="#cb17-24"></a><span class="co">#| warning: false</span></span>
+<span id="cb17-25"><a href="#cb17-25"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb17-26"><a href="#cb17-26"></a><span class="fu">library</span>(janitor)</span>
+<span id="cb17-27"><a href="#cb17-27"></a><span class="co"># Create a data.frame with dirty names</span></span>
+<span id="cb17-28"><a href="#cb17-28"></a>test_df <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(<span class="fu">matrix</span>(<span class="at">ncol =</span> <span class="dv">6</span>))</span>
+<span id="cb17-29"><a href="#cb17-29"></a><span class="fu">names</span>(test_df) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"firstName"</span>, <span class="st">"ábc@!*"</span>, <span class="st">"% successful (2009)"</span>,</span>
+<span id="cb17-30"><a href="#cb17-30"></a>                    <span class="st">"REPEAT VALUE"</span>, <span class="st">"REPEAT VALUE"</span>, <span class="st">""</span>)</span>
+<span id="cb17-31"><a href="#cb17-31"></a><span class="fu">names</span>(test_df)</span>
+<span id="cb17-32"><a href="#cb17-32"></a><span class="in">```</span></span>
+<span id="cb17-33"><a href="#cb17-33"></a></span>
+<span id="cb17-34"><a href="#cb17-34"></a>Horrible!</span>
+<span id="cb17-35"><a href="#cb17-35"></a></span>
+<span id="cb17-36"><a href="#cb17-36"></a>Fixing this, however, is as simple as running <span class="in">`clean_names`</span> (snake_case is the default) on the dataframe:</span>
+<span id="cb17-37"><a href="#cb17-37"></a></span>
+<span id="cb17-40"><a href="#cb17-40"></a><span class="in">```{r}</span></span>
+<span id="cb17-41"><a href="#cb17-41"></a>test_df <span class="ot">&lt;-</span>  <span class="fu">clean_names</span>(test_df)</span>
+<span id="cb17-42"><a href="#cb17-42"></a><span class="fu">names</span>(test_df)</span>
+<span id="cb17-43"><a href="#cb17-43"></a><span class="in">```</span></span>
+<span id="cb17-44"><a href="#cb17-44"></a></span>
+<span id="cb17-45"><a href="#cb17-45"></a>Beautiful!</span>
+<span id="cb17-46"><a href="#cb17-46"></a></span>
+<span id="cb17-47"><a href="#cb17-47"></a>There is some customisation available within the function and I would encourage you to check that out too.</span>
+<span id="cb17-48"><a href="#cb17-48"></a></span>
+<span id="cb17-49"><a href="#cb17-49"></a><span class="fu"># tabyl()</span></span>
+<span id="cb17-50"><a href="#cb17-50"></a></span>
+<span id="cb17-51"><a href="#cb17-51"></a><span class="in">`R`</span>'s base <span class="in">`table()`</span> command gets the job done, but I dare anyone to say it does it nicely. Having some experience with <span class="in">`Stata`</span>, its equivalent <span class="in">`tabulate`</span> command provides the readability/presentability luxury of a Rolls-Royce compared to <span class="in">`table()`</span>'s cramped and bland version of a Datsun Sunny 120Y (the car my good friend drove us around in while we were at Uni BTW - as I said, it gets the job done!)</span>
+<span id="cb17-52"><a href="#cb17-52"></a></span>
+<span id="cb17-53"><a href="#cb17-53"></a>Let me give you an example. We'll use the Star Wars dataset that comes with the <span class="in">`dplyr`</span> package. We're interested in first tabulating the categories of **eye colour** in humans, and then after that, cross-tabulating **eye-colour** with **gender**.</span>
+<span id="cb17-54"><a href="#cb17-54"></a></span>
+<span id="cb17-55"><a href="#cb17-55"></a><span class="fu">## One-way Tabulation</span></span>
+<span id="cb17-56"><a href="#cb17-56"></a></span>
+<span id="cb17-57"><a href="#cb17-57"></a>Base <span class="in">`R`</span>'s tabulation of **eye-colour** gives:</span>
+<span id="cb17-58"><a href="#cb17-58"></a></span>
+<span id="cb17-61"><a href="#cb17-61"></a><span class="in">```{r}</span></span>
+<span id="cb17-62"><a href="#cb17-62"></a><span class="co"># Load data</span></span>
+<span id="cb17-63"><a href="#cb17-63"></a>humans <span class="ot">&lt;-</span> starwars <span class="sc">|&gt;</span> </span>
+<span id="cb17-64"><a href="#cb17-64"></a>  <span class="fu">filter</span>(species <span class="sc">==</span> <span class="st">"Human"</span>)</span>
+<span id="cb17-65"><a href="#cb17-65"></a><span class="co"># Base R table</span></span>
+<span id="cb17-66"><a href="#cb17-66"></a><span class="fu">table</span>(humans<span class="sc">$</span>eye_color)</span>
+<span id="cb17-67"><a href="#cb17-67"></a><span class="in">```</span></span>
+<span id="cb17-68"><a href="#cb17-68"></a></span>
+<span id="cb17-69"><a href="#cb17-69"></a>You can imagine that with a factor that contains more categories, the listing starts to spill out over another row (sometimes more) in your console. It's just not pleasant to quickly look at and interpret. In comparison, in its most basic call, <span class="in">`tabyl()`</span> gives:</span>
+<span id="cb17-70"><a href="#cb17-70"></a></span>
+<span id="cb17-73"><a href="#cb17-73"></a><span class="in">```{r}</span></span>
+<span id="cb17-74"><a href="#cb17-74"></a>humans <span class="sc">|&gt;</span> </span>
+<span id="cb17-75"><a href="#cb17-75"></a>  <span class="fu">tabyl</span>(eye_color, <span class="at">show_na =</span> T)</span>
+<span id="cb17-76"><a href="#cb17-76"></a><span class="in">```</span></span>
+<span id="cb17-77"><a href="#cb17-77"></a></span>
+<span id="cb17-78"><a href="#cb17-78"></a>It prints in a much more readable column format, and provides percentages, as well as frequencies, by default.</span>
+<span id="cb17-79"><a href="#cb17-79"></a></span>
+<span id="cb17-80"><a href="#cb17-80"></a>To save keystrokes, I have written a function for myself with a few further embellishments - marginal totals as well as makeshift borders (note you will need to have installed the <span class="in">`knitr`</span> package if you want to use this). My aim with this and the subsequent function I am going to share with you was to emulate <span class="in">`Stata`</span>'s <span class="in">`tabulate`</span> command as much as possible.</span>
+<span id="cb17-81"><a href="#cb17-81"></a></span>
+<span id="cb17-84"><a href="#cb17-84"></a><span class="in">```{r}</span></span>
+<span id="cb17-85"><a href="#cb17-85"></a>tab1 <span class="ot">&lt;-</span> <span class="cf">function</span>(<span class="at">df =</span> dat, var, <span class="at">show.miss =</span> T) {</span>
+<span id="cb17-86"><a href="#cb17-86"></a>  df <span class="sc">|&gt;</span> </span>
+<span id="cb17-87"><a href="#cb17-87"></a>    <span class="fu">tabyl</span>({{var}}, <span class="at">show_na =</span> show.miss) <span class="sc">|&gt;</span> </span>
+<span id="cb17-88"><a href="#cb17-88"></a>    <span class="fu">adorn_totals</span>(<span class="st">"row"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb17-89"><a href="#cb17-89"></a>    <span class="fu">adorn_pct_formatting</span>(<span class="at">rounding =</span> <span class="st">"half up"</span>, <span class="at">digits =</span> <span class="dv">2</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb17-90"><a href="#cb17-90"></a>    knitr<span class="sc">::</span><span class="fu">kable</span>()</span>
+<span id="cb17-91"><a href="#cb17-91"></a>}</span>
+<span id="cb17-92"><a href="#cb17-92"></a><span class="in">```</span></span>
+<span id="cb17-93"><a href="#cb17-93"></a></span>
+<span id="cb17-94"><a href="#cb17-94"></a>Then, with a simple <span class="in">`tab1(humans, eye_color, show.miss = T)`</span> I can get:</span>
+<span id="cb17-95"><a href="#cb17-95"></a></span>
+<span id="cb17-98"><a href="#cb17-98"></a><span class="in">```{r}</span></span>
+<span id="cb17-99"><a href="#cb17-99"></a><span class="co">#| eval: false</span></span>
+<span id="cb17-100"><a href="#cb17-100"></a><span class="fu">tab1</span>(humans, eye_color, T)</span>
+<span id="cb17-101"><a href="#cb17-101"></a><span class="in">```</span></span>
+<span id="cb17-102"><a href="#cb17-102"></a></span>
+<span id="cb17-103"><a href="#cb17-103"></a><span class="al">![](images/tab1.png)</span>{fig-align="left" height="230"}</span>
+<span id="cb17-104"><a href="#cb17-104"></a></span>
+<span id="cb17-105"><a href="#cb17-105"></a>The <span class="in">`show.miss = T`</span> will include any missing data as a separate category. You can set this to <span class="in">`F`</span> if you prefer.</span>
+<span id="cb17-106"><a href="#cb17-106"></a></span>
+<span id="cb17-107"><a href="#cb17-107"></a><span class="fu">## Two-way Tabulation</span></span>
+<span id="cb17-108"><a href="#cb17-108"></a></span>
+<span id="cb17-109"><a href="#cb17-109"></a>Let's extend the example further by now cross-tabulating **eye-colour** with **gender**. The Base <span class="in">`R`</span> version gives:</span>
+<span id="cb17-110"><a href="#cb17-110"></a></span>
+<span id="cb17-113"><a href="#cb17-113"></a><span class="in">```{r}</span></span>
+<span id="cb17-114"><a href="#cb17-114"></a><span class="fu">table</span>(humans<span class="sc">$</span>eye_color, humans<span class="sc">$</span>gender)</span>
+<span id="cb17-115"><a href="#cb17-115"></a><span class="in">```</span></span>
+<span id="cb17-116"><a href="#cb17-116"></a></span>
+<span id="cb17-117"><a href="#cb17-117"></a>This is actually more readable than the one-way tabulation. In comparison, <span class="in">`tabyl()`</span> produces:</span>
+<span id="cb17-118"><a href="#cb17-118"></a></span>
+<span id="cb17-121"><a href="#cb17-121"></a><span class="in">```{r}</span></span>
+<span id="cb17-122"><a href="#cb17-122"></a>humans <span class="sc">|&gt;</span></span>
+<span id="cb17-123"><a href="#cb17-123"></a>  <span class="fu">tabyl</span>(eye_color, gender, <span class="at">show_na =</span> T)</span>
+<span id="cb17-124"><a href="#cb17-124"></a><span class="in">```</span></span>
+<span id="cb17-125"><a href="#cb17-125"></a></span>
+<span id="cb17-126"><a href="#cb17-126"></a>In its default state, not that different I agree. However, to save some time, and also include a couple of useful additional summaries, I have written myself a function for cross-tabulations as well. Again, I have customised this to my liking, by including marginal totals and bordering. Note that as I have specified row percentages, the marginal row totals all add up to <span class="in">`100%`</span>.</span>
+<span id="cb17-127"><a href="#cb17-127"></a></span>
+<span id="cb17-130"><a href="#cb17-130"></a><span class="in">```{r}</span></span>
+<span id="cb17-131"><a href="#cb17-131"></a>tab2 <span class="ot">&lt;-</span> <span class="cf">function</span>(<span class="at">df =</span> dat, var1, var2, <span class="at">show.miss =</span> T) {</span>
+<span id="cb17-132"><a href="#cb17-132"></a>  df <span class="sc">|&gt;</span></span>
+<span id="cb17-133"><a href="#cb17-133"></a>    <span class="fu">tabyl</span>({{var1}}, {{var2}}, <span class="at">show_na =</span> show.miss) <span class="sc">|&gt;</span></span>
+<span id="cb17-134"><a href="#cb17-134"></a>    <span class="fu">adorn_totals</span>(<span class="st">"row"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb17-135"><a href="#cb17-135"></a>    <span class="fu">adorn_totals</span>(<span class="st">"col"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb17-136"><a href="#cb17-136"></a>    <span class="fu">adorn_percentages</span>(<span class="st">"row"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb17-137"><a href="#cb17-137"></a>    <span class="fu">adorn_pct_formatting</span>(<span class="at">rounding =</span> <span class="st">"half up"</span>, <span class="at">digits =</span> <span class="dv">2</span>) <span class="sc">|&gt;</span></span>
+<span id="cb17-138"><a href="#cb17-138"></a>    <span class="fu">adorn_ns</span>() <span class="sc">|&gt;</span></span>
+<span id="cb17-139"><a href="#cb17-139"></a>    knitr<span class="sc">::</span><span class="fu">kable</span>()</span>
+<span id="cb17-140"><a href="#cb17-140"></a>}</span>
+<span id="cb17-141"><a href="#cb17-141"></a><span class="in">```</span></span>
+<span id="cb17-142"><a href="#cb17-142"></a></span>
+<span id="cb17-143"><a href="#cb17-143"></a>Now I simply type <span class="in">`tab2(humans, eye_color, gender, show.miss = T)`</span> to get:</span>
+<span id="cb17-144"><a href="#cb17-144"></a></span>
+<span id="cb17-147"><a href="#cb17-147"></a><span class="in">```{r}</span></span>
+<span id="cb17-148"><a href="#cb17-148"></a><span class="co">#| eval: false</span></span>
+<span id="cb17-149"><a href="#cb17-149"></a><span class="fu">tab2</span>(humans, eye_color, gender, <span class="at">show.miss =</span> T)</span>
+<span id="cb17-150"><a href="#cb17-150"></a><span class="in">```</span></span>
+<span id="cb17-151"><a href="#cb17-151"></a></span>
+<span id="cb17-152"><a href="#cb17-152"></a><span class="al">![](images/tab2.png)</span>{fig-align="left" height="230"}</span>
+<span id="cb17-153"><a href="#cb17-153"></a></span>
+<span id="cb17-154"><a href="#cb17-154"></a>I better stop there. How is it that my 'short' posts even somehow become long? Until next time...</span>
+</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div></div></div></div></div>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
