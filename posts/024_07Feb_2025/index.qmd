@@ -1,5 +1,5 @@
 ---
-title: "Missing Data and Multiple Imputation <br> for Dummies (Part 1)"
+title: "Missing Data and Multiple Imputation for Dummies <br> (Part 1)"
 date: 2025-02-07
 categories: [code, concept, analysis]
 #image: "images/image.jpg"
