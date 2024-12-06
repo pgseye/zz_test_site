@@ -53,7 +53,7 @@ $$ \hat{y} = 37.3 - 5.4 * 2 - 0.02 * 1 = 26.5 $$
 
 That's all that prediction is, really - substitution into your regression equation. Prediction in this context isn't about predicting the future - in fact for most simple models, time plays no role (although it may, depending on the research question and the model we are using). We are typically more interested in predicting the mean value of the dependent variable given specific values of the independent variable/s.
 
-While you can predict for any combination of covariate values, the visualisation of model predictions comes into its own when we focus on the relationship between some exposure and an outcome, holding the 'effects' of all other covariates in the model at a fixed value (typically the mean, but this can be any value). These are, in other words, **adjusted** predictions, and can help you to answer the question: "What is the expected outcome for certain values or levels of my exposure, when I have removed any other potential confounding effects?"
+While you can predict for any combination of covariate values, the visualisation of model predictions comes into its own when we focus on the relationship between some exposure and an outcome, holding the values of all other covariates in the model fixed. These are, in other words, **adjusted** predictions, and can help you to answer the question: "What is the expected outcome for certain values or levels of my exposure, when I have removed any other potential confounding effects?"
 
 Alright, I think you get enough of an idea that we can actually now take a look at a more concrete example.
 
