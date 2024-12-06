@@ -2,7 +2,7 @@
 title: "Model Prediction/Visualisation <br> 1. The Basics"
 date: 2025-03-21
 categories: [code, concept, modelling, visualisation]
-# image: "R_small.jpeg"
+image: "images/plot.png"
 description: "How to predict from your model."
 ---
 
