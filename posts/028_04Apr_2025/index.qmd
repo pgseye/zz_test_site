@@ -1,0 +1,168 @@
+---
+title: "Model Prediction/Visualisation <br> 2. How Many Dimensions?"
+date: 2025-04-04
+categories: [code, concept, modelling, visualisation]
+#image: "images/plot.png"
+description: "There is a practical limit to the number of predictors you can visualise."
+---
+
+Last time I introduced you to the idea of model prediction and visualisation and hopefully equipped you with the both the know-how and tools to attempt this on your own. Before we move on to more advanced concepts in this space though, it's important that we clear up a pragmatic issue that will strike you at some point in your model visualisation travels. And that issue is about how many predictors one can visualise in a sensible way.
+
+OK you say, but I don't really understand what you mean.
+
+Well think about it what we are attempting to do in model visualisation in terms of 'dimensions'. While we physically inhabit a three-dimensional where we can appreciate height, length and width (depth), our data-analysis world is largely confined to just the first two of those dimensions. Putting aside advances in virtual reality technology, when we work with our data it is typically on a standard computer screen which is an inherently two-dimensional surface (yes, I accept our computer will allow simulated three-dimensional viewing - more on that in a moment). The point is that we fast run out of dimension-viewing capacity. Let's consider what we can effectively view as the number of predictors increases. Keep in mind that the dependent variable in our model is already using up one dimension (height - assigned to the **y-axis**), so if our model includes:
+
+1.  One predictor. The regression solution is a **line** of best fit.
+
+    Consequently, this is simple to visualise. Our independent variable is assigned to the **x-axis** (length). But note - we have now already used up our two dimensions!
+
+2.  Two predictors. The regression solution is a **plane** of best fit.
+
+    Well, this is immediately more challenging. But it is doable. Here we can leverage our computer's graphical capabilities to reproduce depth and plot our predictions in a simulated three-dimensional environment residing on a two-dimensional surface. We keep our first independent variable as is and assign our second independent variable to the **z-axis**. There are [packages](https://cran.r-project.org/web/packages/plot3D/index.html) in `R` that provide this kind of flexibility.
+
+3.  Three predictors (or more). The regression solution is a [**hyperplane**](https://en.wikipedia.org/wiki/Hyperplane#:~:text=In%20geometry%2C%20a%20hyperplane%20is,that%20of%20the%20ambient%20space.) of best fit.
+
+    A What?! It doesn't matter - you can't practically visualise it.
+
+It's not all doom and gloom, however. There are alternative ways around this apparent roadblock - at least to be able to visualise three, four and even five predictors (beyond that I have no idea). An effective approach that I alluded to in the last post, and that will be the focus of the remainder of this one is to think in terms of 'collapsing' each of multiple dimensions into two-dimensional surfaces. In this way we can still view a multi-dimensional space on our height/length limited computer screen. Let's look at some examples now - we'll use the same `birthwt` dataset as in the last post to illustrate these.
+
+# Two Predictors
+
+We have essentially already made this plot in the last post. In our model we are regressing newborn birthweight on maternal age and smoking status, and if you recall we managed the visualisation of our second predictor (smoking status) by assigning it to the colour aesthetic in `ggplot()`.
+
+A couple of notes: In this and all subsequent models I will specify interaction terms between all predictors just to make the output a little more interesting (otherwise you will only see parallel regression lines). Don't get hung up on this - maintain focus on the plotting devices that I will discuss. I have also converted categorical variables to factors in advance, rather than on the fly (as in the last post). This just makes some aspects of the plotting (especially labelling) easier.
+
+So, our model is:
+
+`mod2 <-  lm(bwt ~ age * smoke, data = birthwt)`
+
+```{r}
+#| message: false
+#| warning: false
+library(tidyverse)
+data(birthwt, package = "MASS")
+# Relabel smoking
+birthwt$smoke <-  factor(birthwt$smoke, levels = c(0,1), labels = c("No", "Yes"))
+# Model
+mod2 <-  lm(bwt ~ age * smoke, data = birthwt)
+# Create new data
+newdf <-  expand.grid(age = seq(15, 45, by = 5),
+                      smoke = levels(birthwt$smoke))
+# Predict
+newdf <-  newdf |> 
+  mutate(pred = predict(mod2, newdata = newdf))
+# Visualise
+ggplot(data = newdf, aes(x = age, y = pred, color = smoke)) +
+  geom_line(linewidth = 1) +
+  xlab("Maternal Age") + ylab("Predicted Birthweight") + labs(color = "Smoking Status") +
+  scale_y_continuous(limits = c(0, 5000), breaks = seq(0, 5000, by = 1000)) +
+  theme_bw(base_size = 20) +
+  theme(legend.position = "bottom")
+```
+
+# Three Predictors
+
+Let's now include mother's `race` as a third predictor in the model:
+
+`mod3 <-  lm(bwt ~ age * smoke * race, data = birthwt)`
+
+To get over this hurdle, we can take advantage of `ggplot()`'s facetting functionality to create separate side-by-side plots for each mother's race. And that could look something like:
+
+```{r}
+# Relabel race
+birthwt$race <-  factor(birthwt$race, levels = c(1,2,3), labels = c("White", "Black", "Other"))
+# Model
+mod3 <-  lm(bwt ~ age * smoke * race, data = birthwt)
+# Create new data
+newdf <-  expand.grid(age = seq(15, 45, by = 5),
+                      smoke = levels(birthwt$smoke),
+                      race = levels(birthwt$race))
+# Predict
+newdf <-  newdf |> 
+  mutate(pred = predict(mod3, newdata = newdf))
+# Create labels for plotting race
+label_race <- c("Race: White", "Race: Black", "Race: Other")
+names(label_race) <- c("White", "Black", "Other")
+# Visualise
+ggplot(data = newdf, aes(x = age, y = pred, color = smoke)) +
+  geom_line(linewidth = 1) +
+  xlab("Maternal Age") + ylab("Predicted Birthweight") + labs(color = "Smoking Status") +
+  scale_y_continuous(limits = c(0, 5000), breaks = seq(0, 5000, by = 1000)) +
+  facet_grid(~ race, labeller = labeller(race = label_race)) +
+  theme_bw(base_size = 20) +
+  theme(legend.position = "bottom")
+```
+
+# Four Predictors
+
+Ok, let's add in presence of uterine irritability as a fourth predictor.
+
+`mod4 <-  lm(bwt ~ age * smoke * race * ui, data = birthwt)`
+
+Now we just facet vertically in addition to horizontally:
+
+```{r}
+#| message: false
+#| warning: false
+# Relabel uterine irritability
+birthwt$ui <-  factor(birthwt$ui, levels = c(0, 1), labels = c("No", "Yes"))
+# Model
+mod4 <-  lm(bwt ~ age * smoke * race * ui, data = birthwt)
+# Create new data
+newdf <-  expand.grid(age = seq(15, 45, by = 5),
+                      smoke = levels(birthwt$smoke),
+                      race = levels(birthwt$race),
+                      ui = levels(birthwt$ui))
+# Predict
+newdf <-  newdf |> 
+  mutate(pred = predict(mod4, newdata = newdf))
+# Create labels for plotting ui
+label_ui <- c("Uterine Irritability: No", "Uterine Irritability: Yes")
+names(label_ui) <- c("No", "Yes")
+# Visualise
+ggplot(data = newdf, aes(x = age, y = pred, color = smoke)) +
+  geom_line(linewidth = 1) +
+  xlab("Maternal Age") + ylab("Predicted Birthweight") + labs(color = "Smoking Status") +
+  scale_y_continuous(limits = c(0, 5000), breaks = seq(0, 5000, by = 1000)) +
+  facet_grid(ui ~ race, labeller = labeller(race = label_race, ui = label_ui)) +
+  theme_bw(base_size = 20) +
+  theme(legend.position = "bottom")
+```
+
+# Five Predictors
+
+Now we're getting to the limits of what I think is possible. And honestly, I think even this is potentially too much in terms information overload - there is a fine line between visualisations that are pleasantly informative and those that are just confusing. But, for the sake of the exercise, this is one way that I'm aware of that you could incorporate the plotting of predictions from a model with five predictors. In this case, we specify a 'graphical interaction' between two variables (here I have selected smoking status and history of hypertension), allowing those predictions to be distinguishable by not only color, but by specifying a second plotting aesthetic - linetype. Adjusted predictions for birthweight conditional on no history of hypertension are assigned a solid line and adjusted predictions for birthweight conditional on a history of hypertention are assigned a dashed line.
+
+```{r}
+#| message: false
+#| warning: false
+# Relabel history of hypertension
+birthwt$ht <-  factor(birthwt$ht, levels = c(0, 1), labels = c("No", "Yes"))
+# Model
+mod5 <-  lm(bwt ~ age * smoke * race * ui * ht, data = birthwt)
+# Create new data
+newdf <-  expand.grid(age = seq(15, 45, by = 5),
+                      smoke = levels(birthwt$smoke),
+                      race = levels(birthwt$race),
+                      ui = levels(birthwt$ui),
+                      ht = levels(birthwt$ht))
+# Predict
+newdf <-  newdf |> 
+  mutate(pred = predict(mod5, newdata = newdf))
+# Visualise
+ggplot(data = newdf, aes(x = age, y = pred, group = interaction(smoke, ht), color = smoke, linetype = ht)) +
+  geom_line(linewidth = 1) +
+  xlab("Maternal Age") + ylab("Predicted Birthweight") + labs(color = "Smoking Status", linetype = "History of Hypertension") +
+  scale_y_continuous(limits = c(0, 5000), breaks = seq(0, 5000, by = 1000)) +
+  facet_grid(ui ~ race, labeller = labeller(race = label_race, ui = label_ui)) +
+  theme_bw(base_size = 20) +
+  theme(legend.position = "bottom")
+```
+
+(Note that some regression lines appear to be missing because we have just run out of data for that particular combination of covariate values).
+
+# ggeffects
+
+Remember how I mentioned the `ggeffects` package in the last post? Well now may be a good time to visit that packages [website](https://strengejacke.github.io/ggeffects/articles/ggeffects.html#aims-of-the-ggeffects-package). While everything I have shown you in this post is the result of combined `base R` and `ggplot2` functionality, there are prediction and visualisation options in `ggeffects` that you may find more intuitive and/or easier to use. Especially for the five-predictor case, `ggeffects` essentially allows nested facetting, which is an interesting proposition and arguably more pleasing to the brain than what I have shown you above.
+
+Until next time...

@@ -163,7 +163,10 @@ newdf |>
 ```
 
 ::: callout-important
-Note that the variable names in your new dataframe **MUST** match the names of the corresponding variables in your original dataset, otherwise `predict()` will become upset with you and refuse to do any more work.
+Note two conditions in generating your grid of new data:\
+1. You **MUST** include every variable that is specified in your model;\
+2. The variable names **MUST** match the names of the corresponding variables in your original dataset.\
+Failing these, `predict()` will become upset with you and refuse to do any more work.
 :::
 
 Now we are in a position to generate the predictions that we need. Nothing changes compared to before, except we now specify a new dataframe to predict upon using the `newdata` argument:
@@ -184,6 +187,7 @@ ggplot(data = newdf, aes(x = age, y = pred, color = factor(smoke))) +
   geom_line(linewidth = 1) +
   geom_point(data = birthwt2, aes(x = age, y = bwt), size = 2) +
   xlab("Maternal Age") + ylab("Predicted Birthweight") + labs(color = "Smoking Status") +
+    scale_y_continuous(limits = c(0, 5000), breaks = seq(0, 5000, by = 1000)) +
   theme_bw(base_size = 20) +
   theme(legend.position = "bottom")
 ```

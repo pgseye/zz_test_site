@@ -850,7 +850,10 @@ Important
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Note that the variable names in your new dataframe <strong>MUST</strong> match the names of the corresponding variables in your original dataset, otherwise <code>predict()</code> will become upset with you and refuse to do any more work.</p>
+<p>Note two conditions in generating your grid of new data:<br>
+1. You <strong>MUST</strong> include every variable that is specified in your model;<br>
+2. The variable names <strong>MUST</strong> match the names of the corresponding variables in your original dataset.<br>
+Failing these, <code>predict()</code> will become upset with you and refuse to do any more work.</p>
 </div>
 </div>
 <p>Now we are in a position to generate the predictions that we need. Nothing changes compared to before, except we now specify a new dataframe to predict upon using the <code>newdata</code> argument:</p>
@@ -957,8 +960,9 @@ Important
 <span id="cb15-2"><a href="#cb15-2"></a>  <span class="fu">geom_line</span>(<span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
 <span id="cb15-3"><a href="#cb15-3"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> birthwt2, <span class="fu">aes</span>(<span class="at">x =</span> age, <span class="at">y =</span> bwt), <span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
 <span id="cb15-4"><a href="#cb15-4"></a>  <span class="fu">xlab</span>(<span class="st">"Maternal Age"</span>) <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">"Predicted Birthweight"</span>) <span class="sc">+</span> <span class="fu">labs</span>(<span class="at">color =</span> <span class="st">"Smoking Status"</span>) <span class="sc">+</span></span>
-<span id="cb15-5"><a href="#cb15-5"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">20</span>) <span class="sc">+</span></span>
-<span id="cb15-6"><a href="#cb15-6"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"bottom"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb15-5"><a href="#cb15-5"></a>    <span class="fu">scale_y_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">5000</span>), <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">5000</span>, <span class="at">by =</span> <span class="dv">1000</span>)) <span class="sc">+</span></span>
+<span id="cb15-6"><a href="#cb15-6"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">20</span>) <span class="sc">+</span></span>
+<span id="cb15-7"><a href="#cb15-7"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"bottom"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div>
@@ -1733,40 +1737,44 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb16-183"><a href="#cb16-183"></a><span class="in">```</span></span>
 <span id="cb16-184"><a href="#cb16-184"></a></span>
 <span id="cb16-185"><a href="#cb16-185"></a>::: callout-important</span>
-<span id="cb16-186"><a href="#cb16-186"></a>Note that the variable names in your new dataframe **MUST** match the names of the corresponding variables in your original dataset, otherwise <span class="in">`predict()`</span> will become upset with you and refuse to do any more work.</span>
-<span id="cb16-187"><a href="#cb16-187"></a>:::</span>
-<span id="cb16-188"><a href="#cb16-188"></a></span>
-<span id="cb16-189"><a href="#cb16-189"></a>Now we are in a position to generate the predictions that we need. Nothing changes compared to before, except we now specify a new dataframe to predict upon using the <span class="in">`newdata`</span> argument:</span>
-<span id="cb16-190"><a href="#cb16-190"></a></span>
-<span id="cb16-193"><a href="#cb16-193"></a><span class="in">```{r}</span></span>
-<span id="cb16-194"><a href="#cb16-194"></a>newdf <span class="ot">&lt;-</span>  newdf <span class="sc">|&gt;</span> </span>
-<span id="cb16-195"><a href="#cb16-195"></a>  <span class="fu">mutate</span>(<span class="at">pred =</span> <span class="fu">predict</span>(mod2, <span class="at">newdata =</span> newdf))</span>
-<span id="cb16-196"><a href="#cb16-196"></a>newdf <span class="sc">|&gt;</span> </span>
-<span id="cb16-197"><a href="#cb16-197"></a>  <span class="fu">kable</span>(<span class="at">align =</span> <span class="st">"c"</span>, <span class="at">digits =</span> <span class="dv">1</span>)</span>
-<span id="cb16-198"><a href="#cb16-198"></a><span class="in">```</span></span>
-<span id="cb16-199"><a href="#cb16-199"></a></span>
-<span id="cb16-200"><a href="#cb16-200"></a><span class="fu">### Visualise</span></span>
-<span id="cb16-201"><a href="#cb16-201"></a></span>
-<span id="cb16-202"><a href="#cb16-202"></a>The key when we come to plotting the predictions is to now realise that because we are representing age on the x-axis, we need to use some other means to represent smoking status. In this case we can do that quite easily by using the colour aesthetic in our <span class="in">`ggplot`</span> call:</span>
-<span id="cb16-203"><a href="#cb16-203"></a></span>
-<span id="cb16-206"><a href="#cb16-206"></a><span class="in">```{r}</span></span>
-<span id="cb16-207"><a href="#cb16-207"></a><span class="fu">ggplot</span>(<span class="at">data =</span> newdf, <span class="fu">aes</span>(<span class="at">x =</span> age, <span class="at">y =</span> pred, <span class="at">color =</span> <span class="fu">factor</span>(smoke))) <span class="sc">+</span></span>
-<span id="cb16-208"><a href="#cb16-208"></a>  <span class="fu">geom_line</span>(<span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
-<span id="cb16-209"><a href="#cb16-209"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> birthwt2, <span class="fu">aes</span>(<span class="at">x =</span> age, <span class="at">y =</span> bwt), <span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
-<span id="cb16-210"><a href="#cb16-210"></a>  <span class="fu">xlab</span>(<span class="st">"Maternal Age"</span>) <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">"Predicted Birthweight"</span>) <span class="sc">+</span> <span class="fu">labs</span>(<span class="at">color =</span> <span class="st">"Smoking Status"</span>) <span class="sc">+</span></span>
-<span id="cb16-211"><a href="#cb16-211"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">20</span>) <span class="sc">+</span></span>
-<span id="cb16-212"><a href="#cb16-212"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"bottom"</span>)</span>
-<span id="cb16-213"><a href="#cb16-213"></a><span class="in">```</span></span>
-<span id="cb16-214"><a href="#cb16-214"></a></span>
-<span id="cb16-215"><a href="#cb16-215"></a>Note that I converted smoking status to a factor variable on the fly so that <span class="in">`ggplot`</span> knows that it only has two levels (otherwise it assumes it's a continuous variable).</span>
-<span id="cb16-216"><a href="#cb16-216"></a></span>
-<span id="cb16-217"><a href="#cb16-217"></a>So, what do we actually have here, when I call this a plot of adjusted predictions? We have two parallel regression lines - one for smokers (blue) and one for non-smokers (red). They are parallel because 'effects' are additive - we did not specify an interaction between maternal age and smoking status. The red line is the predicted birthweight as a function of maternal age for non-smoking mothers and the blue line is the predicted birthweight as a function of maternal age for smoking mothers. In other words, predictions of the association between maternal age and newborn birthweight, adjusted for maternal smoking status (we can flip this around and also say that these are predictions of the association between smoking status and newborn birthweight, adjusted for maternal age). The regression line/s no longer zig-zag, like they did in the earlier plot, because we have separated out the 'effect' of the second exposure from the first allowing a 'pure' association between maternal age and newborn birthweight at each level of smoking status to be observed.</span>
+<span id="cb16-186"><a href="#cb16-186"></a>Note two conditions in generating your grid of new data:\</span>
+<span id="cb16-187"><a href="#cb16-187"></a><span class="ss">1. </span>You **MUST** include every variable that is specified in your model;\</span>
+<span id="cb16-188"><a href="#cb16-188"></a><span class="ss">2. </span>The variable names **MUST** match the names of the corresponding variables in your original dataset.\</span>
+<span id="cb16-189"><a href="#cb16-189"></a>Failing these, <span class="in">`predict()`</span> will become upset with you and refuse to do any more work.</span>
+<span id="cb16-190"><a href="#cb16-190"></a>:::</span>
+<span id="cb16-191"><a href="#cb16-191"></a></span>
+<span id="cb16-192"><a href="#cb16-192"></a>Now we are in a position to generate the predictions that we need. Nothing changes compared to before, except we now specify a new dataframe to predict upon using the <span class="in">`newdata`</span> argument:</span>
+<span id="cb16-193"><a href="#cb16-193"></a></span>
+<span id="cb16-196"><a href="#cb16-196"></a><span class="in">```{r}</span></span>
+<span id="cb16-197"><a href="#cb16-197"></a>newdf <span class="ot">&lt;-</span>  newdf <span class="sc">|&gt;</span> </span>
+<span id="cb16-198"><a href="#cb16-198"></a>  <span class="fu">mutate</span>(<span class="at">pred =</span> <span class="fu">predict</span>(mod2, <span class="at">newdata =</span> newdf))</span>
+<span id="cb16-199"><a href="#cb16-199"></a>newdf <span class="sc">|&gt;</span> </span>
+<span id="cb16-200"><a href="#cb16-200"></a>  <span class="fu">kable</span>(<span class="at">align =</span> <span class="st">"c"</span>, <span class="at">digits =</span> <span class="dv">1</span>)</span>
+<span id="cb16-201"><a href="#cb16-201"></a><span class="in">```</span></span>
+<span id="cb16-202"><a href="#cb16-202"></a></span>
+<span id="cb16-203"><a href="#cb16-203"></a><span class="fu">### Visualise</span></span>
+<span id="cb16-204"><a href="#cb16-204"></a></span>
+<span id="cb16-205"><a href="#cb16-205"></a>The key when we come to plotting the predictions is to now realise that because we are representing age on the x-axis, we need to use some other means to represent smoking status. In this case we can do that quite easily by using the colour aesthetic in our <span class="in">`ggplot`</span> call:</span>
+<span id="cb16-206"><a href="#cb16-206"></a></span>
+<span id="cb16-209"><a href="#cb16-209"></a><span class="in">```{r}</span></span>
+<span id="cb16-210"><a href="#cb16-210"></a><span class="fu">ggplot</span>(<span class="at">data =</span> newdf, <span class="fu">aes</span>(<span class="at">x =</span> age, <span class="at">y =</span> pred, <span class="at">color =</span> <span class="fu">factor</span>(smoke))) <span class="sc">+</span></span>
+<span id="cb16-211"><a href="#cb16-211"></a>  <span class="fu">geom_line</span>(<span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb16-212"><a href="#cb16-212"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> birthwt2, <span class="fu">aes</span>(<span class="at">x =</span> age, <span class="at">y =</span> bwt), <span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb16-213"><a href="#cb16-213"></a>  <span class="fu">xlab</span>(<span class="st">"Maternal Age"</span>) <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">"Predicted Birthweight"</span>) <span class="sc">+</span> <span class="fu">labs</span>(<span class="at">color =</span> <span class="st">"Smoking Status"</span>) <span class="sc">+</span></span>
+<span id="cb16-214"><a href="#cb16-214"></a>    <span class="fu">scale_y_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">5000</span>), <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">5000</span>, <span class="at">by =</span> <span class="dv">1000</span>)) <span class="sc">+</span></span>
+<span id="cb16-215"><a href="#cb16-215"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">20</span>) <span class="sc">+</span></span>
+<span id="cb16-216"><a href="#cb16-216"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"bottom"</span>)</span>
+<span id="cb16-217"><a href="#cb16-217"></a><span class="in">```</span></span>
 <span id="cb16-218"><a href="#cb16-218"></a></span>
-<span id="cb16-219"><a href="#cb16-219"></a>These same principles of prediction and visualisation can be applied in nearly all model plotting endeavours. There does, however, become a limit in the number of covariates that can practically be visualised and that is something we will look at in more detail in the next post.</span>
+<span id="cb16-219"><a href="#cb16-219"></a>Note that I converted smoking status to a factor variable on the fly so that <span class="in">`ggplot`</span> knows that it only has two levels (otherwise it assumes it's a continuous variable).</span>
 <span id="cb16-220"><a href="#cb16-220"></a></span>
-<span id="cb16-221"><a href="#cb16-221"></a>I will conclude by saying that for this series I am going to illustrate all concepts using what I consider to be 'first principles' - that is, applying the <span class="in">`predict()`</span> and <span class="in">`expand.grid()`</span> functions for predicting, and <span class="in">`ggplot2`</span> for visualising. But there may be better/faster ways to do this and a package I came across recently that I think would be worthwhile exploring is <span class="co">[</span><span class="ot">`ggeffects`</span><span class="co">](https://strengejacke.github.io/ggeffects/index.html)</span>. I haven't used this myself but a quick scan of the package website gives me the impression this will make even shorter work of my 'first principles' approach. It is a package that I will keep in mind as we go forward on this topic.</span>
+<span id="cb16-221"><a href="#cb16-221"></a>So, what do we actually have here, when I call this a plot of adjusted predictions? We have two parallel regression lines - one for smokers (blue) and one for non-smokers (red). They are parallel because 'effects' are additive - we did not specify an interaction between maternal age and smoking status. The red line is the predicted birthweight as a function of maternal age for non-smoking mothers and the blue line is the predicted birthweight as a function of maternal age for smoking mothers. In other words, predictions of the association between maternal age and newborn birthweight, adjusted for maternal smoking status (we can flip this around and also say that these are predictions of the association between smoking status and newborn birthweight, adjusted for maternal age). The regression line/s no longer zig-zag, like they did in the earlier plot, because we have separated out the 'effect' of the second exposure from the first allowing a 'pure' association between maternal age and newborn birthweight at each level of smoking status to be observed.</span>
 <span id="cb16-222"><a href="#cb16-222"></a></span>
-<span id="cb16-223"><a href="#cb16-223"></a>Catch you in a couple of weeks...</span>
+<span id="cb16-223"><a href="#cb16-223"></a>These same principles of prediction and visualisation can be applied in nearly all model plotting endeavours. There does, however, become a limit in the number of covariates that can practically be visualised and that is something we will look at in more detail in the next post.</span>
+<span id="cb16-224"><a href="#cb16-224"></a></span>
+<span id="cb16-225"><a href="#cb16-225"></a>I will conclude by saying that for this series I am going to illustrate all concepts using what I consider to be 'first principles' - that is, applying the <span class="in">`predict()`</span> and <span class="in">`expand.grid()`</span> functions for predicting, and <span class="in">`ggplot2`</span> for visualising. But there may be better/faster ways to do this and a package I came across recently that I think would be worthwhile exploring is <span class="co">[</span><span class="ot">`ggeffects`</span><span class="co">](https://strengejacke.github.io/ggeffects/index.html)</span>. I haven't used this myself but a quick scan of the package website gives me the impression this will make even shorter work of my 'first principles' approach. It is a package that I will keep in mind as we go forward on this topic.</span>
+<span id="cb16-226"><a href="#cb16-226"></a></span>
+<span id="cb16-227"><a href="#cb16-227"></a>Catch you in a couple of weeks...</span>
 </code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
