@@ -44,7 +44,7 @@ ggplot(data = newdf, aes(x = age, y = pred)) +
   theme(legend.position = "bottom")
 ```
 
-Ok, so clearly there's more to this relationship than I had anticipated, but we already have more information than when we modelled the association assuming it was linear. Based on this prediction, birthweight remains relatively stable until the mother's age approaches `30` years, then increases thereafter. This still seems somewhat counter-intuitive to my mind, and in fact we may have good reason for not paying too much attention to the model prediction at older maternal ages. It turns out that only `20` out of `189` (i.e ~ `10%` of mothers) are older than `30` years - and only `1` mother is older than `40` years - so we do need to be careful about interpreting a trend based on only a few data points. 
+Ok, so clearly there's more to this relationship than I had anticipated, but we already have more information than when we modelled the association assuming it was linear. Based on this prediction, birthweight remains relatively stable until the mother's age approaches `30` years, then increases thereafter. This still seems somewhat counter-intuitive to my mind, and in fact we may have good reason for not paying too much attention to the model prediction at older maternal ages. It turns out that only `20` out of `189` (i.e \~ `10%` of mothers) are older than `30` years - and only `1` mother is older than `40` years - so we do need to be careful about interpreting a trend based on only a few data points.
 
 In any case, let's consider other steps we can take to assess this by adjusting the prediction for potentially confounding factors that could be distorting the relationship as it currently stands. Let's start by first considering maternal smoking.
 
@@ -109,6 +109,7 @@ ggplot(data = newdf, aes(x = age, y = pred, group = interaction(smoke, ht), colo
   theme_bw(base_size = 20) +
   theme(legend.position = "bottom")
 ```
+
 We're now seeing that the predictions further depend on the factors adjusted for. I am not going to attempt to explain any of this - my feeling is that there probably isn't enough data at older maternal ages to come to any firm conclusions about the nature of the true relationship. Furthermore, this is NOT a good model - there is not enough data to support the estimation of all the parameters involved when you interact a spline term with multiple covariates. But that's ok - ensuring model validity wasn't really the point of this post. Instead it was to show you the simplicity of predicting and visualising non-linear functional forms. And I hope that I have managed to do that.
 
 Until next time...
