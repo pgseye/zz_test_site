@@ -1,20 +1,19 @@
 ---
-title: "Model Prediction/Visualisation <br> 3. Non-Linear Functional Forms"
-date: 2025-05-02
+title: "Model Prediction/Visualisation <br> 4. Generalised Linear Models (GLMs)"
+date: 2025-05-16
 categories: [code, concept, modelling, visualisation]
 #image: "images/plot.png"
-description: "Relaxing the linearity assumption does not make prediction/visualisation any more difficult."
+description: "Know what you are predicting when using GLMs."
 ---
 
-You'll be glad to know this is going to be a relatively short post. In fact, in discussing aspects of model prediction and visualisation, the non-linear functional form is almost not worthy of a separate post in itself. BUT, I'm going to walk you through an example anyway - mainly to highlight that the process is no more difficult, nor different, to that of predicting and visualising the linear relationship.
+The examples that I've used so far in this series of posts on model prediction and visualisation have all involved a continuous outcome measure (birthweight measured in grams), and so accordingly we have used a simple linear (regression) model. Nothing difficult there. But does anything change in the visualisation process when the models become a little more advanced?
 
-To illustrate this, we'll again use the `birthwt` dataset. If you recall from the first post in this series, when we considered the modelling of birthweight as a function of maternal age (and later, sex), we made the somewhat unrealistic assumption that maternal age was linearly associated with birthweight. With this constraint in place, the model suggested to us that increasing maternal age was associated with increasing birthweight. At the time I suggested this was biologically implausible and guessed that the association would be more of an inverted U-shape - i.e. birthweight increasing with maternal age to a certain point and then decreasing thereafter.
+Well, the answer is both yes and no (sorry!). While the coding fundamentals largely remain the same, there are some additional considerations in the visualisation of GLMs (as well as mixed and survival models which we will discuss in future posts) that you both need to be aware of and understand.
 
-So, let's relax the assumption of linearity by including a restricted cubic spline term on maternal age and see what the simplest model with that as the sole predictor shows.
 
-::: callout-note
-Note that to better capture potential non-linearity, I have increased the 'resolution' of maternal age when creating the new data grid. I originally used `5` year intervals which was more than enough when we assumed the relationship was linear, but have now amended that to `1` year intervals.
-:::
+
+
+
 
 Our model then becomes:
 

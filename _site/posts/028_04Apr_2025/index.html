@@ -6,10 +6,10 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2025-05-02">
-<meta name="description" content="Relaxing the linearity assumption does not make prediction/visualisation any more difficult.">
+<meta name="dcterms.date" content="2025-05-16">
+<meta name="description" content="Know what you are predicting when using GLMs.">
 
-<title>Test Site 2 - Model Prediction/Visualisation  3. Non-Linear Functional Forms</title>
+<title>Test Site 2 - Model Prediction/Visualisation  4. Generalised Linear Models (GLMs)</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -154,7 +154,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<div class="quarto-title-block"><div><h1 class="title">Model Prediction/Visualisation <br> 3. Non-Linear Functional Forms</h1><button type="button" class="btn code-tools-button dropdown-toggle" id="quarto-code-tools-menu" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi"></i> Code</button><ul class="dropdown-menu dropdown-menu-end" aria-labelelledby="quarto-code-tools-menu"><li><a id="quarto-show-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Show All Code</a></li><li><a id="quarto-hide-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Hide All Code</a></li><li><hr class="dropdown-divider"></li><li><a id="quarto-view-source" class="dropdown-item" href="javascript:void(0)" role="button">View Source</a></li></ul></div></div>
+<div class="quarto-title-block"><div><h1 class="title">Model Prediction/Visualisation <br> 4. Generalised Linear Models (GLMs)</h1><button type="button" class="btn code-tools-button dropdown-toggle" id="quarto-code-tools-menu" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi"></i> Code</button><ul class="dropdown-menu dropdown-menu-end" aria-labelelledby="quarto-code-tools-menu"><li><a id="quarto-show-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Show All Code</a></li><li><a id="quarto-hide-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Hide All Code</a></li><li><hr class="dropdown-divider"></li><li><a id="quarto-view-source" class="dropdown-item" href="javascript:void(0)" role="button">View Source</a></li></ul></div></div>
   <div class="quarto-categories">
     <div class="quarto-category">code</div>
     <div class="quarto-category">concept</div>
@@ -165,7 +165,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <div>
   <div class="description">
-    Relaxing the linearity assumption does not make prediction/visualisation any more difficult.
+    Know what you are predicting when using GLMs.
   </div>
 </div>
 
@@ -176,7 +176,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">May 2, 2025</p>
+      <p class="date">May 16, 2025</p>
     </div>
   </div>
   
@@ -188,22 +188,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p>You’ll be glad to know this is going to be a relatively short post. In fact, in discussing aspects of model prediction and visualisation, the non-linear functional form is almost not worthy of a separate post in itself. BUT, I’m going to walk you through an example anyway - mainly to highlight that the process is no more difficult, nor different, to that of predicting and visualising the linear relationship.</p>
-<p>To illustrate this, we’ll again use the <code>birthwt</code> dataset. If you recall from the first post in this series, when we considered the modelling of birthweight as a function of maternal age (and later, sex), we made the somewhat unrealistic assumption that maternal age was linearly associated with birthweight. With this constraint in place, the model suggested to us that increasing maternal age was associated with increasing birthweight. At the time I suggested this was biologically implausible and guessed that the association would be more of an inverted U-shape - i.e.&nbsp;birthweight increasing with maternal age to a certain point and then decreasing thereafter.</p>
-<p>So, let’s relax the assumption of linearity by including a restricted cubic spline term on maternal age and see what the simplest model with that as the sole predictor shows.</p>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Note
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Note that to better capture potential non-linearity, I have increased the ‘resolution’ of maternal age when creating the new data grid. I originally used <code>5</code> year intervals which was more than enough when we assumed the relationship was linear, but have now amended that to <code>1</code> year intervals.</p>
-</div>
-</div>
+<p>The examples that I’ve used so far in this series of posts on model prediction and visualisation have all involved a continuous outcome measure (birthweight measured in grams), and so accordingly we have used a simple linear (regression) model. Nothing difficult there. But does anything change in the visualisation process when the models become a little more advanced?</p>
+<p>Well, the answer is both yes and no (sorry!). While the coding fundamentals largely remain the same, there are some additional considerations in the visualisation of GLMs (as well as mixed and survival models which we will discuss in future posts) that you both need to be aware of and understand.</p>
 <p>Our model then becomes:</p>
 <p><code>mod &lt;-  lm(bwt ~ ns(age, 3), data = birthwt)</code></p>
 <p>And the visualisation of the model prediction is:</p>
@@ -906,119 +892,118 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <input type="hidden" id="giscus-base-theme" value="light">
 <input type="hidden" id="giscus-alt-theme" value="dark"><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
 <div class="sourceCode" id="cb4" data-shortcodes="false"><pre class="sourceCode numberSource markdown number-lines code-with-copy"><code class="sourceCode markdown"><span id="cb4-1"><a href="#cb4-1"></a><span class="co">---</span></span>
-<span id="cb4-2"><a href="#cb4-2"></a><span class="an">title:</span><span class="co"> "Model Prediction/Visualisation &lt;br&gt; 3. Non-Linear Functional Forms"</span></span>
-<span id="cb4-3"><a href="#cb4-3"></a><span class="an">date:</span><span class="co"> 2025-05-02</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="an">title:</span><span class="co"> "Model Prediction/Visualisation &lt;br&gt; 4. Generalised Linear Models (GLMs)"</span></span>
+<span id="cb4-3"><a href="#cb4-3"></a><span class="an">date:</span><span class="co"> 2025-05-16</span></span>
 <span id="cb4-4"><a href="#cb4-4"></a><span class="an">categories:</span><span class="co"> [code, concept, modelling, visualisation]</span></span>
 <span id="cb4-5"><a href="#cb4-5"></a><span class="co">#image: "images/plot.png"</span></span>
-<span id="cb4-6"><a href="#cb4-6"></a><span class="an">description:</span><span class="co"> "Relaxing the linearity assumption does not make prediction/visualisation any more difficult."</span></span>
+<span id="cb4-6"><a href="#cb4-6"></a><span class="an">description:</span><span class="co"> "Know what you are predicting when using GLMs."</span></span>
 <span id="cb4-7"><a href="#cb4-7"></a><span class="co">---</span></span>
 <span id="cb4-8"><a href="#cb4-8"></a></span>
-<span id="cb4-9"><a href="#cb4-9"></a>You'll be glad to know this is going to be a relatively short post. In fact, in discussing aspects of model prediction and visualisation, the non-linear functional form is almost not worthy of a separate post in itself. BUT, I'm going to walk you through an example anyway - mainly to highlight that the process is no more difficult, nor different, to that of predicting and visualising the linear relationship.</span>
+<span id="cb4-9"><a href="#cb4-9"></a>The examples that I've used so far in this series of posts on model prediction and visualisation have all involved a continuous outcome measure (birthweight measured in grams), and so accordingly we have used a simple linear (regression) model. Nothing difficult there. But does anything change in the visualisation process when the models become a little more advanced?</span>
 <span id="cb4-10"><a href="#cb4-10"></a></span>
-<span id="cb4-11"><a href="#cb4-11"></a>To illustrate this, we'll again use the <span class="in">`birthwt`</span> dataset. If you recall from the first post in this series, when we considered the modelling of birthweight as a function of maternal age (and later, sex), we made the somewhat unrealistic assumption that maternal age was linearly associated with birthweight. With this constraint in place, the model suggested to us that increasing maternal age was associated with increasing birthweight. At the time I suggested this was biologically implausible and guessed that the association would be more of an inverted U-shape - i.e. birthweight increasing with maternal age to a certain point and then decreasing thereafter.</span>
+<span id="cb4-11"><a href="#cb4-11"></a>Well, the answer is both yes and no (sorry!). While the coding fundamentals largely remain the same, there are some additional considerations in the visualisation of GLMs (as well as mixed and survival models which we will discuss in future posts) that you both need to be aware of and understand.</span>
 <span id="cb4-12"><a href="#cb4-12"></a></span>
-<span id="cb4-13"><a href="#cb4-13"></a>So, let's relax the assumption of linearity by including a restricted cubic spline term on maternal age and see what the simplest model with that as the sole predictor shows.</span>
+<span id="cb4-13"><a href="#cb4-13"></a></span>
 <span id="cb4-14"><a href="#cb4-14"></a></span>
-<span id="cb4-15"><a href="#cb4-15"></a>::: callout-note</span>
-<span id="cb4-16"><a href="#cb4-16"></a>Note that to better capture potential non-linearity, I have increased the 'resolution' of maternal age when creating the new data grid. I originally used <span class="in">`5`</span> year intervals which was more than enough when we assumed the relationship was linear, but have now amended that to <span class="in">`1`</span> year intervals.</span>
-<span id="cb4-17"><a href="#cb4-17"></a>:::</span>
-<span id="cb4-18"><a href="#cb4-18"></a></span>
-<span id="cb4-19"><a href="#cb4-19"></a>Our model then becomes:</span>
-<span id="cb4-20"><a href="#cb4-20"></a></span>
-<span id="cb4-21"><a href="#cb4-21"></a><span class="in">`mod &lt;-  lm(bwt ~ ns(age, 3), data = birthwt)`</span></span>
-<span id="cb4-22"><a href="#cb4-22"></a></span>
-<span id="cb4-23"><a href="#cb4-23"></a>And the visualisation of the model prediction is:</span>
-<span id="cb4-24"><a href="#cb4-24"></a></span>
-<span id="cb4-27"><a href="#cb4-27"></a><span class="in">```{r}</span></span>
-<span id="cb4-28"><a href="#cb4-28"></a><span class="co">#| message: false</span></span>
-<span id="cb4-29"><a href="#cb4-29"></a><span class="co">#| warning: false</span></span>
-<span id="cb4-30"><a href="#cb4-30"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb4-31"><a href="#cb4-31"></a><span class="fu">library</span>(splines)</span>
-<span id="cb4-32"><a href="#cb4-32"></a><span class="fu">data</span>(birthwt, <span class="at">package =</span> <span class="st">"MASS"</span>)</span>
-<span id="cb4-33"><a href="#cb4-33"></a><span class="co"># Model</span></span>
-<span id="cb4-34"><a href="#cb4-34"></a>mod <span class="ot">&lt;-</span>  <span class="fu">lm</span>(bwt <span class="sc">~</span> <span class="fu">ns</span>(age, <span class="dv">3</span>), <span class="at">data =</span> birthwt)</span>
-<span id="cb4-35"><a href="#cb4-35"></a><span class="co"># Create new data</span></span>
-<span id="cb4-36"><a href="#cb4-36"></a>newdf <span class="ot">&lt;-</span>  <span class="fu">expand.grid</span>(<span class="at">age =</span> <span class="fu">seq</span>(<span class="dv">15</span>, <span class="dv">45</span>, <span class="at">by =</span> <span class="dv">1</span>))</span>
-<span id="cb4-37"><a href="#cb4-37"></a><span class="co"># Predict</span></span>
-<span id="cb4-38"><a href="#cb4-38"></a>newdf <span class="ot">&lt;-</span>  newdf <span class="sc">|&gt;</span> </span>
-<span id="cb4-39"><a href="#cb4-39"></a>  <span class="fu">mutate</span>(<span class="at">pred =</span> <span class="fu">predict</span>(mod, <span class="at">newdata =</span> newdf))</span>
-<span id="cb4-40"><a href="#cb4-40"></a><span class="co"># Visualise</span></span>
-<span id="cb4-41"><a href="#cb4-41"></a><span class="fu">ggplot</span>(<span class="at">data =</span> newdf, <span class="fu">aes</span>(<span class="at">x =</span> age, <span class="at">y =</span> pred)) <span class="sc">+</span></span>
-<span id="cb4-42"><a href="#cb4-42"></a>  <span class="fu">geom_line</span>(<span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
-<span id="cb4-43"><a href="#cb4-43"></a>  <span class="fu">xlab</span>(<span class="st">"Maternal Age"</span>) <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">"Predicted Birthweight"</span>) <span class="sc">+</span></span>
-<span id="cb4-44"><a href="#cb4-44"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">5000</span>), <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">5000</span>, <span class="at">by =</span> <span class="dv">1000</span>)) <span class="sc">+</span></span>
-<span id="cb4-45"><a href="#cb4-45"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">20</span>) <span class="sc">+</span></span>
-<span id="cb4-46"><a href="#cb4-46"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"bottom"</span>)</span>
-<span id="cb4-47"><a href="#cb4-47"></a><span class="in">```</span></span>
-<span id="cb4-48"><a href="#cb4-48"></a></span>
-<span id="cb4-49"><a href="#cb4-49"></a>Ok, so clearly there's more to this relationship than I had anticipated, but we already have more information than when we modelled the association assuming it was linear. Based on this prediction, birthweight remains relatively stable until the mother's age approaches <span class="in">`30`</span> years, then increases thereafter. This still seems somewhat counter-intuitive to my mind, and in fact we may have good reason for not paying too much attention to the model prediction at older maternal ages. It turns out that only <span class="in">`20`</span> out of <span class="in">`189`</span> (i.e ~ <span class="in">`10%`</span> of mothers) are older than <span class="in">`30`</span> years - and only <span class="in">`1`</span> mother is older than <span class="in">`40`</span> years - so we do need to be careful about interpreting a trend based on only a few data points. </span>
-<span id="cb4-50"><a href="#cb4-50"></a></span>
-<span id="cb4-51"><a href="#cb4-51"></a>In any case, let's consider other steps we can take to assess this by adjusting the prediction for potentially confounding factors that could be distorting the relationship as it currently stands. Let's start by first considering maternal smoking.</span>
-<span id="cb4-52"><a href="#cb4-52"></a></span>
-<span id="cb4-53"><a href="#cb4-53"></a>The association between maternal age and birthweight adjusted for maternal smoking can be visualised as:</span>
-<span id="cb4-54"><a href="#cb4-54"></a></span>
-<span id="cb4-57"><a href="#cb4-57"></a><span class="in">```{r}</span></span>
-<span id="cb4-58"><a href="#cb4-58"></a><span class="co">#| message: false</span></span>
-<span id="cb4-59"><a href="#cb4-59"></a><span class="co">#| warning: false</span></span>
-<span id="cb4-60"><a href="#cb4-60"></a><span class="co"># Relabel smoking</span></span>
-<span id="cb4-61"><a href="#cb4-61"></a>birthwt<span class="sc">$</span>smoke <span class="ot">&lt;-</span>  <span class="fu">factor</span>(birthwt<span class="sc">$</span>smoke, <span class="at">levels =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>), <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"No"</span>, <span class="st">"Yes"</span>))</span>
-<span id="cb4-62"><a href="#cb4-62"></a><span class="co"># Model</span></span>
-<span id="cb4-63"><a href="#cb4-63"></a>mod2 <span class="ot">&lt;-</span>  <span class="fu">lm</span>(bwt <span class="sc">~</span> <span class="fu">ns</span>(age, <span class="dv">3</span>) <span class="sc">*</span> smoke, <span class="at">data =</span> birthwt)</span>
-<span id="cb4-64"><a href="#cb4-64"></a><span class="co"># Create new data</span></span>
-<span id="cb4-65"><a href="#cb4-65"></a>newdf <span class="ot">&lt;-</span>  <span class="fu">expand.grid</span>(<span class="at">age =</span> <span class="fu">seq</span>(<span class="dv">15</span>, <span class="dv">45</span>, <span class="at">by =</span> <span class="dv">1</span>),</span>
-<span id="cb4-66"><a href="#cb4-66"></a>                      <span class="at">smoke =</span> <span class="fu">levels</span>(birthwt<span class="sc">$</span>smoke))</span>
-<span id="cb4-67"><a href="#cb4-67"></a><span class="co"># Predict</span></span>
-<span id="cb4-68"><a href="#cb4-68"></a>newdf <span class="ot">&lt;-</span>  newdf <span class="sc">|&gt;</span></span>
-<span id="cb4-69"><a href="#cb4-69"></a>  <span class="fu">mutate</span>(<span class="at">pred =</span> <span class="fu">predict</span>(mod2, <span class="at">newdata =</span> newdf))</span>
-<span id="cb4-70"><a href="#cb4-70"></a><span class="co"># Visualise</span></span>
-<span id="cb4-71"><a href="#cb4-71"></a><span class="fu">ggplot</span>(<span class="at">data =</span> newdf, <span class="fu">aes</span>(<span class="at">x =</span> age, <span class="at">y =</span> pred, <span class="at">color =</span> smoke)) <span class="sc">+</span></span>
-<span id="cb4-72"><a href="#cb4-72"></a>  <span class="fu">geom_line</span>(<span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
-<span id="cb4-73"><a href="#cb4-73"></a>  <span class="fu">xlab</span>(<span class="st">"Maternal Age"</span>) <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">"Predicted Birthweight"</span>) <span class="sc">+</span> <span class="fu">labs</span>(<span class="at">color =</span> <span class="st">"Smoking Status"</span>) <span class="sc">+</span></span>
-<span id="cb4-74"><a href="#cb4-74"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">5000</span>), <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">5000</span>, <span class="at">by =</span> <span class="dv">1000</span>)) <span class="sc">+</span></span>
-<span id="cb4-75"><a href="#cb4-75"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">20</span>) <span class="sc">+</span></span>
-<span id="cb4-76"><a href="#cb4-76"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"bottom"</span>)</span>
-<span id="cb4-77"><a href="#cb4-77"></a><span class="in">```</span></span>
-<span id="cb4-78"><a href="#cb4-78"></a></span>
-<span id="cb4-79"><a href="#cb4-79"></a>Now we can see that amongst smokers, birthweight declines with maternal age. However, we still observe that same oddly increasing profile of birthweight with maternal age amongst the non-smokers. Perhaps other factors are also at play? Let's just adjust for the full complement as we did in the last post (at least that we can visualise).</span>
-<span id="cb4-80"><a href="#cb4-80"></a></span>
-<span id="cb4-81"><a href="#cb4-81"></a>Thus, the association between maternal age and birthweight adjusted for maternal smoking, history of hypertension, race and uterine irritability, can be visualised as:</span>
-<span id="cb4-82"><a href="#cb4-82"></a></span>
-<span id="cb4-85"><a href="#cb4-85"></a><span class="in">```{r}</span></span>
-<span id="cb4-86"><a href="#cb4-86"></a><span class="co">#| message: false</span></span>
-<span id="cb4-87"><a href="#cb4-87"></a><span class="co">#| warning: false</span></span>
-<span id="cb4-88"><a href="#cb4-88"></a><span class="co"># Relabel history of hypertension</span></span>
-<span id="cb4-89"><a href="#cb4-89"></a>birthwt<span class="sc">$</span>ht <span class="ot">&lt;-</span>  <span class="fu">factor</span>(birthwt<span class="sc">$</span>ht, <span class="at">levels =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"No"</span>, <span class="st">"Yes"</span>))</span>
-<span id="cb4-90"><a href="#cb4-90"></a>birthwt<span class="sc">$</span>race <span class="ot">&lt;-</span>  <span class="fu">factor</span>(birthwt<span class="sc">$</span>race, <span class="at">levels =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>), <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"White"</span>, <span class="st">"Black"</span>, <span class="st">"Other"</span>))</span>
-<span id="cb4-91"><a href="#cb4-91"></a>birthwt<span class="sc">$</span>ui <span class="ot">&lt;-</span>  <span class="fu">factor</span>(birthwt<span class="sc">$</span>ui, <span class="at">levels =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"No"</span>, <span class="st">"Yes"</span>))</span>
-<span id="cb4-92"><a href="#cb4-92"></a><span class="co"># Model</span></span>
-<span id="cb4-93"><a href="#cb4-93"></a>mod3 <span class="ot">&lt;-</span>  <span class="fu">lm</span>(bwt <span class="sc">~</span> <span class="fu">ns</span>(age,<span class="dv">3</span>) <span class="sc">*</span> smoke <span class="sc">*</span> race <span class="sc">*</span> ui <span class="sc">*</span> ht, <span class="at">data =</span> birthwt)</span>
-<span id="cb4-94"><a href="#cb4-94"></a><span class="co"># Create new data</span></span>
-<span id="cb4-95"><a href="#cb4-95"></a>newdf <span class="ot">&lt;-</span>  <span class="fu">expand.grid</span>(<span class="at">age =</span> <span class="fu">seq</span>(<span class="dv">15</span>, <span class="dv">45</span>, <span class="at">by =</span> <span class="dv">1</span>),</span>
-<span id="cb4-96"><a href="#cb4-96"></a>                      <span class="at">smoke =</span> <span class="fu">levels</span>(birthwt<span class="sc">$</span>smoke),</span>
-<span id="cb4-97"><a href="#cb4-97"></a>                      <span class="at">race =</span> <span class="fu">levels</span>(birthwt<span class="sc">$</span>race),</span>
-<span id="cb4-98"><a href="#cb4-98"></a>                      <span class="at">ui =</span> <span class="fu">levels</span>(birthwt<span class="sc">$</span>ui),</span>
-<span id="cb4-99"><a href="#cb4-99"></a>                      <span class="at">ht =</span> <span class="fu">levels</span>(birthwt<span class="sc">$</span>ht))</span>
-<span id="cb4-100"><a href="#cb4-100"></a><span class="co"># Create labels for plotting race</span></span>
-<span id="cb4-101"><a href="#cb4-101"></a>label_race <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Race: White"</span>, <span class="st">"Race: Black"</span>, <span class="st">"Race: Other"</span>)</span>
-<span id="cb4-102"><a href="#cb4-102"></a><span class="fu">names</span>(label_race) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"White"</span>, <span class="st">"Black"</span>, <span class="st">"Other"</span>)</span>
-<span id="cb4-103"><a href="#cb4-103"></a><span class="co"># Create labels for plotting ui</span></span>
-<span id="cb4-104"><a href="#cb4-104"></a>label_ui <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Uterine Irritability: No"</span>, <span class="st">"Uterine Irritability: Yes"</span>)</span>
-<span id="cb4-105"><a href="#cb4-105"></a><span class="fu">names</span>(label_ui) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"No"</span>, <span class="st">"Yes"</span>)</span>
-<span id="cb4-106"><a href="#cb4-106"></a><span class="co"># Predict</span></span>
-<span id="cb4-107"><a href="#cb4-107"></a>newdf <span class="ot">&lt;-</span>  newdf <span class="sc">|&gt;</span> </span>
-<span id="cb4-108"><a href="#cb4-108"></a>  <span class="fu">mutate</span>(<span class="at">pred =</span> <span class="fu">predict</span>(mod3, <span class="at">newdata =</span> newdf))</span>
-<span id="cb4-109"><a href="#cb4-109"></a><span class="co"># Visualise</span></span>
-<span id="cb4-110"><a href="#cb4-110"></a><span class="fu">ggplot</span>(<span class="at">data =</span> newdf, <span class="fu">aes</span>(<span class="at">x =</span> age, <span class="at">y =</span> pred, <span class="at">group =</span> <span class="fu">interaction</span>(smoke, ht), <span class="at">color =</span> smoke, <span class="at">linetype =</span> ht)) <span class="sc">+</span></span>
-<span id="cb4-111"><a href="#cb4-111"></a>  <span class="fu">geom_line</span>(<span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
-<span id="cb4-112"><a href="#cb4-112"></a>  <span class="fu">xlab</span>(<span class="st">"Maternal Age"</span>) <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">"Predicted Birthweight"</span>) <span class="sc">+</span> <span class="fu">labs</span>(<span class="at">color =</span> <span class="st">"Smoking Status"</span>, <span class="at">linetype =</span> <span class="st">"History of Hypertension"</span>) <span class="sc">+</span></span>
-<span id="cb4-113"><a href="#cb4-113"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">5000</span>), <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">5000</span>, <span class="at">by =</span> <span class="dv">1000</span>)) <span class="sc">+</span></span>
-<span id="cb4-114"><a href="#cb4-114"></a>  <span class="fu">facet_grid</span>(ui <span class="sc">~</span> race, <span class="at">labeller =</span> <span class="fu">labeller</span>(<span class="at">race =</span> label_race, <span class="at">ui =</span> label_ui)) <span class="sc">+</span></span>
-<span id="cb4-115"><a href="#cb4-115"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">20</span>) <span class="sc">+</span></span>
-<span id="cb4-116"><a href="#cb4-116"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"bottom"</span>)</span>
-<span id="cb4-117"><a href="#cb4-117"></a><span class="in">```</span></span>
-<span id="cb4-118"><a href="#cb4-118"></a>We're now seeing that the predictions further depend on the factors adjusted for. I am not going to attempt to explain any of this - my feeling is that there probably isn't enough data at older maternal ages to come to any firm conclusions about the nature of the true relationship. Furthermore, this is NOT a good model - there is not enough data to support the estimation of all the parameters involved when you interact a spline term with multiple covariates. But that's ok - ensuring model validity wasn't really the point of this post. Instead it was to show you the simplicity of predicting and visualising non-linear functional forms. And I hope that I have managed to do that.</span>
-<span id="cb4-119"><a href="#cb4-119"></a></span>
-<span id="cb4-120"><a href="#cb4-120"></a>Until next time...</span>
+<span id="cb4-15"><a href="#cb4-15"></a></span>
+<span id="cb4-16"><a href="#cb4-16"></a></span>
+<span id="cb4-17"><a href="#cb4-17"></a></span>
+<span id="cb4-18"><a href="#cb4-18"></a>Our model then becomes:</span>
+<span id="cb4-19"><a href="#cb4-19"></a></span>
+<span id="cb4-20"><a href="#cb4-20"></a><span class="in">`mod &lt;-  lm(bwt ~ ns(age, 3), data = birthwt)`</span></span>
+<span id="cb4-21"><a href="#cb4-21"></a></span>
+<span id="cb4-22"><a href="#cb4-22"></a>And the visualisation of the model prediction is:</span>
+<span id="cb4-23"><a href="#cb4-23"></a></span>
+<span id="cb4-26"><a href="#cb4-26"></a><span class="in">```{r}</span></span>
+<span id="cb4-27"><a href="#cb4-27"></a><span class="co">#| message: false</span></span>
+<span id="cb4-28"><a href="#cb4-28"></a><span class="co">#| warning: false</span></span>
+<span id="cb4-29"><a href="#cb4-29"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb4-30"><a href="#cb4-30"></a><span class="fu">library</span>(splines)</span>
+<span id="cb4-31"><a href="#cb4-31"></a><span class="fu">data</span>(birthwt, <span class="at">package =</span> <span class="st">"MASS"</span>)</span>
+<span id="cb4-32"><a href="#cb4-32"></a><span class="co"># Model</span></span>
+<span id="cb4-33"><a href="#cb4-33"></a>mod <span class="ot">&lt;-</span>  <span class="fu">lm</span>(bwt <span class="sc">~</span> <span class="fu">ns</span>(age, <span class="dv">3</span>), <span class="at">data =</span> birthwt)</span>
+<span id="cb4-34"><a href="#cb4-34"></a><span class="co"># Create new data</span></span>
+<span id="cb4-35"><a href="#cb4-35"></a>newdf <span class="ot">&lt;-</span>  <span class="fu">expand.grid</span>(<span class="at">age =</span> <span class="fu">seq</span>(<span class="dv">15</span>, <span class="dv">45</span>, <span class="at">by =</span> <span class="dv">1</span>))</span>
+<span id="cb4-36"><a href="#cb4-36"></a><span class="co"># Predict</span></span>
+<span id="cb4-37"><a href="#cb4-37"></a>newdf <span class="ot">&lt;-</span>  newdf <span class="sc">|&gt;</span> </span>
+<span id="cb4-38"><a href="#cb4-38"></a>  <span class="fu">mutate</span>(<span class="at">pred =</span> <span class="fu">predict</span>(mod, <span class="at">newdata =</span> newdf))</span>
+<span id="cb4-39"><a href="#cb4-39"></a><span class="co"># Visualise</span></span>
+<span id="cb4-40"><a href="#cb4-40"></a><span class="fu">ggplot</span>(<span class="at">data =</span> newdf, <span class="fu">aes</span>(<span class="at">x =</span> age, <span class="at">y =</span> pred)) <span class="sc">+</span></span>
+<span id="cb4-41"><a href="#cb4-41"></a>  <span class="fu">geom_line</span>(<span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb4-42"><a href="#cb4-42"></a>  <span class="fu">xlab</span>(<span class="st">"Maternal Age"</span>) <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">"Predicted Birthweight"</span>) <span class="sc">+</span></span>
+<span id="cb4-43"><a href="#cb4-43"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">5000</span>), <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">5000</span>, <span class="at">by =</span> <span class="dv">1000</span>)) <span class="sc">+</span></span>
+<span id="cb4-44"><a href="#cb4-44"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">20</span>) <span class="sc">+</span></span>
+<span id="cb4-45"><a href="#cb4-45"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"bottom"</span>)</span>
+<span id="cb4-46"><a href="#cb4-46"></a><span class="in">```</span></span>
+<span id="cb4-47"><a href="#cb4-47"></a></span>
+<span id="cb4-48"><a href="#cb4-48"></a>Ok, so clearly there's more to this relationship than I had anticipated, but we already have more information than when we modelled the association assuming it was linear. Based on this prediction, birthweight remains relatively stable until the mother's age approaches <span class="in">`30`</span> years, then increases thereafter. This still seems somewhat counter-intuitive to my mind, and in fact we may have good reason for not paying too much attention to the model prediction at older maternal ages. It turns out that only <span class="in">`20`</span> out of <span class="in">`189`</span> (i.e ~ <span class="in">`10%`</span> of mothers) are older than <span class="in">`30`</span> years - and only <span class="in">`1`</span> mother is older than <span class="in">`40`</span> years - so we do need to be careful about interpreting a trend based on only a few data points. </span>
+<span id="cb4-49"><a href="#cb4-49"></a></span>
+<span id="cb4-50"><a href="#cb4-50"></a>In any case, let's consider other steps we can take to assess this by adjusting the prediction for potentially confounding factors that could be distorting the relationship as it currently stands. Let's start by first considering maternal smoking.</span>
+<span id="cb4-51"><a href="#cb4-51"></a></span>
+<span id="cb4-52"><a href="#cb4-52"></a>The association between maternal age and birthweight adjusted for maternal smoking can be visualised as:</span>
+<span id="cb4-53"><a href="#cb4-53"></a></span>
+<span id="cb4-56"><a href="#cb4-56"></a><span class="in">```{r}</span></span>
+<span id="cb4-57"><a href="#cb4-57"></a><span class="co">#| message: false</span></span>
+<span id="cb4-58"><a href="#cb4-58"></a><span class="co">#| warning: false</span></span>
+<span id="cb4-59"><a href="#cb4-59"></a><span class="co"># Relabel smoking</span></span>
+<span id="cb4-60"><a href="#cb4-60"></a>birthwt<span class="sc">$</span>smoke <span class="ot">&lt;-</span>  <span class="fu">factor</span>(birthwt<span class="sc">$</span>smoke, <span class="at">levels =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>), <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"No"</span>, <span class="st">"Yes"</span>))</span>
+<span id="cb4-61"><a href="#cb4-61"></a><span class="co"># Model</span></span>
+<span id="cb4-62"><a href="#cb4-62"></a>mod2 <span class="ot">&lt;-</span>  <span class="fu">lm</span>(bwt <span class="sc">~</span> <span class="fu">ns</span>(age, <span class="dv">3</span>) <span class="sc">*</span> smoke, <span class="at">data =</span> birthwt)</span>
+<span id="cb4-63"><a href="#cb4-63"></a><span class="co"># Create new data</span></span>
+<span id="cb4-64"><a href="#cb4-64"></a>newdf <span class="ot">&lt;-</span>  <span class="fu">expand.grid</span>(<span class="at">age =</span> <span class="fu">seq</span>(<span class="dv">15</span>, <span class="dv">45</span>, <span class="at">by =</span> <span class="dv">1</span>),</span>
+<span id="cb4-65"><a href="#cb4-65"></a>                      <span class="at">smoke =</span> <span class="fu">levels</span>(birthwt<span class="sc">$</span>smoke))</span>
+<span id="cb4-66"><a href="#cb4-66"></a><span class="co"># Predict</span></span>
+<span id="cb4-67"><a href="#cb4-67"></a>newdf <span class="ot">&lt;-</span>  newdf <span class="sc">|&gt;</span></span>
+<span id="cb4-68"><a href="#cb4-68"></a>  <span class="fu">mutate</span>(<span class="at">pred =</span> <span class="fu">predict</span>(mod2, <span class="at">newdata =</span> newdf))</span>
+<span id="cb4-69"><a href="#cb4-69"></a><span class="co"># Visualise</span></span>
+<span id="cb4-70"><a href="#cb4-70"></a><span class="fu">ggplot</span>(<span class="at">data =</span> newdf, <span class="fu">aes</span>(<span class="at">x =</span> age, <span class="at">y =</span> pred, <span class="at">color =</span> smoke)) <span class="sc">+</span></span>
+<span id="cb4-71"><a href="#cb4-71"></a>  <span class="fu">geom_line</span>(<span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb4-72"><a href="#cb4-72"></a>  <span class="fu">xlab</span>(<span class="st">"Maternal Age"</span>) <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">"Predicted Birthweight"</span>) <span class="sc">+</span> <span class="fu">labs</span>(<span class="at">color =</span> <span class="st">"Smoking Status"</span>) <span class="sc">+</span></span>
+<span id="cb4-73"><a href="#cb4-73"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">5000</span>), <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">5000</span>, <span class="at">by =</span> <span class="dv">1000</span>)) <span class="sc">+</span></span>
+<span id="cb4-74"><a href="#cb4-74"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">20</span>) <span class="sc">+</span></span>
+<span id="cb4-75"><a href="#cb4-75"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"bottom"</span>)</span>
+<span id="cb4-76"><a href="#cb4-76"></a><span class="in">```</span></span>
+<span id="cb4-77"><a href="#cb4-77"></a></span>
+<span id="cb4-78"><a href="#cb4-78"></a>Now we can see that amongst smokers, birthweight declines with maternal age. However, we still observe that same oddly increasing profile of birthweight with maternal age amongst the non-smokers. Perhaps other factors are also at play? Let's just adjust for the full complement as we did in the last post (at least that we can visualise).</span>
+<span id="cb4-79"><a href="#cb4-79"></a></span>
+<span id="cb4-80"><a href="#cb4-80"></a>Thus, the association between maternal age and birthweight adjusted for maternal smoking, history of hypertension, race and uterine irritability, can be visualised as:</span>
+<span id="cb4-81"><a href="#cb4-81"></a></span>
+<span id="cb4-84"><a href="#cb4-84"></a><span class="in">```{r}</span></span>
+<span id="cb4-85"><a href="#cb4-85"></a><span class="co">#| message: false</span></span>
+<span id="cb4-86"><a href="#cb4-86"></a><span class="co">#| warning: false</span></span>
+<span id="cb4-87"><a href="#cb4-87"></a><span class="co"># Relabel history of hypertension</span></span>
+<span id="cb4-88"><a href="#cb4-88"></a>birthwt<span class="sc">$</span>ht <span class="ot">&lt;-</span>  <span class="fu">factor</span>(birthwt<span class="sc">$</span>ht, <span class="at">levels =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"No"</span>, <span class="st">"Yes"</span>))</span>
+<span id="cb4-89"><a href="#cb4-89"></a>birthwt<span class="sc">$</span>race <span class="ot">&lt;-</span>  <span class="fu">factor</span>(birthwt<span class="sc">$</span>race, <span class="at">levels =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>), <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"White"</span>, <span class="st">"Black"</span>, <span class="st">"Other"</span>))</span>
+<span id="cb4-90"><a href="#cb4-90"></a>birthwt<span class="sc">$</span>ui <span class="ot">&lt;-</span>  <span class="fu">factor</span>(birthwt<span class="sc">$</span>ui, <span class="at">levels =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"No"</span>, <span class="st">"Yes"</span>))</span>
+<span id="cb4-91"><a href="#cb4-91"></a><span class="co"># Model</span></span>
+<span id="cb4-92"><a href="#cb4-92"></a>mod3 <span class="ot">&lt;-</span>  <span class="fu">lm</span>(bwt <span class="sc">~</span> <span class="fu">ns</span>(age,<span class="dv">3</span>) <span class="sc">*</span> smoke <span class="sc">*</span> race <span class="sc">*</span> ui <span class="sc">*</span> ht, <span class="at">data =</span> birthwt)</span>
+<span id="cb4-93"><a href="#cb4-93"></a><span class="co"># Create new data</span></span>
+<span id="cb4-94"><a href="#cb4-94"></a>newdf <span class="ot">&lt;-</span>  <span class="fu">expand.grid</span>(<span class="at">age =</span> <span class="fu">seq</span>(<span class="dv">15</span>, <span class="dv">45</span>, <span class="at">by =</span> <span class="dv">1</span>),</span>
+<span id="cb4-95"><a href="#cb4-95"></a>                      <span class="at">smoke =</span> <span class="fu">levels</span>(birthwt<span class="sc">$</span>smoke),</span>
+<span id="cb4-96"><a href="#cb4-96"></a>                      <span class="at">race =</span> <span class="fu">levels</span>(birthwt<span class="sc">$</span>race),</span>
+<span id="cb4-97"><a href="#cb4-97"></a>                      <span class="at">ui =</span> <span class="fu">levels</span>(birthwt<span class="sc">$</span>ui),</span>
+<span id="cb4-98"><a href="#cb4-98"></a>                      <span class="at">ht =</span> <span class="fu">levels</span>(birthwt<span class="sc">$</span>ht))</span>
+<span id="cb4-99"><a href="#cb4-99"></a><span class="co"># Create labels for plotting race</span></span>
+<span id="cb4-100"><a href="#cb4-100"></a>label_race <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Race: White"</span>, <span class="st">"Race: Black"</span>, <span class="st">"Race: Other"</span>)</span>
+<span id="cb4-101"><a href="#cb4-101"></a><span class="fu">names</span>(label_race) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"White"</span>, <span class="st">"Black"</span>, <span class="st">"Other"</span>)</span>
+<span id="cb4-102"><a href="#cb4-102"></a><span class="co"># Create labels for plotting ui</span></span>
+<span id="cb4-103"><a href="#cb4-103"></a>label_ui <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Uterine Irritability: No"</span>, <span class="st">"Uterine Irritability: Yes"</span>)</span>
+<span id="cb4-104"><a href="#cb4-104"></a><span class="fu">names</span>(label_ui) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"No"</span>, <span class="st">"Yes"</span>)</span>
+<span id="cb4-105"><a href="#cb4-105"></a><span class="co"># Predict</span></span>
+<span id="cb4-106"><a href="#cb4-106"></a>newdf <span class="ot">&lt;-</span>  newdf <span class="sc">|&gt;</span> </span>
+<span id="cb4-107"><a href="#cb4-107"></a>  <span class="fu">mutate</span>(<span class="at">pred =</span> <span class="fu">predict</span>(mod3, <span class="at">newdata =</span> newdf))</span>
+<span id="cb4-108"><a href="#cb4-108"></a><span class="co"># Visualise</span></span>
+<span id="cb4-109"><a href="#cb4-109"></a><span class="fu">ggplot</span>(<span class="at">data =</span> newdf, <span class="fu">aes</span>(<span class="at">x =</span> age, <span class="at">y =</span> pred, <span class="at">group =</span> <span class="fu">interaction</span>(smoke, ht), <span class="at">color =</span> smoke, <span class="at">linetype =</span> ht)) <span class="sc">+</span></span>
+<span id="cb4-110"><a href="#cb4-110"></a>  <span class="fu">geom_line</span>(<span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb4-111"><a href="#cb4-111"></a>  <span class="fu">xlab</span>(<span class="st">"Maternal Age"</span>) <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">"Predicted Birthweight"</span>) <span class="sc">+</span> <span class="fu">labs</span>(<span class="at">color =</span> <span class="st">"Smoking Status"</span>, <span class="at">linetype =</span> <span class="st">"History of Hypertension"</span>) <span class="sc">+</span></span>
+<span id="cb4-112"><a href="#cb4-112"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">5000</span>), <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">5000</span>, <span class="at">by =</span> <span class="dv">1000</span>)) <span class="sc">+</span></span>
+<span id="cb4-113"><a href="#cb4-113"></a>  <span class="fu">facet_grid</span>(ui <span class="sc">~</span> race, <span class="at">labeller =</span> <span class="fu">labeller</span>(<span class="at">race =</span> label_race, <span class="at">ui =</span> label_ui)) <span class="sc">+</span></span>
+<span id="cb4-114"><a href="#cb4-114"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">20</span>) <span class="sc">+</span></span>
+<span id="cb4-115"><a href="#cb4-115"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"bottom"</span>)</span>
+<span id="cb4-116"><a href="#cb4-116"></a><span class="in">```</span></span>
+<span id="cb4-117"><a href="#cb4-117"></a>We're now seeing that the predictions further depend on the factors adjusted for. I am not going to attempt to explain any of this - my feeling is that there probably isn't enough data at older maternal ages to come to any firm conclusions about the nature of the true relationship. Furthermore, this is NOT a good model - there is not enough data to support the estimation of all the parameters involved when you interact a spline term with multiple covariates. But that's ok - ensuring model validity wasn't really the point of this post. Instead it was to show you the simplicity of predicting and visualising non-linear functional forms. And I hope that I have managed to do that.</span>
+<span id="cb4-118"><a href="#cb4-118"></a></span>
+<span id="cb4-119"><a href="#cb4-119"></a>Until next time...</span>
 </code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
