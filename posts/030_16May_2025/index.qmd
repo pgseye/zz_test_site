@@ -14,6 +14,8 @@ So let's get to it. We'll again use the familiar `birthwt` dataset, this time to
 
 `mod <-  glm(low ~ age, family = "binomial", data = birthwt)`
 
+If you recall in the last post, we excluded the observation for the oldest mother having the heaviest baby, and we will do that again here.
+
 ```{r}
 #| message: false
 #| warning: false
@@ -22,7 +24,8 @@ library(splines)
 library(gtsummary)
 data(birthwt, package = "MASS")
 # Model
-mod <-  glm(low ~ age, family = "binomial", data = birthwt)
+mod <-  glm(low ~ age, family = "binomial", data = subset(birthwt, age < 40))
 tbl_regression(mod, intercept = T)
 ```
-The model suggests that there is an ~ `0.05` reduction in the log-odds of being low birthweight with each year increase in maternal age. 
+
+The model suggests that there is an \~ `0.05` reduction in the log-odds of being low birthweight with each year increase in maternal age.

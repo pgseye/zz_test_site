@@ -92,6 +92,7 @@ newdf <-  newdf |>
 # Visualise
 ggplot(data = newdf, aes(x = age, y = pred, color = smoke)) +
   geom_line(linewidth = 1) +
+  geom_point(data = birthwt, aes(x = age, y = bwt)) +
   xlab("Maternal Age") + ylab("Predicted Birthweight") + labs(color = "Smoking Status") +
   scale_y_continuous(limits = c(0, 5000), breaks = seq(0, 5000, by = 1000)) +
   theme_bw(base_size = 20) +
@@ -129,6 +130,7 @@ newdf <-  newdf |>
 # Visualise
 ggplot(data = newdf, aes(x = age, y = pred, group = interaction(smoke, ht), color = smoke, linetype = ht)) +
   geom_line(linewidth = 1) +
+  geom_point(data = birthwt, aes(x = age, y = bwt)) +
   xlab("Maternal Age") + ylab("Predicted Birthweight") + labs(color = "Smoking Status", linetype = "History of Hypertension") +
   scale_y_continuous(limits = c(0, 5000), breaks = seq(0, 5000, by = 1000)) +
   facet_grid(ui ~ race, labeller = labeller(race = label_race, ui = label_ui)) +
