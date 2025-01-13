@@ -212,7 +212,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>It’s not all doom and gloom, however. There are alternative ways around this apparent roadblock - at least to be able to visualise three, four and even five predictors (beyond that I have no idea). An effective approach that I alluded to in the last post, and that will be the focus of the remainder of this one is to think in terms of ‘collapsing’ each of multiple dimensions into two-dimensional surfaces. In this way we can still view a multi-dimensional space on our height/length limited computer screen. Let’s look at some examples now - we’ll use the same <code>birthwt</code> dataset as in the last post to illustrate these.</p>
 <section id="two-predictors" class="level1" data-number="1">
 <h1 data-number="1"><span class="header-section-number">1</span> Two Predictors</h1>
-<p>We have essentially already made this plot in the last post. In our model we are regressing newborn birthweight on maternal age and smoking status, and if you recall we managed the visualisation of our second predictor (smoking status) by assigning it to the colour aesthetic in <code>ggplot()</code>.</p>
+<p>We have essentially already made this plot in the last post. In our model we are regressing newborn birthweight on maternal age and smoking status, and if you recall we managed the visualisation of our second predictor (smoking status) by assigning it to the <strong>colour</strong> aesthetic in <code>ggplot()</code>.</p>
 <p>A couple of notes: In this and all subsequent models I will specify interaction terms between all predictors just to make the output a little more interesting (otherwise you will only see parallel regression lines). Don’t get hung up on this - maintain focus on the plotting devices that I will discuss. I have also converted categorical variables to factors in advance, rather than on the fly (as in the last post). This just makes some aspects of the plotting (especially labelling) easier.</p>
 <p>So, our model is:</p>
 <p><code>mod2 &lt;-  lm(bwt ~ age * smoke, data = birthwt)</code></p>
@@ -331,7 +331,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="five-predictors" class="level1" data-number="4">
 <h1 data-number="4"><span class="header-section-number">4</span> Five Predictors</h1>
-<p>Now we’re getting to the limits of what I think is possible. And honestly, I think even this is potentially too much in terms information overload - there is a fine line between visualisations that are pleasantly informative and those that are just confusing. But, for the sake of the exercise, this is one way that I’m aware of that you could incorporate the plotting of predictions from a model with five predictors. In this case, we specify a ‘graphical interaction’ between two variables (here I have selected smoking status and history of hypertension), allowing those predictions to be distinguishable by not only color, but by specifying a second plotting aesthetic - linetype. Adjusted predictions for birthweight conditional on no history of hypertension are assigned a solid line and adjusted predictions for birthweight conditional on a history of hypertension are assigned a dashed line.</p>
+<p>Now we’re getting to the limits of what I think is possible. And honestly, I think even this is potentially too much in terms information overload - there is a fine line between visualisations that are pleasantly informative and those that are just confusing. But, for the sake of the exercise, this is one way that I’m aware of that you could incorporate the plotting of predictions from a model with five predictors. In this case, we specify a ‘graphical interaction’ between two variables (here I have selected smoking status and history of hypertension), allowing those predictions to be distinguishable by not only color, but by specifying a second plotting aesthetic - <strong>linetype</strong>. Adjusted predictions for birthweight conditional on no history of hypertension are assigned a solid line and adjusted predictions for birthweight conditional on a history of hypertension are assigned a dashed line.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -968,7 +968,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb5-2"><a href="#cb5-2"></a><span class="an">title:</span><span class="co"> "Model Prediction/Visualisation &lt;br&gt; 2. How Many Dimensions?"</span></span>
 <span id="cb5-3"><a href="#cb5-3"></a><span class="an">date:</span><span class="co"> 2025-04-04</span></span>
 <span id="cb5-4"><a href="#cb5-4"></a><span class="an">categories:</span><span class="co"> [code, concept, modelling, visualisation]</span></span>
-<span id="cb5-5"><a href="#cb5-5"></a><span class="co">#image: "images/plot.png"</span></span>
+<span id="cb5-5"><a href="#cb5-5"></a><span class="an">image:</span><span class="co"> "images/plot.png"</span></span>
 <span id="cb5-6"><a href="#cb5-6"></a><span class="an">description:</span><span class="co"> "There is a practical limit to the number of predictors you can visualise."</span></span>
 <span id="cb5-7"><a href="#cb5-7"></a><span class="co">---</span></span>
 <span id="cb5-8"><a href="#cb5-8"></a></span>
