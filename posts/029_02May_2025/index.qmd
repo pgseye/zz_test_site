@@ -38,15 +38,41 @@ newdf <-  newdf |>
 # Visualise
 ggplot(data = newdf, aes(x = age, y = pred)) +
   geom_line(linewidth = 1) +
+  geom_point(data = birthwt, aes(x = age, y = bwt)) +
   xlab("Maternal Age") + ylab("Predicted Birthweight") +
   scale_y_continuous(limits = c(0, 5000), breaks = seq(0, 5000, by = 1000)) +
   theme_bw(base_size = 20) +
   theme(legend.position = "bottom")
 ```
 
-Ok, so clearly there's more to this relationship than I had anticipated, but we already have more information than when we modelled the association assuming it was linear. Based on this prediction, birthweight remains relatively stable until the mother's age approaches `30` years, then increases thereafter. This still seems somewhat counter-intuitive to my mind, and in fact we may have good reason for not paying too much attention to the model prediction at older maternal ages. It turns out that only `20` out of `189` (i.e \~ `10%` of mothers) are older than `30` years - and only `1` mother is older than `40` years - so we do need to be careful about interpreting a trend based on only a few data points.
+Ok, so clearly there's more to this relationship than I had anticipated, but we already have more information than when we modelled the association assuming it was linear. Based on this prediction, birthweight remains relatively stable until the mother's age approaches `30` years, then increases thereafter. This still seems somewhat counter-intuitive to my mind, and in fact we may have good reason for not paying too much attention to the model prediction at older maternal ages. It turns out that only `20` out of `189` (i.e \~ `10%` of mothers) are older than `30` years - and only `1` mother is older than `40` years. In addition, that single data point appears, on cursory examination, to exert considerable influence on the model fit.
 
-In any case, let's consider other steps we can take to assess this by adjusting the prediction for potentially confounding factors that could be distorting the relationship as it currently stands. Let's start by first considering maternal smoking.
+What happens if we refit the model without that observation?
+
+```{r}
+#| message: false
+#| warning: false
+library(tidyverse)
+library(splines)
+data(birthwt, package = "MASS")
+# Model
+mod <-  lm(bwt ~ ns(age, 3), data = subset(birthwt, age < 40))
+# Create new data
+newdf <-  expand.grid(age = seq(15, 40, by = 1))
+# Predict
+newdf <-  newdf |> 
+  mutate(pred = predict(mod, newdata = newdf))
+# Visualise
+ggplot(data = newdf, aes(x = age, y = pred)) +
+  geom_line(linewidth = 1) +
+  geom_point(data = birthwt, aes(x = age, y = bwt)) +
+  xlab("Maternal Age") + ylab("Predicted Birthweight") +
+  scale_y_continuous(limits = c(0, 5000), breaks = seq(0, 5000, by = 1000)) +
+  theme_bw(base_size = 20) +
+  theme(legend.position = "bottom")
+```
+
+This appears a little more sensible than with the inclusion of the last data point, so we'll leave that observation out of all further calculations. Now let's also consider adjusting the prediction for potentially confounding factors that could be distorting the relationship as it currently stands. We'll start by first considering maternal smoking.
 
 The association between maternal age and birthweight adjusted for maternal smoking can be visualised as:
 
@@ -56,9 +82,9 @@ The association between maternal age and birthweight adjusted for maternal smoki
 # Relabel smoking
 birthwt$smoke <-  factor(birthwt$smoke, levels = c(0,1), labels = c("No", "Yes"))
 # Model
-mod2 <-  lm(bwt ~ ns(age, 3) * smoke, data = birthwt)
+mod2 <-  lm(bwt ~ ns(age, 3) * smoke, data = subset(birthwt, age < 40))
 # Create new data
-newdf <-  expand.grid(age = seq(15, 45, by = 1),
+newdf <-  expand.grid(age = seq(15, 40, by = 1),
                       smoke = levels(birthwt$smoke))
 # Predict
 newdf <-  newdf |>
@@ -84,9 +110,9 @@ birthwt$ht <-  factor(birthwt$ht, levels = c(0, 1), labels = c("No", "Yes"))
 birthwt$race <-  factor(birthwt$race, levels = c(1,2,3), labels = c("White", "Black", "Other"))
 birthwt$ui <-  factor(birthwt$ui, levels = c(0, 1), labels = c("No", "Yes"))
 # Model
-mod3 <-  lm(bwt ~ ns(age,3) * smoke * race * ui * ht, data = birthwt)
+mod3 <-  lm(bwt ~ ns(age,3) * smoke * race * ui * ht, data = subset(birthwt, age < 40))
 # Create new data
-newdf <-  expand.grid(age = seq(15, 45, by = 1),
+newdf <-  expand.grid(age = seq(15, 40, by = 1),
                       smoke = levels(birthwt$smoke),
                       race = levels(birthwt$race),
                       ui = levels(birthwt$ui),

@@ -37,8 +37,9 @@ The coefficents in the regression equation define the relationship between each 
 #| warning: false
 library(tidyverse)
 library(kableExtra)
+library(gtsummary)
 data(mtcars)
-summary(lm(mpg ~ wt + am, data = mtcars))
+tbl_regression(lm(mpg ~ wt + am, data = mtcars), intercept = T)
 ```
 
 Interpreting just the regression coefficients, we could say that on average, a one-unit increase in weight (which corresponds here to `1000` pounds) is associated with a reduction in fuel economy of `5.4` mpg when transmission type is held constant. Similary, we can also say that on average, a one-unit increase in transmission type (which corresponds here to simply changing from an automatic to manual car) is associated with a barely notable reduction in fuel economy of `0.02` mpg, when weight is held constant.
@@ -72,7 +73,7 @@ Let's initially consider the possible association between baby birthweight (`bwt
 
 ```{r}
 mod <-  lm(bwt ~ age, data = birthwt)
-summary(mod)
+tbl_regression(mod, intercept = T)
 ```
 
 The model seems to suggest that increasing maternal age is associated with increasing birthweight. Keep in mind that this is unlikely to represent reality and I would guess that the relationship between maternal age and birthweight is non-linear (i.e. at some maternal age, birthweight is more likely to start decreasing with increasing maternal age). But for the sake of today's exercise let's just assume the relationship is linear.
@@ -116,7 +117,7 @@ Let's take it up a step by now including maternal smoking (`smoke`) as another e
 
 ```{r}
 mod2 <-  lm(bwt ~ age + smoke, data = birthwt)
-summary(mod2)
+tbl_regression(mod2, intercept = T)
 ```
 
 So, the coefficient for `age` hasn't really changed that much, but we can see that smoking seems to have a significant impact, decreasing birthweight on average by `278` grams.

@@ -255,29 +255,489 @@ window.Quarto = {
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">library</span>(tidyverse)</span>
 <span id="cb1-2"><a href="#cb1-2"></a><span class="fu">library</span>(kableExtra)</span>
-<span id="cb1-3"><a href="#cb1-3"></a><span class="fu">data</span>(mtcars)</span>
-<span id="cb1-4"><a href="#cb1-4"></a><span class="fu">summary</span>(<span class="fu">lm</span>(mpg <span class="sc">~</span> wt <span class="sc">+</span> am, <span class="at">data =</span> mtcars))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="fu">library</span>(gtsummary)</span>
+<span id="cb1-4"><a href="#cb1-4"></a><span class="fu">data</span>(mtcars)</span>
+<span id="cb1-5"><a href="#cb1-5"></a><span class="fu">tbl_regression</span>(<span class="fu">lm</span>(mpg <span class="sc">~</span> wt <span class="sc">+</span> am, <span class="at">data =</span> mtcars), <span class="at">intercept =</span> T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-Call:
-lm(formula = mpg ~ wt + am, data = mtcars)
+<div class="cell-output-display">
+<div id="zodgywfhen" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#zodgywfhen table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
 
-Residuals:
-    Min      1Q  Median      3Q     Max 
--4.5295 -2.3619 -0.1317  1.4025  6.8782 
+#zodgywfhen thead, #zodgywfhen tbody, #zodgywfhen tfoot, #zodgywfhen tr, #zodgywfhen td, #zodgywfhen th {
+  border-style: none;
+}
 
-Coefficients:
-            Estimate Std. Error t value Pr(&gt;|t|)    
-(Intercept) 37.32155    3.05464  12.218 5.84e-13 ***
-wt          -5.35281    0.78824  -6.791 1.87e-07 ***
-am          -0.02362    1.54565  -0.015    0.988    
----
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+#zodgywfhen p {
+  margin: 0;
+  padding: 0;
+}
 
-Residual standard error: 3.098 on 29 degrees of freedom
-Multiple R-squared:  0.7528,    Adjusted R-squared:  0.7358 
-F-statistic: 44.17 on 2 and 29 DF,  p-value: 1.579e-09</code></pre>
+#zodgywfhen .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#zodgywfhen .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#zodgywfhen .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#zodgywfhen .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#zodgywfhen .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#zodgywfhen .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#zodgywfhen .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#zodgywfhen .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#zodgywfhen .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#zodgywfhen .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#zodgywfhen .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#zodgywfhen .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#zodgywfhen .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#zodgywfhen .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#zodgywfhen .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#zodgywfhen .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#zodgywfhen .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#zodgywfhen .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#zodgywfhen .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#zodgywfhen .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#zodgywfhen .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#zodgywfhen .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#zodgywfhen .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#zodgywfhen .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#zodgywfhen .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#zodgywfhen .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#zodgywfhen .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#zodgywfhen .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#zodgywfhen .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#zodgywfhen .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#zodgywfhen .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#zodgywfhen .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#zodgywfhen .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#zodgywfhen .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#zodgywfhen .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#zodgywfhen .gt_left {
+  text-align: left;
+}
+
+#zodgywfhen .gt_center {
+  text-align: center;
+}
+
+#zodgywfhen .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#zodgywfhen .gt_font_normal {
+  font-weight: normal;
+}
+
+#zodgywfhen .gt_font_bold {
+  font-weight: bold;
+}
+
+#zodgywfhen .gt_font_italic {
+  font-style: italic;
+}
+
+#zodgywfhen .gt_super {
+  font-size: 65%;
+}
+
+#zodgywfhen .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#zodgywfhen .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#zodgywfhen .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#zodgywfhen .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#zodgywfhen .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#zodgywfhen .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#zodgywfhen .gt_indent_5 {
+  text-indent: 25px;
+}
+</style>
+
+<table class="gt_table table table-sm table-striped small" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+<thead>
+<tr class="header gt_col_headings">
+<th id="<strong>Characteristic</strong>" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col"><strong>Characteristic</strong></th>
+<th id="<strong>Beta</strong>" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col"><strong>Beta</strong></th>
+<th id="<strong>95% CI</strong><span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;&quot;><sup>1</sup></span>" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col"><strong>95% CI</strong><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>1</sup></span></th>
+<th id="<strong>p-value</strong>" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col"><strong>p-value</strong></th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_left" headers="label">(Intercept)</td>
+<td class="gt_row gt_center" headers="estimate">37</td>
+<td class="gt_row gt_center" headers="ci">31, 44</td>
+<td class="gt_row gt_center" headers="p.value">&lt;0.001</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="label">wt</td>
+<td class="gt_row gt_center" headers="estimate">-5.4</td>
+<td class="gt_row gt_center" headers="ci">-7.0, -3.7</td>
+<td class="gt_row gt_center" headers="p.value">&lt;0.001</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="label">am</td>
+<td class="gt_row gt_center" headers="estimate">-0.02</td>
+<td class="gt_row gt_center" headers="ci">-3.2, 3.1</td>
+<td class="gt_row gt_center" headers="p.value">&gt;0.9</td>
+</tr>
+</tbody><tfoot class="gt_footnotes">
+<tr class="even">
+<td colspan="4" class="gt_footnote"><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>1</sup></span> CI = Confidence Interval</td>
+</tr>
+</tfoot>
+
+</table>
+
+</div>
 </div>
 </div>
 <p>Interpreting just the regression coefficients, we could say that on average, a one-unit increase in weight (which corresponds here to <code>1000</code> pounds) is associated with a reduction in fuel economy of <code>5.4</code> mpg when transmission type is held constant. Similary, we can also say that on average, a one-unit increase in transmission type (which corresponds here to simply changing from an automatic to manual car) is associated with a barely notable reduction in fuel economy of <code>0.02</code> mpg, when weight is held constant.</p>
@@ -295,8 +755,8 @@ F-statistic: 44.17 on 2 and 29 DF,  p-value: 1.579e-09</code></pre>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="fu">data</span>(birthwt, <span class="at">package =</span> <span class="st">"MASS"</span>)</span>
-<span id="cb3-2"><a href="#cb3-2"></a><span class="fu">head</span>(birthwt, <span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="fu">data</span>(birthwt, <span class="at">package =</span> <span class="st">"MASS"</span>)</span>
+<span id="cb2-2"><a href="#cb2-2"></a><span class="fu">head</span>(birthwt, <span class="dv">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div class="kable-table">
@@ -458,28 +918,482 @@ F-statistic: 44.17 on 2 and 29 DF,  p-value: 1.579e-09</code></pre>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>mod <span class="ot">&lt;-</span>  <span class="fu">lm</span>(bwt <span class="sc">~</span> age, <span class="at">data =</span> birthwt)</span>
-<span id="cb4-2"><a href="#cb4-2"></a><span class="fu">summary</span>(mod)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>mod <span class="ot">&lt;-</span>  <span class="fu">lm</span>(bwt <span class="sc">~</span> age, <span class="at">data =</span> birthwt)</span>
+<span id="cb3-2"><a href="#cb3-2"></a><span class="fu">tbl_regression</span>(mod, <span class="at">intercept =</span> T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-Call:
-lm(formula = bwt ~ age, data = birthwt)
+<div class="cell-output-display">
+<div id="didcicnptw" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#didcicnptw table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
 
-Residuals:
-     Min       1Q   Median       3Q      Max 
--2294.78  -517.63    10.51   530.80  1774.92 
+#didcicnptw thead, #didcicnptw tbody, #didcicnptw tfoot, #didcicnptw tr, #didcicnptw td, #didcicnptw th {
+  border-style: none;
+}
 
-Coefficients:
-            Estimate Std. Error t value Pr(&gt;|t|)    
-(Intercept)  2655.74     238.86   11.12   &lt;2e-16 ***
-age            12.43      10.02    1.24    0.216    
----
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+#didcicnptw p {
+  margin: 0;
+  padding: 0;
+}
 
-Residual standard error: 728.2 on 187 degrees of freedom
-Multiple R-squared:  0.008157,  Adjusted R-squared:  0.002853 
-F-statistic: 1.538 on 1 and 187 DF,  p-value: 0.2165</code></pre>
+#didcicnptw .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#didcicnptw .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#didcicnptw .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#didcicnptw .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#didcicnptw .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#didcicnptw .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#didcicnptw .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#didcicnptw .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#didcicnptw .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#didcicnptw .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#didcicnptw .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#didcicnptw .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#didcicnptw .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#didcicnptw .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#didcicnptw .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#didcicnptw .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#didcicnptw .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#didcicnptw .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#didcicnptw .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#didcicnptw .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#didcicnptw .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#didcicnptw .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#didcicnptw .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#didcicnptw .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#didcicnptw .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#didcicnptw .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#didcicnptw .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#didcicnptw .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#didcicnptw .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#didcicnptw .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#didcicnptw .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#didcicnptw .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#didcicnptw .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#didcicnptw .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#didcicnptw .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#didcicnptw .gt_left {
+  text-align: left;
+}
+
+#didcicnptw .gt_center {
+  text-align: center;
+}
+
+#didcicnptw .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#didcicnptw .gt_font_normal {
+  font-weight: normal;
+}
+
+#didcicnptw .gt_font_bold {
+  font-weight: bold;
+}
+
+#didcicnptw .gt_font_italic {
+  font-style: italic;
+}
+
+#didcicnptw .gt_super {
+  font-size: 65%;
+}
+
+#didcicnptw .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#didcicnptw .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#didcicnptw .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#didcicnptw .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#didcicnptw .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#didcicnptw .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#didcicnptw .gt_indent_5 {
+  text-indent: 25px;
+}
+</style>
+
+<table class="gt_table table table-sm table-striped small" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+<thead>
+<tr class="header gt_col_headings">
+<th id="<strong>Characteristic</strong>" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col"><strong>Characteristic</strong></th>
+<th id="<strong>Beta</strong>" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col"><strong>Beta</strong></th>
+<th id="<strong>95% CI</strong><span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;&quot;><sup>1</sup></span>" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col"><strong>95% CI</strong><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>1</sup></span></th>
+<th id="<strong>p-value</strong>" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col"><strong>p-value</strong></th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_left" headers="label">(Intercept)</td>
+<td class="gt_row gt_center" headers="estimate">2,656</td>
+<td class="gt_row gt_center" headers="ci">2,185, 3,127</td>
+<td class="gt_row gt_center" headers="p.value">&lt;0.001</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="label">age</td>
+<td class="gt_row gt_center" headers="estimate">12</td>
+<td class="gt_row gt_center" headers="ci">-7.3, 32</td>
+<td class="gt_row gt_center" headers="p.value">0.2</td>
+</tr>
+</tbody><tfoot class="gt_footnotes">
+<tr class="odd">
+<td colspan="4" class="gt_footnote"><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>1</sup></span> CI = Confidence Interval</td>
+</tr>
+</tfoot>
+
+</table>
+
+</div>
 </div>
 </div>
 <p>The model seems to suggest that increasing maternal age is associated with increasing birthweight. Keep in mind that this is unlikely to represent reality and I would guess that the relationship between maternal age and birthweight is non-linear (i.e.&nbsp;at some maternal age, birthweight is more likely to start decreasing with increasing maternal age). But for the sake of today’s exercise let’s just assume the relationship is linear.</p>
@@ -489,11 +1403,11 @@ F-statistic: 1.538 on 1 and 187 DF,  p-value: 0.2165</code></pre>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a>birthwt2 <span class="ot">&lt;-</span>  birthwt <span class="sc">|&gt;</span> </span>
-<span id="cb6-2"><a href="#cb6-2"></a>  <span class="fu">select</span>(bwt, age) <span class="sc">|&gt;</span> </span>
-<span id="cb6-3"><a href="#cb6-3"></a>  <span class="fu">mutate</span>(<span class="at">pred =</span> <span class="fu">predict</span>(mod))</span>
-<span id="cb6-4"><a href="#cb6-4"></a><span class="fu">head</span>(birthwt2, <span class="dv">10</span>) <span class="sc">|&gt;</span> </span>
-<span id="cb6-5"><a href="#cb6-5"></a>  <span class="fu">kable</span>(<span class="at">align =</span> <span class="st">"c"</span>, <span class="at">digits =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>birthwt2 <span class="ot">&lt;-</span>  birthwt <span class="sc">|&gt;</span> </span>
+<span id="cb4-2"><a href="#cb4-2"></a>  <span class="fu">select</span>(bwt, age) <span class="sc">|&gt;</span> </span>
+<span id="cb4-3"><a href="#cb4-3"></a>  <span class="fu">mutate</span>(<span class="at">pred =</span> <span class="fu">predict</span>(mod))</span>
+<span id="cb4-4"><a href="#cb4-4"></a><span class="fu">head</span>(birthwt2, <span class="dv">10</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb4-5"><a href="#cb4-5"></a>  <span class="fu">kable</span>(<span class="at">align =</span> <span class="st">"c"</span>, <span class="at">digits =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <table class="table table-sm table-striped small">
@@ -577,8 +1491,8 @@ F-statistic: 1.538 on 1 and 187 DF,  p-value: 0.2165</code></pre>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a><span class="fu">ggplot</span>(birthwt2, <span class="fu">aes</span>(<span class="at">x =</span> age, <span class="at">y =</span> pred)) <span class="sc">+</span></span>
-<span id="cb7-2"><a href="#cb7-2"></a>  <span class="fu">geom_line</span>(<span class="at">linewidth =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="fu">ggplot</span>(birthwt2, <span class="fu">aes</span>(<span class="at">x =</span> age, <span class="at">y =</span> pred)) <span class="sc">+</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a>  <span class="fu">geom_line</span>(<span class="at">linewidth =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div>
@@ -592,11 +1506,11 @@ F-statistic: 1.538 on 1 and 187 DF,  p-value: 0.2165</code></pre>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> birthwt2, <span class="fu">aes</span>(<span class="at">x =</span> age, <span class="at">y =</span> pred)) <span class="sc">+</span></span>
-<span id="cb8-2"><a href="#cb8-2"></a>  <span class="fu">geom_line</span>(<span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
-<span id="cb8-3"><a href="#cb8-3"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> birthwt2, <span class="fu">aes</span>(<span class="at">x =</span> age, <span class="at">y =</span> bwt)) <span class="sc">+</span></span>
-<span id="cb8-4"><a href="#cb8-4"></a>  <span class="fu">xlab</span>(<span class="st">"Maternal Age"</span>) <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">"Predicted Birthweight"</span>) <span class="sc">+</span></span>
-<span id="cb8-5"><a href="#cb8-5"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">20</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> birthwt2, <span class="fu">aes</span>(<span class="at">x =</span> age, <span class="at">y =</span> pred)) <span class="sc">+</span></span>
+<span id="cb6-2"><a href="#cb6-2"></a>  <span class="fu">geom_line</span>(<span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb6-3"><a href="#cb6-3"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> birthwt2, <span class="fu">aes</span>(<span class="at">x =</span> age, <span class="at">y =</span> bwt)) <span class="sc">+</span></span>
+<span id="cb6-4"><a href="#cb6-4"></a>  <span class="fu">xlab</span>(<span class="st">"Maternal Age"</span>) <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">"Predicted Birthweight"</span>) <span class="sc">+</span></span>
+<span id="cb6-5"><a href="#cb6-5"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">20</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div>
@@ -615,29 +1529,488 @@ F-statistic: 1.538 on 1 and 187 DF,  p-value: 0.2165</code></pre>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a>mod2 <span class="ot">&lt;-</span>  <span class="fu">lm</span>(bwt <span class="sc">~</span> age <span class="sc">+</span> smoke, <span class="at">data =</span> birthwt)</span>
-<span id="cb9-2"><a href="#cb9-2"></a><span class="fu">summary</span>(mod2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>mod2 <span class="ot">&lt;-</span>  <span class="fu">lm</span>(bwt <span class="sc">~</span> age <span class="sc">+</span> smoke, <span class="at">data =</span> birthwt)</span>
+<span id="cb7-2"><a href="#cb7-2"></a><span class="fu">tbl_regression</span>(mod2, <span class="at">intercept =</span> T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-Call:
-lm(formula = bwt ~ age + smoke, data = birthwt)
+<div class="cell-output-display">
+<div id="bpexpaxjru" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#bpexpaxjru table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
 
-Residuals:
-     Min       1Q   Median       3Q      Max 
--2119.98  -442.66    52.92   532.38  1690.74 
+#bpexpaxjru thead, #bpexpaxjru tbody, #bpexpaxjru tfoot, #bpexpaxjru tr, #bpexpaxjru td, #bpexpaxjru th {
+  border-style: none;
+}
 
-Coefficients:
-            Estimate Std. Error t value Pr(&gt;|t|)    
-(Intercept) 2791.224    240.950  11.584   &lt;2e-16 ***
-age           11.290      9.881   1.143    0.255    
-smoke       -278.356    106.987  -2.602    0.010 *  
----
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+#bpexpaxjru p {
+  margin: 0;
+  padding: 0;
+}
 
-Residual standard error: 717.2 on 186 degrees of freedom
-Multiple R-squared:  0.04299,   Adjusted R-squared:  0.0327 
-F-statistic: 4.177 on 2 and 186 DF,  p-value: 0.0168</code></pre>
+#bpexpaxjru .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#bpexpaxjru .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#bpexpaxjru .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#bpexpaxjru .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#bpexpaxjru .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#bpexpaxjru .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#bpexpaxjru .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#bpexpaxjru .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#bpexpaxjru .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#bpexpaxjru .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#bpexpaxjru .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#bpexpaxjru .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#bpexpaxjru .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#bpexpaxjru .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#bpexpaxjru .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#bpexpaxjru .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#bpexpaxjru .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#bpexpaxjru .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#bpexpaxjru .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#bpexpaxjru .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#bpexpaxjru .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#bpexpaxjru .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#bpexpaxjru .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#bpexpaxjru .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#bpexpaxjru .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#bpexpaxjru .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#bpexpaxjru .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#bpexpaxjru .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#bpexpaxjru .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#bpexpaxjru .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#bpexpaxjru .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#bpexpaxjru .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#bpexpaxjru .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#bpexpaxjru .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#bpexpaxjru .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#bpexpaxjru .gt_left {
+  text-align: left;
+}
+
+#bpexpaxjru .gt_center {
+  text-align: center;
+}
+
+#bpexpaxjru .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#bpexpaxjru .gt_font_normal {
+  font-weight: normal;
+}
+
+#bpexpaxjru .gt_font_bold {
+  font-weight: bold;
+}
+
+#bpexpaxjru .gt_font_italic {
+  font-style: italic;
+}
+
+#bpexpaxjru .gt_super {
+  font-size: 65%;
+}
+
+#bpexpaxjru .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#bpexpaxjru .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#bpexpaxjru .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#bpexpaxjru .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#bpexpaxjru .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#bpexpaxjru .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#bpexpaxjru .gt_indent_5 {
+  text-indent: 25px;
+}
+</style>
+
+<table class="gt_table table table-sm table-striped small" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+<thead>
+<tr class="header gt_col_headings">
+<th id="<strong>Characteristic</strong>" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col"><strong>Characteristic</strong></th>
+<th id="<strong>Beta</strong>" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col"><strong>Beta</strong></th>
+<th id="<strong>95% CI</strong><span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;&quot;><sup>1</sup></span>" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col"><strong>95% CI</strong><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>1</sup></span></th>
+<th id="<strong>p-value</strong>" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col"><strong>p-value</strong></th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_left" headers="label">(Intercept)</td>
+<td class="gt_row gt_center" headers="estimate">2,791</td>
+<td class="gt_row gt_center" headers="ci">2,316, 3,267</td>
+<td class="gt_row gt_center" headers="p.value">&lt;0.001</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="label">age</td>
+<td class="gt_row gt_center" headers="estimate">11</td>
+<td class="gt_row gt_center" headers="ci">-8.2, 31</td>
+<td class="gt_row gt_center" headers="p.value">0.3</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="label">smoke</td>
+<td class="gt_row gt_center" headers="estimate">-278</td>
+<td class="gt_row gt_center" headers="ci">-489, -67</td>
+<td class="gt_row gt_center" headers="p.value">0.010</td>
+</tr>
+</tbody><tfoot class="gt_footnotes">
+<tr class="even">
+<td colspan="4" class="gt_footnote"><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>1</sup></span> CI = Confidence Interval</td>
+</tr>
+</tfoot>
+
+</table>
+
+</div>
 </div>
 </div>
 <p>So, the coefficient for <code>age</code> hasn’t really changed that much, but we can see that smoking seems to have a significant impact, decreasing birthweight on average by <code>278</code> grams.</p>
@@ -645,11 +2018,11 @@ F-statistic: 4.177 on 2 and 186 DF,  p-value: 0.0168</code></pre>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a>birthwt2 <span class="ot">&lt;-</span>  birthwt <span class="sc">|&gt;</span> </span>
-<span id="cb11-2"><a href="#cb11-2"></a>  <span class="fu">select</span>(bwt, age, smoke) <span class="sc">|&gt;</span> </span>
-<span id="cb11-3"><a href="#cb11-3"></a>  <span class="fu">mutate</span>(<span class="at">pred =</span> <span class="fu">predict</span>(mod2))</span>
-<span id="cb11-4"><a href="#cb11-4"></a><span class="fu">head</span>(birthwt2, <span class="dv">10</span>) <span class="sc">|&gt;</span> </span>
-<span id="cb11-5"><a href="#cb11-5"></a>  <span class="fu">kable</span>(<span class="at">align =</span> <span class="st">"c"</span>, <span class="at">digits =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a>birthwt2 <span class="ot">&lt;-</span>  birthwt <span class="sc">|&gt;</span> </span>
+<span id="cb8-2"><a href="#cb8-2"></a>  <span class="fu">select</span>(bwt, age, smoke) <span class="sc">|&gt;</span> </span>
+<span id="cb8-3"><a href="#cb8-3"></a>  <span class="fu">mutate</span>(<span class="at">pred =</span> <span class="fu">predict</span>(mod2))</span>
+<span id="cb8-4"><a href="#cb8-4"></a><span class="fu">head</span>(birthwt2, <span class="dv">10</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb8-5"><a href="#cb8-5"></a>  <span class="fu">kable</span>(<span class="at">align =</span> <span class="st">"c"</span>, <span class="at">digits =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <table class="table table-sm table-striped small">
@@ -741,11 +2114,11 @@ F-statistic: 4.177 on 2 and 186 DF,  p-value: 0.0168</code></pre>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> birthwt2, <span class="fu">aes</span>(<span class="at">x =</span> age, <span class="at">y =</span> pred)) <span class="sc">+</span></span>
-<span id="cb12-2"><a href="#cb12-2"></a>  <span class="fu">geom_line</span>(<span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
-<span id="cb12-3"><a href="#cb12-3"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> birthwt2, <span class="fu">aes</span>(<span class="at">x =</span> age, <span class="at">y =</span> bwt)) <span class="sc">+</span></span>
-<span id="cb12-4"><a href="#cb12-4"></a>  <span class="fu">xlab</span>(<span class="st">"Maternal Age"</span>) <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">"Predicted Birthweight"</span>) <span class="sc">+</span></span>
-<span id="cb12-5"><a href="#cb12-5"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">20</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> birthwt2, <span class="fu">aes</span>(<span class="at">x =</span> age, <span class="at">y =</span> pred)) <span class="sc">+</span></span>
+<span id="cb9-2"><a href="#cb9-2"></a>  <span class="fu">geom_line</span>(<span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb9-3"><a href="#cb9-3"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> birthwt2, <span class="fu">aes</span>(<span class="at">x =</span> age, <span class="at">y =</span> bwt)) <span class="sc">+</span></span>
+<span id="cb9-4"><a href="#cb9-4"></a>  <span class="fu">xlab</span>(<span class="st">"Maternal Age"</span>) <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">"Predicted Birthweight"</span>) <span class="sc">+</span></span>
+<span id="cb9-5"><a href="#cb9-5"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">20</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div>
@@ -766,10 +2139,10 @@ F-statistic: 4.177 on 2 and 186 DF,  p-value: 0.0168</code></pre>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a>newdf <span class="ot">&lt;-</span>  <span class="fu">expand.grid</span>(<span class="at">age =</span> <span class="fu">seq</span>(<span class="dv">15</span>, <span class="dv">45</span>, <span class="at">by =</span> <span class="dv">5</span>),</span>
-<span id="cb13-2"><a href="#cb13-2"></a>                      <span class="at">smoke =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>))</span>
-<span id="cb13-3"><a href="#cb13-3"></a>newdf <span class="sc">|&gt;</span> </span>
-<span id="cb13-4"><a href="#cb13-4"></a>  <span class="fu">kable</span>(<span class="at">align =</span> <span class="st">"c"</span>, <span class="at">digits =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a>newdf <span class="ot">&lt;-</span>  <span class="fu">expand.grid</span>(<span class="at">age =</span> <span class="fu">seq</span>(<span class="dv">15</span>, <span class="dv">45</span>, <span class="at">by =</span> <span class="dv">5</span>),</span>
+<span id="cb10-2"><a href="#cb10-2"></a>                      <span class="at">smoke =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>))</span>
+<span id="cb10-3"><a href="#cb10-3"></a>newdf <span class="sc">|&gt;</span> </span>
+<span id="cb10-4"><a href="#cb10-4"></a>  <span class="fu">kable</span>(<span class="at">align =</span> <span class="st">"c"</span>, <span class="at">digits =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <table class="table table-sm table-striped small">
@@ -860,10 +2233,10 @@ Failing these, <code>predict()</code> will become upset with you and refuse to d
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a>newdf <span class="ot">&lt;-</span>  newdf <span class="sc">|&gt;</span> </span>
-<span id="cb14-2"><a href="#cb14-2"></a>  <span class="fu">mutate</span>(<span class="at">pred =</span> <span class="fu">predict</span>(mod2, <span class="at">newdata =</span> newdf))</span>
-<span id="cb14-3"><a href="#cb14-3"></a>newdf <span class="sc">|&gt;</span> </span>
-<span id="cb14-4"><a href="#cb14-4"></a>  <span class="fu">kable</span>(<span class="at">align =</span> <span class="st">"c"</span>, <span class="at">digits =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a>newdf <span class="ot">&lt;-</span>  newdf <span class="sc">|&gt;</span> </span>
+<span id="cb11-2"><a href="#cb11-2"></a>  <span class="fu">mutate</span>(<span class="at">pred =</span> <span class="fu">predict</span>(mod2, <span class="at">newdata =</span> newdf))</span>
+<span id="cb11-3"><a href="#cb11-3"></a>newdf <span class="sc">|&gt;</span> </span>
+<span id="cb11-4"><a href="#cb11-4"></a>  <span class="fu">kable</span>(<span class="at">align =</span> <span class="st">"c"</span>, <span class="at">digits =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <table class="table table-sm table-striped small">
@@ -956,13 +2329,13 @@ Failing these, <code>predict()</code> will become upset with you and refuse to d
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> newdf, <span class="fu">aes</span>(<span class="at">x =</span> age, <span class="at">y =</span> pred, <span class="at">color =</span> <span class="fu">factor</span>(smoke))) <span class="sc">+</span></span>
-<span id="cb15-2"><a href="#cb15-2"></a>  <span class="fu">geom_line</span>(<span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
-<span id="cb15-3"><a href="#cb15-3"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> birthwt2, <span class="fu">aes</span>(<span class="at">x =</span> age, <span class="at">y =</span> bwt), <span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
-<span id="cb15-4"><a href="#cb15-4"></a>  <span class="fu">xlab</span>(<span class="st">"Maternal Age"</span>) <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">"Predicted Birthweight"</span>) <span class="sc">+</span> <span class="fu">labs</span>(<span class="at">color =</span> <span class="st">"Smoking Status"</span>) <span class="sc">+</span></span>
-<span id="cb15-5"><a href="#cb15-5"></a>    <span class="fu">scale_y_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">5000</span>), <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">5000</span>, <span class="at">by =</span> <span class="dv">1000</span>)) <span class="sc">+</span></span>
-<span id="cb15-6"><a href="#cb15-6"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">20</span>) <span class="sc">+</span></span>
-<span id="cb15-7"><a href="#cb15-7"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"bottom"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> newdf, <span class="fu">aes</span>(<span class="at">x =</span> age, <span class="at">y =</span> pred, <span class="at">color =</span> <span class="fu">factor</span>(smoke))) <span class="sc">+</span></span>
+<span id="cb12-2"><a href="#cb12-2"></a>  <span class="fu">geom_line</span>(<span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb12-3"><a href="#cb12-3"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> birthwt2, <span class="fu">aes</span>(<span class="at">x =</span> age, <span class="at">y =</span> bwt), <span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb12-4"><a href="#cb12-4"></a>  <span class="fu">xlab</span>(<span class="st">"Maternal Age"</span>) <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">"Predicted Birthweight"</span>) <span class="sc">+</span> <span class="fu">labs</span>(<span class="at">color =</span> <span class="st">"Smoking Status"</span>) <span class="sc">+</span></span>
+<span id="cb12-5"><a href="#cb12-5"></a>    <span class="fu">scale_y_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">5000</span>), <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">5000</span>, <span class="at">by =</span> <span class="dv">1000</span>)) <span class="sc">+</span></span>
+<span id="cb12-6"><a href="#cb12-6"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">20</span>) <span class="sc">+</span></span>
+<span id="cb12-7"><a href="#cb12-7"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"bottom"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div>
@@ -1572,209 +2945,210 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <input type="hidden" id="giscus-base-theme" value="light">
 <input type="hidden" id="giscus-alt-theme" value="dark"><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
-<div class="sourceCode" id="cb16" data-shortcodes="false"><pre class="sourceCode numberSource markdown number-lines code-with-copy"><code class="sourceCode markdown"><span id="cb16-1"><a href="#cb16-1"></a><span class="co">---</span></span>
-<span id="cb16-2"><a href="#cb16-2"></a><span class="an">title:</span><span class="co"> "Model Prediction/Visualisation &lt;br&gt; 1. The Basics"</span></span>
-<span id="cb16-3"><a href="#cb16-3"></a><span class="an">date:</span><span class="co"> 2025-03-21</span></span>
-<span id="cb16-4"><a href="#cb16-4"></a><span class="an">categories:</span><span class="co"> [code, concept, modelling, visualisation]</span></span>
-<span id="cb16-5"><a href="#cb16-5"></a><span class="an">image:</span><span class="co"> "images/plot.png"</span></span>
-<span id="cb16-6"><a href="#cb16-6"></a><span class="an">description:</span><span class="co"> "How to predict from your model."</span></span>
-<span id="cb16-7"><a href="#cb16-7"></a><span class="co">---</span></span>
-<span id="cb16-8"><a href="#cb16-8"></a></span>
-<span id="cb16-9"><a href="#cb16-9"></a>Most of you will be familiar with how to create and run a statistical model in <span class="in">`R`</span>. But what do you then do with your model results? I bet you take <span class="in">`R`</span>'s rather bland console output, convert that to a formatted table in your manuscript, then based on the regression coefficient values, go on and talk about associations of your exposure/s with your outcome.</span>
-<span id="cb16-10"><a href="#cb16-10"></a></span>
-<span id="cb16-11"><a href="#cb16-11"></a>And leave it at that.</span>
-<span id="cb16-12"><a href="#cb16-12"></a></span>
-<span id="cb16-13"><a href="#cb16-13"></a>Well, the old adage of "a picture is worth a thousand words" has never been truer in the context of model prediction and how much additional information value you can obtain if you take your analyses a step further. Our reliance on just looking at the numbers (i.e. the regression coefficients) is sufficient a lot of the time in simple cases, but when models become a more complex - for example, by the specification of non-linear covariate functional forms via splines - regression coefficients on their own are essentially useless in aiding our interpretation. Plotting the model predictions, however, can put us back on track for understanding the important relationships in our data. Even a complex model can make more sense when we can visualise its predictions. These are skills worth learning and adding to your data analyst toolkit.</span>
-<span id="cb16-14"><a href="#cb16-14"></a></span>
-<span id="cb16-15"><a href="#cb16-15"></a>So, I thought I would put together a series of posts on predicting from and visualising your model, where in each post we cover a different area related to the subject. This week it's just about the basics of model prediction and visualisation, but in future posts I hope to extend those ideas to more advanced topics including non-linear functional forms, glm's, mixed-models, etc (let's see how we go). But first, let's start at the start...</span>
-<span id="cb16-16"><a href="#cb16-16"></a></span>
-<span id="cb16-17"><a href="#cb16-17"></a><span class="fu"># What is Model Prediction</span></span>
-<span id="cb16-18"><a href="#cb16-18"></a></span>
-<span id="cb16-19"><a href="#cb16-19"></a>When we specify a model using traditional <span class="in">`lm()`</span> syntax in <span class="in">`R`</span>, remember that we are just re-expressing the fundamental regression equation you will find in any statistical textbook:</span>
-<span id="cb16-20"><a href="#cb16-20"></a></span>
-<span id="cb16-21"><a href="#cb16-21"></a>$$ \hat{y} = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + ... $$</span>
-<span id="cb16-22"><a href="#cb16-22"></a></span>
-<span id="cb16-23"><a href="#cb16-23"></a>Where:</span>
-<span id="cb16-24"><a href="#cb16-24"></a></span>
-<span id="cb16-25"><a href="#cb16-25"></a>$\beta_0$ is the intercept (the expected value of $y$ when $x_1$ and $x_2$ are both equal to <span class="in">`0`</span>);</span>
-<span id="cb16-26"><a href="#cb16-26"></a></span>
-<span id="cb16-27"><a href="#cb16-27"></a>$\beta_1$ and $\beta_2$ are the regression coefficients for $x_1$ and $x_2$, respectively, and;</span>
-<span id="cb16-28"><a href="#cb16-28"></a></span>
-<span id="cb16-29"><a href="#cb16-29"></a>$\beta_1$ is the expected *change* in $y$ for a one-unit change in $x_1$ (when $x_2$ is held at a constant value);</span>
-<span id="cb16-30"><a href="#cb16-30"></a></span>
-<span id="cb16-31"><a href="#cb16-31"></a>$\beta_2$ is the expected *change* in $y$ for a one-unit change in $x_2$ (when $x_1$ is held at a constant value).</span>
-<span id="cb16-32"><a href="#cb16-32"></a></span>
-<span id="cb16-33"><a href="#cb16-33"></a>The coefficents in the regression equation define the relationship between each independent variable (exposure/predictor) and the dependent variable (outcome). But you don't need to stop there - it's very easy to enter values for the independent variables into the equation to also predict the expected (mean) value of the dependent variable. Let's take a look at a very simple example that uses the built-in <span class="in">`mtcars`</span> dataset in <span class="in">`R`</span>. Say we want to examine the relationship between fuel economy (miles/gallon <span class="sc">\[</span><span class="in">`mpg`</span><span class="sc">\]</span>) and weight and transmission type (<span class="in">`wt + am`</span>). A standard linear regression gives:</span>
-<span id="cb16-34"><a href="#cb16-34"></a></span>
-<span id="cb16-37"><a href="#cb16-37"></a><span class="in">```{r}</span></span>
-<span id="cb16-38"><a href="#cb16-38"></a><span class="co">#| message: false</span></span>
-<span id="cb16-39"><a href="#cb16-39"></a><span class="co">#| warning: false</span></span>
-<span id="cb16-40"><a href="#cb16-40"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb16-41"><a href="#cb16-41"></a><span class="fu">library</span>(kableExtra)</span>
-<span id="cb16-42"><a href="#cb16-42"></a><span class="fu">data</span>(mtcars)</span>
-<span id="cb16-43"><a href="#cb16-43"></a><span class="fu">summary</span>(<span class="fu">lm</span>(mpg <span class="sc">~</span> wt <span class="sc">+</span> am, <span class="at">data =</span> mtcars))</span>
-<span id="cb16-44"><a href="#cb16-44"></a><span class="in">```</span></span>
-<span id="cb16-45"><a href="#cb16-45"></a></span>
-<span id="cb16-46"><a href="#cb16-46"></a>Interpreting just the regression coefficients, we could say that on average, a one-unit increase in weight (which corresponds here to <span class="in">`1000`</span> pounds) is associated with a reduction in fuel economy of <span class="in">`5.4`</span> mpg when transmission type is held constant. Similary, we can also say that on average, a one-unit increase in transmission type (which corresponds here to simply changing from an automatic to manual car) is associated with a barely notable reduction in fuel economy of <span class="in">`0.02`</span> mpg, when weight is held constant.</span>
-<span id="cb16-47"><a href="#cb16-47"></a></span>
-<span id="cb16-48"><a href="#cb16-48"></a>But we can use this model to make some simple predictions as well. You might want to know what is the expected fuel economy for a manual, <span class="in">`5000`</span> pound car (not very good I would think). Well it's a simple exercise in substitution:</span>
-<span id="cb16-49"><a href="#cb16-49"></a></span>
-<span id="cb16-50"><a href="#cb16-50"></a>$$ \hat{y} = 37.3 - 5.4 * 5 - 0.02 * 0 = 10.3 $$</span>
-<span id="cb16-51"><a href="#cb16-51"></a></span>
-<span id="cb16-52"><a href="#cb16-52"></a>Ok, what about the economy of a much lighter, automatic, <span class="in">`2000`</span> pound vehicle?</span>
-<span id="cb16-53"><a href="#cb16-53"></a></span>
-<span id="cb16-54"><a href="#cb16-54"></a>$$ \hat{y} = 37.3 - 5.4 * 2 - 0.02 * 1 = 26.5 $$</span>
-<span id="cb16-55"><a href="#cb16-55"></a></span>
-<span id="cb16-56"><a href="#cb16-56"></a>That's all that prediction is, really - substitution into your regression equation. Prediction in this context isn't about predicting the future - in fact for most simple models, time plays no role (although it may, depending on the research question and the model we are using). We are typically more interested in predicting the mean value of the dependent variable given specific values of the independent variable/s.</span>
-<span id="cb16-57"><a href="#cb16-57"></a></span>
-<span id="cb16-58"><a href="#cb16-58"></a>While you can predict for any combination of covariate values, the visualisation of model predictions comes into its own when we focus on the relationship between some exposure and an outcome, holding the values of all other covariates in the model fixed. These are, in other words, **adjusted** predictions, and can help you to answer the question: "What is the expected outcome for certain values or levels of my exposure, when I have removed any other potential confounding effects?"</span>
-<span id="cb16-59"><a href="#cb16-59"></a></span>
-<span id="cb16-60"><a href="#cb16-60"></a>Alright, I think you get enough of an idea that we can actually now take a look at a more concrete example.</span>
-<span id="cb16-61"><a href="#cb16-61"></a></span>
-<span id="cb16-62"><a href="#cb16-62"></a><span class="fu"># `birthwt` Dataset</span></span>
-<span id="cb16-63"><a href="#cb16-63"></a></span>
-<span id="cb16-64"><a href="#cb16-64"></a>In our very first example to show you how to get up and running with predicting and visualising from your model, we will use the <span class="in">`birthwt`</span> dataset that comes with the <span class="in">`MASS`</span> package. A listing of the variables can be found <span class="co">[</span><span class="ot">here</span><span class="co">](https://vincentarelbundock.github.io/Rdatasets/doc/MASS/birthwt.html)</span>, and the first <span class="in">`10`</span> rows of the dataframe look like:</span>
-<span id="cb16-65"><a href="#cb16-65"></a></span>
-<span id="cb16-68"><a href="#cb16-68"></a><span class="in">```{r}</span></span>
-<span id="cb16-69"><a href="#cb16-69"></a><span class="fu">data</span>(birthwt, <span class="at">package =</span> <span class="st">"MASS"</span>)</span>
-<span id="cb16-70"><a href="#cb16-70"></a><span class="fu">head</span>(birthwt, <span class="dv">10</span>)</span>
-<span id="cb16-71"><a href="#cb16-71"></a><span class="in">```</span></span>
-<span id="cb16-72"><a href="#cb16-72"></a></span>
-<span id="cb16-73"><a href="#cb16-73"></a><span class="fu">## Birthweight as a Function of Maternal Age</span></span>
-<span id="cb16-74"><a href="#cb16-74"></a></span>
-<span id="cb16-75"><a href="#cb16-75"></a>Let's initially consider the possible association between baby birthweight (<span class="in">`bwt`</span> - outcome) and mother's <span class="in">`age`</span> (exposure). We will run the model as follows:</span>
-<span id="cb16-76"><a href="#cb16-76"></a></span>
-<span id="cb16-79"><a href="#cb16-79"></a><span class="in">```{r}</span></span>
-<span id="cb16-80"><a href="#cb16-80"></a>mod <span class="ot">&lt;-</span>  <span class="fu">lm</span>(bwt <span class="sc">~</span> age, <span class="at">data =</span> birthwt)</span>
-<span id="cb16-81"><a href="#cb16-81"></a><span class="fu">summary</span>(mod)</span>
-<span id="cb16-82"><a href="#cb16-82"></a><span class="in">```</span></span>
-<span id="cb16-83"><a href="#cb16-83"></a></span>
-<span id="cb16-84"><a href="#cb16-84"></a>The model seems to suggest that increasing maternal age is associated with increasing birthweight. Keep in mind that this is unlikely to represent reality and I would guess that the relationship between maternal age and birthweight is non-linear (i.e. at some maternal age, birthweight is more likely to start decreasing with increasing maternal age). But for the sake of today's exercise let's just assume the relationship is linear.</span>
-<span id="cb16-85"><a href="#cb16-85"></a></span>
-<span id="cb16-86"><a href="#cb16-86"></a><span class="fu">### Predict</span></span>
-<span id="cb16-87"><a href="#cb16-87"></a></span>
-<span id="cb16-88"><a href="#cb16-88"></a>Calculating predictions from the model is as simple as using the <span class="in">`predict()`</span> function following your model call, adding the predictions as a new column to the original dataframe (or creating a new dataframe if you desire). Here I will just add the new column containing the predictions to a new dataframe containing only the relevant variables, and print the first <span class="in">`10`</span> rows:</span>
-<span id="cb16-89"><a href="#cb16-89"></a></span>
-<span id="cb16-92"><a href="#cb16-92"></a><span class="in">```{r}</span></span>
-<span id="cb16-93"><a href="#cb16-93"></a>birthwt2 <span class="ot">&lt;-</span>  birthwt <span class="sc">|&gt;</span> </span>
-<span id="cb16-94"><a href="#cb16-94"></a>  <span class="fu">select</span>(bwt, age) <span class="sc">|&gt;</span> </span>
-<span id="cb16-95"><a href="#cb16-95"></a>  <span class="fu">mutate</span>(<span class="at">pred =</span> <span class="fu">predict</span>(mod))</span>
-<span id="cb16-96"><a href="#cb16-96"></a><span class="fu">head</span>(birthwt2, <span class="dv">10</span>) <span class="sc">|&gt;</span> </span>
-<span id="cb16-97"><a href="#cb16-97"></a>  <span class="fu">kable</span>(<span class="at">align =</span> <span class="st">"c"</span>, <span class="at">digits =</span> <span class="dv">1</span>)</span>
-<span id="cb16-98"><a href="#cb16-98"></a><span class="in">```</span></span>
-<span id="cb16-99"><a href="#cb16-99"></a></span>
-<span id="cb16-100"><a href="#cb16-100"></a><span class="fu">### Visualise</span></span>
-<span id="cb16-101"><a href="#cb16-101"></a></span>
-<span id="cb16-102"><a href="#cb16-102"></a>Plotting the model predictions is simple using <span class="in">`ggplot2`</span>.</span>
-<span id="cb16-103"><a href="#cb16-103"></a></span>
-<span id="cb16-106"><a href="#cb16-106"></a><span class="in">```{r}</span></span>
-<span id="cb16-107"><a href="#cb16-107"></a><span class="fu">ggplot</span>(birthwt2, <span class="fu">aes</span>(<span class="at">x =</span> age, <span class="at">y =</span> pred)) <span class="sc">+</span></span>
-<span id="cb16-108"><a href="#cb16-108"></a>  <span class="fu">geom_line</span>(<span class="at">linewidth =</span> <span class="dv">1</span>)</span>
-<span id="cb16-109"><a href="#cb16-109"></a><span class="in">```</span></span>
-<span id="cb16-110"><a href="#cb16-110"></a></span>
-<span id="cb16-111"><a href="#cb16-111"></a>It can be useful to add in the raw datapoints, so let's do that, and I'll add a couple of plotting embellishments as well.</span>
-<span id="cb16-112"><a href="#cb16-112"></a></span>
-<span id="cb16-115"><a href="#cb16-115"></a><span class="in">```{r}</span></span>
-<span id="cb16-116"><a href="#cb16-116"></a><span class="fu">ggplot</span>(<span class="at">data =</span> birthwt2, <span class="fu">aes</span>(<span class="at">x =</span> age, <span class="at">y =</span> pred)) <span class="sc">+</span></span>
-<span id="cb16-117"><a href="#cb16-117"></a>  <span class="fu">geom_line</span>(<span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
-<span id="cb16-118"><a href="#cb16-118"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> birthwt2, <span class="fu">aes</span>(<span class="at">x =</span> age, <span class="at">y =</span> bwt)) <span class="sc">+</span></span>
-<span id="cb16-119"><a href="#cb16-119"></a>  <span class="fu">xlab</span>(<span class="st">"Maternal Age"</span>) <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">"Predicted Birthweight"</span>) <span class="sc">+</span></span>
-<span id="cb16-120"><a href="#cb16-120"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">20</span>)</span>
-<span id="cb16-121"><a href="#cb16-121"></a><span class="in">```</span></span>
-<span id="cb16-122"><a href="#cb16-122"></a></span>
-<span id="cb16-123"><a href="#cb16-123"></a>Great! We've generated predictions from our model and visualised the results. That wasn't too hard.</span>
-<span id="cb16-124"><a href="#cb16-124"></a></span>
-<span id="cb16-125"><a href="#cb16-125"></a><span class="fu">## Birthweight as a Function of Maternal Age and Smoking</span></span>
-<span id="cb16-126"><a href="#cb16-126"></a></span>
-<span id="cb16-127"><a href="#cb16-127"></a>Let's take it up a step by now including maternal smoking (<span class="in">`smoke`</span>) as another exposure in our model:</span>
-<span id="cb16-128"><a href="#cb16-128"></a></span>
-<span id="cb16-131"><a href="#cb16-131"></a><span class="in">```{r}</span></span>
-<span id="cb16-132"><a href="#cb16-132"></a>mod2 <span class="ot">&lt;-</span>  <span class="fu">lm</span>(bwt <span class="sc">~</span> age <span class="sc">+</span> smoke, <span class="at">data =</span> birthwt)</span>
-<span id="cb16-133"><a href="#cb16-133"></a><span class="fu">summary</span>(mod2)</span>
-<span id="cb16-134"><a href="#cb16-134"></a><span class="in">```</span></span>
-<span id="cb16-135"><a href="#cb16-135"></a></span>
-<span id="cb16-136"><a href="#cb16-136"></a>So, the coefficient for <span class="in">`age`</span> hasn't really changed that much, but we can see that smoking seems to have a significant impact, decreasing birthweight on average by <span class="in">`278`</span> grams.</span>
-<span id="cb16-137"><a href="#cb16-137"></a></span>
-<span id="cb16-138"><a href="#cb16-138"></a>Let's predict birthweight from this model as we did before:</span>
-<span id="cb16-139"><a href="#cb16-139"></a></span>
-<span id="cb16-142"><a href="#cb16-142"></a><span class="in">```{r}</span></span>
-<span id="cb16-143"><a href="#cb16-143"></a>birthwt2 <span class="ot">&lt;-</span>  birthwt <span class="sc">|&gt;</span> </span>
-<span id="cb16-144"><a href="#cb16-144"></a>  <span class="fu">select</span>(bwt, age, smoke) <span class="sc">|&gt;</span> </span>
-<span id="cb16-145"><a href="#cb16-145"></a>  <span class="fu">mutate</span>(<span class="at">pred =</span> <span class="fu">predict</span>(mod2))</span>
-<span id="cb16-146"><a href="#cb16-146"></a><span class="fu">head</span>(birthwt2, <span class="dv">10</span>) <span class="sc">|&gt;</span> </span>
-<span id="cb16-147"><a href="#cb16-147"></a>  <span class="fu">kable</span>(<span class="at">align =</span> <span class="st">"c"</span>, <span class="at">digits =</span> <span class="dv">1</span>)</span>
-<span id="cb16-148"><a href="#cb16-148"></a><span class="in">```</span></span>
-<span id="cb16-149"><a href="#cb16-149"></a></span>
-<span id="cb16-150"><a href="#cb16-150"></a>And plot the predictions as we did before:</span>
-<span id="cb16-151"><a href="#cb16-151"></a></span>
-<span id="cb16-154"><a href="#cb16-154"></a><span class="in">```{r}</span></span>
-<span id="cb16-155"><a href="#cb16-155"></a><span class="fu">ggplot</span>(<span class="at">data =</span> birthwt2, <span class="fu">aes</span>(<span class="at">x =</span> age, <span class="at">y =</span> pred)) <span class="sc">+</span></span>
-<span id="cb16-156"><a href="#cb16-156"></a>  <span class="fu">geom_line</span>(<span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
-<span id="cb16-157"><a href="#cb16-157"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> birthwt2, <span class="fu">aes</span>(<span class="at">x =</span> age, <span class="at">y =</span> bwt)) <span class="sc">+</span></span>
-<span id="cb16-158"><a href="#cb16-158"></a>  <span class="fu">xlab</span>(<span class="st">"Maternal Age"</span>) <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">"Predicted Birthweight"</span>) <span class="sc">+</span></span>
-<span id="cb16-159"><a href="#cb16-159"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">20</span>)</span>
-<span id="cb16-160"><a href="#cb16-160"></a><span class="in">```</span></span>
-<span id="cb16-161"><a href="#cb16-161"></a></span>
-<span id="cb16-162"><a href="#cb16-162"></a>Uh-oh! Something has obviously gone badly wrong.</span>
-<span id="cb16-163"><a href="#cb16-163"></a></span>
-<span id="cb16-164"><a href="#cb16-164"></a>The problem is that we have **predicted on the original data** and the predictions are the result of the combination of each woman's unique values of both maternal age **and** smoking status. In other words, we are not just plotting the predicted value of birthweight as a function of maternal age alone, but rather as a function of both maternal age and smoking status. We are then trying to visualise those predictions as if they were generated from a function of maternal age alone.</span>
-<span id="cb16-165"><a href="#cb16-165"></a></span>
-<span id="cb16-166"><a href="#cb16-166"></a>As you can then see - "Computer says no".</span>
-<span id="cb16-167"><a href="#cb16-167"></a></span>
-<span id="cb16-168"><a href="#cb16-168"></a>To properly visualise predictions when more than one predictor are involved, requires that we find a way to generate the adjusted predictions I mentioned earlier. And, of course, there's a fairly easy way to do that in <span class="in">`R`</span>.</span>
-<span id="cb16-169"><a href="#cb16-169"></a></span>
-<span id="cb16-170"><a href="#cb16-170"></a><span class="fu">### Predict</span></span>
-<span id="cb16-171"><a href="#cb16-171"></a></span>
-<span id="cb16-172"><a href="#cb16-172"></a>When you have more than one covariate in your model, **predicting on new data** will allow you to generate the adjusted predictions that facilitate sensible visualisation. The <span class="in">`predict()`</span> function actually contains a <span class="in">`newdata`</span> argument that you can point towards a 'grid' of specified covariate values to predict on. This 'grid' is essentially a new dataframe that contains all possible combinations of covariates at salient values (typically a range of values at set intervals for numeric variables and every category/level for factor variables). In this way (adjusted) predictions can be made for one variable while keeping the other variable/s at fixed values.</span>
-<span id="cb16-173"><a href="#cb16-173"></a></span>
-<span id="cb16-174"><a href="#cb16-174"></a>To construct the grid of new data, we will use the <span class="co">[</span><span class="ot">`expand.grid()`</span><span class="co">](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/expand.grid)</span> function. I will specify a maternal age range from <span class="in">`15`</span> to <span class="in">`45`</span> in <span class="in">`5`</span> year intervals and a smoking status variable equal to either <span class="in">`0`</span> or <span class="in">`1`</span>. This grid of new data (which I have called <span class="in">`newdf`</span>) looks like:</span>
-<span id="cb16-175"><a href="#cb16-175"></a></span>
-<span id="cb16-178"><a href="#cb16-178"></a><span class="in">```{r}</span></span>
-<span id="cb16-179"><a href="#cb16-179"></a>newdf <span class="ot">&lt;-</span>  <span class="fu">expand.grid</span>(<span class="at">age =</span> <span class="fu">seq</span>(<span class="dv">15</span>, <span class="dv">45</span>, <span class="at">by =</span> <span class="dv">5</span>),</span>
-<span id="cb16-180"><a href="#cb16-180"></a>                      <span class="at">smoke =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>))</span>
-<span id="cb16-181"><a href="#cb16-181"></a>newdf <span class="sc">|&gt;</span> </span>
-<span id="cb16-182"><a href="#cb16-182"></a>  <span class="fu">kable</span>(<span class="at">align =</span> <span class="st">"c"</span>, <span class="at">digits =</span> <span class="dv">1</span>)</span>
-<span id="cb16-183"><a href="#cb16-183"></a><span class="in">```</span></span>
-<span id="cb16-184"><a href="#cb16-184"></a></span>
-<span id="cb16-185"><a href="#cb16-185"></a>::: callout-important</span>
-<span id="cb16-186"><a href="#cb16-186"></a>Note two conditions in generating your grid of new data:\</span>
-<span id="cb16-187"><a href="#cb16-187"></a><span class="ss">1. </span>You **MUST** include every variable that is specified in your model;\</span>
-<span id="cb16-188"><a href="#cb16-188"></a><span class="ss">2. </span>The variable names **MUST** match the names of the corresponding variables in your original dataset.\</span>
-<span id="cb16-189"><a href="#cb16-189"></a>Failing these, <span class="in">`predict()`</span> will become upset with you and refuse to do any more work.</span>
-<span id="cb16-190"><a href="#cb16-190"></a>:::</span>
-<span id="cb16-191"><a href="#cb16-191"></a></span>
-<span id="cb16-192"><a href="#cb16-192"></a>Now we are in a position to generate the predictions that we need. Nothing changes compared to before, except we now specify a new dataframe to predict upon using the <span class="in">`newdata`</span> argument:</span>
-<span id="cb16-193"><a href="#cb16-193"></a></span>
-<span id="cb16-196"><a href="#cb16-196"></a><span class="in">```{r}</span></span>
-<span id="cb16-197"><a href="#cb16-197"></a>newdf <span class="ot">&lt;-</span>  newdf <span class="sc">|&gt;</span> </span>
-<span id="cb16-198"><a href="#cb16-198"></a>  <span class="fu">mutate</span>(<span class="at">pred =</span> <span class="fu">predict</span>(mod2, <span class="at">newdata =</span> newdf))</span>
-<span id="cb16-199"><a href="#cb16-199"></a>newdf <span class="sc">|&gt;</span> </span>
-<span id="cb16-200"><a href="#cb16-200"></a>  <span class="fu">kable</span>(<span class="at">align =</span> <span class="st">"c"</span>, <span class="at">digits =</span> <span class="dv">1</span>)</span>
-<span id="cb16-201"><a href="#cb16-201"></a><span class="in">```</span></span>
-<span id="cb16-202"><a href="#cb16-202"></a></span>
-<span id="cb16-203"><a href="#cb16-203"></a><span class="fu">### Visualise</span></span>
-<span id="cb16-204"><a href="#cb16-204"></a></span>
-<span id="cb16-205"><a href="#cb16-205"></a>The key when we come to plotting the predictions is to now realise that because we are representing age on the x-axis, we need to use some other means to represent smoking status. In this case we can do that quite easily by using the colour aesthetic in our <span class="in">`ggplot`</span> call:</span>
-<span id="cb16-206"><a href="#cb16-206"></a></span>
-<span id="cb16-209"><a href="#cb16-209"></a><span class="in">```{r}</span></span>
-<span id="cb16-210"><a href="#cb16-210"></a><span class="fu">ggplot</span>(<span class="at">data =</span> newdf, <span class="fu">aes</span>(<span class="at">x =</span> age, <span class="at">y =</span> pred, <span class="at">color =</span> <span class="fu">factor</span>(smoke))) <span class="sc">+</span></span>
-<span id="cb16-211"><a href="#cb16-211"></a>  <span class="fu">geom_line</span>(<span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
-<span id="cb16-212"><a href="#cb16-212"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> birthwt2, <span class="fu">aes</span>(<span class="at">x =</span> age, <span class="at">y =</span> bwt), <span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
-<span id="cb16-213"><a href="#cb16-213"></a>  <span class="fu">xlab</span>(<span class="st">"Maternal Age"</span>) <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">"Predicted Birthweight"</span>) <span class="sc">+</span> <span class="fu">labs</span>(<span class="at">color =</span> <span class="st">"Smoking Status"</span>) <span class="sc">+</span></span>
-<span id="cb16-214"><a href="#cb16-214"></a>    <span class="fu">scale_y_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">5000</span>), <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">5000</span>, <span class="at">by =</span> <span class="dv">1000</span>)) <span class="sc">+</span></span>
-<span id="cb16-215"><a href="#cb16-215"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">20</span>) <span class="sc">+</span></span>
-<span id="cb16-216"><a href="#cb16-216"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"bottom"</span>)</span>
-<span id="cb16-217"><a href="#cb16-217"></a><span class="in">```</span></span>
-<span id="cb16-218"><a href="#cb16-218"></a></span>
-<span id="cb16-219"><a href="#cb16-219"></a>Note that I converted smoking status to a factor variable on the fly so that <span class="in">`ggplot`</span> knows that it only has two levels (otherwise it assumes it's a continuous variable).</span>
-<span id="cb16-220"><a href="#cb16-220"></a></span>
-<span id="cb16-221"><a href="#cb16-221"></a>So, what do we actually have here, when I call this a plot of adjusted predictions? We have two parallel regression lines - one for smokers (blue) and one for non-smokers (red). They are parallel because 'effects' are additive - we did not specify an interaction between maternal age and smoking status. The red line is the predicted birthweight as a function of maternal age for non-smoking mothers and the blue line is the predicted birthweight as a function of maternal age for smoking mothers. In other words, predictions of the association between maternal age and newborn birthweight, adjusted for maternal smoking status (we can flip this around and also say that these are predictions of the association between smoking status and newborn birthweight, adjusted for maternal age). The regression line/s no longer zig-zag, like they did in the earlier plot, because we have separated out the 'effect' of the second exposure from the first allowing a 'pure' association between maternal age and newborn birthweight at each level of smoking status to be observed.</span>
-<span id="cb16-222"><a href="#cb16-222"></a></span>
-<span id="cb16-223"><a href="#cb16-223"></a>These same principles of prediction and visualisation can be applied in nearly all model plotting endeavours. There does, however, become a limit in the number of covariates that can practically be visualised and that is something we will look at in more detail in the next post.</span>
-<span id="cb16-224"><a href="#cb16-224"></a></span>
-<span id="cb16-225"><a href="#cb16-225"></a>I will conclude by saying that for this series I am going to illustrate all concepts using what I consider to be 'first principles' - that is, applying the <span class="in">`predict()`</span> and <span class="in">`expand.grid()`</span> functions for predicting, and <span class="in">`ggplot2`</span> for visualising. But there may be better/faster ways to do this and a package I came across recently that I think would be worthwhile exploring is <span class="co">[</span><span class="ot">`ggeffects`</span><span class="co">](https://strengejacke.github.io/ggeffects/index.html)</span>. I haven't used this myself but a quick scan of the package website gives me the impression this will make even shorter work of my 'first principles' approach. It is a package that I will keep in mind as we go forward on this topic.</span>
-<span id="cb16-226"><a href="#cb16-226"></a></span>
-<span id="cb16-227"><a href="#cb16-227"></a>Catch you in a couple of weeks...</span>
+<div class="sourceCode" id="cb13" data-shortcodes="false"><pre class="sourceCode numberSource markdown number-lines code-with-copy"><code class="sourceCode markdown"><span id="cb13-1"><a href="#cb13-1"></a><span class="co">---</span></span>
+<span id="cb13-2"><a href="#cb13-2"></a><span class="an">title:</span><span class="co"> "Model Prediction/Visualisation &lt;br&gt; 1. The Basics"</span></span>
+<span id="cb13-3"><a href="#cb13-3"></a><span class="an">date:</span><span class="co"> 2025-03-21</span></span>
+<span id="cb13-4"><a href="#cb13-4"></a><span class="an">categories:</span><span class="co"> [code, concept, modelling, visualisation]</span></span>
+<span id="cb13-5"><a href="#cb13-5"></a><span class="an">image:</span><span class="co"> "images/plot.png"</span></span>
+<span id="cb13-6"><a href="#cb13-6"></a><span class="an">description:</span><span class="co"> "How to predict from your model."</span></span>
+<span id="cb13-7"><a href="#cb13-7"></a><span class="co">---</span></span>
+<span id="cb13-8"><a href="#cb13-8"></a></span>
+<span id="cb13-9"><a href="#cb13-9"></a>Most of you will be familiar with how to create and run a statistical model in <span class="in">`R`</span>. But what do you then do with your model results? I bet you take <span class="in">`R`</span>'s rather bland console output, convert that to a formatted table in your manuscript, then based on the regression coefficient values, go on and talk about associations of your exposure/s with your outcome.</span>
+<span id="cb13-10"><a href="#cb13-10"></a></span>
+<span id="cb13-11"><a href="#cb13-11"></a>And leave it at that.</span>
+<span id="cb13-12"><a href="#cb13-12"></a></span>
+<span id="cb13-13"><a href="#cb13-13"></a>Well, the old adage of "a picture is worth a thousand words" has never been truer in the context of model prediction and how much additional information value you can obtain if you take your analyses a step further. Our reliance on just looking at the numbers (i.e. the regression coefficients) is sufficient a lot of the time in simple cases, but when models become a more complex - for example, by the specification of non-linear covariate functional forms via splines - regression coefficients on their own are essentially useless in aiding our interpretation. Plotting the model predictions, however, can put us back on track for understanding the important relationships in our data. Even a complex model can make more sense when we can visualise its predictions. These are skills worth learning and adding to your data analyst toolkit.</span>
+<span id="cb13-14"><a href="#cb13-14"></a></span>
+<span id="cb13-15"><a href="#cb13-15"></a>So, I thought I would put together a series of posts on predicting from and visualising your model, where in each post we cover a different area related to the subject. This week it's just about the basics of model prediction and visualisation, but in future posts I hope to extend those ideas to more advanced topics including non-linear functional forms, glm's, mixed-models, etc (let's see how we go). But first, let's start at the start...</span>
+<span id="cb13-16"><a href="#cb13-16"></a></span>
+<span id="cb13-17"><a href="#cb13-17"></a><span class="fu"># What is Model Prediction</span></span>
+<span id="cb13-18"><a href="#cb13-18"></a></span>
+<span id="cb13-19"><a href="#cb13-19"></a>When we specify a model using traditional <span class="in">`lm()`</span> syntax in <span class="in">`R`</span>, remember that we are just re-expressing the fundamental regression equation you will find in any statistical textbook:</span>
+<span id="cb13-20"><a href="#cb13-20"></a></span>
+<span id="cb13-21"><a href="#cb13-21"></a>$$ \hat{y} = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + ... $$</span>
+<span id="cb13-22"><a href="#cb13-22"></a></span>
+<span id="cb13-23"><a href="#cb13-23"></a>Where:</span>
+<span id="cb13-24"><a href="#cb13-24"></a></span>
+<span id="cb13-25"><a href="#cb13-25"></a>$\beta_0$ is the intercept (the expected value of $y$ when $x_1$ and $x_2$ are both equal to <span class="in">`0`</span>);</span>
+<span id="cb13-26"><a href="#cb13-26"></a></span>
+<span id="cb13-27"><a href="#cb13-27"></a>$\beta_1$ and $\beta_2$ are the regression coefficients for $x_1$ and $x_2$, respectively, and;</span>
+<span id="cb13-28"><a href="#cb13-28"></a></span>
+<span id="cb13-29"><a href="#cb13-29"></a>$\beta_1$ is the expected *change* in $y$ for a one-unit change in $x_1$ (when $x_2$ is held at a constant value);</span>
+<span id="cb13-30"><a href="#cb13-30"></a></span>
+<span id="cb13-31"><a href="#cb13-31"></a>$\beta_2$ is the expected *change* in $y$ for a one-unit change in $x_2$ (when $x_1$ is held at a constant value).</span>
+<span id="cb13-32"><a href="#cb13-32"></a></span>
+<span id="cb13-33"><a href="#cb13-33"></a>The coefficents in the regression equation define the relationship between each independent variable (exposure/predictor) and the dependent variable (outcome). But you don't need to stop there - it's very easy to enter values for the independent variables into the equation to also predict the expected (mean) value of the dependent variable. Let's take a look at a very simple example that uses the built-in <span class="in">`mtcars`</span> dataset in <span class="in">`R`</span>. Say we want to examine the relationship between fuel economy (miles/gallon <span class="sc">\[</span><span class="in">`mpg`</span><span class="sc">\]</span>) and weight and transmission type (<span class="in">`wt + am`</span>). A standard linear regression gives:</span>
+<span id="cb13-34"><a href="#cb13-34"></a></span>
+<span id="cb13-37"><a href="#cb13-37"></a><span class="in">```{r}</span></span>
+<span id="cb13-38"><a href="#cb13-38"></a><span class="co">#| message: false</span></span>
+<span id="cb13-39"><a href="#cb13-39"></a><span class="co">#| warning: false</span></span>
+<span id="cb13-40"><a href="#cb13-40"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb13-41"><a href="#cb13-41"></a><span class="fu">library</span>(kableExtra)</span>
+<span id="cb13-42"><a href="#cb13-42"></a><span class="fu">library</span>(gtsummary)</span>
+<span id="cb13-43"><a href="#cb13-43"></a><span class="fu">data</span>(mtcars)</span>
+<span id="cb13-44"><a href="#cb13-44"></a><span class="fu">tbl_regression</span>(<span class="fu">lm</span>(mpg <span class="sc">~</span> wt <span class="sc">+</span> am, <span class="at">data =</span> mtcars), <span class="at">intercept =</span> T)</span>
+<span id="cb13-45"><a href="#cb13-45"></a><span class="in">```</span></span>
+<span id="cb13-46"><a href="#cb13-46"></a></span>
+<span id="cb13-47"><a href="#cb13-47"></a>Interpreting just the regression coefficients, we could say that on average, a one-unit increase in weight (which corresponds here to <span class="in">`1000`</span> pounds) is associated with a reduction in fuel economy of <span class="in">`5.4`</span> mpg when transmission type is held constant. Similary, we can also say that on average, a one-unit increase in transmission type (which corresponds here to simply changing from an automatic to manual car) is associated with a barely notable reduction in fuel economy of <span class="in">`0.02`</span> mpg, when weight is held constant.</span>
+<span id="cb13-48"><a href="#cb13-48"></a></span>
+<span id="cb13-49"><a href="#cb13-49"></a>But we can use this model to make some simple predictions as well. You might want to know what is the expected fuel economy for a manual, <span class="in">`5000`</span> pound car (not very good I would think). Well it's a simple exercise in substitution:</span>
+<span id="cb13-50"><a href="#cb13-50"></a></span>
+<span id="cb13-51"><a href="#cb13-51"></a>$$ \hat{y} = 37.3 - 5.4 * 5 - 0.02 * 0 = 10.3 $$</span>
+<span id="cb13-52"><a href="#cb13-52"></a></span>
+<span id="cb13-53"><a href="#cb13-53"></a>Ok, what about the economy of a much lighter, automatic, <span class="in">`2000`</span> pound vehicle?</span>
+<span id="cb13-54"><a href="#cb13-54"></a></span>
+<span id="cb13-55"><a href="#cb13-55"></a>$$ \hat{y} = 37.3 - 5.4 * 2 - 0.02 * 1 = 26.5 $$</span>
+<span id="cb13-56"><a href="#cb13-56"></a></span>
+<span id="cb13-57"><a href="#cb13-57"></a>That's all that prediction is, really - substitution into your regression equation. Prediction in this context isn't about predicting the future - in fact for most simple models, time plays no role (although it may, depending on the research question and the model we are using). We are typically more interested in predicting the mean value of the dependent variable given specific values of the independent variable/s.</span>
+<span id="cb13-58"><a href="#cb13-58"></a></span>
+<span id="cb13-59"><a href="#cb13-59"></a>While you can predict for any combination of covariate values, the visualisation of model predictions comes into its own when we focus on the relationship between some exposure and an outcome, holding the values of all other covariates in the model fixed. These are, in other words, **adjusted** predictions, and can help you to answer the question: "What is the expected outcome for certain values or levels of my exposure, when I have removed any other potential confounding effects?"</span>
+<span id="cb13-60"><a href="#cb13-60"></a></span>
+<span id="cb13-61"><a href="#cb13-61"></a>Alright, I think you get enough of an idea that we can actually now take a look at a more concrete example.</span>
+<span id="cb13-62"><a href="#cb13-62"></a></span>
+<span id="cb13-63"><a href="#cb13-63"></a><span class="fu"># `birthwt` Dataset</span></span>
+<span id="cb13-64"><a href="#cb13-64"></a></span>
+<span id="cb13-65"><a href="#cb13-65"></a>In our very first example to show you how to get up and running with predicting and visualising from your model, we will use the <span class="in">`birthwt`</span> dataset that comes with the <span class="in">`MASS`</span> package. A listing of the variables can be found <span class="co">[</span><span class="ot">here</span><span class="co">](https://vincentarelbundock.github.io/Rdatasets/doc/MASS/birthwt.html)</span>, and the first <span class="in">`10`</span> rows of the dataframe look like:</span>
+<span id="cb13-66"><a href="#cb13-66"></a></span>
+<span id="cb13-69"><a href="#cb13-69"></a><span class="in">```{r}</span></span>
+<span id="cb13-70"><a href="#cb13-70"></a><span class="fu">data</span>(birthwt, <span class="at">package =</span> <span class="st">"MASS"</span>)</span>
+<span id="cb13-71"><a href="#cb13-71"></a><span class="fu">head</span>(birthwt, <span class="dv">10</span>)</span>
+<span id="cb13-72"><a href="#cb13-72"></a><span class="in">```</span></span>
+<span id="cb13-73"><a href="#cb13-73"></a></span>
+<span id="cb13-74"><a href="#cb13-74"></a><span class="fu">## Birthweight as a Function of Maternal Age</span></span>
+<span id="cb13-75"><a href="#cb13-75"></a></span>
+<span id="cb13-76"><a href="#cb13-76"></a>Let's initially consider the possible association between baby birthweight (<span class="in">`bwt`</span> - outcome) and mother's <span class="in">`age`</span> (exposure). We will run the model as follows:</span>
+<span id="cb13-77"><a href="#cb13-77"></a></span>
+<span id="cb13-80"><a href="#cb13-80"></a><span class="in">```{r}</span></span>
+<span id="cb13-81"><a href="#cb13-81"></a>mod <span class="ot">&lt;-</span>  <span class="fu">lm</span>(bwt <span class="sc">~</span> age, <span class="at">data =</span> birthwt)</span>
+<span id="cb13-82"><a href="#cb13-82"></a><span class="fu">tbl_regression</span>(mod, <span class="at">intercept =</span> T)</span>
+<span id="cb13-83"><a href="#cb13-83"></a><span class="in">```</span></span>
+<span id="cb13-84"><a href="#cb13-84"></a></span>
+<span id="cb13-85"><a href="#cb13-85"></a>The model seems to suggest that increasing maternal age is associated with increasing birthweight. Keep in mind that this is unlikely to represent reality and I would guess that the relationship between maternal age and birthweight is non-linear (i.e. at some maternal age, birthweight is more likely to start decreasing with increasing maternal age). But for the sake of today's exercise let's just assume the relationship is linear.</span>
+<span id="cb13-86"><a href="#cb13-86"></a></span>
+<span id="cb13-87"><a href="#cb13-87"></a><span class="fu">### Predict</span></span>
+<span id="cb13-88"><a href="#cb13-88"></a></span>
+<span id="cb13-89"><a href="#cb13-89"></a>Calculating predictions from the model is as simple as using the <span class="in">`predict()`</span> function following your model call, adding the predictions as a new column to the original dataframe (or creating a new dataframe if you desire). Here I will just add the new column containing the predictions to a new dataframe containing only the relevant variables, and print the first <span class="in">`10`</span> rows:</span>
+<span id="cb13-90"><a href="#cb13-90"></a></span>
+<span id="cb13-93"><a href="#cb13-93"></a><span class="in">```{r}</span></span>
+<span id="cb13-94"><a href="#cb13-94"></a>birthwt2 <span class="ot">&lt;-</span>  birthwt <span class="sc">|&gt;</span> </span>
+<span id="cb13-95"><a href="#cb13-95"></a>  <span class="fu">select</span>(bwt, age) <span class="sc">|&gt;</span> </span>
+<span id="cb13-96"><a href="#cb13-96"></a>  <span class="fu">mutate</span>(<span class="at">pred =</span> <span class="fu">predict</span>(mod))</span>
+<span id="cb13-97"><a href="#cb13-97"></a><span class="fu">head</span>(birthwt2, <span class="dv">10</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb13-98"><a href="#cb13-98"></a>  <span class="fu">kable</span>(<span class="at">align =</span> <span class="st">"c"</span>, <span class="at">digits =</span> <span class="dv">1</span>)</span>
+<span id="cb13-99"><a href="#cb13-99"></a><span class="in">```</span></span>
+<span id="cb13-100"><a href="#cb13-100"></a></span>
+<span id="cb13-101"><a href="#cb13-101"></a><span class="fu">### Visualise</span></span>
+<span id="cb13-102"><a href="#cb13-102"></a></span>
+<span id="cb13-103"><a href="#cb13-103"></a>Plotting the model predictions is simple using <span class="in">`ggplot2`</span>.</span>
+<span id="cb13-104"><a href="#cb13-104"></a></span>
+<span id="cb13-107"><a href="#cb13-107"></a><span class="in">```{r}</span></span>
+<span id="cb13-108"><a href="#cb13-108"></a><span class="fu">ggplot</span>(birthwt2, <span class="fu">aes</span>(<span class="at">x =</span> age, <span class="at">y =</span> pred)) <span class="sc">+</span></span>
+<span id="cb13-109"><a href="#cb13-109"></a>  <span class="fu">geom_line</span>(<span class="at">linewidth =</span> <span class="dv">1</span>)</span>
+<span id="cb13-110"><a href="#cb13-110"></a><span class="in">```</span></span>
+<span id="cb13-111"><a href="#cb13-111"></a></span>
+<span id="cb13-112"><a href="#cb13-112"></a>It can be useful to add in the raw datapoints, so let's do that, and I'll add a couple of plotting embellishments as well.</span>
+<span id="cb13-113"><a href="#cb13-113"></a></span>
+<span id="cb13-116"><a href="#cb13-116"></a><span class="in">```{r}</span></span>
+<span id="cb13-117"><a href="#cb13-117"></a><span class="fu">ggplot</span>(<span class="at">data =</span> birthwt2, <span class="fu">aes</span>(<span class="at">x =</span> age, <span class="at">y =</span> pred)) <span class="sc">+</span></span>
+<span id="cb13-118"><a href="#cb13-118"></a>  <span class="fu">geom_line</span>(<span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb13-119"><a href="#cb13-119"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> birthwt2, <span class="fu">aes</span>(<span class="at">x =</span> age, <span class="at">y =</span> bwt)) <span class="sc">+</span></span>
+<span id="cb13-120"><a href="#cb13-120"></a>  <span class="fu">xlab</span>(<span class="st">"Maternal Age"</span>) <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">"Predicted Birthweight"</span>) <span class="sc">+</span></span>
+<span id="cb13-121"><a href="#cb13-121"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">20</span>)</span>
+<span id="cb13-122"><a href="#cb13-122"></a><span class="in">```</span></span>
+<span id="cb13-123"><a href="#cb13-123"></a></span>
+<span id="cb13-124"><a href="#cb13-124"></a>Great! We've generated predictions from our model and visualised the results. That wasn't too hard.</span>
+<span id="cb13-125"><a href="#cb13-125"></a></span>
+<span id="cb13-126"><a href="#cb13-126"></a><span class="fu">## Birthweight as a Function of Maternal Age and Smoking</span></span>
+<span id="cb13-127"><a href="#cb13-127"></a></span>
+<span id="cb13-128"><a href="#cb13-128"></a>Let's take it up a step by now including maternal smoking (<span class="in">`smoke`</span>) as another exposure in our model:</span>
+<span id="cb13-129"><a href="#cb13-129"></a></span>
+<span id="cb13-132"><a href="#cb13-132"></a><span class="in">```{r}</span></span>
+<span id="cb13-133"><a href="#cb13-133"></a>mod2 <span class="ot">&lt;-</span>  <span class="fu">lm</span>(bwt <span class="sc">~</span> age <span class="sc">+</span> smoke, <span class="at">data =</span> birthwt)</span>
+<span id="cb13-134"><a href="#cb13-134"></a><span class="fu">tbl_regression</span>(mod2, <span class="at">intercept =</span> T)</span>
+<span id="cb13-135"><a href="#cb13-135"></a><span class="in">```</span></span>
+<span id="cb13-136"><a href="#cb13-136"></a></span>
+<span id="cb13-137"><a href="#cb13-137"></a>So, the coefficient for <span class="in">`age`</span> hasn't really changed that much, but we can see that smoking seems to have a significant impact, decreasing birthweight on average by <span class="in">`278`</span> grams.</span>
+<span id="cb13-138"><a href="#cb13-138"></a></span>
+<span id="cb13-139"><a href="#cb13-139"></a>Let's predict birthweight from this model as we did before:</span>
+<span id="cb13-140"><a href="#cb13-140"></a></span>
+<span id="cb13-143"><a href="#cb13-143"></a><span class="in">```{r}</span></span>
+<span id="cb13-144"><a href="#cb13-144"></a>birthwt2 <span class="ot">&lt;-</span>  birthwt <span class="sc">|&gt;</span> </span>
+<span id="cb13-145"><a href="#cb13-145"></a>  <span class="fu">select</span>(bwt, age, smoke) <span class="sc">|&gt;</span> </span>
+<span id="cb13-146"><a href="#cb13-146"></a>  <span class="fu">mutate</span>(<span class="at">pred =</span> <span class="fu">predict</span>(mod2))</span>
+<span id="cb13-147"><a href="#cb13-147"></a><span class="fu">head</span>(birthwt2, <span class="dv">10</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb13-148"><a href="#cb13-148"></a>  <span class="fu">kable</span>(<span class="at">align =</span> <span class="st">"c"</span>, <span class="at">digits =</span> <span class="dv">1</span>)</span>
+<span id="cb13-149"><a href="#cb13-149"></a><span class="in">```</span></span>
+<span id="cb13-150"><a href="#cb13-150"></a></span>
+<span id="cb13-151"><a href="#cb13-151"></a>And plot the predictions as we did before:</span>
+<span id="cb13-152"><a href="#cb13-152"></a></span>
+<span id="cb13-155"><a href="#cb13-155"></a><span class="in">```{r}</span></span>
+<span id="cb13-156"><a href="#cb13-156"></a><span class="fu">ggplot</span>(<span class="at">data =</span> birthwt2, <span class="fu">aes</span>(<span class="at">x =</span> age, <span class="at">y =</span> pred)) <span class="sc">+</span></span>
+<span id="cb13-157"><a href="#cb13-157"></a>  <span class="fu">geom_line</span>(<span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb13-158"><a href="#cb13-158"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> birthwt2, <span class="fu">aes</span>(<span class="at">x =</span> age, <span class="at">y =</span> bwt)) <span class="sc">+</span></span>
+<span id="cb13-159"><a href="#cb13-159"></a>  <span class="fu">xlab</span>(<span class="st">"Maternal Age"</span>) <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">"Predicted Birthweight"</span>) <span class="sc">+</span></span>
+<span id="cb13-160"><a href="#cb13-160"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">20</span>)</span>
+<span id="cb13-161"><a href="#cb13-161"></a><span class="in">```</span></span>
+<span id="cb13-162"><a href="#cb13-162"></a></span>
+<span id="cb13-163"><a href="#cb13-163"></a>Uh-oh! Something has obviously gone badly wrong.</span>
+<span id="cb13-164"><a href="#cb13-164"></a></span>
+<span id="cb13-165"><a href="#cb13-165"></a>The problem is that we have **predicted on the original data** and the predictions are the result of the combination of each woman's unique values of both maternal age **and** smoking status. In other words, we are not just plotting the predicted value of birthweight as a function of maternal age alone, but rather as a function of both maternal age and smoking status. We are then trying to visualise those predictions as if they were generated from a function of maternal age alone.</span>
+<span id="cb13-166"><a href="#cb13-166"></a></span>
+<span id="cb13-167"><a href="#cb13-167"></a>As you can then see - "Computer says no".</span>
+<span id="cb13-168"><a href="#cb13-168"></a></span>
+<span id="cb13-169"><a href="#cb13-169"></a>To properly visualise predictions when more than one predictor are involved, requires that we find a way to generate the adjusted predictions I mentioned earlier. And, of course, there's a fairly easy way to do that in <span class="in">`R`</span>.</span>
+<span id="cb13-170"><a href="#cb13-170"></a></span>
+<span id="cb13-171"><a href="#cb13-171"></a><span class="fu">### Predict</span></span>
+<span id="cb13-172"><a href="#cb13-172"></a></span>
+<span id="cb13-173"><a href="#cb13-173"></a>When you have more than one covariate in your model, **predicting on new data** will allow you to generate the adjusted predictions that facilitate sensible visualisation. The <span class="in">`predict()`</span> function actually contains a <span class="in">`newdata`</span> argument that you can point towards a 'grid' of specified covariate values to predict on. This 'grid' is essentially a new dataframe that contains all possible combinations of covariates at salient values (typically a range of values at set intervals for numeric variables and every category/level for factor variables). In this way (adjusted) predictions can be made for one variable while keeping the other variable/s at fixed values.</span>
+<span id="cb13-174"><a href="#cb13-174"></a></span>
+<span id="cb13-175"><a href="#cb13-175"></a>To construct the grid of new data, we will use the <span class="co">[</span><span class="ot">`expand.grid()`</span><span class="co">](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/expand.grid)</span> function. I will specify a maternal age range from <span class="in">`15`</span> to <span class="in">`45`</span> in <span class="in">`5`</span> year intervals and a smoking status variable equal to either <span class="in">`0`</span> or <span class="in">`1`</span>. This grid of new data (which I have called <span class="in">`newdf`</span>) looks like:</span>
+<span id="cb13-176"><a href="#cb13-176"></a></span>
+<span id="cb13-179"><a href="#cb13-179"></a><span class="in">```{r}</span></span>
+<span id="cb13-180"><a href="#cb13-180"></a>newdf <span class="ot">&lt;-</span>  <span class="fu">expand.grid</span>(<span class="at">age =</span> <span class="fu">seq</span>(<span class="dv">15</span>, <span class="dv">45</span>, <span class="at">by =</span> <span class="dv">5</span>),</span>
+<span id="cb13-181"><a href="#cb13-181"></a>                      <span class="at">smoke =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>))</span>
+<span id="cb13-182"><a href="#cb13-182"></a>newdf <span class="sc">|&gt;</span> </span>
+<span id="cb13-183"><a href="#cb13-183"></a>  <span class="fu">kable</span>(<span class="at">align =</span> <span class="st">"c"</span>, <span class="at">digits =</span> <span class="dv">1</span>)</span>
+<span id="cb13-184"><a href="#cb13-184"></a><span class="in">```</span></span>
+<span id="cb13-185"><a href="#cb13-185"></a></span>
+<span id="cb13-186"><a href="#cb13-186"></a>::: callout-important</span>
+<span id="cb13-187"><a href="#cb13-187"></a>Note two conditions in generating your grid of new data:\</span>
+<span id="cb13-188"><a href="#cb13-188"></a><span class="ss">1. </span>You **MUST** include every variable that is specified in your model;\</span>
+<span id="cb13-189"><a href="#cb13-189"></a><span class="ss">2. </span>The variable names **MUST** match the names of the corresponding variables in your original dataset.\</span>
+<span id="cb13-190"><a href="#cb13-190"></a>Failing these, <span class="in">`predict()`</span> will become upset with you and refuse to do any more work.</span>
+<span id="cb13-191"><a href="#cb13-191"></a>:::</span>
+<span id="cb13-192"><a href="#cb13-192"></a></span>
+<span id="cb13-193"><a href="#cb13-193"></a>Now we are in a position to generate the predictions that we need. Nothing changes compared to before, except we now specify a new dataframe to predict upon using the <span class="in">`newdata`</span> argument:</span>
+<span id="cb13-194"><a href="#cb13-194"></a></span>
+<span id="cb13-197"><a href="#cb13-197"></a><span class="in">```{r}</span></span>
+<span id="cb13-198"><a href="#cb13-198"></a>newdf <span class="ot">&lt;-</span>  newdf <span class="sc">|&gt;</span> </span>
+<span id="cb13-199"><a href="#cb13-199"></a>  <span class="fu">mutate</span>(<span class="at">pred =</span> <span class="fu">predict</span>(mod2, <span class="at">newdata =</span> newdf))</span>
+<span id="cb13-200"><a href="#cb13-200"></a>newdf <span class="sc">|&gt;</span> </span>
+<span id="cb13-201"><a href="#cb13-201"></a>  <span class="fu">kable</span>(<span class="at">align =</span> <span class="st">"c"</span>, <span class="at">digits =</span> <span class="dv">1</span>)</span>
+<span id="cb13-202"><a href="#cb13-202"></a><span class="in">```</span></span>
+<span id="cb13-203"><a href="#cb13-203"></a></span>
+<span id="cb13-204"><a href="#cb13-204"></a><span class="fu">### Visualise</span></span>
+<span id="cb13-205"><a href="#cb13-205"></a></span>
+<span id="cb13-206"><a href="#cb13-206"></a>The key when we come to plotting the predictions is to now realise that because we are representing age on the x-axis, we need to use some other means to represent smoking status. In this case we can do that quite easily by using the colour aesthetic in our <span class="in">`ggplot`</span> call:</span>
+<span id="cb13-207"><a href="#cb13-207"></a></span>
+<span id="cb13-210"><a href="#cb13-210"></a><span class="in">```{r}</span></span>
+<span id="cb13-211"><a href="#cb13-211"></a><span class="fu">ggplot</span>(<span class="at">data =</span> newdf, <span class="fu">aes</span>(<span class="at">x =</span> age, <span class="at">y =</span> pred, <span class="at">color =</span> <span class="fu">factor</span>(smoke))) <span class="sc">+</span></span>
+<span id="cb13-212"><a href="#cb13-212"></a>  <span class="fu">geom_line</span>(<span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb13-213"><a href="#cb13-213"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> birthwt2, <span class="fu">aes</span>(<span class="at">x =</span> age, <span class="at">y =</span> bwt), <span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb13-214"><a href="#cb13-214"></a>  <span class="fu">xlab</span>(<span class="st">"Maternal Age"</span>) <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">"Predicted Birthweight"</span>) <span class="sc">+</span> <span class="fu">labs</span>(<span class="at">color =</span> <span class="st">"Smoking Status"</span>) <span class="sc">+</span></span>
+<span id="cb13-215"><a href="#cb13-215"></a>    <span class="fu">scale_y_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">5000</span>), <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">5000</span>, <span class="at">by =</span> <span class="dv">1000</span>)) <span class="sc">+</span></span>
+<span id="cb13-216"><a href="#cb13-216"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">20</span>) <span class="sc">+</span></span>
+<span id="cb13-217"><a href="#cb13-217"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"bottom"</span>)</span>
+<span id="cb13-218"><a href="#cb13-218"></a><span class="in">```</span></span>
+<span id="cb13-219"><a href="#cb13-219"></a></span>
+<span id="cb13-220"><a href="#cb13-220"></a>Note that I converted smoking status to a factor variable on the fly so that <span class="in">`ggplot`</span> knows that it only has two levels (otherwise it assumes it's a continuous variable).</span>
+<span id="cb13-221"><a href="#cb13-221"></a></span>
+<span id="cb13-222"><a href="#cb13-222"></a>So, what do we actually have here, when I call this a plot of adjusted predictions? We have two parallel regression lines - one for smokers (blue) and one for non-smokers (red). They are parallel because 'effects' are additive - we did not specify an interaction between maternal age and smoking status. The red line is the predicted birthweight as a function of maternal age for non-smoking mothers and the blue line is the predicted birthweight as a function of maternal age for smoking mothers. In other words, predictions of the association between maternal age and newborn birthweight, adjusted for maternal smoking status (we can flip this around and also say that these are predictions of the association between smoking status and newborn birthweight, adjusted for maternal age). The regression line/s no longer zig-zag, like they did in the earlier plot, because we have separated out the 'effect' of the second exposure from the first allowing a 'pure' association between maternal age and newborn birthweight at each level of smoking status to be observed.</span>
+<span id="cb13-223"><a href="#cb13-223"></a></span>
+<span id="cb13-224"><a href="#cb13-224"></a>These same principles of prediction and visualisation can be applied in nearly all model plotting endeavours. There does, however, become a limit in the number of covariates that can practically be visualised and that is something we will look at in more detail in the next post.</span>
+<span id="cb13-225"><a href="#cb13-225"></a></span>
+<span id="cb13-226"><a href="#cb13-226"></a>I will conclude by saying that for this series I am going to illustrate all concepts using what I consider to be 'first principles' - that is, applying the <span class="in">`predict()`</span> and <span class="in">`expand.grid()`</span> functions for predicting, and <span class="in">`ggplot2`</span> for visualising. But there may be better/faster ways to do this and a package I came across recently that I think would be worthwhile exploring is <span class="co">[</span><span class="ot">`ggeffects`</span><span class="co">](https://strengejacke.github.io/ggeffects/index.html)</span>. I haven't used this myself but a quick scan of the package website gives me the impression this will make even shorter work of my 'first principles' approach. It is a package that I will keep in mind as we go forward on this topic.</span>
+<span id="cb13-227"><a href="#cb13-227"></a></span>
+<span id="cb13-228"><a href="#cb13-228"></a>Catch you in a couple of weeks...</span>
 </code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->

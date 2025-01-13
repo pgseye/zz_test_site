@@ -28,7 +28,7 @@ It's not all doom and gloom, however. There are alternative ways around this app
 
 # Two Predictors
 
-We have essentially already made this plot in the last post. In our model we are regressing newborn birthweight on maternal age and smoking status, and if you recall we managed the visualisation of our second predictor (smoking status) by assigning it to the colour aesthetic in `ggplot()`.
+We have essentially already made this plot in the last post. In our model we are regressing newborn birthweight on maternal age and smoking status, and if you recall we managed the visualisation of our second predictor (smoking status) by assigning it to the **colour** aesthetic in `ggplot()`.
 
 A couple of notes: In this and all subsequent models I will specify interaction terms between all predictors just to make the output a little more interesting (otherwise you will only see parallel regression lines). Don't get hung up on this - maintain focus on the plotting devices that I will discuss. I have also converted categorical variables to factors in advance, rather than on the fly (as in the last post). This just makes some aspects of the plotting (especially labelling) easier.
 
@@ -131,7 +131,7 @@ ggplot(data = newdf, aes(x = age, y = pred, color = smoke)) +
 
 # Five Predictors
 
-Now we're getting to the limits of what I think is possible. And honestly, I think even this is potentially too much in terms information overload - there is a fine line between visualisations that are pleasantly informative and those that are just confusing. But, for the sake of the exercise, this is one way that I'm aware of that you could incorporate the plotting of predictions from a model with five predictors. In this case, we specify a 'graphical interaction' between two variables (here I have selected smoking status and history of hypertension), allowing those predictions to be distinguishable by not only color, but by specifying a second plotting aesthetic - linetype. Adjusted predictions for birthweight conditional on no history of hypertension are assigned a solid line and adjusted predictions for birthweight conditional on a history of hypertension are assigned a dashed line.
+Now we're getting to the limits of what I think is possible. And honestly, I think even this is potentially too much in terms information overload - there is a fine line between visualisations that are pleasantly informative and those that are just confusing. But, for the sake of the exercise, this is one way that I'm aware of that you could incorporate the plotting of predictions from a model with five predictors. In this case, we specify a 'graphical interaction' between two variables (here I have selected smoking status and history of hypertension), allowing those predictions to be distinguishable by not only color, but by specifying a second plotting aesthetic - **linetype**. Adjusted predictions for birthweight conditional on no history of hypertension are assigned a solid line and adjusted predictions for birthweight conditional on a history of hypertension are assigned a dashed line.
 
 ```{r}
 #| message: false
