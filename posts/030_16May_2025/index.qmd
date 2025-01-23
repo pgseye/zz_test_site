@@ -10,7 +10,11 @@ The examples that I've used so far in this series of posts on model prediction a
 
 Well, the answer is both yes and no (sorry!). While the coding fundamentals largely remain the same, there are some additional considerations in the visualisation of GLM's (as well as mixed and survival models which we will discuss in future posts) that you need to be aware of and better still, understand.
 
-So let's get to it. We'll again use the familiar `birthwt` dataset, this time to predict from, and visualise a logistic regression model. Our outcome variable (`low`) is now a dichotomised version of birthweight, with `1` assigned to values less than `2500` grams and `0` to values that are greater. In the first instance we'll assume a linear relationship of maternal age with the log-odds of low birthweight and our model may be written as:
+So let's get to it. We'll again use the familiar `birthwt` dataset, this time to predict from, and visualise a logistic regression model. Our outcome variable (`low`) is now a dichotomised version of birthweight, with `1` assigned to values less than `2500` grams and `0` to values that are greater.
+
+# Assuming Linear Relationship in the Log-Odds
+
+In the first instance we'll assume a linear relationship of maternal age with the log-odds of low birthweight and our model may be written as:
 
 `mod <-  glm(low ~ age, family = "binomial", data = birthwt)`
 
@@ -29,3 +33,121 @@ tbl_regression(mod, intercept = T)
 ```
 
 The model suggests that there is an \~ `0.05` reduction in the log-odds of being low birthweight with each year increase in maternal age.
+
+## Visualising Log-Odds of the Outcome
+
+But how do we visualise the relationship between maternal age and the log-odds of low birthweight? And then compare the model fit? Well, the first part of that is not as straightforward as creating a simple scatterplot of the association between a continuous covariate and a continuous outcome, but it's certainly not intractable. We need to do a little bit of legwork to get what we want, and in this case the simplest solution is to calculate the observed proportions of low birthweight aggregated across quantiles of maternal age, then convert those proportions to log-odds using the `qlogis()` function. The code to do this is shown below.
+
+```{r}
+# Categorise maternal age into 5 quantiles (could make this more or less)
+birthwt <- birthwt |>
+    mutate(age_5 = cut_number(age, 5))
+# Proportion of women with low birthweight babies in each quantile of maternal age
+grouped_dat <- birthwt |> 
+  group_by(age_5) |> 
+  count(low) |> 
+  pivot_wider(names_from = low,
+              values_from = n) |> 
+  mutate(obs_props = `1`/(`0` + `1`),
+         obs_logodds = qlogis(obs_props))
+# Take the middle age of each quantile range and bind to data
+vec = c(16.5, 20, 22.5, 26, 36.5)
+grouped_dat <-  cbind("age_5_mid" = vec, grouped_dat)
+```
+
+We can then plot that data as:
+
+```{r}
+ggplot(data = grouped_dat, aes(x = age_5_mid, y = obs_logodds)) +
+  geom_point(size = 3) +
+  scale_y_continuous(limits = c(-2, 0), breaks = seq(-2, 0, by = 0.2)) + 
+  scale_x_continuous(limits = c(15, 45), breaks = seq(15, 45, by = 5)) +
+  xlab("Maternal Age") + ylab("Log-odds of Low Birthweight") +
+  theme_bw(base_size = 20)
+```
+
+And superimpose the model predictions as:
+
+```{r}
+newdf <-  expand.grid(age = seq(15, 45, by = 5))
+newdf <-  newdf |> 
+    mutate(pred_logodds = predict(mod, newdata = newdf))
+ggplot(data = grouped_dat, aes(x = age_5_mid, y = obs_logodds)) +
+  geom_point(size = 3) +
+  geom_line(data = newdf, aes(x = age, y = pred_logodds)) +
+  scale_y_continuous(limits = c(-2, 0), breaks = seq(-2, 0, by = 0.2)) + 
+  scale_x_continuous(limits = c(15, 45), breaks = seq(15, 45, by = 5)) +
+  xlab("Maternal Age (yrs)") + ylab("Predicted Log-odds of Low Birthweight") +
+  theme_bw(base_size = 20)
+```
+
+Let's recap what we have done, and why, here. We've taken the **observed** proportions of low birthweight babies, converted those values to equivalent **observed** log-odds and plotted those alongside the model **predicted** log-odds as a visual aid to assess model fit.  Now, I'm not suggesting that this is something you do every time you fit a logistic regression model, but it gives you some idea of the basis in the model fitting - which is always in the log-odds of the outcome. And in its default state, this assumes a linear association of the covariate with that outcome form.
+
+## Visualising Probability of the Outcome
+
+I would like to point out at this stage that it's not much extra work to plot the **predicted** probabilities (of low birthweight) - the outcome that you are as a general rule, more interested in knowing about. We already calculated the **observed** proportions, so the only small tweak we now need to make in predicting from our model to ensure we are generating **predicted** probabilities, is to include `type = "response"` in our prediction call:
+
+```{r}
+newdf <-  expand.grid(age = seq(15, 45, by = 5))
+newdf <-  newdf |> 
+    mutate(pred_probs = predict(mod, newdata = newdf, type = "response"))
+ggplot(data = grouped_dat, aes(x = age_5_mid, y = obs_props)) +
+  geom_point(size = 3) +
+  geom_line(data = newdf, aes(x = age, y = pred_probs)) +
+  scale_y_continuous(limits = c(0, 1), breaks = seq(0, 1, by = 0.2)) + 
+  scale_x_continuous(limits = c(15, 45), breaks = seq(15, 45, by = 5)) +
+  xlab("Maternal Age (yrs)") + ylab("Predicted Probability of Low Birthweight") +
+  theme_bw(base_size = 20)
+```
+
+Note that in contrast to the (assumed linear) log-odds, the association between a continuous covariate and the predicted probability is now **expected** to be non-linear.
+
+# Allowing Non-Linear Relationship in the Log-Odds
+
+Let us now repeat all of those steps but this time relaxing the linearity assumption of maternal age with the log-odds of having a low-birthweight baby. We can do that by simply specifying a restricted cubic spline term on maternal age - our new model then becomes:
+
+`mod2 <-  glm(low ~ ns(age,3), family = "binomial", data = birthwt)`
+
+```{r}
+# Model
+mod2 <-  glm(low ~ ns(age,3), family = "binomial", data = subset(birthwt, age < 40))
+tbl_regression(mod2, intercept = T)
+```
+
+## Visualising Log-Odds of the Outcome
+
+```{r}
+#| message: false
+#| warning: false
+newdf2 <-  expand.grid(age = seq(15, 45, by = 0.5))
+newdf2 <-  newdf2 |> 
+    mutate(pred_logodds = predict(mod2, newdata = newdf2))
+ggplot(data = grouped_dat, aes(x = age_5_mid, y = obs_logodds)) +
+  geom_point(size = 3) +
+  geom_line(data = newdf2, aes(x = age, y = pred_logodds)) +
+  scale_y_continuous(limits = c(-2, 0), breaks = seq(-2, 0, by = 0.2)) + 
+  scale_x_continuous(limits = c(15, 45), breaks = seq(15, 45, by = 5)) +
+  xlab("Maternal Age (yrs)") + ylab("Predicted Log-odds of Low Birthweight") +
+  theme_bw(base_size = 20)
+```
+
+## Visualising Probability of the Outcome
+
+```{r}
+#| message: false
+#| warning: false
+newdf2 <-  expand.grid(age = seq(15, 45, by = 0.5))
+newdf2 <-  newdf2 |> 
+    mutate(pred_probs = predict(mod2, newdata = newdf2, type = "response"))
+ggplot(data = grouped_dat, aes(x = age_5_mid, y = obs_props)) +
+  geom_point(size = 3) +
+  geom_line(data = newdf2, aes(x = age, y = pred_probs)) +
+  scale_y_continuous(limits = c(0, 1), breaks = seq(0, 1, by = 0.2)) + 
+  scale_x_continuous(limits = c(15, 45), breaks = seq(15, 45, by = 5)) +
+  xlab("Maternal Age (yrs)") + ylab("Predicted Probability of Low Birthweight") +
+  theme_bw(base_size = 20)
+```
+
+While this isn't exactly a confidence-inspiring fit, given the nature of the observed data, it illustrates the idea of visualising a non-linear log-odds model fit (in fact, a likelihood ratio test of the two models suggests the spline term doesn’t add any statistical value and can be removed). The takeaway here is to note that visualising the non-linear functional form is no more difficult than the default linear case. Also take note that with the introduction of a spline term, **both the predicted log-odds and probabilities** no longer assume a linear association with the covariate of interest.
+
+That's probably enough on this particular topic - I will hopefully see you again in two weeks for more prediction/visualisation tips.
