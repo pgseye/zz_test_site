@@ -1,0 +1,44 @@
+---
+title: "Model Prediction/Visualisation <br> 5. Linear Mixed Models (LMMs)"
+date: 2025-05-30
+categories: [code, concept, modelling, visualisation]
+# image: "images/plot.png"
+description: "Visualising Fixed vs Random Effects."
+---
+
+
+
+
+In this example of the latter use-case, we are going to use data from a built-in dataset in the `lme4` package. The `sleepstudy` data looks at reaction times over time in sleep-deprived individuals. For the sake of the exercise we will fit a mixed model with reaction time (ms) as the outcome, time (days) as a fixed-effect and time (days) and individual as random-effects. So this is a random slopes model allowing the 'effect' of sleep-deprivation on reaction time to vary over time for each individual. We fit the model and view a few lines of the dataframe which now contains the fixed (`mod_pred_fix`) and random (`mod_pred_ran`) predictions.
+
+```{r}
+#| message: false
+library(lme4)
+library(ggplot2)
+library(gtsummary)
+# Load data
+data("sleepstudy")
+# Model
+mod <- lmer(Reaction ~ Days + (Days | Subject), data = sleepstudy)
+# Predict
+sleepstudy$mod_pred_fix <- predict(mod, re.form = NA) # predict fixed effects
+sleepstudy$mod_pred_ran <- predict(mod) # predict random effects
+# View data
+head(sleepstudy, 10)
+```
+
+We can then plot the data interactively by simply 'wrapping' the ggplot object in a `plotly` call. If you hover over a data point you can easily identify which individual it belongs to as well as the observed reaction time. Similarly, by hovering over one of the random slopes you will see the predicted reaction time and the individual that corresponds to.
+
+You won't want to do this for every plot you make but it does provide a simple way to make some of your more complex visualisations using ggplot that bit more useful (and fun!) in helping to understand your data.
+
+```{r}
+# Plot
+p <- sleepstudy |>
+    ggplot(aes(x = Days, y = Reaction, color = factor(Subject))) +
+    geom_line(aes(x = Days, y = mod_pred_ran)) +
+    geom_line(aes(x = Days, y = mod_pred_fix), linewidth = 2, color = "blue") +
+    geom_point(alpha = 0.5) +
+    xlab("Time (days)") + ylab("Reaction Time (ms)") +
+    guides(color = "none") +
+    theme_bw(base_size = 15)
+```

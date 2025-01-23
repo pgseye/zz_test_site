@@ -81,7 +81,7 @@ ggplot(data = grouped_dat, aes(x = age_5_mid, y = obs_logodds)) +
   theme_bw(base_size = 20)
 ```
 
-Let's recap what we have done, and why, here. We've taken the **observed** proportions of low birthweight babies, converted those values to equivalent **observed** log-odds and plotted those alongside the model **predicted** log-odds as a visual aid to assess model fit.  Now, I'm not suggesting that this is something you do every time you fit a logistic regression model, but it gives you some idea of the basis in the model fitting - which is always in the log-odds of the outcome. And in its default state, this assumes a linear association of the covariate with that outcome form.
+Let's recap what we have done, and why, here. We've taken the **observed** proportions of low birthweight babies, converted those values to equivalent **observed** log-odds and plotted those alongside the model **predicted** log-odds as a visual aid to assess model fit. Now, I'm not suggesting that this is something you do every time you fit a logistic regression model, but it gives you some idea of the basis in the model fitting - which is always in the log-odds of the outcome. And in its default state, this assumes a linear association of the covariate with that outcome form.
 
 ## Visualising Probability of the Outcome
 
@@ -104,13 +104,13 @@ Note that in contrast to the (assumed linear) log-odds, the association between 
 
 # Allowing Non-Linear Relationship in the Log-Odds
 
-Let us now repeat all of those steps but this time relaxing the linearity assumption of maternal age with the log-odds of having a low-birthweight baby. We can do that by simply specifying a restricted cubic spline term on maternal age - our new model then becomes:
+Let us now repeat all of those steps but this time relaxing the linearity assumption of maternal age with the log-odds of having a low-birthweight baby. We can do that by simply fitting a restricted cubic spline term on maternal age - given the few data points, we won't go too heavy-handed on the wiggliness and risk over-fitting, by specifying `df = 2` (i.e. one internal knot) instead of the usual `df = 3`. Our new model then becomes:
 
-`mod2 <-  glm(low ~ ns(age,3), family = "binomial", data = birthwt)`
+`mod2 <-  glm(low ~ ns(age, 2), family = "binomial", data = birthwt)`
 
 ```{r}
 # Model
-mod2 <-  glm(low ~ ns(age,3), family = "binomial", data = subset(birthwt, age < 40))
+mod2 <-  glm(low ~ ns(age,2), family = "binomial", data = subset(birthwt, age < 40))
 tbl_regression(mod2, intercept = T)
 ```
 
@@ -148,6 +148,6 @@ ggplot(data = grouped_dat, aes(x = age_5_mid, y = obs_props)) +
   theme_bw(base_size = 20)
 ```
 
-While this isn't exactly a confidence-inspiring fit, given the nature of the observed data, it illustrates the idea of visualising a non-linear log-odds model fit (in fact, a likelihood ratio test of the two models suggests the spline term doesn’t add any statistical value and can be removed). The takeaway here is to note that visualising the non-linear functional form is no more difficult than the default linear case. Also take note that with the introduction of a spline term, **both the predicted log-odds and probabilities** no longer assume a linear association with the covariate of interest.
+A likelihood ratio test of the two models suggests the spline term doesn’t actually add any statistical value and can be removed. In any case, the takeaway here is to note that visualising the non-linear functional form is no more difficult than the default linear case. Also take note that with the introduction of a spline term, **both the predicted log-odds and probabilities** no longer assume a linear association with the covariate of interest.
 
 That's probably enough on this particular topic - I will hopefully see you again in two weeks for more prediction/visualisation tips.
