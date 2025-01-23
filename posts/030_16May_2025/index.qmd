@@ -2,7 +2,7 @@
 title: "Model Prediction/Visualisation <br> 4. Generalised Linear Models (GLMs)"
 date: 2025-05-16
 categories: [code, concept, modelling, visualisation]
-#image: "images/plot.png"
+image: "images/plot.png"
 description: "Know what you are predicting when using GLMs."
 ---
 
