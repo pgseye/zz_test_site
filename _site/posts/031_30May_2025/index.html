@@ -147,7 +147,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <!-- sidebar -->
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#predicting" id="toc-predicting" class="nav-link active" data-scroll-target="#predicting"><span class="header-section-number">1</span> Predicting</a></li>
+  <li><a href="#one-plot-visualisation" id="toc-one-plot-visualisation" class="nav-link" data-scroll-target="#one-plot-visualisation"><span class="header-section-number">2</span> One-Plot Visualisation</a></li>
+  <li><a href="#multi-plot-visualisation" id="toc-multi-plot-visualisation" class="nav-link" data-scroll-target="#multi-plot-visualisation"><span class="header-section-number">3</span> Multi-Plot Visualisation</a></li>
+  <li><a href="#some-background-stuff" id="toc-some-background-stuff" class="nav-link" data-scroll-target="#some-background-stuff"><span class="header-section-number">4</span> Some Background Stuff</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -188,7 +197,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p>In this example of the latter use-case, we are going to use data from a built-in dataset in the <code>lme4</code> package. The <code>sleepstudy</code> data looks at reaction times over time in sleep-deprived individuals. For the sake of the exercise we will fit a mixed model with reaction time (ms) as the outcome, time (days) as a fixed-effect and time (days) and individual as random-effects. So this is a random slopes model allowing the ‘effect’ of sleep-deprivation on reaction time to vary over time for each individual. We fit the model and view a few lines of the dataframe which now contains the fixed (<code>mod_pred_fix</code>) and random (<code>mod_pred_ran</code>) predictions.</p>
+<p>This week we are continuing our series on predicting and visualising models in <code>R</code> by focussing on linear mixed models (LMM’s). Like GLM’s, the fundamentals of the process remain the same bar a few tweaks specific to LMM’s that you need to be aware of. Here we are back to dealing with a continuous covariate and outcome - the new development to note is the distinction between <a href="https://www.theanalysisfactor.com/specifying-fixed-and-random-factors-in-mixed-models/">fixed and random effects</a> and how to handle each appropriately in the <code>predict()</code> function.</p>
+<section id="predicting" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Predicting</h1>
+<p>To illustrate these ideas we’ll revisit the <code>sleepstudy</code> dataset which is available in the <code>lme4</code> package (I have used this for a similar purpose in one of my <a href="https://msni-stats-tips.netlify.app/posts/004_02feb_2024/">previous posts</a>). The <code>sleepstudy</code> data looks at reaction times over time in sleep-deprived individuals. For the sake of the exercise we will fit a mixed model with reaction time (ms) as the outcome, time (days) as a fixed-effect and time (days) and individual as random-effects. So this is a random slopes model allowing the ‘effect’ of sleep-deprivation on reaction time to vary over time for each individual. We fit the model and view a few lines of the dataframe which now contains the fixed (<code>mod_pred_fix</code>) and random (<code>mod_pred_ran</code>) predictions. Obtaining the predictions is very easy - we create the two new variables by simply calling:</p>
+<p><code>predict(mod)</code> for the random-effects, and:</p>
+<p><code>predict(mod, re.form = NA)</code> for the fixed-effects.</p>
+<p>Note the <code>re.form = NA</code> sets all random-effects to <code>0</code>.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -293,26 +308,183 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-<p>We can then plot the data interactively by simply ‘wrapping’ the ggplot object in a <code>plotly</code> call. If you hover over a data point you can easily identify which individual it belongs to as well as the observed reaction time. Similarly, by hovering over one of the random slopes you will see the predicted reaction time and the individual that corresponds to.</p>
-<p>You won’t want to do this for every plot you make but it does provide a simple way to make some of your more complex visualisations using ggplot that bit more useful (and fun!) in helping to understand your data.</p>
+<p><br></p>
+<p>So, <code>mod_pred_fix</code> represents the <strong>group-averaged</strong> prediction of <code>reaction time</code> (outcome) as a function of time (covariate) and similarly <code>mod_pred_ran</code> represents the <strong>individual</strong> predictions of the same.</p>
+</section>
+<section id="one-plot-visualisation" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> One-Plot Visualisation</h1>
+<p>Plotting the results is then quite straightforward with <code>ggplot2</code>:</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="co"># Plot</span></span>
-<span id="cb2-2"><a href="#cb2-2"></a>p <span class="ot">&lt;-</span> sleepstudy <span class="sc">|&gt;</span></span>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="co"># Plot all data</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a>sleepstudy <span class="sc">|&gt;</span></span>
 <span id="cb2-3"><a href="#cb2-3"></a>    <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> Days, <span class="at">y =</span> Reaction, <span class="at">color =</span> <span class="fu">factor</span>(Subject))) <span class="sc">+</span></span>
 <span id="cb2-4"><a href="#cb2-4"></a>    <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x =</span> Days, <span class="at">y =</span> mod_pred_ran)) <span class="sc">+</span></span>
 <span id="cb2-5"><a href="#cb2-5"></a>    <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x =</span> Days, <span class="at">y =</span> mod_pred_fix), <span class="at">linewidth =</span> <span class="dv">2</span>, <span class="at">color =</span> <span class="st">"blue"</span>) <span class="sc">+</span></span>
-<span id="cb2-6"><a href="#cb2-6"></a>    <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
-<span id="cb2-7"><a href="#cb2-7"></a>    <span class="fu">xlab</span>(<span class="st">"Time (days)"</span>) <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">"Reaction Time (ms)"</span>) <span class="sc">+</span></span>
-<span id="cb2-8"><a href="#cb2-8"></a>    <span class="fu">guides</span>(<span class="at">color =</span> <span class="st">"none"</span>) <span class="sc">+</span></span>
-<span id="cb2-9"><a href="#cb2-9"></a>    <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">15</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb2-6"><a href="#cb2-6"></a>    <span class="fu">scale_y_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">200</span>, <span class="dv">500</span>), <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">200</span>, <span class="dv">500</span>, <span class="at">by =</span> <span class="dv">50</span>)) <span class="sc">+</span></span>
+<span id="cb2-7"><a href="#cb2-7"></a>    <span class="fu">scale_x_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">9</span>), <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">9</span>, <span class="at">by =</span> <span class="dv">1</span>)) <span class="sc">+</span></span>
+<span id="cb2-8"><a href="#cb2-8"></a>    <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb2-9"><a href="#cb2-9"></a>    <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Reaction Time ~ Days of Sleep Deprivation"</span>) <span class="sc">+</span> <span class="fu">xlab</span>(<span class="st">"Time (days)"</span>) <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">"Average Reaction Time (ms)"</span>) <span class="sc">+</span></span>
+<span id="cb2-10"><a href="#cb2-10"></a>    <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">15</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="1152"></p>
+</figure>
 </div>
+</div>
+</div>
+</section>
+<section id="multi-plot-visualisation" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Multi-Plot Visualisation</h1>
+<p>The above plot is good for showing all the data at once, but can get a little bit confusing if you are interested in looking more closely at any specific individual trajectories. If that is in fact the case, an alternative plot representation is to facet on individuals, like so:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="co"># Plot - facet on individual</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a>sleepstudy <span class="sc">|&gt;</span></span>
+<span id="cb3-3"><a href="#cb3-3"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> Days, <span class="at">y =</span> Reaction)) <span class="sc">+</span></span>
+<span id="cb3-4"><a href="#cb3-4"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x =</span> Days, <span class="at">y =</span> mod_pred_ran), <span class="at">linewidth =</span> <span class="dv">1</span>, <span class="at">color =</span> <span class="st">"green"</span>) <span class="sc">+</span></span>
+<span id="cb3-5"><a href="#cb3-5"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x =</span> Days, <span class="at">y =</span> mod_pred_fix), <span class="at">linewidth =</span> <span class="dv">1</span>, <span class="at">color =</span> <span class="st">"blue"</span>) <span class="sc">+</span></span>
+<span id="cb3-6"><a href="#cb3-6"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">200</span>, <span class="dv">500</span>), <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">200</span>, <span class="dv">500</span>, <span class="at">by =</span> <span class="dv">100</span>)) <span class="sc">+</span></span>
+<span id="cb3-7"><a href="#cb3-7"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">9</span>), <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">9</span>, <span class="at">by =</span> <span class="dv">2</span>)) <span class="sc">+</span></span>
+<span id="cb3-8"><a href="#cb3-8"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb3-9"><a href="#cb3-9"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>Subject) <span class="sc">+</span></span>
+<span id="cb3-10"><a href="#cb3-10"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Time (Days)"</span>,</span>
+<span id="cb3-11"><a href="#cb3-11"></a>       <span class="at">y =</span> <span class="st">"Average Reaction Time (ms)"</span>,</span>
+<span id="cb3-12"><a href="#cb3-12"></a>       <span class="at">title =</span> <span class="st">"Reaction Time ~ Days of Sleep Deprivation"</span>,</span>
+<span id="cb3-13"><a href="#cb3-13"></a>       <span class="at">subtitle =</span> <span class="st">"Blue = Fixed Effects Prediction | Green = Random Effects Prediction"</span>) <span class="sc">+</span></span>
+<span id="cb3-14"><a href="#cb3-14"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">15</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="1152"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>It’s now much easier to see the individual trajectories and how they compare to that of the group average.</p>
+</section>
+<section id="some-background-stuff" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Some Background Stuff</h1>
+<p>While not essential to producing a visualisation of the model predictions, taking a little detour to understand in more detail how we actually arrived at the fixed- and random-effect predictions is a worthwhile exercise and one which can aid in building your mixed-modelling intuition.</p>
+<p>Let’s first inspect an unprettified summary of the model output:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="fu">summary</span>(mod)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Linear mixed model fit by REML ['lmerMod']
+Formula: Reaction ~ Days + (Days | Subject)
+   Data: sleepstudy
+
+REML criterion at convergence: 1743.6
+
+Scaled residuals: 
+    Min      1Q  Median      3Q     Max 
+-3.9536 -0.4634  0.0231  0.4634  5.1793 
+
+Random effects:
+ Groups   Name        Variance Std.Dev. Corr
+ Subject  (Intercept) 612.10   24.741       
+          Days         35.07    5.922   0.07
+ Residual             654.94   25.592       
+Number of obs: 180, groups:  Subject, 18
+
+Fixed effects:
+            Estimate Std. Error t value
+(Intercept)  251.405      6.825  36.838
+Days          10.467      1.546   6.771
+
+Correlation of Fixed Effects:
+     (Intr)
+Days -0.138</code></pre>
+</div>
+</div>
+<p>We obtain the fixed-effects as an <code>Intercept</code> and a coefficient for time (<code>Days</code>) and we can interpret that as an average reaction time of <code>251.4 ms</code> at baseline and an average increase of <code>10.5 ms</code> in reaction time for the passing of each day. Note that the random-effects are not as easily interpretable in their reported form which is an estimate of the variance of the distribution of individual reaction times, not average differences as for fixed-effects.</p>
+<p>A shortcut to obtain the fixed-effects of an <code>lmer</code> class model in <code>R</code> is:</p>
+<p><code>fixef(mod)</code></p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a><span class="fu">fixef</span>(mod)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>(Intercept)        Days 
+  251.40510    10.46729 </code></pre>
+</div>
+</div>
+<p>and similarly for the random-effects:</p>
+<p><code>ranef(mod)</code></p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a><span class="fu">ranef</span>(mod)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>$Subject
+    (Intercept)        Days
+308   2.2585509   9.1989758
+309 -40.3987381  -8.6196806
+310 -38.9604090  -5.4488565
+330  23.6906196  -4.8143503
+331  22.2603126  -3.0699116
+332   9.0395679  -0.2721770
+333  16.8405086  -0.2236361
+334  -7.2326151   1.0745816
+335  -0.3336684 -10.7521652
+337  34.8904868   8.6282652
+349 -25.2102286   1.1734322
+350 -13.0700342   6.6142178
+351   4.5778642  -3.0152621
+352  20.8636782   3.5360011
+369   3.2754656   0.8722149
+370 -25.6129993   4.8224850
+371   0.8070461  -0.9881562
+372  12.3145921   1.2840221
+
+with conditional variances for "Subject" </code></pre>
+</div>
+</div>
+<p>So what do the random-effects actually tell us? In a nutshell, these represent the individual differences from the fixed-effects values.</p>
+<p>Let’s consider <code>Subject 308</code> as an example to illustrate this. If we are interested in the predicted baseline reaction time for this individual, all we need to do is add the fixed- and random-effects intercepts values - <code>251.405 + 2.259 = 253.664</code> ms (we can ignore the time ‘effect’ which is <code>0</code> by definition at baseline). By comparison, we can also easily obtain that predicted value with the following code:</p>
+<p><code>predict(mod, newdata = data.frame(days = 0, Subject = 308), re.form = ~(Days|Subject))</code></p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a><span class="fu">predict</span>(mod, <span class="at">newdata =</span> <span class="fu">data.frame</span>(<span class="at">Days =</span> <span class="dv">0</span>, <span class="at">Subject =</span> <span class="dv">308</span>), <span class="at">re.form =</span> <span class="sc">~</span>(Days<span class="sc">|</span>Subject))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>       1 
+253.6637 </code></pre>
+</div>
+</div>
+<p>It’s a little bit more complex to manually calculate the predicted value at any other time point because the ‘effect’ of time is no longer ignorable and we just need to remember the basics of our regression equation. Say, we want to calculate the reaction time for <code>Subject 308</code> at <code>5</code> days. A simple way to do this is to first work out the fixed-effect prediction at <code>5</code> days and then add the random-effect prediction to it.</p>
+<p>The fixed-effect prediction is just the intercept value plus the coefficient for time multiplied by the number of days (either from the model summary or from <code>fixef()</code>). In numbers: <code>251.405 + (10.467 * 5) = 303.74</code>. This gives the predicted group-average reaction time at <code>5</code> days.</p>
+<p>The random-effect prediction is the same but from <code>ranef()</code> and specific to the individual. In numbers: <code>2.259 + (9.198 * 5) = 48.249</code>. This gives the <strong>additional</strong> (to the group-average) reaction time specific to the individual.</p>
+<p>We can then add those two values to obtain the predicted reaction time for <code>Subject 308</code> at <code>5</code> days - i.e.&nbsp;<code>303.74 + 48.249 = 351.989</code>. If you don’t want to manually calculate this, then you can use:</p>
+<p><code>predict(mod, newdata = data.frame(days = 5, Subject = 308), re.form = ~(Days|Subject))</code></p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a><span class="fu">predict</span>(mod, <span class="at">newdata =</span> <span class="fu">data.frame</span>(<span class="at">Days =</span> <span class="dv">5</span>, <span class="at">Subject =</span> <span class="dv">308</span>), <span class="at">re.form =</span> <span class="sc">~</span>(Days<span class="sc">|</span>Subject))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>      1 
+351.995 </code></pre>
+</div>
+</div>
+<p>Which is essentially the same, bar rounding error.</p>
+<p>And that brings us to the end of this post. Hopefully that gives you some idea as to how random effects and their predictions are calculated. In the next post, we will finish our series on model prediction and visualisation be taking a look at the Cox model. Until then…</p>
 
 
 <!-- -->
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -901,50 +1073,146 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <input type="hidden" id="giscus-base-theme" value="light">
 <input type="hidden" id="giscus-alt-theme" value="dark"><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
-<div class="sourceCode" id="cb3" data-shortcodes="false"><pre class="sourceCode numberSource markdown number-lines code-with-copy"><code class="sourceCode markdown"><span id="cb3-1"><a href="#cb3-1"></a><span class="co">---</span></span>
-<span id="cb3-2"><a href="#cb3-2"></a><span class="an">title:</span><span class="co"> "Model Prediction/Visualisation &lt;br&gt; 5. Linear Mixed Models (LMMs)"</span></span>
-<span id="cb3-3"><a href="#cb3-3"></a><span class="an">date:</span><span class="co"> 2025-05-30</span></span>
-<span id="cb3-4"><a href="#cb3-4"></a><span class="an">categories:</span><span class="co"> [code, concept, modelling, visualisation]</span></span>
-<span id="cb3-5"><a href="#cb3-5"></a><span class="co"># image: "images/plot.png"</span></span>
-<span id="cb3-6"><a href="#cb3-6"></a><span class="an">description:</span><span class="co"> "Visualising Fixed vs Random Effects."</span></span>
-<span id="cb3-7"><a href="#cb3-7"></a><span class="co">---</span></span>
-<span id="cb3-8"><a href="#cb3-8"></a></span>
-<span id="cb3-9"><a href="#cb3-9"></a></span>
-<span id="cb3-10"><a href="#cb3-10"></a></span>
-<span id="cb3-11"><a href="#cb3-11"></a></span>
-<span id="cb3-12"><a href="#cb3-12"></a>In this example of the latter use-case, we are going to use data from a built-in dataset in the <span class="in">`lme4`</span> package. The <span class="in">`sleepstudy`</span> data looks at reaction times over time in sleep-deprived individuals. For the sake of the exercise we will fit a mixed model with reaction time (ms) as the outcome, time (days) as a fixed-effect and time (days) and individual as random-effects. So this is a random slopes model allowing the 'effect' of sleep-deprivation on reaction time to vary over time for each individual. We fit the model and view a few lines of the dataframe which now contains the fixed (<span class="in">`mod_pred_fix`</span>) and random (<span class="in">`mod_pred_ran`</span>) predictions.</span>
-<span id="cb3-13"><a href="#cb3-13"></a></span>
-<span id="cb3-16"><a href="#cb3-16"></a><span class="in">```{r}</span></span>
-<span id="cb3-17"><a href="#cb3-17"></a><span class="co">#| message: false</span></span>
-<span id="cb3-18"><a href="#cb3-18"></a><span class="fu">library</span>(lme4)</span>
-<span id="cb3-19"><a href="#cb3-19"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb3-20"><a href="#cb3-20"></a><span class="fu">library</span>(gtsummary)</span>
-<span id="cb3-21"><a href="#cb3-21"></a><span class="co"># Load data</span></span>
-<span id="cb3-22"><a href="#cb3-22"></a><span class="fu">data</span>(<span class="st">"sleepstudy"</span>)</span>
-<span id="cb3-23"><a href="#cb3-23"></a><span class="co"># Model</span></span>
-<span id="cb3-24"><a href="#cb3-24"></a>mod <span class="ot">&lt;-</span> <span class="fu">lmer</span>(Reaction <span class="sc">~</span> Days <span class="sc">+</span> (Days <span class="sc">|</span> Subject), <span class="at">data =</span> sleepstudy)</span>
-<span id="cb3-25"><a href="#cb3-25"></a><span class="co"># Predict</span></span>
-<span id="cb3-26"><a href="#cb3-26"></a>sleepstudy<span class="sc">$</span>mod_pred_fix <span class="ot">&lt;-</span> <span class="fu">predict</span>(mod, <span class="at">re.form =</span> <span class="cn">NA</span>) <span class="co"># predict fixed effects</span></span>
-<span id="cb3-27"><a href="#cb3-27"></a>sleepstudy<span class="sc">$</span>mod_pred_ran <span class="ot">&lt;-</span> <span class="fu">predict</span>(mod) <span class="co"># predict random effects</span></span>
-<span id="cb3-28"><a href="#cb3-28"></a><span class="co"># View data</span></span>
-<span id="cb3-29"><a href="#cb3-29"></a><span class="fu">head</span>(sleepstudy, <span class="dv">10</span>)</span>
-<span id="cb3-30"><a href="#cb3-30"></a><span class="in">```</span></span>
-<span id="cb3-31"><a href="#cb3-31"></a></span>
-<span id="cb3-32"><a href="#cb3-32"></a>We can then plot the data interactively by simply 'wrapping' the ggplot object in a <span class="in">`plotly`</span> call. If you hover over a data point you can easily identify which individual it belongs to as well as the observed reaction time. Similarly, by hovering over one of the random slopes you will see the predicted reaction time and the individual that corresponds to.</span>
-<span id="cb3-33"><a href="#cb3-33"></a></span>
-<span id="cb3-34"><a href="#cb3-34"></a>You won't want to do this for every plot you make but it does provide a simple way to make some of your more complex visualisations using ggplot that bit more useful (and fun!) in helping to understand your data.</span>
-<span id="cb3-35"><a href="#cb3-35"></a></span>
-<span id="cb3-38"><a href="#cb3-38"></a><span class="in">```{r}</span></span>
-<span id="cb3-39"><a href="#cb3-39"></a><span class="co"># Plot</span></span>
-<span id="cb3-40"><a href="#cb3-40"></a>p <span class="ot">&lt;-</span> sleepstudy <span class="sc">|&gt;</span></span>
-<span id="cb3-41"><a href="#cb3-41"></a>    <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> Days, <span class="at">y =</span> Reaction, <span class="at">color =</span> <span class="fu">factor</span>(Subject))) <span class="sc">+</span></span>
-<span id="cb3-42"><a href="#cb3-42"></a>    <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x =</span> Days, <span class="at">y =</span> mod_pred_ran)) <span class="sc">+</span></span>
-<span id="cb3-43"><a href="#cb3-43"></a>    <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x =</span> Days, <span class="at">y =</span> mod_pred_fix), <span class="at">linewidth =</span> <span class="dv">2</span>, <span class="at">color =</span> <span class="st">"blue"</span>) <span class="sc">+</span></span>
-<span id="cb3-44"><a href="#cb3-44"></a>    <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
-<span id="cb3-45"><a href="#cb3-45"></a>    <span class="fu">xlab</span>(<span class="st">"Time (days)"</span>) <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">"Reaction Time (ms)"</span>) <span class="sc">+</span></span>
-<span id="cb3-46"><a href="#cb3-46"></a>    <span class="fu">guides</span>(<span class="at">color =</span> <span class="st">"none"</span>) <span class="sc">+</span></span>
-<span id="cb3-47"><a href="#cb3-47"></a>    <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">15</span>)</span>
-<span id="cb3-48"><a href="#cb3-48"></a><span class="in">```</span></span>
+<div class="sourceCode" id="cb14" data-shortcodes="false"><pre class="sourceCode numberSource markdown number-lines code-with-copy"><code class="sourceCode markdown"><span id="cb14-1"><a href="#cb14-1"></a><span class="co">---</span></span>
+<span id="cb14-2"><a href="#cb14-2"></a><span class="an">title:</span><span class="co"> "Model Prediction/Visualisation &lt;br&gt; 5. Linear Mixed Models (LMMs)"</span></span>
+<span id="cb14-3"><a href="#cb14-3"></a><span class="an">date:</span><span class="co"> 2025-05-30</span></span>
+<span id="cb14-4"><a href="#cb14-4"></a><span class="an">categories:</span><span class="co"> [code, concept, modelling, visualisation]</span></span>
+<span id="cb14-5"><a href="#cb14-5"></a><span class="co"># image: "images/plot.png"</span></span>
+<span id="cb14-6"><a href="#cb14-6"></a><span class="an">description:</span><span class="co"> "Visualising Fixed vs Random Effects."</span></span>
+<span id="cb14-7"><a href="#cb14-7"></a><span class="co">---</span></span>
+<span id="cb14-8"><a href="#cb14-8"></a></span>
+<span id="cb14-9"><a href="#cb14-9"></a>This week we are continuing our series on predicting and visualising models in <span class="in">`R`</span> by focussing on linear mixed models (LMM's). Like GLM's, the fundamentals of the process remain the same bar a few tweaks specific to LMM's that you need to be aware of. Here we are back to dealing with a continuous covariate and outcome - the new development to note is the distinction between <span class="co">[</span><span class="ot">fixed and random effects</span><span class="co">](https://www.theanalysisfactor.com/specifying-fixed-and-random-factors-in-mixed-models/)</span> and how to handle each appropriately in the <span class="in">`predict()`</span> function.</span>
+<span id="cb14-10"><a href="#cb14-10"></a></span>
+<span id="cb14-11"><a href="#cb14-11"></a><span class="fu"># Predicting</span></span>
+<span id="cb14-12"><a href="#cb14-12"></a></span>
+<span id="cb14-13"><a href="#cb14-13"></a>To illustrate these ideas we'll revisit the <span class="in">`sleepstudy`</span> dataset which is available in the <span class="in">`lme4`</span> package (I have used this for a similar purpose in one of my <span class="co">[</span><span class="ot">previous posts</span><span class="co">](https://msni-stats-tips.netlify.app/posts/004_02feb_2024/)</span>). The <span class="in">`sleepstudy`</span> data looks at reaction times over time in sleep-deprived individuals. For the sake of the exercise we will fit a mixed model with reaction time (ms) as the outcome, time (days) as a fixed-effect and time (days) and individual as random-effects. So this is a random slopes model allowing the 'effect' of sleep-deprivation on reaction time to vary over time for each individual. We fit the model and view a few lines of the dataframe which now contains the fixed (<span class="in">`mod_pred_fix`</span>) and random (<span class="in">`mod_pred_ran`</span>) predictions. Obtaining the predictions is very easy - we create the two new variables by simply calling:</span>
+<span id="cb14-14"><a href="#cb14-14"></a></span>
+<span id="cb14-15"><a href="#cb14-15"></a><span class="in">`predict(mod)`</span> for the random-effects, and:</span>
+<span id="cb14-16"><a href="#cb14-16"></a></span>
+<span id="cb14-17"><a href="#cb14-17"></a><span class="in">`predict(mod, re.form = NA)`</span> for the fixed-effects.</span>
+<span id="cb14-18"><a href="#cb14-18"></a></span>
+<span id="cb14-19"><a href="#cb14-19"></a>Note the <span class="in">`re.form = NA`</span> sets all random-effects to <span class="in">`0`</span>.</span>
+<span id="cb14-20"><a href="#cb14-20"></a></span>
+<span id="cb14-23"><a href="#cb14-23"></a><span class="in">```{r}</span></span>
+<span id="cb14-24"><a href="#cb14-24"></a><span class="co">#| message: false</span></span>
+<span id="cb14-25"><a href="#cb14-25"></a><span class="fu">library</span>(lme4)</span>
+<span id="cb14-26"><a href="#cb14-26"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb14-27"><a href="#cb14-27"></a><span class="fu">library</span>(gtsummary)</span>
+<span id="cb14-28"><a href="#cb14-28"></a><span class="co"># Load data</span></span>
+<span id="cb14-29"><a href="#cb14-29"></a><span class="fu">data</span>(<span class="st">"sleepstudy"</span>)</span>
+<span id="cb14-30"><a href="#cb14-30"></a><span class="co"># Model</span></span>
+<span id="cb14-31"><a href="#cb14-31"></a>mod <span class="ot">&lt;-</span> <span class="fu">lmer</span>(Reaction <span class="sc">~</span> Days <span class="sc">+</span> (Days <span class="sc">|</span> Subject), <span class="at">data =</span> sleepstudy)</span>
+<span id="cb14-32"><a href="#cb14-32"></a><span class="co"># Predict</span></span>
+<span id="cb14-33"><a href="#cb14-33"></a>sleepstudy<span class="sc">$</span>mod_pred_fix <span class="ot">&lt;-</span> <span class="fu">predict</span>(mod, <span class="at">re.form =</span> <span class="cn">NA</span>) <span class="co"># predict fixed effects</span></span>
+<span id="cb14-34"><a href="#cb14-34"></a>sleepstudy<span class="sc">$</span>mod_pred_ran <span class="ot">&lt;-</span> <span class="fu">predict</span>(mod) <span class="co"># predict random effects</span></span>
+<span id="cb14-35"><a href="#cb14-35"></a><span class="co"># View data</span></span>
+<span id="cb14-36"><a href="#cb14-36"></a><span class="fu">head</span>(sleepstudy, <span class="dv">10</span>)</span>
+<span id="cb14-37"><a href="#cb14-37"></a><span class="in">```</span></span>
+<span id="cb14-38"><a href="#cb14-38"></a>&lt;br&gt;</span>
+<span id="cb14-39"><a href="#cb14-39"></a></span>
+<span id="cb14-40"><a href="#cb14-40"></a>So, <span class="in">`mod_pred_fix`</span> represents the **group-averaged** prediction of `reaction time` (outcome) as a function of time (covariate) and similarly `mod_pred_ran` represents the **individual** predictions of the same. </span>
+<span id="cb14-41"><a href="#cb14-41"></a></span>
+<span id="cb14-42"><a href="#cb14-42"></a><span class="fu"># One-Plot Visualisation</span></span>
+<span id="cb14-43"><a href="#cb14-43"></a></span>
+<span id="cb14-44"><a href="#cb14-44"></a>Plotting the results is then quite straightforward with <span class="in">`ggplot2`</span>:</span>
+<span id="cb14-45"><a href="#cb14-45"></a></span>
+<span id="cb14-48"><a href="#cb14-48"></a><span class="in">```{r}</span></span>
+<span id="cb14-49"><a href="#cb14-49"></a><span class="co">#| message: false</span></span>
+<span id="cb14-50"><a href="#cb14-50"></a><span class="co">#| warning: false</span></span>
+<span id="cb14-51"><a href="#cb14-51"></a><span class="co"># Plot all data</span></span>
+<span id="cb14-52"><a href="#cb14-52"></a>sleepstudy <span class="sc">|&gt;</span></span>
+<span id="cb14-53"><a href="#cb14-53"></a>    <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> Days, <span class="at">y =</span> Reaction, <span class="at">color =</span> <span class="fu">factor</span>(Subject))) <span class="sc">+</span></span>
+<span id="cb14-54"><a href="#cb14-54"></a>    <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x =</span> Days, <span class="at">y =</span> mod_pred_ran)) <span class="sc">+</span></span>
+<span id="cb14-55"><a href="#cb14-55"></a>    <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x =</span> Days, <span class="at">y =</span> mod_pred_fix), <span class="at">linewidth =</span> <span class="dv">2</span>, <span class="at">color =</span> <span class="st">"blue"</span>) <span class="sc">+</span></span>
+<span id="cb14-56"><a href="#cb14-56"></a>    <span class="fu">scale_y_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">200</span>, <span class="dv">500</span>), <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">200</span>, <span class="dv">500</span>, <span class="at">by =</span> <span class="dv">50</span>)) <span class="sc">+</span></span>
+<span id="cb14-57"><a href="#cb14-57"></a>    <span class="fu">scale_x_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">9</span>), <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">9</span>, <span class="at">by =</span> <span class="dv">1</span>)) <span class="sc">+</span></span>
+<span id="cb14-58"><a href="#cb14-58"></a>    <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb14-59"><a href="#cb14-59"></a>    <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Reaction Time ~ Days of Sleep Deprivation"</span>) <span class="sc">+</span> <span class="fu">xlab</span>(<span class="st">"Time (days)"</span>) <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">"Average Reaction Time (ms)"</span>) <span class="sc">+</span></span>
+<span id="cb14-60"><a href="#cb14-60"></a>    <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">15</span>)</span>
+<span id="cb14-61"><a href="#cb14-61"></a><span class="in">```</span></span>
+<span id="cb14-62"><a href="#cb14-62"></a></span>
+<span id="cb14-63"><a href="#cb14-63"></a><span class="fu"># Multi-Plot Visualisation</span></span>
+<span id="cb14-64"><a href="#cb14-64"></a></span>
+<span id="cb14-65"><a href="#cb14-65"></a>The above plot is good for showing all the data at once, but can get a little bit confusing if you are interested in looking more closely at any specific individual trajectories. If that is in fact the case, an alternative plot representation is to facet on individuals, like so:</span>
+<span id="cb14-66"><a href="#cb14-66"></a></span>
+<span id="cb14-69"><a href="#cb14-69"></a><span class="in">```{r}</span></span>
+<span id="cb14-70"><a href="#cb14-70"></a><span class="co">#| message: false</span></span>
+<span id="cb14-71"><a href="#cb14-71"></a><span class="co">#| warning: false</span></span>
+<span id="cb14-72"><a href="#cb14-72"></a><span class="co"># Plot - facet on individual</span></span>
+<span id="cb14-73"><a href="#cb14-73"></a>sleepstudy <span class="sc">|&gt;</span></span>
+<span id="cb14-74"><a href="#cb14-74"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> Days, <span class="at">y =</span> Reaction)) <span class="sc">+</span></span>
+<span id="cb14-75"><a href="#cb14-75"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x =</span> Days, <span class="at">y =</span> mod_pred_ran), <span class="at">linewidth =</span> <span class="dv">1</span>, <span class="at">color =</span> <span class="st">"green"</span>) <span class="sc">+</span></span>
+<span id="cb14-76"><a href="#cb14-76"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x =</span> Days, <span class="at">y =</span> mod_pred_fix), <span class="at">linewidth =</span> <span class="dv">1</span>, <span class="at">color =</span> <span class="st">"blue"</span>) <span class="sc">+</span></span>
+<span id="cb14-77"><a href="#cb14-77"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">200</span>, <span class="dv">500</span>), <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">200</span>, <span class="dv">500</span>, <span class="at">by =</span> <span class="dv">100</span>)) <span class="sc">+</span></span>
+<span id="cb14-78"><a href="#cb14-78"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">9</span>), <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">9</span>, <span class="at">by =</span> <span class="dv">2</span>)) <span class="sc">+</span></span>
+<span id="cb14-79"><a href="#cb14-79"></a>  <span class="fu">geom_point</span>(<span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb14-80"><a href="#cb14-80"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>Subject) <span class="sc">+</span></span>
+<span id="cb14-81"><a href="#cb14-81"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Time (Days)"</span>,</span>
+<span id="cb14-82"><a href="#cb14-82"></a>       <span class="at">y =</span> <span class="st">"Average Reaction Time (ms)"</span>,</span>
+<span id="cb14-83"><a href="#cb14-83"></a>       <span class="at">title =</span> <span class="st">"Reaction Time ~ Days of Sleep Deprivation"</span>,</span>
+<span id="cb14-84"><a href="#cb14-84"></a>       <span class="at">subtitle =</span> <span class="st">"Blue = Fixed Effects Prediction | Green = Random Effects Prediction"</span>) <span class="sc">+</span></span>
+<span id="cb14-85"><a href="#cb14-85"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">15</span>)</span>
+<span id="cb14-86"><a href="#cb14-86"></a><span class="in">```</span></span>
+<span id="cb14-87"><a href="#cb14-87"></a></span>
+<span id="cb14-88"><a href="#cb14-88"></a>It's now much easier to see the individual trajectories and how they compare to that of the group average.</span>
+<span id="cb14-89"><a href="#cb14-89"></a></span>
+<span id="cb14-90"><a href="#cb14-90"></a><span class="fu"># Some Background Stuff</span></span>
+<span id="cb14-91"><a href="#cb14-91"></a></span>
+<span id="cb14-92"><a href="#cb14-92"></a>While not essential to producing a visualisation of the model predictions, taking a little detour to understand in more detail how we actually arrived at the fixed- and random-effect predictions is a worthwhile exercise and one which can aid in building your mixed-modelling intuition.</span>
+<span id="cb14-93"><a href="#cb14-93"></a></span>
+<span id="cb14-94"><a href="#cb14-94"></a>Let's first inspect an unprettified summary of the model output:</span>
+<span id="cb14-95"><a href="#cb14-95"></a></span>
+<span id="cb14-98"><a href="#cb14-98"></a><span class="in">```{r}</span></span>
+<span id="cb14-99"><a href="#cb14-99"></a><span class="fu">summary</span>(mod)</span>
+<span id="cb14-100"><a href="#cb14-100"></a><span class="in">```</span></span>
+<span id="cb14-101"><a href="#cb14-101"></a></span>
+<span id="cb14-102"><a href="#cb14-102"></a>We obtain the fixed-effects as an <span class="in">`Intercept`</span> and a coefficient for time (<span class="in">`Days`</span>) and we can interpret that as an average reaction time of <span class="in">`251.4 ms`</span> at baseline and an average increase of <span class="in">`10.5 ms`</span> in reaction time for the passing of each day. Note that the random-effects are not as easily interpretable in their reported form which is an estimate of the variance of the distribution of individual reaction times, not average differences as for fixed-effects.</span>
+<span id="cb14-103"><a href="#cb14-103"></a></span>
+<span id="cb14-104"><a href="#cb14-104"></a>A shortcut to obtain the fixed-effects of an <span class="in">`lmer`</span> class model in <span class="in">`R`</span> is:</span>
+<span id="cb14-105"><a href="#cb14-105"></a></span>
+<span id="cb14-106"><a href="#cb14-106"></a><span class="in">`fixef(mod)`</span></span>
+<span id="cb14-107"><a href="#cb14-107"></a></span>
+<span id="cb14-110"><a href="#cb14-110"></a><span class="in">```{r}</span></span>
+<span id="cb14-111"><a href="#cb14-111"></a><span class="fu">fixef</span>(mod)</span>
+<span id="cb14-112"><a href="#cb14-112"></a><span class="in">```</span></span>
+<span id="cb14-113"><a href="#cb14-113"></a></span>
+<span id="cb14-114"><a href="#cb14-114"></a>and similarly for the random-effects:</span>
+<span id="cb14-115"><a href="#cb14-115"></a></span>
+<span id="cb14-116"><a href="#cb14-116"></a><span class="in">`ranef(mod)`</span></span>
+<span id="cb14-117"><a href="#cb14-117"></a></span>
+<span id="cb14-120"><a href="#cb14-120"></a><span class="in">```{r}</span></span>
+<span id="cb14-121"><a href="#cb14-121"></a><span class="fu">ranef</span>(mod)</span>
+<span id="cb14-122"><a href="#cb14-122"></a><span class="in">```</span></span>
+<span id="cb14-123"><a href="#cb14-123"></a></span>
+<span id="cb14-124"><a href="#cb14-124"></a>So what do the random-effects actually tell us? In a nutshell, these represent the individual differences from the fixed-effects values. </span>
+<span id="cb14-125"><a href="#cb14-125"></a></span>
+<span id="cb14-126"><a href="#cb14-126"></a>Let's consider <span class="in">`Subject 308`</span> as an example to illustrate this. If we are interested in the predicted baseline reaction time for this individual, all we need to do is add the fixed- and random-effects intercepts values - <span class="in">`251.405 + 2.259 = 253.664`</span> ms (we can ignore the time 'effect' which is <span class="in">`0`</span> by definition at baseline). By comparison, we can also easily obtain that predicted value with the following code:</span>
+<span id="cb14-127"><a href="#cb14-127"></a></span>
+<span id="cb14-128"><a href="#cb14-128"></a><span class="in">`predict(mod, newdata = data.frame(days = 0, Subject = 308), re.form = ~(Days|Subject))`</span></span>
+<span id="cb14-129"><a href="#cb14-129"></a></span>
+<span id="cb14-132"><a href="#cb14-132"></a><span class="in">```{r}</span></span>
+<span id="cb14-133"><a href="#cb14-133"></a><span class="fu">predict</span>(mod, <span class="at">newdata =</span> <span class="fu">data.frame</span>(<span class="at">Days =</span> <span class="dv">0</span>, <span class="at">Subject =</span> <span class="dv">308</span>), <span class="at">re.form =</span> <span class="sc">~</span>(Days<span class="sc">|</span>Subject))</span>
+<span id="cb14-134"><a href="#cb14-134"></a><span class="in">```</span></span>
+<span id="cb14-135"><a href="#cb14-135"></a></span>
+<span id="cb14-136"><a href="#cb14-136"></a>It's a little bit more complex to manually calculate the predicted value at any other time point because the 'effect' of time is no longer ignorable and we just need to remember the basics of our regression equation. Say, we want to calculate the reaction time for <span class="in">`Subject 308`</span> at <span class="in">`5`</span> days. A simple way to do this is to first work out the fixed-effect prediction at <span class="in">`5`</span> days and then add the random-effect prediction to it.</span>
+<span id="cb14-137"><a href="#cb14-137"></a></span>
+<span id="cb14-138"><a href="#cb14-138"></a>The fixed-effect prediction is just the intercept value plus the coefficient for time multiplied by the number of days (either from the model summary or from <span class="in">`fixef()`</span>). In numbers: <span class="in">`251.405 + (10.467 * 5) = 303.74`</span>. This gives the predicted group-average reaction time at <span class="in">`5`</span> days.</span>
+<span id="cb14-139"><a href="#cb14-139"></a></span>
+<span id="cb14-140"><a href="#cb14-140"></a>The random-effect prediction is the same but from <span class="in">`ranef()`</span> and specific to the individual. In numbers: <span class="in">`2.259 + (9.198 * 5) = 48.249`</span>. This gives the **additional** (to the group-average) reaction time specific to the individual.</span>
+<span id="cb14-141"><a href="#cb14-141"></a></span>
+<span id="cb14-142"><a href="#cb14-142"></a>We can then add those two values to obtain the predicted reaction time for <span class="in">`Subject 308`</span> at <span class="in">`5`</span> days - i.e. <span class="in">`303.74 + 48.249 = 351.989`</span>. If you don't want to manually calculate this, then you can use:</span>
+<span id="cb14-143"><a href="#cb14-143"></a></span>
+<span id="cb14-144"><a href="#cb14-144"></a><span class="in">`predict(mod, newdata = data.frame(days = 5, Subject = 308), re.form = ~(Days|Subject))`</span></span>
+<span id="cb14-145"><a href="#cb14-145"></a></span>
+<span id="cb14-148"><a href="#cb14-148"></a><span class="in">```{r}</span></span>
+<span id="cb14-149"><a href="#cb14-149"></a><span class="fu">predict</span>(mod, <span class="at">newdata =</span> <span class="fu">data.frame</span>(<span class="at">Days =</span> <span class="dv">5</span>, <span class="at">Subject =</span> <span class="dv">308</span>), <span class="at">re.form =</span> <span class="sc">~</span>(Days<span class="sc">|</span>Subject))</span>
+<span id="cb14-150"><a href="#cb14-150"></a><span class="in">```</span></span>
+<span id="cb14-151"><a href="#cb14-151"></a></span>
+<span id="cb14-152"><a href="#cb14-152"></a>Which is essentially the same, bar rounding error.</span>
+<span id="cb14-153"><a href="#cb14-153"></a></span>
+<span id="cb14-154"><a href="#cb14-154"></a>And that brings us to the end of this post. Hopefully that gives you some idea as to how random effects and their predictions are calculated. In the next post, we will finish our series on model prediction and visualisation be taking a look at the Cox model. Until then...</span>
+<span id="cb14-155"><a href="#cb14-155"></a></span>
+<span id="cb14-156"><a href="#cb14-156"></a></span>
 </code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
