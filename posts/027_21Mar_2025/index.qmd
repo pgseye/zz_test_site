@@ -64,7 +64,8 @@ In our very first example to show you how to get up and running with predicting 
 
 ```{r}
 data(birthwt, package = "MASS")
-head(birthwt, 10)
+head(birthwt, 10) |> 
+  kable(align = "c", digits = 2)
 ```
 
 ## Birthweight as a Function of Maternal Age

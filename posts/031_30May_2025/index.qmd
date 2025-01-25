@@ -23,6 +23,7 @@ Note the `re.form = NA` sets all random-effects to `0`.
 library(lme4)
 library(ggplot2)
 library(gtsummary)
+library(kableExtra)
 # Load data
 data("sleepstudy")
 # Model
@@ -31,11 +32,13 @@ mod <- lmer(Reaction ~ Days + (Days | Subject), data = sleepstudy)
 sleepstudy$mod_pred_fix <- predict(mod, re.form = NA) # predict fixed effects
 sleepstudy$mod_pred_ran <- predict(mod) # predict random effects
 # View data
-head(sleepstudy, 10)
+head(sleepstudy, 10) |> 
+  kable(align = "c", digits = 2)
 ```
+
 <br>
 
-So, `mod_pred_fix` represents the **group-averaged** prediction of `reaction time` (outcome) as a function of time (covariate) and similarly `mod_pred_ran` represents the **individual** predictions of the same. 
+So, `mod_pred_fix` represents the **group-averaged** prediction of `reaction time` (outcome) as a function of time (covariate) and similarly `mod_pred_ran` represents the **individual** predictions of the same.
 
 # One-Plot Visualisation
 
@@ -109,7 +112,7 @@ and similarly for the random-effects:
 ranef(mod)
 ```
 
-So what do the random-effects actually tell us? In a nutshell, these represent the individual differences from the fixed-effects values. 
+So what do the random-effects actually tell us? In a nutshell, these represent the individual differences from the fixed-effects values.
 
 Let's consider `Subject 308` as an example to illustrate this. If we are interested in the predicted baseline reaction time for this individual, all we need to do is add the fixed- and random-effects intercepts values - `251.405 + 2.259 = 253.664` ms (we can ignore the time 'effect' which is `0` by definition at baseline). By comparison, we can also easily obtain that predicted value with the following code:
 
@@ -136,6 +139,3 @@ predict(mod, newdata = data.frame(Days = 5, Subject = 308), re.form = ~(Days|Sub
 Which is essentially the same, bar rounding error.
 
 And that brings us to the end of this post. Hopefully that gives you some idea as to how random effects and their predictions are calculated. In the next post, we will finish our series on model prediction and visualisation be taking a look at the Cox model. Until then...
-
-
-

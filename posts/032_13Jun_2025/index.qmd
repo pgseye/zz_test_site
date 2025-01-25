@@ -1,0 +1,86 @@
+---
+title: "Model Prediction/Visualisation <br> 6. Survival Analysis - Cox Model"
+date: 2025-06-13
+categories: [code, concept, modelling, visualisation]
+# image: "images/plot.png"
+description: "How to Survive Visualising the Cox Model."
+---
+
+In the last post in this series on model prediction and visualisation in `R` we are going to talk about survival analysis and specifically the Cox model. Like the extensions to the standard linear model that we most recently discussed - the GLM and LMM - predicting with the Cox model is also relatively straightforward, but the intuition in how those predictions are calculated may be less so. I hope to make that easier for you today.
+
+We're going to use the inbuilt `GBSG2` dataset form the `TH.data` package, so please install that package if you don't already have it. The dataframe contains observations from the German Breast Cancer Study Group 2 study of `686` women, examining the effects of hormone treatment on recurrence-free survival time. The [variables](https://cran.r-project.org/web/packages/TH.data/TH.data.pdf) we'll be using are:
+
+-   `time` - recurrence free survival time (in days).
+
+-   `cens` - censoring indicator (0- censored, 1- event).
+
+-   `horTh` - hormonal therapy, a factor at two levels (yes and no).
+
+-   `tsize` - tumor size (in mm).
+
+The first few rows of the data look like:
+
+```{r}
+#| message: false
+#| warning: false
+library(survival)
+library(survminer)
+library(tidyverse)
+library(kableExtra)
+# Load data
+data(GBSG2, package = "TH.data")
+GBSG2 |> 
+  select(time, cens, horTh, tsize) |> 
+  head(10) |> 
+  kable(align = "c", digits = 2)
+```
+
+
+
+
+```{r}
+# Kaplan-Meier fit
+fit <- survfit(Surv(time, cens) ~ horTh, data = GBSG2)
+# Plot KM fit
+ggsurvplot(fit)
+```
+
+```{r}
+cox_mod <- coxph(Surv(time, cens) ~ horTh + tsize, data = GBSG2)
+
+newdat <- expand.grid(time = seq(0, 2500, by = 50), 
+                       cens = 1, 
+                       horTh = levels(GBSG2$horTh),
+                       tsize = c(min(GBSG2$tsize), max(GBSG2$tsize)))
+preds <- predict(cox_mod, newdata = newdat, type = "survival", se.fit = TRUE)
+newdat$prob <- preds$fit
+# If wanting to calculate 95% C.I.'s...
+newdat$lcl <- preds$fit - 1.96*preds$se.fit
+newdat$ucl <- preds$fit + 1.96*preds$se.fit
+head(newdat, 10)
+```
+
+```{r}
+ggplot(newdat, aes(x = time, y = prob, color = horTh)) +
+  geom_line() +
+  facet_wrap(~ tsize) +
+  scale_y_continuous(limits = c(0, 1), breaks = seq(0, 1, by = 0.1)) +
+  theme_bw(base_size = 20)
+```
+
+manually
+
+https://www.graphpad.com/guides/prism/latest/statistics/stat_cox_math_cumulative_hazard.htm
+
+```{r}
+H0 <- basehaz(cox_mod, centered = F) # Cumulative baseline hazard
+cox_mod$coefficients
+H <- H0$hazard * exp((1 * cox_mod$coefficients[1]) + (120 * cox_mod$coefficients[2])) # Cumulative hazard for 2nd covariate pattern of newdat (horTh = yes and tsize = 20)
+S <- exp(- H) # Survival probability
+data.frame(time = H0$time, Surv = S)
+plot(H0$time, S) # plot survival for the 2nd covariate pattern
+# Normally one doesn't worry about using basehaz - survfit does everything it does and more. Just can use to work from first principles if you want.
+# Compare survival probabilities calcualated manually from basehaz with those estimated from survfit
+1-H
+
+```
