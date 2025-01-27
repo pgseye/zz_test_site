@@ -11,11 +11,8 @@ In the last post in this series on model prediction and visualisation in `R` we 
 We're going to use the inbuilt `GBSG2` dataset form the `TH.data` package, so please install that package if you don't already have it. The dataframe contains observations from the German Breast Cancer Study Group 2 study of `686` women, examining the effects of hormone treatment on recurrence-free survival time. The [variables](https://cran.r-project.org/web/packages/TH.data/TH.data.pdf) we'll be using are:
 
 -   `time` - recurrence free survival time (in days).
-
 -   `cens` - censoring indicator (0- censored, 1- event).
-
 -   `horTh` - hormonal therapy, a factor at two levels (yes and no).
-
 -   `tsize` - tumor size (in mm).
 
 The first few rows of the data look like:
@@ -26,6 +23,7 @@ The first few rows of the data look like:
 library(survival)
 library(survminer)
 library(tidyverse)
+library(gtsummary)
 library(kableExtra)
 # Load data
 data(GBSG2, package = "TH.data")
@@ -35,52 +33,187 @@ GBSG2 |>
   kable(align = "c", digits = 2)
 ```
 
+<br>
 
-
+The first thing we can do is to plot the empirical survival curve by calling on the Kaplan-Meier estimator - stratifying this by whether a woman received hormone therapy or not.
 
 ```{r}
 # Kaplan-Meier fit
 fit <- survfit(Surv(time, cens) ~ horTh, data = GBSG2)
 # Plot KM fit
-ggsurvplot(fit)
+ggsurvplot(fit, 
+           risk.table = TRUE,
+           submain = "Kaplan-Meier Survival Curves for Hormone Therapy Use") +
+  theme_survminer(
+     font.submain = 22,
+     font.x = 18,
+     font.y = 18,
+     font.legend = 16,
+     font.tickslab = 14)
 ```
+
+It appears that unadjusted for other potentially confounding factors, women who take hormone therapy have a better chance of survival - an unsurprising finding I'm sure you would agree.
+
+Let's fit a Cox model to the data, now also adjusting for tumour size.
 
 ```{r}
 cox_mod <- coxph(Surv(time, cens) ~ horTh + tsize, data = GBSG2)
+tbl_regression(cox_mod, exp = T)
+```
 
+The model results suggest (in agreement with the KM curve) that holding tumour size constant, there is an \~ `31%` reduction in the risk of recurrence for women who take hormone therapy. Similarly, within strata of hormone therapy, each additional mm increase in tumour size is associated with an \~ `2%` increase in the risk of recurrence over time.
+
+# Visualising Cox Model Predictions - Auto Mode
+
+Let's say we are now interested in predicting survival as a function of both hormone therapy use and tumour size. Well we can just call `predict()` on our Cox model, specifying a new grid of data to predict on, which at minimum must include our time and status (which we set to `1`) variables. In addition I have asked to predict survival for four covariate combinations (tumour sizes of `3` and `120` mm are the minimum and maximum values in the dataset):
+
+1.  hormone therapy = `no  (0)` and tumour size = `3` mm
+2.  hormone therapy = `yes (1)` and tumour size = `3` mm
+3.  hormone therapy = `no  (0)` and tumour size = `120` mm
+4.  hormone therapy = `yes (1)` and tumour size = `120` mm
+
+Note that we need to make one small tweak in `predict()` which is to include an argument for prediction type - in this case we want **"survival"** (note there are [additional types](https://stat.ethz.ch/R-manual/R-devel/library/survival/html/predict.coxph.html) that you can specify depending on what you want to predict from the model).
+
+The code to do this is shown below. The reason I'm calling this "auto mode" is that there's really nothing different here to what we have done so far - we pretty much just let predict handle everything.
+
+```{r}
+# Create new data grid to predict on
 newdat <- expand.grid(time = seq(0, 2500, by = 50), 
-                       cens = 1, 
-                       horTh = levels(GBSG2$horTh),
-                       tsize = c(min(GBSG2$tsize), max(GBSG2$tsize)))
+                      cens = 1, 
+                      horTh = levels(GBSG2$horTh),
+                      tsize = c(min(GBSG2$tsize), max(GBSG2$tsize)))
+# Calculate predicted survival probabilities
 preds <- predict(cox_mod, newdata = newdat, type = "survival", se.fit = TRUE)
-newdat$prob <- preds$fit
+newdat$prob_surv <- preds$fit
 # If wanting to calculate 95% C.I.'s...
-newdat$lcl <- preds$fit - 1.96*preds$se.fit
-newdat$ucl <- preds$fit + 1.96*preds$se.fit
-head(newdat, 10)
+newdat$lcl_surv <- preds$fit - 1.96*preds$se.fit
+newdat$ucl_surv <- preds$fit + 1.96*preds$se.fit
+# View predictions
+head(newdat, 10) |> 
+  kable(align = "c", digits = 4)
 ```
 
+<br>
+
+And then we can plot the predictions like so using `ggplot`:
+
 ```{r}
-ggplot(newdat, aes(x = time, y = prob, color = horTh)) +
-  geom_line() +
-  facet_wrap(~ tsize) +
+# Create 'labeller' for tumour size
+tum_names <- as_labeller(
+     c(`3` = "Tumour Size = 3 mm", `120` = "Tumour Size = 120 mm"))
+# Plot
+ggplot(newdat, aes(x = time, y = prob_surv, color = horTh)) +
+  geom_line(linewidth = 1) +
+  facet_wrap(tsize ~ ., labeller = tum_names) +
   scale_y_continuous(limits = c(0, 1), breaks = seq(0, 1, by = 0.1)) +
-  theme_bw(base_size = 20)
+  labs(x = "Recurrence-Free Survival (Days)",
+       y = "Predicted Probability of Survival",
+       title = "Probability of Survival as a Function of Hormone Therapy and Tumour Size",
+       color = "Hormone Therapy") +
+  theme_bw(base_size = 20) + theme(legend.position = "bottom")
 ```
 
-manually
+These visualisations confirm our intuition that survival is better for women with smaller tumours and who also take hormone therapy to manage their disease.
 
-https://www.graphpad.com/guides/prism/latest/statistics/stat_cox_math_cumulative_hazard.htm
+# Visualising Cox Model Predictions - Manual Mode
+
+Ultimately, what I have described above is all you need to know if you want to visualise predictions from the Cox model. But if you are interested in understanding at a deeper level how the predicted values are calculated, I'll also take you through "manual mode".
+
+An important first point to grasp is that estimation of the baseline hazard function is essential to predicting survival probabilities in time-to-event models. You can think of the baseline hazard function as the equivalent of the intercept in a standard linear model. These provide an **absolute** value of the outcome from which **relative** 'effect' estimates are computed. For example, the hazard ratio in a Cox model represents a proportional change in the hazard rate for one covariate category (e.g. hormone therapy = yes [coded as 1]) relative to a reference covariate category (e.g. hormone therapy = no [coded as 0]) which is assumed to take the shape of the baseline hazard rate function. The baseline hazard rate itself can vary over time, but the proportional change should remain the same (if the proportional hazards assumption is satisfied). I have briefly touched on these ideas in a [previous post](https://msni-stats-tips.netlify.app/posts/021_01nov_2024/#semi-parametric-cox-model). The comparison with the linear model is in the regression coefficient representing a relative average change from the model intercept, which if you recall is the mean value of the outcome when all covariate values are at `0` or at their reference level. Similarly, the baseline hazard rate function is referred to as *baseline* because it represents the hazard rate function when all covariate values are at `0` or at their reference level.
+
+Now, while fully-parametric survival models assume a particular statistical distribution for the baseline hazard rate and estimate it by default, the semi-parametric nature of the Cox model allows hazard ratios to be computed without any knowledge of the function. Consequently, we cannot directly obtain survival probabilities from it, but we can do a little post-hoc "under-the-hood" processing to combine it with a non-parametric estimator of the baseline hazard function (typically the **Breslow** estimator) - and estimate survival probabilities that way.
+
+In `R` we can use the [`basehaz()`](https://stat.ethz.ch/R-manual/R-devel/library/survival/html/basehaz.html) function to calculate the **cumulative** baseline hazard function `H(t)`. This is different to the baseline hazard rate function that we have discussed until now. The cumulative baseline hazard function represents the integral of the baseline hazard rate function from `0` to `t`, and can be thought of as the total accumulated risk of experiencing the event of interest by time `t`. Because it is more computationally stable to work with, `H(t)` acts as a useful link in deriving survival probabilities from hazard rates. Once we know the cumulative baseline hazard function, it's very easy to find the commensurate survival function `S(t)` (the probability that the event of interest has not occurred by time `t`) by simply exponentiating the negative of `H(t)` - i.e.:
+
+$$ S(t) = e^{-H(t)} $$ More detail can be found [here](https://www.graphpad.com/guides/prism/latest/statistics/stat_cox_math_cumulative_hazard.htm).
+
+Let's now put this process into action with the existing data. We can essentially break this down into five steps which I have labelled accordingly in the code below to help you follow the description:
+
+## Step 1
+The first thing we need to do is to estimate the cumulative baseline hazard function (`H0`) when all covariate values are at `0` or at their reference level. We do this using specifying `centered = FALSE` in the call to `basehaz()`. It is important to include the `centered = F` argument as the default setting is `TRUE` which we don't want as this has a different interpretation (i.e. cumulative hazard function estimated at the mean of all covariate values). Also note that the cumulative hazard is estimated at each of the *observed* times in the dataset.
+
+## Step 2
+We then estimate the cumulative hazard function (`H1` - `H4`) for each covariate combination of interest. For these data we have four as I have listed above. As an example, to calculate `H1` we simply multiply `H0` by the covariate combination values and their respective Cox model coefficients. e.g.:
+
+`H1 <- H0$hazard * exp((0 * cox_mod$coefficients[1]) + (3 * cox_mod$coefficients[2]))`
+
+In the above `cox_mod$coefficients[1]` gives the coefficient value for hormone therapy and `cox_mod$coefficients[2]` gives the coefficient value for tumour size. To obtain the cumulative hazard function for the first covariate combination we just multiply the cumulative baseline hazard function by the exponent of the sum of the products of the coefficients and our covariate values of interest (in this case `0` to indicate no hormone therapy and `3` to indicate the tumour size).
+
+## Step 3
+We then calculate the survival function for each covariate combination by taking the exponent of the negative of the cumulative hazard function.
+
+## Step 4
+Now we create a dataframe containing the predicted survival probabilities for each covariate combination. The first `20` rows for each covariate combination is shown below.
+
+## Step 5
+Then we create our plot.
 
 ```{r}
-H0 <- basehaz(cox_mod, centered = F) # Cumulative baseline hazard
-cox_mod$coefficients
-H <- H0$hazard * exp((1 * cox_mod$coefficients[1]) + (120 * cox_mod$coefficients[2])) # Cumulative hazard for 2nd covariate pattern of newdat (horTh = yes and tsize = 20)
-S <- exp(- H) # Survival probability
-data.frame(time = H0$time, Surv = S)
-plot(H0$time, S) # plot survival for the 2nd covariate pattern
-# Normally one doesn't worry about using basehaz - survfit does everything it does and more. Just can use to work from first principles if you want.
-# Compare survival probabilities calcualated manually from basehaz with those estimated from survfit
-1-H
+# Step 1
+# Estimate the cumulative baseline hazard function
+H0 <- basehaz(cox_mod, centered = F)
 
+# Step 2
+# Calculate cumulative hazard function for covariate combo 1.
+H1 <- H0$hazard * exp((0 * cox_mod$coefficients[1]) + (3 * cox_mod$coefficients[2]))
+# Calculate cumulative hazard function for covariate combo 2.
+H2 <- H0$hazard * exp((1 * cox_mod$coefficients[1]) + (3 * cox_mod$coefficients[2]))
+# Calculate cumulative hazard function for covariate combo 3.
+H3 <- H0$hazard * exp((0 * cox_mod$coefficients[1]) + (120 * cox_mod$coefficients[2]))
+# Calculate cumulative hazard function for covariate combo 4.
+H4 <- H0$hazard * exp((1 * cox_mod$coefficients[1]) + (120 * cox_mod$coefficients[2]))
+
+# Step 3
+# Calculate survival function for covariate combo 1.
+S1 <- exp(-H1)
+# Calculate survival function for covariate combo 2.
+S2 <- exp(-H2)
+# Calculate survival function for covariate combo 3.
+S3 <- exp(-H3)
+# Calculate survival function for covariate combo 4.
+S4 <- exp(-H4)
+
+# Step 4
+# Create dataframe of predicted survival probabilities as a function of covariate combos
+surv_df <-  rbind(data.frame(combo = 1, time = H0$time, horTh = 0, tsize = 3, prob_surv = S1),
+                  data.frame(combo = 2, time = H0$time, horTh = 1, tsize = 3, prob_surv = S2),
+                  data.frame(combo = 3, time = H0$time, horTh = 0, tsize = 120, prob_surv = S3),
+                  data.frame(combo = 4, time = H0$time, horTh = 1, tsize = 120, prob_surv = S4))
+
+# Inspect each df
+head(data.frame(combo = 1, time = H0$time, horTh = 0, tsize = 3, prob_surv = S1), 20) |> 
+  kable(align = "c", digits = 4)
+head(data.frame(combo = 2, time = H0$time, horTh = 1, tsize = 3, prob_surv = S2), 20) |> 
+  kable(align = "c", digits = 4)
+head(data.frame(combo = 3, time = H0$time, horTh = 0, tsize = 120, prob_surv = S3), 20) |> 
+  kable(align = "c", digits = 4)
+head(data.frame(combo = 4, time = H0$time, horTh = 1, tsize = 120, prob_surv = S4), 20) |> 
+  kable(align = "c", digits = 4)
 ```
+
+<br>
+
+...and Voilà.
+
+```{r}
+# Step 5
+# Create 'labeller' for tumour size
+tum_names <- as_labeller(
+  c(`3` = "Tumour Size = 3 mm", `120` = "Tumour Size = 120 mm"))
+# Plot
+ggplot(surv_df, aes(x = time, y = prob_surv, color = factor(horTh))) +
+  geom_line(linewidth = 1) +
+  facet_wrap(tsize ~ ., labeller = tum_names) +
+  scale_y_continuous(limits = c(0, 1), breaks = seq(0, 1, by = 0.1)) +
+  labs(x = "Recurrence-Free Survival (Days)",
+       y = "Predicted Probability of Survival",
+       title = "Probability of Survival as a Function of Hormone Therapy and Tumour Size",
+       color = "Hormone Therapy") +
+  theme_bw(base_size = 20) + theme(legend.position = "bottom")
+```
+
+# End Mode
+
+That brings us to an end in this series on model prediction and visualisation in `R`. I hope it's given you some appreciation for how much further you can take your regression modelling endeavours. I find being able to 'see' what my model is proposing as a reflection of reality to be an invaluable addition to the simply listing of a bunch of coefficient values that we tend to take as the final product of model estimation. We don't need to - and in fact we shouldn't - stop there. You are familiar with the statistical adage of 'always plot your data'. Well, in becoming a better data analyst I think a similar argument could be made for 'always plot your models'.
+
+Until next time...
