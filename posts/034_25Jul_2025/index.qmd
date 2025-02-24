@@ -8,7 +8,7 @@ description: "The hazards of misunderstanding the hazard ratio."
 
 Welcome back after a brief mid-year break.
 
-In the last post we discussed some approaches to the diagnosis of non-proportional hazards for a covariate in our Cox model. Today we are going to look at some remediation actions we can take when we are faced with the issue in our day-to-day work. To get us started I've broken those actions down broadly into four groups:
+In the last post we discussed some approaches to the diagnosis of non-proportional hazards for a covariate in our Cox model. Today we are going to consider several remediation actions we can take when we are faced with this issue in our day-to-day work. To get us started I've broken those actions down broadly into four groups:
 
 1.  Model specification adjustments.
 

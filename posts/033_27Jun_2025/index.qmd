@@ -165,7 +165,7 @@ So, how do we specify this time-covariate interaction term in our Cox model?
 
 Well there is a trick to this that relies on first knowing two small pieces of very important information, without which you will fall victim to the same naive error that has plagued countless analysts before you.
 
-### One simple rule about covariate values
+### One simple rule about covariate values in the Cox model
 
 **"You cannot look into the future"**
 
@@ -256,6 +256,7 @@ Out of interest - what would we have gotten in the naive analysis - i.e. where w
 vfit3 <- coxph(Surv(time, status) ~ trt + age + trt:time, vdata1)
 tbl_regression(vfit3, exp = T)
 ```
+
 Hmmm - quite different... and quite wrong!
 
 There is actually a quicker way to run this equivalent model without needing to first split the data, but I wanted to show you the "first-principles" approach, first. Again, on page 21 of the [time-dependent vignette](https://cran.r-project.org/web/packages/survival/vignettes/timedep.pdf), a general method is outlined which relies on the *time-transform* functionality of `coxph()`. Using this model specification, you will see that we end up with the same result.
