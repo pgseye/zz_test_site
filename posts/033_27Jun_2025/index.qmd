@@ -1,0 +1,272 @@
+---
+title: "Are your Hazards Proportional? - What to do when it just ain't so (Part 1)"
+date: 2025-06-27
+categories: [code, concept, modelling, visualisation]
+# image: "images/plot.png"
+description: "The hazards of misunderstanding the hazard ratio."
+---
+
+# Background
+
+Ok, I'm going to be a bit melodramatic here, but bear with me. Have you ever felt like crying when your carefully constructed Cox model - one that is giving you the significant 'effect/s' you've been dreaming of - fails at the last hurdle when you discover that one (or more) of its covariates violates the assumption of proportional hazards?
+
+Or is that just me?
+
+The Cox model is ubiquitous in medical research and is typically utilised when questions develop around assessing the time to some outcome of interest. Like any other mathematical model, the Cox model is capable of capturing only a simple reflection of biological systems that are much more complex in reality. To that end assumptions are made about the nature of the data that the model is expected to parse, and the greater the violation of those assumptions, the less faithful one can expect the reflection to be. In other words, the model becomes less and less trustworthy.
+
+Where am I headed with my ham-fisted attempt at philosophising? Well, as I'm sure you know, one of the primary assumptions underpinning the Cox model is that of proportional hazards. I have actually discussed this in one of my [previous posts on survival analysis](https://msni-stats-tips.netlify.app/posts/021_01nov_2024/#semi-parametric-cox-model) when I introduced the Cox model, but it's so important I'm going to reiterate here.
+
+# Proportional Hazards (in a Nutshell)
+
+The following is what I said in that post:
+
+"The proportional hazards assumption basically requires that the hazard ratio (HR) is constant over time, or equivalently, that the hazard for one individual is proportional to the hazard for any other individual, and where the proportionality constant doesn't depend on time.
+
+So if we look at the figure below - I have plotted hypothetical hazard functions for males (in blue) and females (in red) for the risk of some event. You'll note that the shapes are essentially the same but are scaled versions of one another. When proportional hazards hold, then we can take a ratio of the two hazard rates at any time point and that ratio should remain constant. And I've illustrated that here at two time points - $t1$ and $t2$. The difference in the hazards obviously varies but the ratio of the hazards at those two time points is the same. At time `1` a hazard rate of `3` for males and `2` for females gives a HR of `1.5` and similarly, at time `2`, a hazard rate of `0.75` for males and `0.5` for females, again gives a HR of `1.5`.
+
+![](images/prop_hazards.png){fig-align="center"}
+
+**In reality, hazard rates are probably not going to be exactly proportional the entire time, but the aim is to make sure any departures from proportionality are minimal - otherwise this means the HR itself varies with time and this adds further complexity to your model.**"
+
+All of that remains true, but the last paragraph is particularly important in the context of this week's topic. In general, we just tend to assume the HR that is output by `coxph()` is valid over the entire duration of observation when this is unlikely to be the case. If hazards are in fact non-proportional and we still accept that HR as the single 'effect' estimate, then it represents an **averaged HR** over the observation period (this [paper](https://pmc.ncbi.nlm.nih.gov/articles/PMC3653612/) discusses this issue - and more - in greater detail). Small departures from proportionality are probably still OK, but it's the larger departures that become more problematic in our model validity. The good news is there are steps we can take to test for these departures and that is ultimately the focus of today's post.
+
+# tvc's vs tvc's
+
+Before we go any further I think it is important to clarify a couple of related but distinct concepts regarding "time variation" in survival analyses, as "tvc" is an acronym with two different definitions depending on the context in which it is used.
+
+## tvc (time-varying covariate)
+
+In perhaps the more common usage, "tvc" can represent a *time-varying covariate* (also known as time-dependent covariate (tdc)). This is a covariate whose *values change* over the duration of one's observation period, but whose *'effect' on survival typically remains constant.* A good example here would be different time periods in which a person received treatment or not. Time-varying covariates are constructed as multi-row (i.e. [counting process](https://msni-stats-tips.netlify.app/posts/006_23feb_2024/#correct-analysis-assuming-treatment-status-is-time-varying)) data where each row contains a non-overlapping time period defined by a different treatment covariate value. Proportional hazards may still be assessed with counting process data and if no violation is noted, **a constant HR over the duration of observation** may be assumed.
+
+## tvc (time-varying coefficient)
+
+Now, without intending to create confusion, "tvc" may also represent a *time-varying coefficient* (also known as time-dependent coefficient (tdc)). This is associated with a covariate whose baseline *values remain constant* over the duration of observation, but whose *'effect' on the risk of an event can indeed change with time.* **In other words, the HR varies with time.** Data are typically formatted as one-row per person.
+
+## Well is it tvc or tvc?
+
+In a survival analysis, one may have:
+
+1.  Neither time-varying covariates nor time-varying coefficients (single-row/person, constant HR).
+
+2.  Time-varying coefficients but not time-varying covariates (single-row/person, time-varying HR).
+
+3.  Time-varying covariates but not time-varying coefficients (multi-row/person, constant HR).
+
+4.  Time-varying coefficients and time-varying covariates (multi-row/person, time-varying HR).
+
+In today's post, the examples and discussion I provide will only focus on scenario 2. The addition of time-varying covariates into analyses with time-varying coefficients (scenario 4) complicates matters significantly and I've made the decision not to tackle this for the time being (although I may come back to this in a later post).
+
+But now that we've cleared that up, let's get back to the issue at hand.
+
+# Testing for Proportional Hazards
+
+There are essentially three approaches to testing the proportional hazards assumption, although dare I say most of us probably only ever use the first.
+
+1.  Goodness of Fit (GOF) tests.
+2.  Graphical assessment.
+3.  Time-dependent variables.
+
+To illustrate these approaches we'll use the `veteran` dataset that is built into `R`'s `survival` package. Details can be found [here](https://www.rdocumentation.org/packages/survival/versions/3.8-3/topics/veteran) but, in brief, the data consist of survival times for `137` lung-cancer sufferers enrolled in an RCT of two treatment regimens. The variables of interest for the purpose of today's exercise are:
+
+-   `time` - survival time (days)
+
+-   `status` - censor (0), death (1)
+
+-   `trt` - treatment \[standard (1) vs test (2)\]
+
+-   `age` - age (yrs)
+
+We'll consider `trt` our primary "exposure" of interest and `age` a covariate to adjust for. The first few rows of the data look like:
+
+```{r}
+#| message: false
+#| warning: false
+library(survival)
+library(tidyverse)
+library(survminer)
+library(gtsummary)
+library(kableExtra)
+# Load veteran data from survival package
+vdata1 <-  veteran
+# Make treatment variable equal to 0,1 instead of 1,2 (not necessary, but I just like to work with the former)
+vdata1$trt <-  as.numeric(vdata1$trt) - 1
+# Create id variable and organise columns
+vdata1$id <-  seq(1:dim(vdata1)[1])
+vdata1 <-  vdata1 |> 
+  select(id, time, status, trt, age)
+head(vdata1, 10) |> 
+  kable(align = "c", digits = 2)
+```
+
+<br>
+
+As a precursor step let's plot the Kaplan-Meier curves for these data - for no other reason than to calibrate our expectations for the upcoming proportional hazards tests.
+
+```{r}
+# Kaplan-Meier plot
+km_trt_fit <- survfit(Surv(time, status) ~ trt, data = veteran)
+ggsurvplot(km_trt_fit, data = veteran, size = 1, palette = c("#E7B800", "#2E9FDF"), conf.int = F,
+           legend.labs = c("standard", "test"), ggtheme = theme_bw(base_size = 20))
+```
+
+OK, well this is interesting as it already tells us we have a problem with the `trt` variable. Survival curves should ideally gradually separate over time. When they appear to converge - or worse still **cross** - this should be a warning to us that the hazard function for one group is NOT a scaled function of the other (i.e. they are non-proportional with respect to time). While this is a fairly obvious violation in this example, it is not uncommon for non-proportionality to appear more subtle in KM plots leaving us unsure as to whether there may be a problem or not. Not to worry though - that's why we have these additional tests we can employ, and which I will discuss now!
+
+## Goodness of Fit (GOF) tests.
+
+The classic GOF approach uses a test statistic and p-value to assess the significance of the PH assumption based on the Schoenfeld residuals of the Cox model (I won't attempt to explain how these residuals are derived). Visually, if proportional hazards hold, then a plot of the scaled Schoenfeld residuals over time (for a particular covariate) should have zero slope. That is, we should ideally see a horizontal line which indicates that the residuals for that covariate are not related to survival time. In `R` we can use the `cox.zph()` function to perform a significance test for each covariate and for the model as a whole. Additionally, we can `plot()` the object returned by the `cox.zph()` call to visualise the shape of the resulting smoothed (loess) curve fitted to the residuals, for each covariate. **It can be very helpful to take note of this functional form as that is how the HR for the covariate is expected to actually vary over time.** This also provides a sanity check for any time-varying HR we might calculate later, if we decide to take remediation action in relaxing the assumption of proportionality in our model specification.
+
+To test the proportional hazards assumption we first need to fit a Cox model, so let's do that now.
+
+```{r}
+# Fit basic model with treatment and age as the only predictors
+vfit1 <- coxph(Surv(time, status) ~ trt + age, vdata1)
+tbl_regression(vfit1, exp = T)
+```
+
+Based on these model results there does not appear to be much to note, as neither covariate shows an association with the risk of death (this may not remain the case in a more complete, fully-adjusted model). But let's push ahead anyway and use `cox.zph()` to test the model fit and plot the results in evaluating proportional hazards for each of our covariates.
+
+```{r}
+(sch_res <-  cox.zph(vfit1))
+par(mfrow = c(1,2))
+plot(sch_res[1], hr = T) # trt
+abline(h = 1, lty = 3, col = "red")
+plot(sch_res[2], hr = T) # age
+abline(h = 1, lty = 3, col = "red")
+```
+
+The hypothesis test for a horizontal line fitted through the residuals for each covariate reveals a non-significant p value for both `trt` and `age`, although we would have good justification for doubting the validity of a constant HR for `trt`. Further evidence for this is provided in the plots - while the smoother is fairly horizontal for `age`, it is not for `trt`, which demonstrates an increase in the HR early on followed by a gradual decline after the first or so.
+
+::: callout-note
+Note the red dashed line is meant simply as a reference constant null effect (HR = 1). The hypothesis test is a test against a constant HR (of any value).
+:::
+
+## Graphical assessment.
+
+This option involves plotting what are referred to as log-log survival curves over the different levels of the covariate. Essentially we take the log of the survival function twice and plot that resulting function. Note that "log-log" is technically -log(-log survival) which is equivalent to -log(cumulative hazard), so we are really plotting a version of the cumulative hazards, but we won't dwell on the detail. The important point is that if hazards are proportional we expect these lines to be approximately parallel and be separated by a constant value of $\beta$ (i.e. the log HR) over the duration of observation time.
+
+We can do this in `R` for the `trt` variable using the code shown below.
+
+```{r}
+plot(survfit(Surv(vdata1$time, vdata1$status) ~ vdata1$trt), 
+     col = c("black", "red"), fun = "cloglog", xlab = "log time", ylab = "log-log survival")
+```
+
+An issue with graphical assessment of proportional hazards is that it is somewhat subjective and we don't have a clear way to determine a significant violation. In this plot, however, I think the result is quite clear and we can assert with reasonable confidence that the HR for `trt` may not in fact be constant in time.
+
+## Time-dependent variables.
+
+The last approach to testing for proportional hazards on a covariate is to create an interaction between the covariate and time (or some function of it). This allows the 'effect' of the covariate to vary at different times and we can assess the proportional hazards assumption by testing for the significance of this interaction term. If the p value is statistically significant this provides some evidence for a time-varying 'effect' of the covariate on survival times (i.e. the HR is NOT constant over time).
+
+::: callout-note
+The use and interpretation of such an interaction in a Cox model is really no different to that in any model - the main difference is that in this context we are interacting a covariate with time instead of another covariate. Keep in mind of course, that it is possible to include standard covariate-covariate interactions in the Cox model as well.
+:::
+
+So, how do we specify this time-covariate interaction term in our Cox model?
+
+Well there is a trick to this that relies on first knowing two small pieces of very important information, without which you will fall victim to the same naive error that has plagued countless analysts before you.
+
+### One simple rule about covariate values
+
+**"You cannot look into the future"**
+
+Terry Therneau - one of the main authors of the `survival` package, writes on page 2 of the package's [time-dependent vignette](https://cran.r-project.org/web/packages/survival/vignettes/timedep.pdf):
+
+"**The key rule for time dependent covariates in a Cox model is simple and essentially the same as that for gambling: you cannot look into the future. A covariate may change in any way based on past data or outcomes, but it may not reach forward in time.**"
+
+And on page 101 of [Applied Survival Analysis Using R](https://xsliulab.github.io/Workshop/2021/week3/survival-analysis-book.pdf):
+
+"The partial likelihood theory for survival data, introduced in Chap. 5, allows one to model survival times while accommodating covariate information. An important caveat to this theory is that the values of the covariates must be determined at time t = 0, when the patient enters the study, and remain constant thereafter. **This issue arises with survival data because such data evolve over time, and it would be improper to use the value a covariate to model survival information that is observed before the covariate’s value is known.** To accommodate covariates that may change their value over time (“time dependent covariates”), special measures are necessary to obtain valid parameter estimates. An intervention that occurs after the start of the trial, or a covariate (such as air pollution exposure) that changes values over the course of the study are two examples of time dependent variables.
+
+The rule is clear: we cannot predict survival using covariate values from the future."
+
+And from [Logical and statistical fallacies in the use of Cox regression models](https://pubmed.ncbi.nlm.nih.gov/8546126/):
+
+"A potential source of error involving the use of future information arises from the improper use of covariates in the Cox model...
+
+...For example, we discuss why one should almost never use a covariate that has been averaged over a patient’s entire follow-up time as a baseline covariate. Instead, the baseline value should be used as a covariate, or the cumulative average up to each point in time should be used as a time-dependent covariate."
+
+You may wonder why I am telling you this? The reason is that I think it's a common error for the naive analyst to use future covariate information in survival models. It is particularly salient to be aware of this when we are now talking about constructing a covariate-time interaction term. Because if I asked you how you would do this, I bet you a million dollars you would tell me something like "Well, I'll just interact each persons event/censoring time with the covariate we want to test". In formula terms:
+
+`vfit1 <- coxph(Surv(time, status) ~ trt + age + trt:time, vdata1)`
+
+Well you would be wrong, because in doing this, you are breaking that cardinal rule of not looking into the future (I'll show you why shortly).
+
+With regards to this erroneous model specification, Terry Therneau writes on page 21 of the [time-dependent vignette](https://cran.r-project.org/web/packages/survival/vignettes/timedep.pdf):
+
+"This mistake has been made often enough the the coxph routine has been updated to print an error message for such attempts. The issue is that the above code does not actually create a time dependent covariate, rather it creates a time-static value for each subject based on their value for the covariate time; no differently than if we had constructed the variable outside of a coxph call. **This variable most definitely breaks the rule about not looking into the future, and one would quickly find the circularity: large values of time appear to predict long survival because long survival leads to large values for time.**"
+
+### Event times are all-important in the Cox model
+
+The second concept that you may have come across in your readings on survival analysis (but I would bet you probably don't remember) is that event times are where the action is at in estimating the Cox model. **At each event time the covariate values for the individual experiencing the event are compared against the values in place for all the individuals at risk at that time (i.e. in the "risk set").** Not in the past, and certainly not in the future, **but at that time**. Regression coefficients (i.e. log HRs) are then estimated as a function of these covariate values.
+
+### Putting it all together
+
+So, now that we know the rule about not using future covariate information and also the importance of event times in Cox model estimation, how do we use this information to construct the *correct* time-covariate interaction we alluded to above in assessing the validity of proportional hazards?
+
+The "trick" is to split our data at every event time. In doing this we create a new dataset where we essentially have multi-row (counting process) data for each person. Each person's observation time is split into periods defined by **all** event times, for whatever time that person remains under observation. As an example, let's look at just the first `3` patients in the `veteran` dataset:
+
+```{r}
+# Create new df with just the first 3 subjects
+vdata1_first3 <-  vdata1 |> 
+  slice(1:3) 
+vdata1_first3 |> 
+  kable(align = "c", digits = 2)
+```
+
+Each of these patients experiences the event. We can use the `survSplit()` function to split each persons observation time by all events. When we do this we get:
+
+```{r}
+# Split time at every event and create vector of unique event times
+event_times <- sort(unique(with(vdata1_first3, time[status == 1])))
+# Create new df in CP form with splits at every event time
+vdata2_first3 <- survSplit(Surv(time, status) ~., vdata1_first3, cut = event_times)
+vdata2_first3 |> 
+  kable(align = "c", digits = 2)
+```
+
+You can see that Subject `1` has the shortest observation time (`72` days) and given there were no other event times in that period, their data remains the same. Subject `2`, however, has the longest observation time (`411` days) and given there are `3` events and they are at in the *risk set* for all of those, their observation time is split into `3` periods defined by those event timings. Subject `3` has an observation time of `228` days and as they are only at risk therefore for two of the three events, their observation time is split into `2` periods. And so on - hopefully you are starting to get the picture.
+
+::: callout-note
+One issue to be aware of with splitting time at every event is that it can lead to some very large datasets!
+:::
+
+In this data manipulation trick we are emulating single-row/person data with multi-row/person data, but the specifications are equivalent as the covariate values remain the same for each individual. The point is that we now have a data set where the risk sets used to calculate the covariate-time interaction respect the *current* time, not a potentially future time defined by the end of observation (i.e. event/censoring) as we would have used in the naive analysis.
+
+After all of that, let's finally run this model. We take our `137` patients and use `survSplit` to create an expanded dataset whereby observation time for each patient is split at all death times. We then use a `trt:time` interaction to assess whether proportional hazards may hold over the duration of observation.
+
+```{r}
+#| message: false
+#| warning: false
+# Split time at every event and create vector of unique event times
+event_times <- sort(unique(with(vdata1, time[status == 1])))
+# Create new df in CP form with splits at every event time
+vdata2 <- survSplit(Surv(time, status) ~., vdata1, cut = event_times)
+vfit2 <- coxph(Surv(tstart, time, status) ~ trt + age + trt:time, vdata2)
+tbl_regression(vfit2, exp = T)
+```
+
+The p value for the interaction term is `0.03` and so by this third method we may also surmise that the hazards for `trt` may not be proportional over time.
+
+Out of interest - what would we have gotten in the naive analysis - i.e. where we create the interaction term using the event/censoring time?
+
+```{r}
+#| message: false
+#| warning: false
+# Naive model using final observation time
+vfit3 <- coxph(Surv(time, status) ~ trt + age + trt:time, vdata1)
+tbl_regression(vfit3, exp = T)
+```
+Hmmm - quite different... and quite wrong!
+
+There is actually a quicker way to run this equivalent model without needing to first split the data, but I wanted to show you the "first-principles" approach, first. Again, on page 21 of the [time-dependent vignette](https://cran.r-project.org/web/packages/survival/vignettes/timedep.pdf), a general method is outlined which relies on the *time-transform* functionality of `coxph()`. Using this model specification, you will see that we end up with the same result.
+
+```{r}
+vfit3 <- coxph(Surv(time, status) ~ trt + age + tt(trt), tt = function(x,t,...) x*t, vdata1)
+tbl_regression(vfit3, exp = T)
+```
+
+# Wrap-Up
+
+I had originally intended to make this all one post, but clearly I have gone on for too long as usual. Today we have discussed how to diagnose non-proportional hazards, but of course you are wondering about the equally important question of "what do we actually do about non-proportional hazards?"
+
+I will tackle that in the Part 2 post in a few weeks, so I hope to see you then.

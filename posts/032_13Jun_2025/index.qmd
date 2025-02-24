@@ -3,7 +3,7 @@ title: "Model Prediction/Visualisation <br> 6. Survival Analysis - Cox Model"
 date: 2025-06-13
 categories: [code, concept, modelling, visualisation]
 # image: "images/plot.png"
-description: "How to Survive Visualising the Cox Model."
+description: "How to survive visualising the Cox model."
 ---
 
 In the last post in this series on model prediction and visualisation in `R` we are going to talk about survival analysis and specifically the Cox model. Like the extensions to the standard linear model that we most recently discussed - the GLM and LMM - predicting with the Cox model is also relatively straightforward, but the intuition in how those predictions are calculated may be less so. I hope to make that easier for you today.
@@ -119,7 +119,7 @@ These visualisations confirm our intuition that survival is better for women wit
 
 Ultimately, what I have described above is all you need to know if you want to visualise predictions from the Cox model. But if you are interested in understanding at a deeper level how the predicted values are calculated, I'll also take you through "manual mode".
 
-An important first point to grasp is that estimation of the baseline hazard function is essential to predicting survival probabilities in time-to-event models. You can think of the baseline hazard function as the equivalent of the intercept in a standard linear model. These provide an **absolute** value of the outcome from which **relative** 'effect' estimates are computed. For example, the hazard ratio in a Cox model represents a proportional change in the hazard rate for one covariate category (e.g. hormone therapy = yes [coded as 1]) relative to a reference covariate category (e.g. hormone therapy = no [coded as 0]) which is assumed to take the shape of the baseline hazard rate function. The baseline hazard rate itself can vary over time, but the proportional change should remain the same (if the proportional hazards assumption is satisfied). I have briefly touched on these ideas in a [previous post](https://msni-stats-tips.netlify.app/posts/021_01nov_2024/#semi-parametric-cox-model). The comparison with the linear model is in the regression coefficient representing a relative average change from the model intercept, which if you recall is the mean value of the outcome when all covariate values are at `0` or at their reference level. Similarly, the baseline hazard rate function is referred to as *baseline* because it represents the hazard rate function when all covariate values are at `0` or at their reference level.
+An important first point to grasp is that estimation of the baseline hazard function is essential to predicting survival probabilities in time-to-event models. You can think of the baseline hazard function as the equivalent of the intercept in a standard linear model. These provide an **absolute** value of the outcome from which **relative** 'effect' estimates are computed. For example, the hazard ratio in a Cox model represents a proportional change in the hazard rate for one covariate category (e.g. hormone therapy = yes \[coded as 1\]) relative to a reference covariate category (e.g. hormone therapy = no \[coded as 0\]) which is assumed to take the shape of the baseline hazard rate function. The baseline hazard rate itself can vary over time, but the proportional change should remain the same (if the proportional hazards assumption is satisfied). I have briefly touched on these ideas in a [previous post](https://msni-stats-tips.netlify.app/posts/021_01nov_2024/#semi-parametric-cox-model). The comparison with the linear model is in the regression coefficient representing a relative average change from the model intercept, which if you recall is the mean value of the outcome when all covariate values are at `0` or at their reference level. Similarly, the baseline hazard rate function is referred to as *baseline* because it represents the hazard rate function when all covariate values are at `0` or at their reference level.
 
 Now, while fully-parametric survival models assume a particular statistical distribution for the baseline hazard rate and estimate it by default, the semi-parametric nature of the Cox model allows hazard ratios to be computed without any knowledge of the function. Consequently, we cannot directly obtain survival probabilities from it, but we can do a little post-hoc "under-the-hood" processing to combine it with a non-parametric estimator of the baseline hazard function (typically the **Breslow** estimator) - and estimate survival probabilities that way.
 
@@ -130,9 +130,11 @@ $$ S(t) = e^{-H(t)} $$ More detail can be found [here](https://www.graphpad.com/
 Let's now put this process into action with the existing data. We can essentially break this down into five steps which I have labelled accordingly in the code below to help you follow the description:
 
 ## Step 1
+
 The first thing we need to do is to estimate the cumulative baseline hazard function (`H0`) when all covariate values are at `0` or at their reference level. We do this using specifying `centered = FALSE` in the call to `basehaz()`. It is important to include the `centered = F` argument as the default setting is `TRUE` which we don't want as this has a different interpretation (i.e. cumulative hazard function estimated at the mean of all covariate values). Also note that the cumulative hazard is estimated at each of the *observed* times in the dataset.
 
 ## Step 2
+
 We then estimate the cumulative hazard function (`H1` - `H4`) for each covariate combination of interest. For these data we have four as I have listed above. As an example, to calculate `H1` we simply multiply `H0` by the covariate combination values and their respective Cox model coefficients. e.g.:
 
 `H1 <- H0$hazard * exp((0 * cox_mod$coefficients[1]) + (3 * cox_mod$coefficients[2]))`
@@ -140,12 +142,15 @@ We then estimate the cumulative hazard function (`H1` - `H4`) for each covariate
 In the above `cox_mod$coefficients[1]` gives the coefficient value for hormone therapy and `cox_mod$coefficients[2]` gives the coefficient value for tumour size. To obtain the cumulative hazard function for the first covariate combination we just multiply the cumulative baseline hazard function by the exponent of the sum of the products of the coefficients and our covariate values of interest (in this case `0` to indicate no hormone therapy and `3` to indicate the tumour size).
 
 ## Step 3
+
 We then calculate the survival function for each covariate combination by taking the exponent of the negative of the cumulative hazard function.
 
 ## Step 4
+
 Now we create a dataframe containing the predicted survival probabilities for each covariate combination. The first `20` rows for each covariate combination is shown below.
 
 ## Step 5
+
 Then we create our plot.
 
 ```{r}

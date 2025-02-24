@@ -1,0 +1,27 @@
+---
+title: "Are your Hazards Proportional? - What to do when it just ain't so (Part 2)"
+date: 2025-07-25
+categories: [code, concept, modelling, visualisation]
+# image: "images/plot.png"
+description: "The hazards of misunderstanding the hazard ratio."
+---
+
+Welcome back after a brief mid-year break.
+
+In the last post we discussed some approaches to the diagnosis of non-proportional hazards for a covariate in our Cox model. Today we are going to look at some remediation actions we can take when we are faced with the issue in our day-to-day work. To get us started I've broken those actions down broadly into four groups:
+
+1.  Model specification adjustments.
+
+2.  Use strata (categorical variables only).
+
+3.  Incorporate non-proportionality into the model (time-dependent coefficients).
+
+    -   Step functions (different HR's over different time intervals).
+
+    -   Continuous time-dependent coefficients (smoothed HR over time).
+
+4.  Use a different type of model.
+
+    -   Accelerated failure time model.
+
+    -   Flexible parametric (Royston-Parmar) survival model.

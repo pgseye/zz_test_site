@@ -3,7 +3,7 @@ title: "Model Prediction/Visualisation <br> 5. Linear Mixed Models (LMMs)"
 date: 2025-05-30
 categories: [code, concept, modelling, visualisation]
 # image: "images/plot.png"
-description: "Visualising Fixed vs Random Effects."
+description: "Visualising fixed vs random effects."
 ---
 
 This week we are continuing our series on predicting and visualising models in `R` by focussing on linear mixed models (LMM's). Like GLM's, the fundamentals of the process remain the same bar a few tweaks specific to LMM's that you need to be aware of. Here we are back to dealing with a continuous covariate and outcome - the new development to note is the distinction between [fixed and random effects](https://www.theanalysisfactor.com/specifying-fixed-and-random-factors-in-mixed-models/) and how to handle each appropriately in the `predict()` function.
