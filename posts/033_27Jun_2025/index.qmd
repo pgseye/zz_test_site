@@ -8,7 +8,7 @@ description: "The hazards of misunderstanding the hazard ratio."
 
 # Background
 
-Ok, I'm going to be a bit melodramatic here, but bear with me. Have you ever felt like crying when your carefully constructed Cox model - one that is giving you the significant 'effect/s' you've been dreaming of - fails at the last hurdle when you discover that one (or more) of its covariates violates the assumption of proportional hazards?
+Ok, I'm going to be a bit melodramatic here, but bear with me. Have you ever felt like crying when your carefully constructed Cox model - one that is giving you the significant 'effect/s' you've been dreaming of - fails at the last hurdle when you discover that one (or more) of its covariates violates the assumption of proportional hazards (PH)?
 
 Or is that just me?
 
@@ -22,7 +22,7 @@ The following is what I said in that post:
 
 "The proportional hazards assumption basically requires that the hazard ratio (HR) is constant over time, or equivalently, that the hazard for one individual is proportional to the hazard for any other individual, and where the proportionality constant doesn't depend on time.
 
-So if we look at the figure below - I have plotted hypothetical hazard functions for males (in blue) and females (in red) for the risk of some event. You'll note that the shapes are essentially the same but are scaled versions of one another. When proportional hazards hold, then we can take a ratio of the two hazard rates at any time point and that ratio should remain constant. And I've illustrated that here at two time points - $t1$ and $t2$. The difference in the hazards obviously varies but the ratio of the hazards at those two time points is the same. At time `1` a hazard rate of `3` for males and `2` for females gives a HR of `1.5` and similarly, at time `2`, a hazard rate of `0.75` for males and `0.5` for females, again gives a HR of `1.5`.
+So if we look at the figure below - I have plotted hypothetical hazard functions for males (in blue) and females (in red) for the risk of some event. You'll note that the shapes are essentially the same but are scaled versions of one another. When PH hold, then we can take a ratio of the two hazard rates at any time point and that ratio should remain constant. And I've illustrated that here at two time points - $t1$ and $t2$. The difference in the hazards obviously varies but the ratio of the hazards at those two time points is the same. At time `1` a hazard rate of `3` for males and `2` for females gives a HR of `1.5` and similarly, at time `2`, a hazard rate of `0.75` for males and `0.5` for females, again gives a HR of `1.5`.
 
 ![](images/prop_hazards.png){fig-align="center"}
 
@@ -36,7 +36,7 @@ Before we go any further I think it is important to clarify a couple of related 
 
 ## tvc (time-varying covariate)
 
-In perhaps the more common usage, "tvc" can represent a *time-varying covariate* (also known as time-dependent covariate (tdc)). This is a covariate whose *values change* over the duration of one's observation period, but whose *'effect' on survival typically remains constant.* A good example here would be different time periods in which a person received treatment or not. Time-varying covariates are constructed as multi-row (i.e. [counting process](https://msni-stats-tips.netlify.app/posts/006_23feb_2024/#correct-analysis-assuming-treatment-status-is-time-varying)) data where each row contains a non-overlapping time period defined by a different treatment covariate value. Proportional hazards may still be assessed with counting process data and if no violation is noted, **a constant HR over the duration of observation** may be assumed.
+In perhaps the more common usage, "tvc" can represent a *time-varying covariate* (also known as time-dependent covariate (tdc)). This is a covariate whose *values change* over the duration of one's observation period, but whose *'effect' on survival typically remains constant.* A good example here would be different time periods in which a person received treatment or not. Time-varying covariates are constructed as multi-row (i.e. [counting process](https://msni-stats-tips.netlify.app/posts/006_23feb_2024/#correct-analysis-assuming-treatment-status-is-time-varying)) data where each row contains a non-overlapping time period defined by a different treatment covariate value. PH may still be assessed with counting process data and if no violation is noted, **a constant HR over the duration of observation** may be assumed.
 
 ## tvc (time-varying coefficient)
 
@@ -60,7 +60,7 @@ But now that we've cleared that up, let's get back to the issue at hand.
 
 # Testing for Proportional Hazards
 
-There are essentially three approaches to testing the proportional hazards assumption, although dare I say most of us probably only ever use the first.
+There are essentially three approaches to testing the PH assumption, although dare I say most of us probably only ever use the first.
 
 1.  Goodness of Fit (GOF) tests.
 2.  Graphical assessment.
@@ -100,7 +100,7 @@ head(vdata1, 10) |>
 
 <br>
 
-As a precursor step let's plot the Kaplan-Meier curves for these data - for no other reason than to calibrate our expectations for the upcoming proportional hazards tests.
+As a precursor step let's plot the Kaplan-Meier curves for these data - for no other reason than to calibrate our expectations for the upcoming PH tests.
 
 ```{r}
 # Kaplan-Meier plot
@@ -113,7 +113,7 @@ OK, well this is interesting as it already tells us we have a problem with the `
 
 ## Goodness of Fit (GOF) tests.
 
-The classic GOF approach uses a test statistic and p-value to assess the significance of the PH assumption based on the Schoenfeld residuals of the Cox model (I won't attempt to explain how these residuals are derived). Visually, if proportional hazards hold, then a plot of the scaled Schoenfeld residuals over time (for a particular covariate) should have zero slope. That is, we should ideally see a horizontal line which indicates that the residuals for that covariate are not related to survival time. In `R` we can use the `cox.zph()` function to perform a significance test for each covariate and for the model as a whole. Additionally, we can `plot()` the object returned by the `cox.zph()` call to visualise the shape of the resulting smoothed (loess) curve fitted to the residuals, for each covariate. **It can be very helpful to take note of this functional form as that is how the HR for the covariate is expected to actually vary over time.** This also provides a sanity check for any time-varying HR we might calculate later, if we decide to take remediation action in relaxing the assumption of proportionality in our model specification.
+The classic GOF approach uses a test statistic and p-value to assess the significance of the PH assumption based on the Schoenfeld residuals of the Cox model (I won't attempt to explain how these residuals are derived). Visually, if PH hold, then a plot of the scaled Schoenfeld residuals over time (for a particular covariate) should have zero slope. That is, we should ideally see a horizontal line which indicates that the residuals for that covariate are not related to survival time. In `R` we can use the `cox.zph()` function to perform a significance test for each covariate and for the model as a whole. Additionally, we can `plot()` the object returned by the `cox.zph()` call to visualise the shape of the resulting smoothed (loess) curve fitted to the residuals, for each covariate. **It can be very helpful to take note of this functional form as that is how the HR for the covariate is expected to actually vary over time.** This also provides a sanity check for any time-varying HR we might calculate later, if we decide to take remediation action in relaxing the assumption of proportionality in our model specification.
 
 To test the proportional hazards assumption we first need to fit a Cox model, so let's do that now.
 
@@ -123,7 +123,7 @@ vfit1 <- coxph(Surv(time, status) ~ trt + age, vdata1)
 tbl_regression(vfit1, exp = T)
 ```
 
-Based on these model results there does not appear to be much to note, as neither covariate shows an association with the risk of death (this may not remain the case in a more complete, fully-adjusted model). But let's push ahead anyway and use `cox.zph()` to test the model fit and plot the results in evaluating proportional hazards for each of our covariates.
+Based on these model results there does not appear to be much to note, as neither covariate shows an association with the risk of death (this may not remain the case in a more complete, fully-adjusted model). But let's push ahead anyway and use `cox.zph()` to test the model fit and plot the results in evaluating PH for each of our covariates.
 
 ```{r}
 (sch_res <-  cox.zph(vfit1))
@@ -151,11 +151,11 @@ plot(survfit(Surv(vdata1$time, vdata1$status) ~ vdata1$trt),
      col = c("black", "red"), fun = "cloglog", xlab = "log time", ylab = "log-log survival")
 ```
 
-An issue with graphical assessment of proportional hazards is that it is somewhat subjective and we don't have a clear way to determine a significant violation. In this plot, however, I think the result is quite clear and we can assert with reasonable confidence that the HR for `trt` may not in fact be constant in time.
+An issue with graphical assessment of PH is that it is somewhat subjective and we don't have a clear way to determine a significant violation. In this plot, however, I think the result is quite clear and we can assert with reasonable confidence that the HR for `trt` may not in fact be constant in time.
 
 ## Time-dependent variables.
 
-The last approach to testing for proportional hazards on a covariate is to create an interaction between the covariate and time (or some function of it). This allows the 'effect' of the covariate to vary at different times and we can assess the proportional hazards assumption by testing for the significance of this interaction term. If the p value is statistically significant this provides some evidence for a time-varying 'effect' of the covariate on survival times (i.e. the HR is NOT constant over time).
+The last approach to testing for PH on a covariate is to create an interaction between the covariate and time (or some function of it). This allows the 'effect' of the covariate to vary at different times and we can assess the PH assumption by testing for the significance of this interaction term. If the p value is statistically significant this provides some evidence for a time-varying 'effect' of the covariate on survival times (i.e. the HR is NOT constant over time).
 
 ::: callout-note
 The use and interpretation of such an interaction in a Cox model is really no different to that in any model - the main difference is that in this context we are interacting a covariate with time instead of another covariate. Keep in mind of course, that it is possible to include standard covariate-covariate interactions in the Cox model as well.
@@ -201,7 +201,7 @@ The second concept that you may have come across in your readings on survival an
 
 ### Putting it all together
 
-So, now that we know the rule about not using future covariate information and also the importance of event times in Cox model estimation, how do we use this information to construct the *correct* time-covariate interaction we alluded to above in assessing the validity of proportional hazards?
+So, now that we know the rule about not using future covariate information and also the importance of event times in Cox model estimation, how do we use this information to construct the *correct* time-covariate interaction we alluded to above in assessing the validity of PH?
 
 The "trick" is to split our data at every event time. In doing this we create a new dataset where we essentially have multi-row (counting process) data for each person. Each person's observation time is split into periods defined by **all** event times, for whatever time that person remains under observation. As an example, let's look at just the first `3` patients in the `veteran` dataset:
 
@@ -232,7 +232,7 @@ One issue to be aware of with splitting time at every event is that it can lead 
 
 In this data manipulation trick we are emulating single-row/person data with multi-row/person data, but the specifications are equivalent as the covariate values remain the same for each individual. The point is that we now have a data set where the risk sets used to calculate the covariate-time interaction respect the *current* time, not a potentially future time defined by the end of observation (i.e. event/censoring) as we would have used in the naive analysis.
 
-After all of that, let's finally run this model. We take our `137` patients and use `survSplit` to create an expanded dataset whereby observation time for each patient is split at all death times. We then use a `trt:time` interaction to assess whether proportional hazards may hold over the duration of observation.
+After all of that, let's finally run this model. We take our `137` patients and use `survSplit` to create an expanded dataset whereby observation time for each patient is split at all death times. We then use a `trt:time` interaction to assess whether PH may hold over the duration of observation.
 
 ```{r}
 #| message: false
@@ -241,6 +241,7 @@ After all of that, let's finally run this model. We take our `137` patients and 
 event_times <- sort(unique(with(vdata1, time[status == 1])))
 # Create new df in CP form with splits at every event time
 vdata2 <- survSplit(Surv(time, status) ~., vdata1, cut = event_times)
+# Fit Cox model with trt:time interaction (current times)
 vfit2 <- coxph(Surv(tstart, time, status) ~ trt + age + trt:time, vdata2)
 tbl_regression(vfit2, exp = T)
 ```
@@ -252,7 +253,7 @@ Out of interest - what would we have gotten in the naive analysis - i.e. where w
 ```{r}
 #| message: false
 #| warning: false
-# Naive model using final observation time
+# Fit (naive) Cox model with trt:time interaction (future times)
 vfit3 <- coxph(Surv(time, status) ~ trt + age + trt:time, vdata1)
 tbl_regression(vfit3, exp = T)
 ```
@@ -262,12 +263,13 @@ Hmmm - quite different... and quite wrong!
 There is actually a quicker way to run this equivalent model without needing to first split the data, but I wanted to show you the "first-principles" approach, first. Again, on page 21 of the [time-dependent vignette](https://cran.r-project.org/web/packages/survival/vignettes/timedep.pdf), a general method is outlined which relies on the *time-transform* functionality of `coxph()`. Using this model specification, you will see that we end up with the same result.
 
 ```{r}
+# Fit Cox model with trt:time interaction (time transform function)
 vfit3 <- coxph(Surv(time, status) ~ trt + age + tt(trt), tt = function(x,t,...) x*t, vdata1)
 tbl_regression(vfit3, exp = T)
 ```
 
 # Wrap-Up
 
-I had originally intended to make this all one post, but clearly I have gone on for too long as usual. Today we have discussed how to diagnose non-proportional hazards, but of course you are wondering about the equally important question of "what do we actually do about non-proportional hazards?"
+I had originally intended to make this all one post, but clearly I have gone on for too long as usual. Today we have discussed how to diagnose non-PH, but of course you are wondering about the equally important question of "what do we actually do about non-PH?"
 
 I will tackle that in the Part 2 post in a few weeks, so I hope to see you then.

@@ -244,7 +244,7 @@ window.Quarto = {
 
 <section id="background" class="level1" data-number="1">
 <h1 data-number="1"><span class="header-section-number">1</span> Background</h1>
-<p>Ok, I’m going to be a bit melodramatic here, but bear with me. Have you ever felt like crying when your carefully constructed Cox model - one that is giving you the significant ‘effect/s’ you’ve been dreaming of - fails at the last hurdle when you discover that one (or more) of its covariates violates the assumption of proportional hazards?</p>
+<p>Ok, I’m going to be a bit melodramatic here, but bear with me. Have you ever felt like crying when your carefully constructed Cox model - one that is giving you the significant ‘effect/s’ you’ve been dreaming of - fails at the last hurdle when you discover that one (or more) of its covariates violates the assumption of proportional hazards (PH)?</p>
 <p>Or is that just me?</p>
 <p>The Cox model is ubiquitous in medical research and is typically utilised when questions develop around assessing the time to some outcome of interest. Like any other mathematical model, the Cox model is capable of capturing only a simple reflection of biological systems that are much more complex in reality. To that end assumptions are made about the nature of the data that the model is expected to parse, and the greater the violation of those assumptions, the less faithful one can expect the reflection to be. In other words, the model becomes less and less trustworthy.</p>
 <p>Where am I headed with my ham-fisted attempt at philosophising? Well, as I’m sure you know, one of the primary assumptions underpinning the Cox model is that of proportional hazards. I have actually discussed this in one of my <a href="https://msni-stats-tips.netlify.app/posts/021_01nov_2024/#semi-parametric-cox-model">previous posts on survival analysis</a> when I introduced the Cox model, but it’s so important I’m going to reiterate here.</p>
@@ -253,7 +253,7 @@ window.Quarto = {
 <h1 data-number="2"><span class="header-section-number">2</span> Proportional Hazards (in a Nutshell)</h1>
 <p>The following is what I said in that post:</p>
 <p>“The proportional hazards assumption basically requires that the hazard ratio (HR) is constant over time, or equivalently, that the hazard for one individual is proportional to the hazard for any other individual, and where the proportionality constant doesn’t depend on time.</p>
-<p>So if we look at the figure below - I have plotted hypothetical hazard functions for males (in blue) and females (in red) for the risk of some event. You’ll note that the shapes are essentially the same but are scaled versions of one another. When proportional hazards hold, then we can take a ratio of the two hazard rates at any time point and that ratio should remain constant. And I’ve illustrated that here at two time points - <span class="math inline">\(t1\)</span> and <span class="math inline">\(t2\)</span>. The difference in the hazards obviously varies but the ratio of the hazards at those two time points is the same. At time <code>1</code> a hazard rate of <code>3</code> for males and <code>2</code> for females gives a HR of <code>1.5</code> and similarly, at time <code>2</code>, a hazard rate of <code>0.75</code> for males and <code>0.5</code> for females, again gives a HR of <code>1.5</code>.</p>
+<p>So if we look at the figure below - I have plotted hypothetical hazard functions for males (in blue) and females (in red) for the risk of some event. You’ll note that the shapes are essentially the same but are scaled versions of one another. When PH hold, then we can take a ratio of the two hazard rates at any time point and that ratio should remain constant. And I’ve illustrated that here at two time points - <span class="math inline">\(t1\)</span> and <span class="math inline">\(t2\)</span>. The difference in the hazards obviously varies but the ratio of the hazards at those two time points is the same. At time <code>1</code> a hazard rate of <code>3</code> for males and <code>2</code> for females gives a HR of <code>1.5</code> and similarly, at time <code>2</code>, a hazard rate of <code>0.75</code> for males and <code>0.5</code> for females, again gives a HR of <code>1.5</code>.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="images/prop_hazards.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
@@ -267,7 +267,7 @@ window.Quarto = {
 <p>Before we go any further I think it is important to clarify a couple of related but distinct concepts regarding “time variation” in survival analyses, as “tvc” is an acronym with two different definitions depending on the context in which it is used.</p>
 <section id="tvc-time-varying-covariate" class="level2" data-number="3.1">
 <h2 data-number="3.1" class="anchored" data-anchor-id="tvc-time-varying-covariate"><span class="header-section-number">3.1</span> tvc (time-varying covariate)</h2>
-<p>In perhaps the more common usage, “tvc” can represent a <em>time-varying covariate</em> (also known as time-dependent covariate (tdc)). This is a covariate whose <em>values change</em> over the duration of one’s observation period, but whose <em>‘effect’ on survival typically remains constant.</em> A good example here would be different time periods in which a person received treatment or not. Time-varying covariates are constructed as multi-row (i.e.&nbsp;<a href="https://msni-stats-tips.netlify.app/posts/006_23feb_2024/#correct-analysis-assuming-treatment-status-is-time-varying">counting process</a>) data where each row contains a non-overlapping time period defined by a different treatment covariate value. Proportional hazards may still be assessed with counting process data and if no violation is noted, <strong>a constant HR over the duration of observation</strong> may be assumed.</p>
+<p>In perhaps the more common usage, “tvc” can represent a <em>time-varying covariate</em> (also known as time-dependent covariate (tdc)). This is a covariate whose <em>values change</em> over the duration of one’s observation period, but whose <em>‘effect’ on survival typically remains constant.</em> A good example here would be different time periods in which a person received treatment or not. Time-varying covariates are constructed as multi-row (i.e.&nbsp;<a href="https://msni-stats-tips.netlify.app/posts/006_23feb_2024/#correct-analysis-assuming-treatment-status-is-time-varying">counting process</a>) data where each row contains a non-overlapping time period defined by a different treatment covariate value. PH may still be assessed with counting process data and if no violation is noted, <strong>a constant HR over the duration of observation</strong> may be assumed.</p>
 </section>
 <section id="tvc-time-varying-coefficient" class="level2" data-number="3.2">
 <h2 data-number="3.2" class="anchored" data-anchor-id="tvc-time-varying-coefficient"><span class="header-section-number">3.2</span> tvc (time-varying coefficient)</h2>
@@ -288,7 +288,7 @@ window.Quarto = {
 </section>
 <section id="testing-for-proportional-hazards" class="level1" data-number="4">
 <h1 data-number="4"><span class="header-section-number">4</span> Testing for Proportional Hazards</h1>
-<p>There are essentially three approaches to testing the proportional hazards assumption, although dare I say most of us probably only ever use the first.</p>
+<p>There are essentially three approaches to testing the PH assumption, although dare I say most of us probably only ever use the first.</p>
 <ol type="1">
 <li>Goodness of Fit (GOF) tests.</li>
 <li>Graphical assessment.</li>
@@ -408,7 +408,7 @@ window.Quarto = {
 </div>
 </div>
 <p><br></p>
-<p>As a precursor step let’s plot the Kaplan-Meier curves for these data - for no other reason than to calibrate our expectations for the upcoming proportional hazards tests.</p>
+<p>As a precursor step let’s plot the Kaplan-Meier curves for these data - for no other reason than to calibrate our expectations for the upcoming PH tests.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -428,7 +428,7 @@ window.Quarto = {
 <p>OK, well this is interesting as it already tells us we have a problem with the <code>trt</code> variable. Survival curves should ideally gradually separate over time. When they appear to converge - or worse still <strong>cross</strong> - this should be a warning to us that the hazard function for one group is NOT a scaled function of the other (i.e.&nbsp;they are non-proportional with respect to time). While this is a fairly obvious violation in this example, it is not uncommon for non-proportionality to appear more subtle in KM plots leaving us unsure as to whether there may be a problem or not. Not to worry though - that’s why we have these additional tests we can employ, and which I will discuss now!</p>
 <section id="goodness-of-fit-gof-tests." class="level2" data-number="4.1">
 <h2 data-number="4.1" class="anchored" data-anchor-id="goodness-of-fit-gof-tests."><span class="header-section-number">4.1</span> Goodness of Fit (GOF) tests.</h2>
-<p>The classic GOF approach uses a test statistic and p-value to assess the significance of the PH assumption based on the Schoenfeld residuals of the Cox model (I won’t attempt to explain how these residuals are derived). Visually, if proportional hazards hold, then a plot of the scaled Schoenfeld residuals over time (for a particular covariate) should have zero slope. That is, we should ideally see a horizontal line which indicates that the residuals for that covariate are not related to survival time. In <code>R</code> we can use the <code>cox.zph()</code> function to perform a significance test for each covariate and for the model as a whole. Additionally, we can <code>plot()</code> the object returned by the <code>cox.zph()</code> call to visualise the shape of the resulting smoothed (loess) curve fitted to the residuals, for each covariate. <strong>It can be very helpful to take note of this functional form as that is how the HR for the covariate is expected to actually vary over time.</strong> This also provides a sanity check for any time-varying HR we might calculate later, if we decide to take remediation action in relaxing the assumption of proportionality in our model specification.</p>
+<p>The classic GOF approach uses a test statistic and p-value to assess the significance of the PH assumption based on the Schoenfeld residuals of the Cox model (I won’t attempt to explain how these residuals are derived). Visually, if PH hold, then a plot of the scaled Schoenfeld residuals over time (for a particular covariate) should have zero slope. That is, we should ideally see a horizontal line which indicates that the residuals for that covariate are not related to survival time. In <code>R</code> we can use the <code>cox.zph()</code> function to perform a significance test for each covariate and for the model as a whole. Additionally, we can <code>plot()</code> the object returned by the <code>cox.zph()</code> call to visualise the shape of the resulting smoothed (loess) curve fitted to the residuals, for each covariate. <strong>It can be very helpful to take note of this functional form as that is how the HR for the covariate is expected to actually vary over time.</strong> This also provides a sanity check for any time-varying HR we might calculate later, if we decide to take remediation action in relaxing the assumption of proportionality in our model specification.</p>
 <p>To test the proportional hazards assumption we first need to fit a Cox model, so let’s do that now.</p>
 <div class="cell">
 <details class="code-fold">
@@ -438,23 +438,23 @@ window.Quarto = {
 <span id="cb3-3"><a href="#cb3-3"></a><span class="fu">tbl_regression</span>(vfit1, <span class="at">exp =</span> T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<div id="hakgllzqjh" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#hakgllzqjh table {
+<div id="wncyapsihw" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#wncyapsihw table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#hakgllzqjh thead, #hakgllzqjh tbody, #hakgllzqjh tfoot, #hakgllzqjh tr, #hakgllzqjh td, #hakgllzqjh th {
+#wncyapsihw thead, #wncyapsihw tbody, #wncyapsihw tfoot, #wncyapsihw tr, #wncyapsihw td, #wncyapsihw th {
   border-style: none;
 }
 
-#hakgllzqjh p {
+#wncyapsihw p {
   margin: 0;
   padding: 0;
 }
 
-#hakgllzqjh .gt_table {
+#wncyapsihw .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -480,12 +480,12 @@ window.Quarto = {
   border-left-color: #D3D3D3;
 }
 
-#hakgllzqjh .gt_caption {
+#wncyapsihw .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#hakgllzqjh .gt_title {
+#wncyapsihw .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -497,7 +497,7 @@ window.Quarto = {
   border-bottom-width: 0;
 }
 
-#hakgllzqjh .gt_subtitle {
+#wncyapsihw .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -509,7 +509,7 @@ window.Quarto = {
   border-top-width: 0;
 }
 
-#hakgllzqjh .gt_heading {
+#wncyapsihw .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -521,13 +521,13 @@ window.Quarto = {
   border-right-color: #D3D3D3;
 }
 
-#hakgllzqjh .gt_bottom_border {
+#wncyapsihw .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#hakgllzqjh .gt_col_headings {
+#wncyapsihw .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -542,7 +542,7 @@ window.Quarto = {
   border-right-color: #D3D3D3;
 }
 
-#hakgllzqjh .gt_col_heading {
+#wncyapsihw .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -562,7 +562,7 @@ window.Quarto = {
   overflow-x: hidden;
 }
 
-#hakgllzqjh .gt_column_spanner_outer {
+#wncyapsihw .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -574,15 +574,15 @@ window.Quarto = {
   padding-right: 4px;
 }
 
-#hakgllzqjh .gt_column_spanner_outer:first-child {
+#wncyapsihw .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#hakgllzqjh .gt_column_spanner_outer:last-child {
+#wncyapsihw .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#hakgllzqjh .gt_column_spanner {
+#wncyapsihw .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -594,11 +594,11 @@ window.Quarto = {
   width: 100%;
 }
 
-#hakgllzqjh .gt_spanner_row {
+#wncyapsihw .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#hakgllzqjh .gt_group_heading {
+#wncyapsihw .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -624,7 +624,7 @@ window.Quarto = {
   text-align: left;
 }
 
-#hakgllzqjh .gt_empty_group_heading {
+#wncyapsihw .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -639,15 +639,15 @@ window.Quarto = {
   vertical-align: middle;
 }
 
-#hakgllzqjh .gt_from_md > :first-child {
+#wncyapsihw .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#hakgllzqjh .gt_from_md > :last-child {
+#wncyapsihw .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#hakgllzqjh .gt_row {
+#wncyapsihw .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -666,7 +666,7 @@ window.Quarto = {
   overflow-x: hidden;
 }
 
-#hakgllzqjh .gt_stub {
+#wncyapsihw .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -679,7 +679,7 @@ window.Quarto = {
   padding-right: 5px;
 }
 
-#hakgllzqjh .gt_stub_row_group {
+#wncyapsihw .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -693,15 +693,15 @@ window.Quarto = {
   vertical-align: top;
 }
 
-#hakgllzqjh .gt_row_group_first td {
+#wncyapsihw .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#hakgllzqjh .gt_row_group_first th {
+#wncyapsihw .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#hakgllzqjh .gt_summary_row {
+#wncyapsihw .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -711,16 +711,16 @@ window.Quarto = {
   padding-right: 5px;
 }
 
-#hakgllzqjh .gt_first_summary_row {
+#wncyapsihw .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#hakgllzqjh .gt_first_summary_row.thick {
+#wncyapsihw .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#hakgllzqjh .gt_last_summary_row {
+#wncyapsihw .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -730,7 +730,7 @@ window.Quarto = {
   border-bottom-color: #D3D3D3;
 }
 
-#hakgllzqjh .gt_grand_summary_row {
+#wncyapsihw .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -740,7 +740,7 @@ window.Quarto = {
   padding-right: 5px;
 }
 
-#hakgllzqjh .gt_first_grand_summary_row {
+#wncyapsihw .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -750,7 +750,7 @@ window.Quarto = {
   border-top-color: #D3D3D3;
 }
 
-#hakgllzqjh .gt_last_grand_summary_row_top {
+#wncyapsihw .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -760,11 +760,11 @@ window.Quarto = {
   border-bottom-color: #D3D3D3;
 }
 
-#hakgllzqjh .gt_striped {
+#wncyapsihw .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#hakgllzqjh .gt_table_body {
+#wncyapsihw .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -773,7 +773,7 @@ window.Quarto = {
   border-bottom-color: #D3D3D3;
 }
 
-#hakgllzqjh .gt_footnotes {
+#wncyapsihw .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -787,7 +787,7 @@ window.Quarto = {
   border-right-color: #D3D3D3;
 }
 
-#hakgllzqjh .gt_footnote {
+#wncyapsihw .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -796,7 +796,7 @@ window.Quarto = {
   padding-right: 5px;
 }
 
-#hakgllzqjh .gt_sourcenotes {
+#wncyapsihw .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -810,7 +810,7 @@ window.Quarto = {
   border-right-color: #D3D3D3;
 }
 
-#hakgllzqjh .gt_sourcenote {
+#wncyapsihw .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -818,63 +818,63 @@ window.Quarto = {
   padding-right: 5px;
 }
 
-#hakgllzqjh .gt_left {
+#wncyapsihw .gt_left {
   text-align: left;
 }
 
-#hakgllzqjh .gt_center {
+#wncyapsihw .gt_center {
   text-align: center;
 }
 
-#hakgllzqjh .gt_right {
+#wncyapsihw .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#hakgllzqjh .gt_font_normal {
+#wncyapsihw .gt_font_normal {
   font-weight: normal;
 }
 
-#hakgllzqjh .gt_font_bold {
+#wncyapsihw .gt_font_bold {
   font-weight: bold;
 }
 
-#hakgllzqjh .gt_font_italic {
+#wncyapsihw .gt_font_italic {
   font-style: italic;
 }
 
-#hakgllzqjh .gt_super {
+#wncyapsihw .gt_super {
   font-size: 65%;
 }
 
-#hakgllzqjh .gt_footnote_marks {
+#wncyapsihw .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#hakgllzqjh .gt_asterisk {
+#wncyapsihw .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#hakgllzqjh .gt_indent_1 {
+#wncyapsihw .gt_indent_1 {
   text-indent: 5px;
 }
 
-#hakgllzqjh .gt_indent_2 {
+#wncyapsihw .gt_indent_2 {
   text-indent: 10px;
 }
 
-#hakgllzqjh .gt_indent_3 {
+#wncyapsihw .gt_indent_3 {
   text-indent: 15px;
 }
 
-#hakgllzqjh .gt_indent_4 {
+#wncyapsihw .gt_indent_4 {
   text-indent: 20px;
 }
 
-#hakgllzqjh .gt_indent_5 {
+#wncyapsihw .gt_indent_5 {
   text-indent: 25px;
 }
 </style>
@@ -912,7 +912,7 @@ window.Quarto = {
 </div>
 </div>
 </div>
-<p>Based on these model results there does not appear to be much to note, as neither covariate shows an association with the risk of death (this may not remain the case in a more complete, fully-adjusted model). But let’s push ahead anyway and use <code>cox.zph()</code> to test the model fit and plot the results in evaluating proportional hazards for each of our covariates.</p>
+<p>Based on these model results there does not appear to be much to note, as neither covariate shows an association with the risk of death (this may not remain the case in a more complete, fully-adjusted model). But let’s push ahead anyway and use <code>cox.zph()</code> to test the model fit and plot the results in evaluating PH for each of our covariates.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -973,11 +973,11 @@ Note
 </div>
 </div>
 </div>
-<p>An issue with graphical assessment of proportional hazards is that it is somewhat subjective and we don’t have a clear way to determine a significant violation. In this plot, however, I think the result is quite clear and we can assert with reasonable confidence that the HR for <code>trt</code> may not in fact be constant in time.</p>
+<p>An issue with graphical assessment of PH is that it is somewhat subjective and we don’t have a clear way to determine a significant violation. In this plot, however, I think the result is quite clear and we can assert with reasonable confidence that the HR for <code>trt</code> may not in fact be constant in time.</p>
 </section>
 <section id="time-dependent-variables." class="level2" data-number="4.3">
 <h2 data-number="4.3" class="anchored" data-anchor-id="time-dependent-variables."><span class="header-section-number">4.3</span> Time-dependent variables.</h2>
-<p>The last approach to testing for proportional hazards on a covariate is to create an interaction between the covariate and time (or some function of it). This allows the ‘effect’ of the covariate to vary at different times and we can assess the proportional hazards assumption by testing for the significance of this interaction term. If the p value is statistically significant this provides some evidence for a time-varying ‘effect’ of the covariate on survival times (i.e.&nbsp;the HR is NOT constant over time).</p>
+<p>The last approach to testing for PH on a covariate is to create an interaction between the covariate and time (or some function of it). This allows the ‘effect’ of the covariate to vary at different times and we can assess the PH assumption by testing for the significance of this interaction term. If the p value is statistically significant this provides some evidence for a time-varying ‘effect’ of the covariate on survival times (i.e.&nbsp;the HR is NOT constant over time).</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -1016,7 +1016,7 @@ Note
 </section>
 <section id="putting-it-all-together" class="level3" data-number="4.3.3">
 <h3 data-number="4.3.3" class="anchored" data-anchor-id="putting-it-all-together"><span class="header-section-number">4.3.3</span> Putting it all together</h3>
-<p>So, now that we know the rule about not using future covariate information and also the importance of event times in Cox model estimation, how do we use this information to construct the <em>correct</em> time-covariate interaction we alluded to above in assessing the validity of proportional hazards?</p>
+<p>So, now that we know the rule about not using future covariate information and also the importance of event times in Cox model estimation, how do we use this information to construct the <em>correct</em> time-covariate interaction we alluded to above in assessing the validity of PH?</p>
 <p>The “trick” is to split our data at every event time. In doing this we create a new dataset where we essentially have multi-row (counting process) data for each person. Each person’s observation time is split into periods defined by <strong>all</strong> event times, for whatever time that person remains under observation. As an example, let’s look at just the first <code>3</code> patients in the <code>veteran</code> dataset:</p>
 <div class="cell">
 <details class="code-fold">
@@ -1155,7 +1155,7 @@ Note
 </div>
 </div>
 <p>In this data manipulation trick we are emulating single-row/person data with multi-row/person data, but the specifications are equivalent as the covariate values remain the same for each individual. The point is that we now have a data set where the risk sets used to calculate the covariate-time interaction respect the <em>current</em> time, not a potentially future time defined by the end of observation (i.e.&nbsp;event/censoring) as we would have used in the naive analysis.</p>
-<p>After all of that, let’s finally run this model. We take our <code>137</code> patients and use <code>survSplit</code> to create an expanded dataset whereby observation time for each patient is split at all death times. We then use a <code>trt:time</code> interaction to assess whether proportional hazards may hold over the duration of observation.</p>
+<p>After all of that, let’s finally run this model. We take our <code>137</code> patients and use <code>survSplit</code> to create an expanded dataset whereby observation time for each patient is split at all death times. We then use a <code>trt:time</code> interaction to assess whether PH may hold over the duration of observation.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -1163,27 +1163,28 @@ Note
 <span id="cb10-2"><a href="#cb10-2"></a>event_times <span class="ot">&lt;-</span> <span class="fu">sort</span>(<span class="fu">unique</span>(<span class="fu">with</span>(vdata1, time[status <span class="sc">==</span> <span class="dv">1</span>])))</span>
 <span id="cb10-3"><a href="#cb10-3"></a><span class="co"># Create new df in CP form with splits at every event time</span></span>
 <span id="cb10-4"><a href="#cb10-4"></a>vdata2 <span class="ot">&lt;-</span> <span class="fu">survSplit</span>(<span class="fu">Surv</span>(time, status) <span class="sc">~</span>., vdata1, <span class="at">cut =</span> event_times)</span>
-<span id="cb10-5"><a href="#cb10-5"></a>vfit2 <span class="ot">&lt;-</span> <span class="fu">coxph</span>(<span class="fu">Surv</span>(tstart, time, status) <span class="sc">~</span> trt <span class="sc">+</span> age <span class="sc">+</span> trt<span class="sc">:</span>time, vdata2)</span>
-<span id="cb10-6"><a href="#cb10-6"></a><span class="fu">tbl_regression</span>(vfit2, <span class="at">exp =</span> T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb10-5"><a href="#cb10-5"></a><span class="co"># Fit Cox model with trt:time interaction (current times)</span></span>
+<span id="cb10-6"><a href="#cb10-6"></a>vfit2 <span class="ot">&lt;-</span> <span class="fu">coxph</span>(<span class="fu">Surv</span>(tstart, time, status) <span class="sc">~</span> trt <span class="sc">+</span> age <span class="sc">+</span> trt<span class="sc">:</span>time, vdata2)</span>
+<span id="cb10-7"><a href="#cb10-7"></a><span class="fu">tbl_regression</span>(vfit2, <span class="at">exp =</span> T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<div id="hakajpipra" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#hakajpipra table {
+<div id="clnfviyzkv" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#clnfviyzkv table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#hakajpipra thead, #hakajpipra tbody, #hakajpipra tfoot, #hakajpipra tr, #hakajpipra td, #hakajpipra th {
+#clnfviyzkv thead, #clnfviyzkv tbody, #clnfviyzkv tfoot, #clnfviyzkv tr, #clnfviyzkv td, #clnfviyzkv th {
   border-style: none;
 }
 
-#hakajpipra p {
+#clnfviyzkv p {
   margin: 0;
   padding: 0;
 }
 
-#hakajpipra .gt_table {
+#clnfviyzkv .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -1209,12 +1210,12 @@ Note
   border-left-color: #D3D3D3;
 }
 
-#hakajpipra .gt_caption {
+#clnfviyzkv .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#hakajpipra .gt_title {
+#clnfviyzkv .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -1226,7 +1227,7 @@ Note
   border-bottom-width: 0;
 }
 
-#hakajpipra .gt_subtitle {
+#clnfviyzkv .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -1238,7 +1239,7 @@ Note
   border-top-width: 0;
 }
 
-#hakajpipra .gt_heading {
+#clnfviyzkv .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -1250,13 +1251,13 @@ Note
   border-right-color: #D3D3D3;
 }
 
-#hakajpipra .gt_bottom_border {
+#clnfviyzkv .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#hakajpipra .gt_col_headings {
+#clnfviyzkv .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1271,7 +1272,7 @@ Note
   border-right-color: #D3D3D3;
 }
 
-#hakajpipra .gt_col_heading {
+#clnfviyzkv .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1291,7 +1292,7 @@ Note
   overflow-x: hidden;
 }
 
-#hakajpipra .gt_column_spanner_outer {
+#clnfviyzkv .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1303,15 +1304,15 @@ Note
   padding-right: 4px;
 }
 
-#hakajpipra .gt_column_spanner_outer:first-child {
+#clnfviyzkv .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#hakajpipra .gt_column_spanner_outer:last-child {
+#clnfviyzkv .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#hakajpipra .gt_column_spanner {
+#clnfviyzkv .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -1323,11 +1324,11 @@ Note
   width: 100%;
 }
 
-#hakajpipra .gt_spanner_row {
+#clnfviyzkv .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#hakajpipra .gt_group_heading {
+#clnfviyzkv .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1353,7 +1354,7 @@ Note
   text-align: left;
 }
 
-#hakajpipra .gt_empty_group_heading {
+#clnfviyzkv .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -1368,15 +1369,15 @@ Note
   vertical-align: middle;
 }
 
-#hakajpipra .gt_from_md > :first-child {
+#clnfviyzkv .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#hakajpipra .gt_from_md > :last-child {
+#clnfviyzkv .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#hakajpipra .gt_row {
+#clnfviyzkv .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1395,7 +1396,7 @@ Note
   overflow-x: hidden;
 }
 
-#hakajpipra .gt_stub {
+#clnfviyzkv .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1408,7 +1409,7 @@ Note
   padding-right: 5px;
 }
 
-#hakajpipra .gt_stub_row_group {
+#clnfviyzkv .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1422,15 +1423,15 @@ Note
   vertical-align: top;
 }
 
-#hakajpipra .gt_row_group_first td {
+#clnfviyzkv .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#hakajpipra .gt_row_group_first th {
+#clnfviyzkv .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#hakajpipra .gt_summary_row {
+#clnfviyzkv .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1440,16 +1441,16 @@ Note
   padding-right: 5px;
 }
 
-#hakajpipra .gt_first_summary_row {
+#clnfviyzkv .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#hakajpipra .gt_first_summary_row.thick {
+#clnfviyzkv .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#hakajpipra .gt_last_summary_row {
+#clnfviyzkv .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1459,7 +1460,7 @@ Note
   border-bottom-color: #D3D3D3;
 }
 
-#hakajpipra .gt_grand_summary_row {
+#clnfviyzkv .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1469,7 +1470,7 @@ Note
   padding-right: 5px;
 }
 
-#hakajpipra .gt_first_grand_summary_row {
+#clnfviyzkv .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1479,7 +1480,7 @@ Note
   border-top-color: #D3D3D3;
 }
 
-#hakajpipra .gt_last_grand_summary_row_top {
+#clnfviyzkv .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1489,11 +1490,11 @@ Note
   border-bottom-color: #D3D3D3;
 }
 
-#hakajpipra .gt_striped {
+#clnfviyzkv .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#hakajpipra .gt_table_body {
+#clnfviyzkv .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1502,7 +1503,7 @@ Note
   border-bottom-color: #D3D3D3;
 }
 
-#hakajpipra .gt_footnotes {
+#clnfviyzkv .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1516,7 +1517,7 @@ Note
   border-right-color: #D3D3D3;
 }
 
-#hakajpipra .gt_footnote {
+#clnfviyzkv .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -1525,7 +1526,7 @@ Note
   padding-right: 5px;
 }
 
-#hakajpipra .gt_sourcenotes {
+#clnfviyzkv .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1539,7 +1540,7 @@ Note
   border-right-color: #D3D3D3;
 }
 
-#hakajpipra .gt_sourcenote {
+#clnfviyzkv .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -1547,63 +1548,63 @@ Note
   padding-right: 5px;
 }
 
-#hakajpipra .gt_left {
+#clnfviyzkv .gt_left {
   text-align: left;
 }
 
-#hakajpipra .gt_center {
+#clnfviyzkv .gt_center {
   text-align: center;
 }
 
-#hakajpipra .gt_right {
+#clnfviyzkv .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#hakajpipra .gt_font_normal {
+#clnfviyzkv .gt_font_normal {
   font-weight: normal;
 }
 
-#hakajpipra .gt_font_bold {
+#clnfviyzkv .gt_font_bold {
   font-weight: bold;
 }
 
-#hakajpipra .gt_font_italic {
+#clnfviyzkv .gt_font_italic {
   font-style: italic;
 }
 
-#hakajpipra .gt_super {
+#clnfviyzkv .gt_super {
   font-size: 65%;
 }
 
-#hakajpipra .gt_footnote_marks {
+#clnfviyzkv .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#hakajpipra .gt_asterisk {
+#clnfviyzkv .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#hakajpipra .gt_indent_1 {
+#clnfviyzkv .gt_indent_1 {
   text-indent: 5px;
 }
 
-#hakajpipra .gt_indent_2 {
+#clnfviyzkv .gt_indent_2 {
   text-indent: 10px;
 }
 
-#hakajpipra .gt_indent_3 {
+#clnfviyzkv .gt_indent_3 {
   text-indent: 15px;
 }
 
-#hakajpipra .gt_indent_4 {
+#clnfviyzkv .gt_indent_4 {
   text-indent: 20px;
 }
 
-#hakajpipra .gt_indent_5 {
+#clnfviyzkv .gt_indent_5 {
   text-indent: 25px;
 }
 </style>
@@ -1652,28 +1653,28 @@ Note
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a><span class="co"># Naive model using final observation time</span></span>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a><span class="co"># Fit (naive) Cox model with trt:time interaction (future times)</span></span>
 <span id="cb11-2"><a href="#cb11-2"></a>vfit3 <span class="ot">&lt;-</span> <span class="fu">coxph</span>(<span class="fu">Surv</span>(time, status) <span class="sc">~</span> trt <span class="sc">+</span> age <span class="sc">+</span> trt<span class="sc">:</span>time, vdata1)</span>
 <span id="cb11-3"><a href="#cb11-3"></a><span class="fu">tbl_regression</span>(vfit3, <span class="at">exp =</span> T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<div id="kqthrxvqxz" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#kqthrxvqxz table {
+<div id="cfyaoxairl" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#cfyaoxairl table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#kqthrxvqxz thead, #kqthrxvqxz tbody, #kqthrxvqxz tfoot, #kqthrxvqxz tr, #kqthrxvqxz td, #kqthrxvqxz th {
+#cfyaoxairl thead, #cfyaoxairl tbody, #cfyaoxairl tfoot, #cfyaoxairl tr, #cfyaoxairl td, #cfyaoxairl th {
   border-style: none;
 }
 
-#kqthrxvqxz p {
+#cfyaoxairl p {
   margin: 0;
   padding: 0;
 }
 
-#kqthrxvqxz .gt_table {
+#cfyaoxairl .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -1699,12 +1700,12 @@ Note
   border-left-color: #D3D3D3;
 }
 
-#kqthrxvqxz .gt_caption {
+#cfyaoxairl .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#kqthrxvqxz .gt_title {
+#cfyaoxairl .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -1716,7 +1717,7 @@ Note
   border-bottom-width: 0;
 }
 
-#kqthrxvqxz .gt_subtitle {
+#cfyaoxairl .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -1728,7 +1729,7 @@ Note
   border-top-width: 0;
 }
 
-#kqthrxvqxz .gt_heading {
+#cfyaoxairl .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -1740,13 +1741,13 @@ Note
   border-right-color: #D3D3D3;
 }
 
-#kqthrxvqxz .gt_bottom_border {
+#cfyaoxairl .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#kqthrxvqxz .gt_col_headings {
+#cfyaoxairl .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1761,7 +1762,7 @@ Note
   border-right-color: #D3D3D3;
 }
 
-#kqthrxvqxz .gt_col_heading {
+#cfyaoxairl .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1781,7 +1782,7 @@ Note
   overflow-x: hidden;
 }
 
-#kqthrxvqxz .gt_column_spanner_outer {
+#cfyaoxairl .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1793,15 +1794,15 @@ Note
   padding-right: 4px;
 }
 
-#kqthrxvqxz .gt_column_spanner_outer:first-child {
+#cfyaoxairl .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#kqthrxvqxz .gt_column_spanner_outer:last-child {
+#cfyaoxairl .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#kqthrxvqxz .gt_column_spanner {
+#cfyaoxairl .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -1813,11 +1814,11 @@ Note
   width: 100%;
 }
 
-#kqthrxvqxz .gt_spanner_row {
+#cfyaoxairl .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#kqthrxvqxz .gt_group_heading {
+#cfyaoxairl .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1843,7 +1844,7 @@ Note
   text-align: left;
 }
 
-#kqthrxvqxz .gt_empty_group_heading {
+#cfyaoxairl .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -1858,15 +1859,15 @@ Note
   vertical-align: middle;
 }
 
-#kqthrxvqxz .gt_from_md > :first-child {
+#cfyaoxairl .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#kqthrxvqxz .gt_from_md > :last-child {
+#cfyaoxairl .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#kqthrxvqxz .gt_row {
+#cfyaoxairl .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1885,7 +1886,7 @@ Note
   overflow-x: hidden;
 }
 
-#kqthrxvqxz .gt_stub {
+#cfyaoxairl .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1898,7 +1899,7 @@ Note
   padding-right: 5px;
 }
 
-#kqthrxvqxz .gt_stub_row_group {
+#cfyaoxairl .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1912,15 +1913,15 @@ Note
   vertical-align: top;
 }
 
-#kqthrxvqxz .gt_row_group_first td {
+#cfyaoxairl .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#kqthrxvqxz .gt_row_group_first th {
+#cfyaoxairl .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#kqthrxvqxz .gt_summary_row {
+#cfyaoxairl .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1930,16 +1931,16 @@ Note
   padding-right: 5px;
 }
 
-#kqthrxvqxz .gt_first_summary_row {
+#cfyaoxairl .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#kqthrxvqxz .gt_first_summary_row.thick {
+#cfyaoxairl .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#kqthrxvqxz .gt_last_summary_row {
+#cfyaoxairl .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1949,7 +1950,7 @@ Note
   border-bottom-color: #D3D3D3;
 }
 
-#kqthrxvqxz .gt_grand_summary_row {
+#cfyaoxairl .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1959,7 +1960,7 @@ Note
   padding-right: 5px;
 }
 
-#kqthrxvqxz .gt_first_grand_summary_row {
+#cfyaoxairl .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1969,7 +1970,7 @@ Note
   border-top-color: #D3D3D3;
 }
 
-#kqthrxvqxz .gt_last_grand_summary_row_top {
+#cfyaoxairl .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1979,11 +1980,11 @@ Note
   border-bottom-color: #D3D3D3;
 }
 
-#kqthrxvqxz .gt_striped {
+#cfyaoxairl .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#kqthrxvqxz .gt_table_body {
+#cfyaoxairl .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1992,7 +1993,7 @@ Note
   border-bottom-color: #D3D3D3;
 }
 
-#kqthrxvqxz .gt_footnotes {
+#cfyaoxairl .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -2006,7 +2007,7 @@ Note
   border-right-color: #D3D3D3;
 }
 
-#kqthrxvqxz .gt_footnote {
+#cfyaoxairl .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -2015,7 +2016,7 @@ Note
   padding-right: 5px;
 }
 
-#kqthrxvqxz .gt_sourcenotes {
+#cfyaoxairl .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -2029,7 +2030,7 @@ Note
   border-right-color: #D3D3D3;
 }
 
-#kqthrxvqxz .gt_sourcenote {
+#cfyaoxairl .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -2037,63 +2038,63 @@ Note
   padding-right: 5px;
 }
 
-#kqthrxvqxz .gt_left {
+#cfyaoxairl .gt_left {
   text-align: left;
 }
 
-#kqthrxvqxz .gt_center {
+#cfyaoxairl .gt_center {
   text-align: center;
 }
 
-#kqthrxvqxz .gt_right {
+#cfyaoxairl .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#kqthrxvqxz .gt_font_normal {
+#cfyaoxairl .gt_font_normal {
   font-weight: normal;
 }
 
-#kqthrxvqxz .gt_font_bold {
+#cfyaoxairl .gt_font_bold {
   font-weight: bold;
 }
 
-#kqthrxvqxz .gt_font_italic {
+#cfyaoxairl .gt_font_italic {
   font-style: italic;
 }
 
-#kqthrxvqxz .gt_super {
+#cfyaoxairl .gt_super {
   font-size: 65%;
 }
 
-#kqthrxvqxz .gt_footnote_marks {
+#cfyaoxairl .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#kqthrxvqxz .gt_asterisk {
+#cfyaoxairl .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#kqthrxvqxz .gt_indent_1 {
+#cfyaoxairl .gt_indent_1 {
   text-indent: 5px;
 }
 
-#kqthrxvqxz .gt_indent_2 {
+#cfyaoxairl .gt_indent_2 {
   text-indent: 10px;
 }
 
-#kqthrxvqxz .gt_indent_3 {
+#cfyaoxairl .gt_indent_3 {
   text-indent: 15px;
 }
 
-#kqthrxvqxz .gt_indent_4 {
+#cfyaoxairl .gt_indent_4 {
   text-indent: 20px;
 }
 
-#kqthrxvqxz .gt_indent_5 {
+#cfyaoxairl .gt_indent_5 {
   text-indent: 25px;
 }
 </style>
@@ -2146,23 +2147,23 @@ Note
 <span id="cb12-2"><a href="#cb12-2"></a><span class="fu">tbl_regression</span>(vfit3, <span class="at">exp =</span> T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
-<div id="cskngfhvac" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#cskngfhvac table {
+<div id="ebbyvoavmh" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#ebbyvoavmh table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#cskngfhvac thead, #cskngfhvac tbody, #cskngfhvac tfoot, #cskngfhvac tr, #cskngfhvac td, #cskngfhvac th {
+#ebbyvoavmh thead, #ebbyvoavmh tbody, #ebbyvoavmh tfoot, #ebbyvoavmh tr, #ebbyvoavmh td, #ebbyvoavmh th {
   border-style: none;
 }
 
-#cskngfhvac p {
+#ebbyvoavmh p {
   margin: 0;
   padding: 0;
 }
 
-#cskngfhvac .gt_table {
+#ebbyvoavmh .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -2188,12 +2189,12 @@ Note
   border-left-color: #D3D3D3;
 }
 
-#cskngfhvac .gt_caption {
+#ebbyvoavmh .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#cskngfhvac .gt_title {
+#ebbyvoavmh .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -2205,7 +2206,7 @@ Note
   border-bottom-width: 0;
 }
 
-#cskngfhvac .gt_subtitle {
+#ebbyvoavmh .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -2217,7 +2218,7 @@ Note
   border-top-width: 0;
 }
 
-#cskngfhvac .gt_heading {
+#ebbyvoavmh .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -2229,13 +2230,13 @@ Note
   border-right-color: #D3D3D3;
 }
 
-#cskngfhvac .gt_bottom_border {
+#ebbyvoavmh .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#cskngfhvac .gt_col_headings {
+#ebbyvoavmh .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -2250,7 +2251,7 @@ Note
   border-right-color: #D3D3D3;
 }
 
-#cskngfhvac .gt_col_heading {
+#ebbyvoavmh .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2270,7 +2271,7 @@ Note
   overflow-x: hidden;
 }
 
-#cskngfhvac .gt_column_spanner_outer {
+#ebbyvoavmh .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2282,15 +2283,15 @@ Note
   padding-right: 4px;
 }
 
-#cskngfhvac .gt_column_spanner_outer:first-child {
+#ebbyvoavmh .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#cskngfhvac .gt_column_spanner_outer:last-child {
+#ebbyvoavmh .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#cskngfhvac .gt_column_spanner {
+#ebbyvoavmh .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -2302,11 +2303,11 @@ Note
   width: 100%;
 }
 
-#cskngfhvac .gt_spanner_row {
+#ebbyvoavmh .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#cskngfhvac .gt_group_heading {
+#ebbyvoavmh .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2332,7 +2333,7 @@ Note
   text-align: left;
 }
 
-#cskngfhvac .gt_empty_group_heading {
+#ebbyvoavmh .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -2347,15 +2348,15 @@ Note
   vertical-align: middle;
 }
 
-#cskngfhvac .gt_from_md > :first-child {
+#ebbyvoavmh .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#cskngfhvac .gt_from_md > :last-child {
+#ebbyvoavmh .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#cskngfhvac .gt_row {
+#ebbyvoavmh .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2374,7 +2375,7 @@ Note
   overflow-x: hidden;
 }
 
-#cskngfhvac .gt_stub {
+#ebbyvoavmh .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2387,7 +2388,7 @@ Note
   padding-right: 5px;
 }
 
-#cskngfhvac .gt_stub_row_group {
+#ebbyvoavmh .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2401,15 +2402,15 @@ Note
   vertical-align: top;
 }
 
-#cskngfhvac .gt_row_group_first td {
+#ebbyvoavmh .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#cskngfhvac .gt_row_group_first th {
+#ebbyvoavmh .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#cskngfhvac .gt_summary_row {
+#ebbyvoavmh .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -2419,16 +2420,16 @@ Note
   padding-right: 5px;
 }
 
-#cskngfhvac .gt_first_summary_row {
+#ebbyvoavmh .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#cskngfhvac .gt_first_summary_row.thick {
+#ebbyvoavmh .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#cskngfhvac .gt_last_summary_row {
+#ebbyvoavmh .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2438,7 +2439,7 @@ Note
   border-bottom-color: #D3D3D3;
 }
 
-#cskngfhvac .gt_grand_summary_row {
+#ebbyvoavmh .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -2448,7 +2449,7 @@ Note
   padding-right: 5px;
 }
 
-#cskngfhvac .gt_first_grand_summary_row {
+#ebbyvoavmh .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2458,7 +2459,7 @@ Note
   border-top-color: #D3D3D3;
 }
 
-#cskngfhvac .gt_last_grand_summary_row_top {
+#ebbyvoavmh .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2468,11 +2469,11 @@ Note
   border-bottom-color: #D3D3D3;
 }
 
-#cskngfhvac .gt_striped {
+#ebbyvoavmh .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#cskngfhvac .gt_table_body {
+#ebbyvoavmh .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -2481,7 +2482,7 @@ Note
   border-bottom-color: #D3D3D3;
 }
 
-#cskngfhvac .gt_footnotes {
+#ebbyvoavmh .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -2495,7 +2496,7 @@ Note
   border-right-color: #D3D3D3;
 }
 
-#cskngfhvac .gt_footnote {
+#ebbyvoavmh .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -2504,7 +2505,7 @@ Note
   padding-right: 5px;
 }
 
-#cskngfhvac .gt_sourcenotes {
+#ebbyvoavmh .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -2518,7 +2519,7 @@ Note
   border-right-color: #D3D3D3;
 }
 
-#cskngfhvac .gt_sourcenote {
+#ebbyvoavmh .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -2526,63 +2527,63 @@ Note
   padding-right: 5px;
 }
 
-#cskngfhvac .gt_left {
+#ebbyvoavmh .gt_left {
   text-align: left;
 }
 
-#cskngfhvac .gt_center {
+#ebbyvoavmh .gt_center {
   text-align: center;
 }
 
-#cskngfhvac .gt_right {
+#ebbyvoavmh .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#cskngfhvac .gt_font_normal {
+#ebbyvoavmh .gt_font_normal {
   font-weight: normal;
 }
 
-#cskngfhvac .gt_font_bold {
+#ebbyvoavmh .gt_font_bold {
   font-weight: bold;
 }
 
-#cskngfhvac .gt_font_italic {
+#ebbyvoavmh .gt_font_italic {
   font-style: italic;
 }
 
-#cskngfhvac .gt_super {
+#ebbyvoavmh .gt_super {
   font-size: 65%;
 }
 
-#cskngfhvac .gt_footnote_marks {
+#ebbyvoavmh .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#cskngfhvac .gt_asterisk {
+#ebbyvoavmh .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#cskngfhvac .gt_indent_1 {
+#ebbyvoavmh .gt_indent_1 {
   text-indent: 5px;
 }
 
-#cskngfhvac .gt_indent_2 {
+#ebbyvoavmh .gt_indent_2 {
   text-indent: 10px;
 }
 
-#cskngfhvac .gt_indent_3 {
+#ebbyvoavmh .gt_indent_3 {
   text-indent: 15px;
 }
 
-#cskngfhvac .gt_indent_4 {
+#ebbyvoavmh .gt_indent_4 {
   text-indent: 20px;
 }
 
-#cskngfhvac .gt_indent_5 {
+#ebbyvoavmh .gt_indent_5 {
   text-indent: 25px;
 }
 </style>
@@ -2631,7 +2632,7 @@ Note
 </section>
 <section id="wrap-up" class="level1" data-number="5">
 <h1 data-number="5"><span class="header-section-number">5</span> Wrap-Up</h1>
-<p>I had originally intended to make this all one post, but clearly I have gone on for too long as usual. Today we have discussed how to diagnose non-proportional hazards, but of course you are wondering about the equally important question of “what do we actually do about non-proportional hazards?”</p>
+<p>I had originally intended to make this all one post, but clearly I have gone on for too long as usual. Today we have discussed how to diagnose non-PH, but of course you are wondering about the equally important question of “what do we actually do about non-PH?”</p>
 <p>I will tackle that in the Part 2 post in a few weeks, so I hope to see you then.</p>
 
 
@@ -3236,7 +3237,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb13-8"><a href="#cb13-8"></a></span>
 <span id="cb13-9"><a href="#cb13-9"></a><span class="fu"># Background</span></span>
 <span id="cb13-10"><a href="#cb13-10"></a></span>
-<span id="cb13-11"><a href="#cb13-11"></a>Ok, I'm going to be a bit melodramatic here, but bear with me. Have you ever felt like crying when your carefully constructed Cox model - one that is giving you the significant 'effect/s' you've been dreaming of - fails at the last hurdle when you discover that one (or more) of its covariates violates the assumption of proportional hazards?</span>
+<span id="cb13-11"><a href="#cb13-11"></a>Ok, I'm going to be a bit melodramatic here, but bear with me. Have you ever felt like crying when your carefully constructed Cox model - one that is giving you the significant 'effect/s' you've been dreaming of - fails at the last hurdle when you discover that one (or more) of its covariates violates the assumption of proportional hazards (PH)?</span>
 <span id="cb13-12"><a href="#cb13-12"></a></span>
 <span id="cb13-13"><a href="#cb13-13"></a>Or is that just me?</span>
 <span id="cb13-14"><a href="#cb13-14"></a></span>
@@ -3250,7 +3251,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb13-22"><a href="#cb13-22"></a></span>
 <span id="cb13-23"><a href="#cb13-23"></a>"The proportional hazards assumption basically requires that the hazard ratio (HR) is constant over time, or equivalently, that the hazard for one individual is proportional to the hazard for any other individual, and where the proportionality constant doesn't depend on time.</span>
 <span id="cb13-24"><a href="#cb13-24"></a></span>
-<span id="cb13-25"><a href="#cb13-25"></a>So if we look at the figure below - I have plotted hypothetical hazard functions for males (in blue) and females (in red) for the risk of some event. You'll note that the shapes are essentially the same but are scaled versions of one another. When proportional hazards hold, then we can take a ratio of the two hazard rates at any time point and that ratio should remain constant. And I've illustrated that here at two time points - $t1$ and $t2$. The difference in the hazards obviously varies but the ratio of the hazards at those two time points is the same. At time <span class="in">`1`</span> a hazard rate of <span class="in">`3`</span> for males and <span class="in">`2`</span> for females gives a HR of <span class="in">`1.5`</span> and similarly, at time <span class="in">`2`</span>, a hazard rate of <span class="in">`0.75`</span> for males and <span class="in">`0.5`</span> for females, again gives a HR of <span class="in">`1.5`</span>.</span>
+<span id="cb13-25"><a href="#cb13-25"></a>So if we look at the figure below - I have plotted hypothetical hazard functions for males (in blue) and females (in red) for the risk of some event. You'll note that the shapes are essentially the same but are scaled versions of one another. When PH hold, then we can take a ratio of the two hazard rates at any time point and that ratio should remain constant. And I've illustrated that here at two time points - $t1$ and $t2$. The difference in the hazards obviously varies but the ratio of the hazards at those two time points is the same. At time <span class="in">`1`</span> a hazard rate of <span class="in">`3`</span> for males and <span class="in">`2`</span> for females gives a HR of <span class="in">`1.5`</span> and similarly, at time <span class="in">`2`</span>, a hazard rate of <span class="in">`0.75`</span> for males and <span class="in">`0.5`</span> for females, again gives a HR of <span class="in">`1.5`</span>.</span>
 <span id="cb13-26"><a href="#cb13-26"></a></span>
 <span id="cb13-27"><a href="#cb13-27"></a><span class="al">![](images/prop_hazards.png)</span>{fig-align="center"}</span>
 <span id="cb13-28"><a href="#cb13-28"></a></span>
@@ -3264,7 +3265,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb13-36"><a href="#cb13-36"></a></span>
 <span id="cb13-37"><a href="#cb13-37"></a><span class="fu">## tvc (time-varying covariate)</span></span>
 <span id="cb13-38"><a href="#cb13-38"></a></span>
-<span id="cb13-39"><a href="#cb13-39"></a>In perhaps the more common usage, "tvc" can represent a *time-varying covariate* (also known as time-dependent covariate (tdc)). This is a covariate whose *values change* over the duration of one's observation period, but whose *'effect' on survival typically remains constant.* A good example here would be different time periods in which a person received treatment or not. Time-varying covariates are constructed as multi-row (i.e. [counting process](https://msni-stats-tips.netlify.app/posts/006_23feb_2024/#correct-analysis-assuming-treatment-status-is-time-varying)) data where each row contains a non-overlapping time period defined by a different treatment covariate value. Proportional hazards may still be assessed with counting process data and if no violation is noted, **a constant HR over the duration of observation** may be assumed.</span>
+<span id="cb13-39"><a href="#cb13-39"></a>In perhaps the more common usage, "tvc" can represent a *time-varying covariate* (also known as time-dependent covariate (tdc)). This is a covariate whose *values change* over the duration of one's observation period, but whose *'effect' on survival typically remains constant.* A good example here would be different time periods in which a person received treatment or not. Time-varying covariates are constructed as multi-row (i.e. [counting process](https://msni-stats-tips.netlify.app/posts/006_23feb_2024/#correct-analysis-assuming-treatment-status-is-time-varying)) data where each row contains a non-overlapping time period defined by a different treatment covariate value. PH may still be assessed with counting process data and if no violation is noted, **a constant HR over the duration of observation** may be assumed.</span>
 <span id="cb13-40"><a href="#cb13-40"></a></span>
 <span id="cb13-41"><a href="#cb13-41"></a><span class="fu">## tvc (time-varying coefficient)</span></span>
 <span id="cb13-42"><a href="#cb13-42"></a></span>
@@ -3288,7 +3289,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb13-60"><a href="#cb13-60"></a></span>
 <span id="cb13-61"><a href="#cb13-61"></a><span class="fu"># Testing for Proportional Hazards</span></span>
 <span id="cb13-62"><a href="#cb13-62"></a></span>
-<span id="cb13-63"><a href="#cb13-63"></a>There are essentially three approaches to testing the proportional hazards assumption, although dare I say most of us probably only ever use the first.</span>
+<span id="cb13-63"><a href="#cb13-63"></a>There are essentially three approaches to testing the PH assumption, although dare I say most of us probably only ever use the first.</span>
 <span id="cb13-64"><a href="#cb13-64"></a></span>
 <span id="cb13-65"><a href="#cb13-65"></a><span class="ss">1.  </span>Goodness of Fit (GOF) tests.</span>
 <span id="cb13-66"><a href="#cb13-66"></a><span class="ss">2.  </span>Graphical assessment.</span>
@@ -3328,7 +3329,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb13-102"><a href="#cb13-102"></a></span>
 <span id="cb13-103"><a href="#cb13-103"></a>&lt;br&gt;</span>
 <span id="cb13-104"><a href="#cb13-104"></a></span>
-<span id="cb13-105"><a href="#cb13-105"></a>As a precursor step let's plot the Kaplan-Meier curves for these data - for no other reason than to calibrate our expectations for the upcoming proportional hazards tests.</span>
+<span id="cb13-105"><a href="#cb13-105"></a>As a precursor step let's plot the Kaplan-Meier curves for these data - for no other reason than to calibrate our expectations for the upcoming PH tests.</span>
 <span id="cb13-106"><a href="#cb13-106"></a></span>
 <span id="cb13-109"><a href="#cb13-109"></a><span class="in">```{r}</span></span>
 <span id="cb13-110"><a href="#cb13-110"></a><span class="co"># Kaplan-Meier plot</span></span>
@@ -3341,7 +3342,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb13-117"><a href="#cb13-117"></a></span>
 <span id="cb13-118"><a href="#cb13-118"></a><span class="fu">## Goodness of Fit (GOF) tests.</span></span>
 <span id="cb13-119"><a href="#cb13-119"></a></span>
-<span id="cb13-120"><a href="#cb13-120"></a>The classic GOF approach uses a test statistic and p-value to assess the significance of the PH assumption based on the Schoenfeld residuals of the Cox model (I won't attempt to explain how these residuals are derived). Visually, if proportional hazards hold, then a plot of the scaled Schoenfeld residuals over time (for a particular covariate) should have zero slope. That is, we should ideally see a horizontal line which indicates that the residuals for that covariate are not related to survival time. In <span class="in">`R`</span> we can use the <span class="in">`cox.zph()`</span> function to perform a significance test for each covariate and for the model as a whole. Additionally, we can <span class="in">`plot()`</span> the object returned by the <span class="in">`cox.zph()`</span> call to visualise the shape of the resulting smoothed (loess) curve fitted to the residuals, for each covariate. **It can be very helpful to take note of this functional form as that is how the HR for the covariate is expected to actually vary over time.** This also provides a sanity check for any time-varying HR we might calculate later, if we decide to take remediation action in relaxing the assumption of proportionality in our model specification.</span>
+<span id="cb13-120"><a href="#cb13-120"></a>The classic GOF approach uses a test statistic and p-value to assess the significance of the PH assumption based on the Schoenfeld residuals of the Cox model (I won't attempt to explain how these residuals are derived). Visually, if PH hold, then a plot of the scaled Schoenfeld residuals over time (for a particular covariate) should have zero slope. That is, we should ideally see a horizontal line which indicates that the residuals for that covariate are not related to survival time. In <span class="in">`R`</span> we can use the <span class="in">`cox.zph()`</span> function to perform a significance test for each covariate and for the model as a whole. Additionally, we can <span class="in">`plot()`</span> the object returned by the <span class="in">`cox.zph()`</span> call to visualise the shape of the resulting smoothed (loess) curve fitted to the residuals, for each covariate. **It can be very helpful to take note of this functional form as that is how the HR for the covariate is expected to actually vary over time.** This also provides a sanity check for any time-varying HR we might calculate later, if we decide to take remediation action in relaxing the assumption of proportionality in our model specification.</span>
 <span id="cb13-121"><a href="#cb13-121"></a></span>
 <span id="cb13-122"><a href="#cb13-122"></a>To test the proportional hazards assumption we first need to fit a Cox model, so let's do that now.</span>
 <span id="cb13-123"><a href="#cb13-123"></a></span>
@@ -3351,7 +3352,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb13-129"><a href="#cb13-129"></a><span class="fu">tbl_regression</span>(vfit1, <span class="at">exp =</span> T)</span>
 <span id="cb13-130"><a href="#cb13-130"></a><span class="in">```</span></span>
 <span id="cb13-131"><a href="#cb13-131"></a></span>
-<span id="cb13-132"><a href="#cb13-132"></a>Based on these model results there does not appear to be much to note, as neither covariate shows an association with the risk of death (this may not remain the case in a more complete, fully-adjusted model). But let's push ahead anyway and use <span class="in">`cox.zph()`</span> to test the model fit and plot the results in evaluating proportional hazards for each of our covariates.</span>
+<span id="cb13-132"><a href="#cb13-132"></a>Based on these model results there does not appear to be much to note, as neither covariate shows an association with the risk of death (this may not remain the case in a more complete, fully-adjusted model). But let's push ahead anyway and use <span class="in">`cox.zph()`</span> to test the model fit and plot the results in evaluating PH for each of our covariates.</span>
 <span id="cb13-133"><a href="#cb13-133"></a></span>
 <span id="cb13-136"><a href="#cb13-136"></a><span class="in">```{r}</span></span>
 <span id="cb13-137"><a href="#cb13-137"></a>(sch_res <span class="ot">&lt;-</span>  <span class="fu">cox.zph</span>(vfit1))</span>
@@ -3379,11 +3380,11 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb13-161"><a href="#cb13-161"></a>     <span class="at">col =</span> <span class="fu">c</span>(<span class="st">"black"</span>, <span class="st">"red"</span>), <span class="at">fun =</span> <span class="st">"cloglog"</span>, <span class="at">xlab =</span> <span class="st">"log time"</span>, <span class="at">ylab =</span> <span class="st">"log-log survival"</span>)</span>
 <span id="cb13-162"><a href="#cb13-162"></a><span class="in">```</span></span>
 <span id="cb13-163"><a href="#cb13-163"></a></span>
-<span id="cb13-164"><a href="#cb13-164"></a>An issue with graphical assessment of proportional hazards is that it is somewhat subjective and we don't have a clear way to determine a significant violation. In this plot, however, I think the result is quite clear and we can assert with reasonable confidence that the HR for <span class="in">`trt`</span> may not in fact be constant in time.</span>
+<span id="cb13-164"><a href="#cb13-164"></a>An issue with graphical assessment of PH is that it is somewhat subjective and we don't have a clear way to determine a significant violation. In this plot, however, I think the result is quite clear and we can assert with reasonable confidence that the HR for <span class="in">`trt`</span> may not in fact be constant in time.</span>
 <span id="cb13-165"><a href="#cb13-165"></a></span>
 <span id="cb13-166"><a href="#cb13-166"></a><span class="fu">## Time-dependent variables.</span></span>
 <span id="cb13-167"><a href="#cb13-167"></a></span>
-<span id="cb13-168"><a href="#cb13-168"></a>The last approach to testing for proportional hazards on a covariate is to create an interaction between the covariate and time (or some function of it). This allows the 'effect' of the covariate to vary at different times and we can assess the proportional hazards assumption by testing for the significance of this interaction term. If the p value is statistically significant this provides some evidence for a time-varying 'effect' of the covariate on survival times (i.e. the HR is NOT constant over time).</span>
+<span id="cb13-168"><a href="#cb13-168"></a>The last approach to testing for PH on a covariate is to create an interaction between the covariate and time (or some function of it). This allows the 'effect' of the covariate to vary at different times and we can assess the PH assumption by testing for the significance of this interaction term. If the p value is statistically significant this provides some evidence for a time-varying 'effect' of the covariate on survival times (i.e. the HR is NOT constant over time).</span>
 <span id="cb13-169"><a href="#cb13-169"></a></span>
 <span id="cb13-170"><a href="#cb13-170"></a>::: callout-note</span>
 <span id="cb13-171"><a href="#cb13-171"></a>The use and interpretation of such an interaction in a Cox model is really no different to that in any model - the main difference is that in this context we are interacting a covariate with time instead of another covariate. Keep in mind of course, that it is possible to include standard covariate-covariate interactions in the Cox model as well.</span>
@@ -3429,7 +3430,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb13-211"><a href="#cb13-211"></a></span>
 <span id="cb13-212"><a href="#cb13-212"></a><span class="fu">### Putting it all together</span></span>
 <span id="cb13-213"><a href="#cb13-213"></a></span>
-<span id="cb13-214"><a href="#cb13-214"></a>So, now that we know the rule about not using future covariate information and also the importance of event times in Cox model estimation, how do we use this information to construct the *correct* time-covariate interaction we alluded to above in assessing the validity of proportional hazards?</span>
+<span id="cb13-214"><a href="#cb13-214"></a>So, now that we know the rule about not using future covariate information and also the importance of event times in Cox model estimation, how do we use this information to construct the *correct* time-covariate interaction we alluded to above in assessing the validity of PH?</span>
 <span id="cb13-215"><a href="#cb13-215"></a></span>
 <span id="cb13-216"><a href="#cb13-216"></a>The "trick" is to split our data at every event time. In doing this we create a new dataset where we essentially have multi-row (counting process) data for each person. Each person's observation time is split into periods defined by **all** event times, for whatever time that person remains under observation. As an example, let's look at just the first <span class="in">`3`</span> patients in the <span class="in">`veteran`</span> dataset:</span>
 <span id="cb13-217"><a href="#cb13-217"></a></span>
@@ -3460,7 +3461,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb13-246"><a href="#cb13-246"></a></span>
 <span id="cb13-247"><a href="#cb13-247"></a>In this data manipulation trick we are emulating single-row/person data with multi-row/person data, but the specifications are equivalent as the covariate values remain the same for each individual. The point is that we now have a data set where the risk sets used to calculate the covariate-time interaction respect the *current* time, not a potentially future time defined by the end of observation (i.e. event/censoring) as we would have used in the naive analysis.</span>
 <span id="cb13-248"><a href="#cb13-248"></a></span>
-<span id="cb13-249"><a href="#cb13-249"></a>After all of that, let's finally run this model. We take our <span class="in">`137`</span> patients and use <span class="in">`survSplit`</span> to create an expanded dataset whereby observation time for each patient is split at all death times. We then use a <span class="in">`trt:time`</span> interaction to assess whether proportional hazards may hold over the duration of observation.</span>
+<span id="cb13-249"><a href="#cb13-249"></a>After all of that, let's finally run this model. We take our <span class="in">`137`</span> patients and use <span class="in">`survSplit`</span> to create an expanded dataset whereby observation time for each patient is split at all death times. We then use a <span class="in">`trt:time`</span> interaction to assess whether PH may hold over the duration of observation.</span>
 <span id="cb13-250"><a href="#cb13-250"></a></span>
 <span id="cb13-253"><a href="#cb13-253"></a><span class="in">```{r}</span></span>
 <span id="cb13-254"><a href="#cb13-254"></a><span class="co">#| message: false</span></span>
@@ -3469,36 +3470,38 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb13-257"><a href="#cb13-257"></a>event_times <span class="ot">&lt;-</span> <span class="fu">sort</span>(<span class="fu">unique</span>(<span class="fu">with</span>(vdata1, time[status <span class="sc">==</span> <span class="dv">1</span>])))</span>
 <span id="cb13-258"><a href="#cb13-258"></a><span class="co"># Create new df in CP form with splits at every event time</span></span>
 <span id="cb13-259"><a href="#cb13-259"></a>vdata2 <span class="ot">&lt;-</span> <span class="fu">survSplit</span>(<span class="fu">Surv</span>(time, status) <span class="sc">~</span>., vdata1, <span class="at">cut =</span> event_times)</span>
-<span id="cb13-260"><a href="#cb13-260"></a>vfit2 <span class="ot">&lt;-</span> <span class="fu">coxph</span>(<span class="fu">Surv</span>(tstart, time, status) <span class="sc">~</span> trt <span class="sc">+</span> age <span class="sc">+</span> trt<span class="sc">:</span>time, vdata2)</span>
-<span id="cb13-261"><a href="#cb13-261"></a><span class="fu">tbl_regression</span>(vfit2, <span class="at">exp =</span> T)</span>
-<span id="cb13-262"><a href="#cb13-262"></a><span class="in">```</span></span>
-<span id="cb13-263"><a href="#cb13-263"></a></span>
-<span id="cb13-264"><a href="#cb13-264"></a>The p value for the interaction term is <span class="in">`0.03`</span> and so by this third method we may also surmise that the hazards for <span class="in">`trt`</span> may not be proportional over time.</span>
-<span id="cb13-265"><a href="#cb13-265"></a></span>
-<span id="cb13-266"><a href="#cb13-266"></a>Out of interest - what would we have gotten in the naive analysis - i.e. where we create the interaction term using the event/censoring time?</span>
-<span id="cb13-267"><a href="#cb13-267"></a></span>
-<span id="cb13-270"><a href="#cb13-270"></a><span class="in">```{r}</span></span>
-<span id="cb13-271"><a href="#cb13-271"></a><span class="co">#| message: false</span></span>
-<span id="cb13-272"><a href="#cb13-272"></a><span class="co">#| warning: false</span></span>
-<span id="cb13-273"><a href="#cb13-273"></a><span class="co"># Naive model using final observation time</span></span>
-<span id="cb13-274"><a href="#cb13-274"></a>vfit3 <span class="ot">&lt;-</span> <span class="fu">coxph</span>(<span class="fu">Surv</span>(time, status) <span class="sc">~</span> trt <span class="sc">+</span> age <span class="sc">+</span> trt<span class="sc">:</span>time, vdata1)</span>
-<span id="cb13-275"><a href="#cb13-275"></a><span class="fu">tbl_regression</span>(vfit3, <span class="at">exp =</span> T)</span>
-<span id="cb13-276"><a href="#cb13-276"></a><span class="in">```</span></span>
-<span id="cb13-277"><a href="#cb13-277"></a></span>
-<span id="cb13-278"><a href="#cb13-278"></a>Hmmm - quite different... and quite wrong!</span>
-<span id="cb13-279"><a href="#cb13-279"></a></span>
-<span id="cb13-280"><a href="#cb13-280"></a>There is actually a quicker way to run this equivalent model without needing to first split the data, but I wanted to show you the "first-principles" approach, first. Again, on page 21 of the <span class="co">[</span><span class="ot">time-dependent vignette</span><span class="co">](https://cran.r-project.org/web/packages/survival/vignettes/timedep.pdf)</span>, a general method is outlined which relies on the *time-transform* functionality of <span class="in">`coxph()`</span>. Using this model specification, you will see that we end up with the same result.</span>
-<span id="cb13-281"><a href="#cb13-281"></a></span>
-<span id="cb13-284"><a href="#cb13-284"></a><span class="in">```{r}</span></span>
-<span id="cb13-285"><a href="#cb13-285"></a>vfit3 <span class="ot">&lt;-</span> <span class="fu">coxph</span>(<span class="fu">Surv</span>(time, status) <span class="sc">~</span> trt <span class="sc">+</span> age <span class="sc">+</span> <span class="fu">tt</span>(trt), <span class="at">tt =</span> <span class="cf">function</span>(x,t,...) x<span class="sc">*</span>t, vdata1)</span>
-<span id="cb13-286"><a href="#cb13-286"></a><span class="fu">tbl_regression</span>(vfit3, <span class="at">exp =</span> T)</span>
-<span id="cb13-287"><a href="#cb13-287"></a><span class="in">```</span></span>
-<span id="cb13-288"><a href="#cb13-288"></a></span>
-<span id="cb13-289"><a href="#cb13-289"></a><span class="fu"># Wrap-Up</span></span>
+<span id="cb13-260"><a href="#cb13-260"></a><span class="co"># Fit Cox model with trt:time interaction (current times)</span></span>
+<span id="cb13-261"><a href="#cb13-261"></a>vfit2 <span class="ot">&lt;-</span> <span class="fu">coxph</span>(<span class="fu">Surv</span>(tstart, time, status) <span class="sc">~</span> trt <span class="sc">+</span> age <span class="sc">+</span> trt<span class="sc">:</span>time, vdata2)</span>
+<span id="cb13-262"><a href="#cb13-262"></a><span class="fu">tbl_regression</span>(vfit2, <span class="at">exp =</span> T)</span>
+<span id="cb13-263"><a href="#cb13-263"></a><span class="in">```</span></span>
+<span id="cb13-264"><a href="#cb13-264"></a></span>
+<span id="cb13-265"><a href="#cb13-265"></a>The p value for the interaction term is <span class="in">`0.03`</span> and so by this third method we may also surmise that the hazards for <span class="in">`trt`</span> may not be proportional over time.</span>
+<span id="cb13-266"><a href="#cb13-266"></a></span>
+<span id="cb13-267"><a href="#cb13-267"></a>Out of interest - what would we have gotten in the naive analysis - i.e. where we create the interaction term using the event/censoring time?</span>
+<span id="cb13-268"><a href="#cb13-268"></a></span>
+<span id="cb13-271"><a href="#cb13-271"></a><span class="in">```{r}</span></span>
+<span id="cb13-272"><a href="#cb13-272"></a><span class="co">#| message: false</span></span>
+<span id="cb13-273"><a href="#cb13-273"></a><span class="co">#| warning: false</span></span>
+<span id="cb13-274"><a href="#cb13-274"></a><span class="co"># Fit (naive) Cox model with trt:time interaction (future times)</span></span>
+<span id="cb13-275"><a href="#cb13-275"></a>vfit3 <span class="ot">&lt;-</span> <span class="fu">coxph</span>(<span class="fu">Surv</span>(time, status) <span class="sc">~</span> trt <span class="sc">+</span> age <span class="sc">+</span> trt<span class="sc">:</span>time, vdata1)</span>
+<span id="cb13-276"><a href="#cb13-276"></a><span class="fu">tbl_regression</span>(vfit3, <span class="at">exp =</span> T)</span>
+<span id="cb13-277"><a href="#cb13-277"></a><span class="in">```</span></span>
+<span id="cb13-278"><a href="#cb13-278"></a></span>
+<span id="cb13-279"><a href="#cb13-279"></a>Hmmm - quite different... and quite wrong!</span>
+<span id="cb13-280"><a href="#cb13-280"></a></span>
+<span id="cb13-281"><a href="#cb13-281"></a>There is actually a quicker way to run this equivalent model without needing to first split the data, but I wanted to show you the "first-principles" approach, first. Again, on page 21 of the <span class="co">[</span><span class="ot">time-dependent vignette</span><span class="co">](https://cran.r-project.org/web/packages/survival/vignettes/timedep.pdf)</span>, a general method is outlined which relies on the *time-transform* functionality of <span class="in">`coxph()`</span>. Using this model specification, you will see that we end up with the same result.</span>
+<span id="cb13-282"><a href="#cb13-282"></a></span>
+<span id="cb13-285"><a href="#cb13-285"></a><span class="in">```{r}</span></span>
+<span id="cb13-286"><a href="#cb13-286"></a><span class="co"># Fit Cox model with trt:time interaction (time transform function)</span></span>
+<span id="cb13-287"><a href="#cb13-287"></a>vfit3 <span class="ot">&lt;-</span> <span class="fu">coxph</span>(<span class="fu">Surv</span>(time, status) <span class="sc">~</span> trt <span class="sc">+</span> age <span class="sc">+</span> <span class="fu">tt</span>(trt), <span class="at">tt =</span> <span class="cf">function</span>(x,t,...) x<span class="sc">*</span>t, vdata1)</span>
+<span id="cb13-288"><a href="#cb13-288"></a><span class="fu">tbl_regression</span>(vfit3, <span class="at">exp =</span> T)</span>
+<span id="cb13-289"><a href="#cb13-289"></a><span class="in">```</span></span>
 <span id="cb13-290"><a href="#cb13-290"></a></span>
-<span id="cb13-291"><a href="#cb13-291"></a>I had originally intended to make this all one post, but clearly I have gone on for too long as usual. Today we have discussed how to diagnose non-proportional hazards, but of course you are wondering about the equally important question of "what do we actually do about non-proportional hazards?"</span>
+<span id="cb13-291"><a href="#cb13-291"></a><span class="fu"># Wrap-Up</span></span>
 <span id="cb13-292"><a href="#cb13-292"></a></span>
-<span id="cb13-293"><a href="#cb13-293"></a>I will tackle that in the Part 2 post in a few weeks, so I hope to see you then.</span>
+<span id="cb13-293"><a href="#cb13-293"></a>I had originally intended to make this all one post, but clearly I have gone on for too long as usual. Today we have discussed how to diagnose non-PH, but of course you are wondering about the equally important question of "what do we actually do about non-PH?"</span>
+<span id="cb13-294"><a href="#cb13-294"></a></span>
+<span id="cb13-295"><a href="#cb13-295"></a>I will tackle that in the Part 2 post in a few weeks, so I hope to see you then.</span>
 </code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
