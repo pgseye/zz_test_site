@@ -2,7 +2,7 @@
 title: "Are your Hazards Proportional? - What to do when it just ain't so (Part 2)"
 date: 2025-07-25
 categories: [code, concept, modelling, visualisation]
-# image: "images/plot.png"
+image: "images/tvc_plot.png"
 description: "The hazards of misunderstanding the hazard ratio."
 ---
 
