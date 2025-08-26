@@ -1,0 +1,1530 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.549">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="dcterms.date" content="2025-10-17">
+<meta name="description" content="A broad overview of implications for power, sample size and precision.">
+
+<title>Test Site 2 - Correlated Data</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Test Site 2</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html"> 
+<span class="menu-text">About</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html"> 
+<span class="menu-text">All Posts</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+          <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#what-are-correlated-data" id="toc-what-are-correlated-data" class="nav-link active" data-scroll-target="#what-are-correlated-data"><span class="header-section-number">1</span> What are Correlated Data?</a>
+  <ul>
+  <li><a href="#what-are-repeated-measures-data" id="toc-what-are-repeated-measures-data" class="nav-link" data-scroll-target="#what-are-repeated-measures-data"><span class="header-section-number">1.1</span> What are Repeated Measures data?</a></li>
+  <li><a href="#what-are-clustered-data" id="toc-what-are-clustered-data" class="nav-link" data-scroll-target="#what-are-clustered-data"><span class="header-section-number">1.2</span> What are Clustered data?</a></li>
+  <li><a href="#repeated-measures-and-clustered-data." id="toc-repeated-measures-and-clustered-data." class="nav-link" data-scroll-target="#repeated-measures-and-clustered-data."><span class="header-section-number">1.3</span> Repeated Measures AND Clustered data.</a></li>
+  <li><a href="#why-do-we-care" id="toc-why-do-we-care" class="nav-link" data-scroll-target="#why-do-we-care"><span class="header-section-number">1.4</span> Why do we care?</a></li>
+  </ul></li>
+  <li><a href="#some-basic-correlated-data-concepts." id="toc-some-basic-correlated-data-concepts." class="nav-link" data-scroll-target="#some-basic-correlated-data-concepts."><span class="header-section-number">2</span> Some Basic Correlated Data Concepts.</a>
+  <ul>
+  <li><a href="#intraclass-cluster-correlation---icc" id="toc-intraclass-cluster-correlation---icc" class="nav-link" data-scroll-target="#intraclass-cluster-correlation---icc"><span class="header-section-number">2.1</span> Intraclass (cluster) correlation - ICC</a>
+  <ul class="collapse">
+  <li><a href="#relationship-to-anova" id="toc-relationship-to-anova" class="nav-link" data-scroll-target="#relationship-to-anova"><span class="header-section-number">2.1.1</span> Relationship to ANOVA</a></li>
+  <li><a href="#a-different-way-to-imagine-the-same-thing" id="toc-a-different-way-to-imagine-the-same-thing" class="nav-link" data-scroll-target="#a-different-way-to-imagine-the-same-thing"><span class="header-section-number">2.1.2</span> A different way to imagine the same thing</a></li>
+  <li><a href="#give-me-something-tangible" id="toc-give-me-something-tangible" class="nav-link" data-scroll-target="#give-me-something-tangible"><span class="header-section-number">2.1.3</span> Give me something tangible</a></li>
+  </ul></li>
+  <li><a href="#brief-intermission" id="toc-brief-intermission" class="nav-link" data-scroll-target="#brief-intermission"><span class="header-section-number">2.2</span> …Brief Intermission…</a></li>
+  <li><a href="#design-effect-de-and-effective-sample-size-ess" id="toc-design-effect-de-and-effective-sample-size-ess" class="nav-link" data-scroll-target="#design-effect-de-and-effective-sample-size-ess"><span class="header-section-number">2.3</span> Design Effect (DE) and Effective Sample Size (ESS)</a>
+  <ul class="collapse">
+  <li><a href="#worked-example-1---icc-0.02" id="toc-worked-example-1---icc-0.02" class="nav-link" data-scroll-target="#worked-example-1---icc-0.02"><span class="header-section-number">2.3.1</span> Worked Example 1 - ICC = 0.02</a></li>
+  <li><a href="#worked-example-2---icc-0" id="toc-worked-example-2---icc-0" class="nav-link" data-scroll-target="#worked-example-2---icc-0"><span class="header-section-number">2.3.2</span> Worked Example 2 - ICC = 0</a></li>
+  <li><a href="#worked-example-3---icc-1" id="toc-worked-example-3---icc-1" class="nav-link" data-scroll-target="#worked-example-3---icc-1"><span class="header-section-number">2.3.3</span> Worked Example 3 - ICC = 1</a></li>
+  </ul></li>
+  <li><a href="#take-homes" id="toc-take-homes" class="nav-link" data-scroll-target="#take-homes"><span class="header-section-number">2.4</span> Take Homes</a></li>
+  </ul></li>
+  <li><a href="#simulations---effect-of-icc-on-standard-errors" id="toc-simulations---effect-of-icc-on-standard-errors" class="nav-link" data-scroll-target="#simulations---effect-of-icc-on-standard-errors"><span class="header-section-number">3</span> Simulations - Effect of ICC on Standard Errors</a>
+  <ul>
+  <li><a href="#simulation-1---icc-0.99-m-10-k-10" id="toc-simulation-1---icc-0.99-m-10-k-10" class="nav-link" data-scroll-target="#simulation-1---icc-0.99-m-10-k-10"><span class="header-section-number">3.1</span> Simulation 1 - ICC = 0.99, m = 10, k = 10</a></li>
+  <li><a href="#simulation-2---icc-0.99-m-100-k-10" id="toc-simulation-2---icc-0.99-m-100-k-10" class="nav-link" data-scroll-target="#simulation-2---icc-0.99-m-100-k-10"><span class="header-section-number">3.2</span> Simulation 2 - ICC = 0.99, m = 100, k = 10</a></li>
+  <li><a href="#simulation-3---icc-0.99-m-10-k-100" id="toc-simulation-3---icc-0.99-m-10-k-100" class="nav-link" data-scroll-target="#simulation-3---icc-0.99-m-10-k-100"><span class="header-section-number">3.3</span> Simulation 3 - ICC = 0.99, m = 10, k = 100</a></li>
+  <li><a href="#simulations-4-6---icc-0.1" id="toc-simulations-4-6---icc-0.1" class="nav-link" data-scroll-target="#simulations-4-6---icc-0.1"><span class="header-section-number">3.4</span> Simulations 4-6 - ICC = 0.1</a></li>
+  </ul></li>
+  <li><a href="#wrap-up" id="toc-wrap-up" class="nav-link" data-scroll-target="#wrap-up"><span class="header-section-number">4</span> Wrap-Up</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<div class="quarto-title-block"><div><h1 class="title">Correlated Data</h1><button type="button" class="btn code-tools-button dropdown-toggle" id="quarto-code-tools-menu" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi"></i> Code</button><ul class="dropdown-menu dropdown-menu-end" aria-labelelledby="quarto-code-tools-menu"><li><a id="quarto-show-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Show All Code</a></li><li><a id="quarto-hide-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Hide All Code</a></li><li><hr class="dropdown-divider"></li><li><a id="quarto-view-source" class="dropdown-item" href="javascript:void(0)" role="button">View Source</a></li></ul></div></div>
+  <div class="quarto-categories">
+    <div class="quarto-category">code</div>
+    <div class="quarto-category">concept</div>
+    <div class="quarto-category">modelling</div>
+  </div>
+  </div>
+
+<div>
+  <div class="description">
+    A broad overview of implications for power, sample size and precision.
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">October 17, 2025</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>Today we’re going to take a fairly high-level look at the idea of correlated data. I have no doubt that many of you are already aware that correlated data need to be properly accounted for in the analyses that you do. And to that end you probably know that you need to use something like a linear mixed-model instead of a vanilla linear regression if a regression model is called for, but perhaps you don’t really understand why. What I am therefore hoping I can achieve with this post is to build a little intuition in to your stats thinking to help you recognise some of the implications of correlated data when it comes to power, sample size and precision, in your daily research.</p>
+<section id="what-are-correlated-data" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> What are Correlated Data?</h1>
+<p>Ok, so what are correlated data in the context that we’re talking about today? In very basic terms, think of them as <strong>groups</strong> or <strong>clusters</strong> of observations that share similarities with each other, so that observations within one group tend to be <strong>more alike</strong> than observations within another group. It’s important to keep in mind that this grouping or clustering structure is usually not of scientific interest in its own right, but arises as a natural consequence of how we sample our data. For example we may take multiple outcome measurements on a subject because we are interested in change over time, or we may measure some outcome of interest on a subject only once but recruit our subjects through GP clinics or hospitals. In both of these cases there is an implicit grouping or clustering structure - the individual subject in the first and the GP clinic/hospital in the second.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/clustered_vs_repeated.png" class="quarto-figure quarto-figure-center figure-img" height="400"></p>
+</figure>
+</div>
+<p>In the figure above I asked Google Gemini to generate a couple of images reflecting these concepts, using Lego figurines. It got the idea, but I couldn’t help but think there was something a little malign in the algorithm that day, as it appeared to be channelling North Korean military in the case of repeated measures on the same individual (left), and psychopaths in the context of different individuals grouped by a common factor (right). Anyway, I’m sure you get the idea…</p>
+<section id="what-are-repeated-measures-data" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="what-are-repeated-measures-data"><span class="header-section-number">1.1</span> What are Repeated Measures data?</h2>
+<p>Repeated measures data occur when you take multiple outcome measures from the same subjects (or experimental units), over time, space or condition. Now of these, data of the first type is probably the most common because many interesting research questions often involve a time component and discovering something about the trajectory of change in an outcome of interest over time - i.e.&nbsp;what we commonly refer to as longitudinal data. But repeated measures can also be made over ‘space’ - for example, we might be interested in comparing values on different measurement devices; OR under different conditions - treatment being a classic example here. In this context of repeated measures data, you can think of the individual, abstractly, as being the ‘cluster’.</p>
+</section>
+<section id="what-are-clustered-data" class="level2" data-number="1.2">
+<h2 data-number="1.2" class="anchored" data-anchor-id="what-are-clustered-data"><span class="header-section-number">1.2</span> What are Clustered data?</h2>
+<p>Clustered data differ from repeated measures in that outcome measures are taken from individuals usually just once, but where the individuals are related in some way to each other within a larger grouping structure. So when we talk about humans, clusters can be many things - families, schools, and GP clinics and hospitals are all common examples. But we can also talk about other grouping structures - animal litters and cages and bacterial plates in the lab; or cities and countries from a geographic perspective. If we return to people as being the experimental unit, in the context of clustered data, you can think of the individual as belonging to the cluster, rather than being the cluster as in the case of repeated measures.</p>
+</section>
+<section id="repeated-measures-and-clustered-data." class="level2" data-number="1.3">
+<h2 data-number="1.3" class="anchored" data-anchor-id="repeated-measures-and-clustered-data."><span class="header-section-number">1.3</span> Repeated Measures AND Clustered data.</h2>
+<p>You may come across other terms in your readings regarding correlated data and probably the two most common ones are hierarchical and nested - and these terms make sense when you think about it. Whether data are repeated measures or clustered, or a combination of both, the general idea is that observations exist within groups which then exist at different ‘levels’. The simplest grouping structure consists, by necessity, of just two levels but there can be more depending on the nature of the data. In the figure below I have made an example consisting of a 3-level hierarchy where we have repeated measures (level 1) nested within patients (level 2) which are further nested within hospitals (level 3).</p>
+<p><img src="images/hierarchy.jpg" class="img-fluid"></p>
+</section>
+<section id="why-do-we-care" class="level2" data-number="1.4">
+<h2 data-number="1.4" class="anchored" data-anchor-id="why-do-we-care"><span class="header-section-number">1.4</span> Why do we care?</h2>
+<p>So why do we care about potential correlations in our data structure? Well, because in all likelihood (pardon the stats pun), you’ll be wrong if you don’t. A fundamental tenet in statistics is that <strong>data points are independent</strong> - in other words, knowing the value of one data point doesn’t inform you as to the value of any others. This assumption of independence is violated in the presence of repeated measures or clustering. In turn this can result in unreliable estimation because standard errors and p-values are incorrect - and they tend to be incorrect on the ‘too low’ side, leading to false positives and claims of statistical significance when in fact, none may actually exist. In practice we commonly see this when the naive analyst uses standard linear regression techniques, thus ignoring potential correlations, in data that are not independent. What one should be doing instead are using models that explicitly account for these correlation structures in the model specification - and that is most commonly the mixed-model where we can flexibly specify these correlations as random effects (Generalised Estimating Equations - GEE’s - are another option but account for the correlations in a different way, mathematically).</p>
+</section>
+</section>
+<section id="some-basic-correlated-data-concepts." class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Some Basic Correlated Data Concepts.</h1>
+<p>There are some rare instances where we might not actually need a more complex mixed-model at all - although dare I say this is really an exception rather than the rule. In some cases, while a grouping structure exists, its effect is so weak that we can effectively treat the data as independent and leave the corresponding random effect out. In model terms this would essentially be a comparison between a mixed-model (accounting for potential correlations) and the simpler standard linear model (ignoring potential correlations). In practice we could test this simply by comparing the models in terms of likelihood ratios or fit criteria like the AIC, selecting the model with the ‘better’ fit. Now, the reason I am telling you about this is that the basis for these kinds of tests are related to the important idea of the <em>intraclass</em> - or <em>intracluster</em> - correlation, and that is something that we are going to discuss next.</p>
+<section id="intraclass-cluster-correlation---icc" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="intraclass-cluster-correlation---icc"><span class="header-section-number">2.1</span> Intraclass (cluster) correlation - ICC</h2>
+<p>The ICC (or rho by it’s Greek symbol) measures the relatedness of correlated data by comparing the between- and within-cluster variances. In other words:</p>
+<p><span class="math display">\[\rho = \frac{\sigma_{(between)}}{\sigma_{(between)} + \sigma_{(within)}} = \frac{\sigma_{(between)}}{\sigma_{(total)}}\]</span></p>
+<p>Mathematically, the ICC is the ratio of the between-cluster to total variance (where the total variance is the sum of the between- and within-cluster variances). The value of the ICC ranges from <code>0</code> to <code>1</code>; where an ICC of <code>0</code> means that <strong>observations within a group are as different as observations in other groups</strong> - that is, they are independent; and an ICC of <code>1</code> means that <strong>observations within a group are the same</strong> - that is, they are completely dependent. Another way to think about this is that when the ICC = <code>0</code>, knowing the value of any one observation within a group, gives you no clue as the value of the other observations within that group - they are just as likely to different as observations belonging to other groups. Contrast this to the opposite extreme when the ICC = <code>1</code>. Now, if we know the value of any one observation within a group, we automatically know the values of all other observations within that group! If this is not quite making sense yet, I will expound on this notion over the next few sections, and I hope that will make things clearer for you.</p>
+<section id="relationship-to-anova" class="level3" data-number="2.1.1">
+<h3 data-number="2.1.1" class="anchored" data-anchor-id="relationship-to-anova"><span class="header-section-number">2.1.1</span> Relationship to ANOVA</h3>
+<p>Let’s build on the ideas presented above by considering how the ICC relates to a traditional analysis of variance (ANOVA) [For those who aren’t as familiar with ANOVA, both ANOVA and regression are part of the same statistical framework (the General Linear Model), with the former being a special case of the latter, and the latter, ultimately, being more flexible in its application]. To illustrate ANOVA, I am ‘<a href="https://www.datanovia.com/en/lessons/anova-in-r/">borrowing</a>’ the following image:</p>
+<p><img src="images/between_within.png" class="img-fluid"></p>
+<p>To work out the between-cluster variance we first calculate the mean of each cluster and then calculate the variance of those means. The within-cluster variance is a little different - here we calculate the variance of the observations within each cluster and then take an average of those variances.</p>
+<p>Now, when we conduct an ANOVA all we are basically doing is comparing the between-group variance against the within-group variance. And if the between-group variance is larger than the within-group variance it tells us that the group means might differ in an important way (in other words that the signal is greater than the noise).</p>
+</section>
+<section id="a-different-way-to-imagine-the-same-thing" class="level3" data-number="2.1.2">
+<h3 data-number="2.1.2" class="anchored" data-anchor-id="a-different-way-to-imagine-the-same-thing"><span class="header-section-number">2.1.2</span> A different way to imagine the same thing</h3>
+<p>Let’s now consider the same concept visualised via abacus plots (again I am <a href="https://en.wikipedia.org/wiki/Intraclass_correlation">borrowing</a> these images as I didn’t feel the need to re-invent the wheel). So how does knowledge of the between- and within-cluster variances allow us to ballpark what the ICC might be? In each plot below the vertical line represents a group of observations (so in each plot we have <code>20</code> groups each consisting of <code>4</code> observations). On the left we have a situation where the <strong>observations within a given group are as different as observations in other groups</strong>. So here the grouping structure doesn’t really matter. The between-cluster variance is therefore low relative to the within-cluster variance, and as a proportion of the total variance results in a small number divided by a bigger number <strong>leading to a low ICC</strong>. When you scan across that plot you can see that the points appear fairly randomly scattered.</p>
+<p>Compare that to the plot on the right. Here we have the opposite situation where the <strong>observations within any one group are very similar to each other</strong>. In this case the grouping structure does matter. Now the between-cluster variance is high relative to the within-cluster variance, and as a proportion of the total variance results in a big number divided by a smaller number <strong>leading to a high ICC</strong>. Now when you scan across the plot you can see that the points are much more clustered together in their groups.</p>
+<p><img src="images/iccs.png" class="img-fluid"></p>
+</section>
+<section id="give-me-something-tangible" class="level3" data-number="2.1.3">
+<h3 data-number="2.1.3" class="anchored" data-anchor-id="give-me-something-tangible"><span class="header-section-number">2.1.3</span> Give me something tangible</h3>
+<p>OK, thus far I’ve talked about ICC’s in a very abstract way, I know. But can we contextualise the concept in a real-world setting? You might be thinking - what are some actual examples of ICC’s? Well, I haven’t done an exhaustive literature search by any stretch, but my general sense is that there’s not a lot of information out there because researchers just don’t tend to publish these numbers, as they’re not usually of direct interest in themselves. With what I did find, ICC’s in bio-medical research tend to be low - correlations around <code>0.1</code> seem to come up a bit. But of course this can vary widely and it obviously depends on the research question and specific cluster factor of interest.</p>
+<p>So just as a couple of examples, one <a href="https://www.jclinepi.com/article/S0895-4356(23)00071-9/fulltext">paper</a> looking at student performance outcomes found an ICC of <code>0.06</code> for class-room as a cluster factor. Another <a href="https://trialsjournal.biomedcentral.com/articles/10.1186/s13063-020-04349-4">paper</a> looking at diabetes and hypertension outcomes in primary-care medicine found ICC’s ranging from <code>0.01</code> to <code>0.48</code> with clinics as a cluster factor. And then another <a href="https://bmchealthservres.biomedcentral.com/articles/10.1186/1472-6963-14-84">paper</a> looking at heart failure with hospital as a cluster factor - ICC’s from <code>0.03</code> to <code>0.06</code> were documented.</p>
+<p>Now, I also did try and do a search for MS related ICC’s and couldn’t really find anything out there unfortunately - but it could just be that I didn’t look hard enough. How about I leave that as a task for you…</p>
+</section>
+</section>
+<section id="brief-intermission" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="brief-intermission"><span class="header-section-number">2.2</span> …Brief Intermission…</h2>
+<p>All good and well you say. I now understand what the ICC is and what some reasonable values for the parameter might be. But I’m still not sure what this all means for me in my day-to-day research!</p>
+<p>Fair question.</p>
+<p>And the answer can essentially be distilled down to the following; power and/or sample size, and precision. Let’s talk about how each of these are related to the ICC, now.</p>
+</section>
+<section id="design-effect-de-and-effective-sample-size-ess" class="level2" data-number="2.3">
+<h2 data-number="2.3" class="anchored" data-anchor-id="design-effect-de-and-effective-sample-size-ess"><span class="header-section-number">2.3</span> Design Effect (DE) and Effective Sample Size (ESS)</h2>
+<p>If you aren’t already familiar with the Design Effect (DE) and Effective Sample Size (ESS), these concepts closely follow on from the ICC in providing a practical framework for the adjustment of a potential correlation structure in our data. Now, there are two points I want to make about this before we go any further:</p>
+<ol type="1">
+<li>The first is that this mostly applies to planning randomised controlled trials where subjects are recruited within larger groups (GP clinics/hospitals/etc) . This is what is typically known as a cluster randomised controlled trial. That’s not to say that sample size calculations aren’t important in observational research but we’re often at the mercy of the data that we have available and so we just tend to take what we can get (and we don’t get upset). The important point I want you to take away from this is that our study power may actually be less than what we imagine it to be if we’re only ever thinking about it in terms of the number of subjects that we have (based on standard sample size calculations ignoring correlations).</li>
+<li>To that end, while these ideas also loosely translate to repeated measures data, in the context we are talking about them today, it is only for clustered data. In this case, and as you will soon see, increasing the ICC decimates the actual sample size that we have. Repeated measures data are a little different because the individual <strong>is</strong> the cluster (rather than being part of the cluster) and in this case we are always adequately powered by the actual subjects that we have, regardless of whether the ICC is high or not (a topic for another day - but please trust me for now).</li>
+</ol>
+<p>Now, let’s get back on track. If you have clustering effects at play, because of potential similarities between subjects within a cluster, there is a <strong>net loss of data</strong>. In other words some patients bring little or even nothing new to the table in terms of unique information. What do I mean by this? Let’s take an example of <code>100</code> patients from <code>4</code> hospitals (<code>25</code> from each) that we want to include in a study. Our sample size is <code>100</code> but it’s quite possible that our <strong>effective sample size (ESS) is less</strong> - in other words we have fewer patients than <code>100</code> from a statistical information perspective. It then follows that we might need to increase our actual sample size to greater than <code>100</code> patients, to compensate (I’ll give you some worked examples of this shortly). If the ICC is known (e.g.&nbsp;from a pilot study), it can be used at the design stage of the study to inform the sample size calculation.</p>
+<p>The Design Effect (DE) is another important concept and forms part of the effective sample size calculation. Basically, the DE is an inflation factor that we multiply the actual sample size by to account for clustering effects. This gives us an adjusted sample size that contains the same amount of statistical information as our original sample size if no correlation structure were present.</p>
+<p><span class="math display">\[ DE = 1 + \rho(m - 1) \]</span></p>
+<p><span class="math display">\[ ESS = \frac{mk}{DE} \]</span></p>
+<p>Alright, let’s look at these two formulae, but don’t let them intimidate you - they are really not that hard. The DE is just <code>1</code> plus the ICC multiplied by <em>m</em> minus <code>1</code> - where <strong><em>m</em></strong> <strong>is the average number of subjects in a cluster</strong>. Then the ESS is simply <em>m</em> multiplied by <em>k</em> - <strong>where <em>k</em> is the number of clusters</strong> - divided by the DE.</p>
+<p>Let us know apply these two formulae in some worked examples. We’ll use the same idea of <code>100</code> patients from <code>4</code> hospitals and calcuate the ESS under <code>3</code> different ICC’s - a plausible value of <code>0.02</code>; then we’ll consider either extreme - <code>0</code> if we assume complete independence and <code>1</code> if we assume complete dependence. My aim is just to get you thinking about a situation where you might have <code>100</code> patients, but you’ve also got some unrealised clustering which could reduce your ESS and give you less study power than you had imagined.</p>
+<section id="worked-example-1---icc-0.02" class="level3" data-number="2.3.1">
+<h3 data-number="2.3.1" class="anchored" data-anchor-id="worked-example-1---icc-0.02"><span class="header-section-number">2.3.1</span> Worked Example 1 - ICC = 0.02</h3>
+<ul>
+<li>ICC = <code>0.02</code>, <em>m</em> = <code>25</code>, <em>k</em> = <code>4</code>, <em>n</em> = <code>100</code></li>
+</ul>
+<p>Ok, so our first example uses an ICC of <code>0.02</code>. The DE works out at <code>1.48</code>. The ESS in this case would then reduce to <code>68</code> patients. So while we have <code>100</code> patients, statistically only <code>68</code> patients worth are contributing information. We can then use the DE as an inflation factor to multiply by our original sample size to work out an adjusted sample size with equivalent study power in the presence of the clustering effects. And in this case we would need to recruit another <code>48</code> patients.</p>
+<p><span class="math display">\[ DE = 1 + 0.02(25 - 1) = 1.48 \]</span></p>
+<p><span class="math display">\[ ESS = \frac{mk}{DE} = \frac{25 * 4}{1.48} = 68 \]</span></p>
+<p><span class="math display">\[ ASS = n * DE = 100 * 1.48 = 148 \]</span></p>
+</section>
+<section id="worked-example-2---icc-0" class="level3" data-number="2.3.2">
+<h3 data-number="2.3.2" class="anchored" data-anchor-id="worked-example-2---icc-0"><span class="header-section-number">2.3.2</span> Worked Example 2 - ICC = 0</h3>
+<ul>
+<li>ICC = <code>0</code>, <em>m</em> = <code>25</code>, <em>k</em> = <code>4</code>, <em>n</em> = <code>100</code></li>
+</ul>
+<p>An ICC of <code>0</code> here effectively means that individuals within hospitals share no outcome similarities and represent completely independent observations - so, measuring one individual tells us nothing about the other individuals in that hospital.</p>
+<p>So what happens if we assume independent data? This time the DE is <code>1</code> and the ESS remains the same as the original sample. We don’t need to adjust our sample size at all because the cluster structure doesn’t impact the individual observations in any way.</p>
+<p><span class="math display">\[ DE = 1 + 0(25 - 1) = 1 \]</span></p>
+<p><span class="math display">\[ ESS = \frac{mk}{DE} = \frac{25 * 4}{1} = 100 \]</span></p>
+<p><span class="math display">\[ ASS = n * DE = 100 * 1 = 100 \]</span></p>
+</section>
+<section id="worked-example-3---icc-1" class="level3" data-number="2.3.3">
+<h3 data-number="2.3.3" class="anchored" data-anchor-id="worked-example-3---icc-1"><span class="header-section-number">2.3.3</span> Worked Example 3 - ICC = 1</h3>
+<ul>
+<li>ICC = <code>1</code>, <em>m</em> = <code>25</code>, <em>k</em> = <code>4</code>, <em>n</em> = <code>100</code></li>
+</ul>
+<p>An ICC of <code>1</code> here now means that individuals within hospitals share identical outcomes and are completely dependent - this time, measuring one individual informs us about all individuals in that hospital. This is obviously an extremely unrealistic scenario.</p>
+<p>Now the DE essentially becomes the cluster size and because every observation within a cluster is identical, the <strong>ESS collapses to the number of clusters</strong>. So we might have had <code>100</code> patients, but statistically we only have <code>4</code>. And under these conditions we’d need to recruit <code>2500</code> patients to have the same study power as <code>100</code> completely independent patients.</p>
+<p><span class="math display">\[ DE = 1 + 1(25 - 1) = 25 \]</span></p>
+<p><span class="math display">\[ ESS = \frac{mk}{DE} = \frac{25 * 4}{25} = 4 \]</span></p>
+<p><span class="math display">\[ ASS = n * DE = 100 * 25 = 2500 \]</span></p>
+</section>
+</section>
+<section id="take-homes" class="level2" data-number="2.4">
+<h2 data-number="2.4" class="anchored" data-anchor-id="take-homes"><span class="header-section-number">2.4</span> Take Homes</h2>
+<p>Based on everything that we have learned thus far, here are a few important themes that might be useful to add to your stats knowledge toolkit for future reference:</p>
+<ul>
+<li><p>When ICC = <code>0</code>, the DE = <code>1</code> and the ESS = <em>n</em>. Observations within clusters are independent and the sample size doesn’t need to be adjusted.</p></li>
+<li><p>When ICC = <code>1</code>, the DE = <em>m</em> and the ESS reduces to the number of clusters. Observations within clusters are completely dependent and the sample size needs to be adjusted up by a factor of the DE.</p></li>
+<li><p>A high <em>k</em> (number of clusters) and a low <em>m</em> (number of subjects within a cluster) give the smallest DE.</p></li>
+<li><p>When designing studies, increasing the number of clusters (<em>k</em>) will improve study power more than increasing the number of subjects within a cluster (<em>m</em>).</p></li>
+<li><p><strong>More clusters are always better than larger clusters!</strong></p></li>
+<li><p>At the end of the day there might not be much you can actually do about your power/sample size when recruiting individuals from clinics, hospitals, etc. It is what it is and you take what you can get.</p></li>
+<li><p>But it’s important to realise that when you have potential clustering effects in play, sample size and power are dependent on more than just the number of individuals in your study.</p></li>
+</ul>
+</section>
+</section>
+<section id="simulations---effect-of-icc-on-standard-errors" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Simulations - Effect of ICC on Standard Errors</h1>
+<p>You’ll be pleased to know that we are almost finished. But, before we do, there is one final piece to this correlated data puzzle that I think is important to touch on. Remember when I said above that the implications for ignoring correlation stuctures in our data could be boiled down to power and/or sample size, and precision?</p>
+<p>Power and sample size are certainly very important to consider when planning a study. But there’s another side to this coin, and that is how the ICC potentially affects our analysis at the end of the study. I stated earlier that our analysis could be wrong because our standard errors (SE’s) and p-values may be unreliable. This is what I’m referring to when I talk about <em>precision</em> - how ‘tightly’ a parameter is estimated. High precision translates to low SE’s, small p-values and narrow 95% CI’s. In contrast, low precision means that we have high SE’s, larger p-values and wider CI’s. Of course, we always like to see the former and not the latter when we run a regression model.</p>
+<p>Let’s briefly explore this with a couple of simulations to hopefully consolidate these ideas. Here I have simulated <code>6</code> different data sets with varying ICC’s, cluster size (<em>m</em>), and number of clusters (<em>k</em>) (the code is provided at the end of this post if you want to do this yourself, but it’s not really necessary - you really just need the output). I then ran both a mixed-model - which accounts for any clustering effect; and a standard linear regression - which ignores any clustering effect, on each dataset. The aim of the exercise is to compare the SE’s (and p-values less importantly) across datasets.</p>
+<section id="simulation-1---icc-0.99-m-10-k-10" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="simulation-1---icc-0.99-m-10-k-10"><span class="header-section-number">3.1</span> Simulation 1 - ICC = 0.99, m = 10, k = 10</h2>
+<p>Let’s start off by looking at the last <code>3</code> rows of the table - where I have set the ICC very high. With <code>10</code> people in each of <code>10</code> clusters (i.e.&nbsp;n = <code>100</code>) the SE is <code>4.71</code> and the p-value <code>0.06</code> with a mixed model. Compare this a much smaller SE of <code>1.43</code> and a very low p-value when we ignore the correlation by using a standard model. Note that this is incorrect and would lead us to the wrong conclusion. The mixed-model correctly adjusts for the fact that observations within each cluster are almost identical, whereas the standard model considers them all unique and independent.</p>
+<p><img src="images/models1.png" class="img-fluid"></p>
+</section>
+<section id="simulation-2---icc-0.99-m-100-k-10" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="simulation-2---icc-0.99-m-100-k-10"><span class="header-section-number">3.2</span> Simulation 2 - ICC = 0.99, m = 100, k = 10</h2>
+<p>Now imagine we had access to <code>1000</code> patients instead of <code>100</code>. In this scenario we still have <code>10</code> clusters but the cluster size had increased from <code>10</code> to <code>100</code>. The SE for the mixed-model is basically the same - so increasing the cluster size hasn’t made much difference. But contrast that to running a standard regression where the SE has now decreased even further because the model now thinks it’s dealing with <code>1000</code> bits of unique information, rather than <code>100</code>.</p>
+<p><img src="images/models2.png" class="img-fluid"></p>
+</section>
+<section id="simulation-3---icc-0.99-m-10-k-100" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="simulation-3---icc-0.99-m-10-k-100"><span class="header-section-number">3.3</span> Simulation 3 - ICC = 0.99, m = 10, k = 100</h2>
+<p>What if we still had <code>1000</code> patients but this time we were able to increase the number of clusters keeping the cluster size the same - so now we’ve got <code>100</code> clusters each with <code>10</code> subjects. Now the SE has reduced in the mixed-model, indicating more power to separate the signal from the noise. This comes back to the ‘more clusters is better than bigger clusters’ take home that I mentioned before. The standard model hasn’t really changed that much as would be expected.</p>
+<p><img src="images/models3.png" class="img-fluid"></p>
+</section>
+<section id="simulations-4-6---icc-0.1" class="level2" data-number="3.4">
+<h2 data-number="3.4" class="anchored" data-anchor-id="simulations-4-6---icc-0.1"><span class="header-section-number">3.4</span> Simulations 4-6 - ICC = 0.1</h2>
+<p>If we now look at the scenario with a low ICC, we see a similar pattern in the SE reducing in our mixed-model when we increase the number of clusters. The main difference here is that the SE’s, in general, are much lower, because we are dealing with data that are much less correlated in the first place, so that each unique data point brings more new information to the statistical analysis.</p>
+<p><img src="images/models4.png" class="img-fluid"></p>
+</section>
+</section>
+<section id="wrap-up" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Wrap-Up</h1>
+<p>I think that’s well and truly enough for today and apologies if you have fallen asleep at your keyboards. Correlated data are prevalent in bio-medical research and so I hope this post has given you some intuition as to the implications and also how to navigate the practicalities in your day-to-day work. Until next time…</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="fu">library</span>(simstudy)</span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="fu">library</span>(lme4)</span>
+<span id="cb1-4"><a href="#cb1-4"></a><span class="fu">library</span>(lmerTest)</span>
+<span id="cb1-5"><a href="#cb1-5"></a><span class="fu">library</span>(sjstats)</span>
+<span id="cb1-6"><a href="#cb1-6"></a></span>
+<span id="cb1-7"><a href="#cb1-7"></a><span class="co"># Calculate the between variances for set target ICC's, given a within variance (here just set to 4)</span></span>
+<span id="cb1-8"><a href="#cb1-8"></a>targetICC <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.1</span>, <span class="fl">0.99</span>)</span>
+<span id="cb1-9"><a href="#cb1-9"></a>setVars <span class="ot">&lt;-</span> <span class="fu">iccRE</span>(<span class="at">ICC =</span> targetICC, <span class="at">dist =</span> <span class="st">"normal"</span>, <span class="at">varWithin =</span> <span class="dv">4</span>)</span>
+<span id="cb1-10"><a href="#cb1-10"></a><span class="fu">round</span>(setVars, <span class="dv">4</span>)</span>
+<span id="cb1-11"><a href="#cb1-11"></a></span>
+<span id="cb1-12"><a href="#cb1-12"></a><span class="co"># m = number of subjects in a cluster</span></span>
+<span id="cb1-13"><a href="#cb1-13"></a><span class="co"># k = number of clusters</span></span>
+<span id="cb1-14"><a href="#cb1-14"></a></span>
+<span id="cb1-15"><a href="#cb1-15"></a><span class="co">#++++++++++++++++++++++++++++++</span></span>
+<span id="cb1-16"><a href="#cb1-16"></a></span>
+<span id="cb1-17"><a href="#cb1-17"></a><span class="co"># ICC = 0.1 (m = 10, k = 10; n = 100)</span></span>
+<span id="cb1-18"><a href="#cb1-18"></a><span class="fu">set.seed</span>(<span class="dv">7368888</span>)</span>
+<span id="cb1-19"><a href="#cb1-19"></a><span class="co"># Create data</span></span>
+<span id="cb1-20"><a href="#cb1-20"></a><span class="co"># 1. Define df to create 'a' (precursor to y with mu = 0, var = 0.444) and 'size' (cluster size) variables</span></span>
+<span id="cb1-21"><a href="#cb1-21"></a>d <span class="ot">&lt;-</span> <span class="fu">defData</span>(<span class="at">varname =</span> <span class="st">"a"</span>, <span class="at">formula =</span> <span class="dv">0</span>, <span class="at">variance =</span> <span class="fl">0.4444</span>, <span class="at">id =</span> <span class="st">"grp"</span>)</span>
+<span id="cb1-22"><a href="#cb1-22"></a>d <span class="ot">&lt;-</span> <span class="fu">defData</span>(d, <span class="at">varname =</span> <span class="st">"size"</span>, <span class="at">formula =</span> <span class="dv">10</span>, <span class="at">dist =</span> <span class="st">"nonrandom"</span>)</span>
+<span id="cb1-23"><a href="#cb1-23"></a><span class="co"># 2. Define df to create formula for 'y' (outcome).</span></span>
+<span id="cb1-24"><a href="#cb1-24"></a>a <span class="ot">&lt;-</span> <span class="fu">defDataAdd</span>(<span class="at">varname =</span> <span class="st">"y"</span>, <span class="at">formula =</span> <span class="st">"5 + a"</span>, <span class="at">variance =</span> <span class="dv">4</span>, <span class="at">dist =</span> <span class="st">"normal"</span>)</span>
+<span id="cb1-25"><a href="#cb1-25"></a><span class="co"># 3. Replicate 10 times (each line is a cluster)</span></span>
+<span id="cb1-26"><a href="#cb1-26"></a>dT <span class="ot">&lt;-</span> <span class="fu">genData</span>(<span class="dv">10</span>, d)</span>
+<span id="cb1-27"><a href="#cb1-27"></a><span class="co"># 4. Expand df</span></span>
+<span id="cb1-28"><a href="#cb1-28"></a>dat <span class="ot">&lt;-</span> <span class="fu">genCluster</span>(<span class="at">dtClust =</span> dT, <span class="at">cLevelVar =</span> <span class="st">"grp"</span>, <span class="at">numIndsVar =</span> <span class="st">"size"</span>, <span class="at">level1ID =</span> <span class="st">"id"</span>)</span>
+<span id="cb1-29"><a href="#cb1-29"></a><span class="co"># 5. Generate and add 'y' values based on Step 2.</span></span>
+<span id="cb1-30"><a href="#cb1-30"></a>dat <span class="ot">&lt;-</span> <span class="fu">addColumns</span>(a, dat)</span>
+<span id="cb1-31"><a href="#cb1-31"></a><span class="co"># Run mixed-model</span></span>
+<span id="cb1-32"><a href="#cb1-32"></a>mod <span class="ot">&lt;-</span> <span class="fu">lmer</span>(y <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>grp), <span class="at">data =</span> dat)</span>
+<span id="cb1-33"><a href="#cb1-33"></a><span class="fu">summary</span>(mod)</span>
+<span id="cb1-34"><a href="#cb1-34"></a><span class="co"># Run standard model (ignore correlations)</span></span>
+<span id="cb1-35"><a href="#cb1-35"></a>mod <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> <span class="dv">1</span>, <span class="at">data =</span> dat)</span>
+<span id="cb1-36"><a href="#cb1-36"></a><span class="fu">summary</span>(mod)</span>
+<span id="cb1-37"><a href="#cb1-37"></a></span>
+<span id="cb1-38"><a href="#cb1-38"></a><span class="co"># ICC = 0.1 (m = 100, k = 10; n = 1000)</span></span>
+<span id="cb1-39"><a href="#cb1-39"></a><span class="fu">set.seed</span>(<span class="dv">7368888</span>)</span>
+<span id="cb1-40"><a href="#cb1-40"></a><span class="co"># Create data</span></span>
+<span id="cb1-41"><a href="#cb1-41"></a><span class="co"># 1. Define df to create 'a' (precursor to y with mu = 0, var = 0.444) and 'size' (cluster size) variables</span></span>
+<span id="cb1-42"><a href="#cb1-42"></a>d <span class="ot">&lt;-</span> <span class="fu">defData</span>(<span class="at">varname =</span> <span class="st">"a"</span>, <span class="at">formula =</span> <span class="dv">0</span>, <span class="at">variance =</span> <span class="fl">0.4444</span>, <span class="at">id =</span> <span class="st">"grp"</span>)</span>
+<span id="cb1-43"><a href="#cb1-43"></a>d <span class="ot">&lt;-</span> <span class="fu">defData</span>(d, <span class="at">varname =</span> <span class="st">"size"</span>, <span class="at">formula =</span> <span class="dv">100</span>, <span class="at">dist =</span> <span class="st">"nonrandom"</span>)</span>
+<span id="cb1-44"><a href="#cb1-44"></a><span class="co"># 2. Define df to create formula for 'y' (outcome).</span></span>
+<span id="cb1-45"><a href="#cb1-45"></a>a <span class="ot">&lt;-</span> <span class="fu">defDataAdd</span>(<span class="at">varname =</span> <span class="st">"y"</span>, <span class="at">formula =</span> <span class="st">"5 + a"</span>, <span class="at">variance =</span> <span class="dv">4</span>, <span class="at">dist =</span> <span class="st">"normal"</span>)</span>
+<span id="cb1-46"><a href="#cb1-46"></a><span class="co"># 3. Replicate 10 times (each line is a cluster)</span></span>
+<span id="cb1-47"><a href="#cb1-47"></a>dT <span class="ot">&lt;-</span> <span class="fu">genData</span>(<span class="dv">10</span>, d)</span>
+<span id="cb1-48"><a href="#cb1-48"></a><span class="co"># 4. Expand df</span></span>
+<span id="cb1-49"><a href="#cb1-49"></a>dat <span class="ot">&lt;-</span> <span class="fu">genCluster</span>(<span class="at">dtClust =</span> dT, <span class="at">cLevelVar =</span> <span class="st">"grp"</span>, <span class="at">numIndsVar =</span> <span class="st">"size"</span>, <span class="at">level1ID =</span> <span class="st">"id"</span>)</span>
+<span id="cb1-50"><a href="#cb1-50"></a><span class="co"># 5. Generate and add 'y' values based on Step 2.</span></span>
+<span id="cb1-51"><a href="#cb1-51"></a>dat <span class="ot">&lt;-</span> <span class="fu">addColumns</span>(a, dat)</span>
+<span id="cb1-52"><a href="#cb1-52"></a><span class="co"># Run model</span></span>
+<span id="cb1-53"><a href="#cb1-53"></a>mod <span class="ot">&lt;-</span> <span class="fu">lmer</span>(y <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>grp), <span class="at">data =</span> dat)</span>
+<span id="cb1-54"><a href="#cb1-54"></a><span class="fu">summary</span>(mod)</span>
+<span id="cb1-55"><a href="#cb1-55"></a><span class="co"># Run standard model (ignore correlations)</span></span>
+<span id="cb1-56"><a href="#cb1-56"></a>mod <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> <span class="dv">1</span>, <span class="at">data =</span> dat)</span>
+<span id="cb1-57"><a href="#cb1-57"></a><span class="fu">summary</span>(mod)</span>
+<span id="cb1-58"><a href="#cb1-58"></a></span>
+<span id="cb1-59"><a href="#cb1-59"></a><span class="co"># ICC = 0.1 (m = 10, k = 100; n = 1000)</span></span>
+<span id="cb1-60"><a href="#cb1-60"></a><span class="fu">set.seed</span>(<span class="dv">7368888</span>)</span>
+<span id="cb1-61"><a href="#cb1-61"></a><span class="co"># Create data</span></span>
+<span id="cb1-62"><a href="#cb1-62"></a><span class="co"># 1. Define df to create 'a' (precursor to y with mu = 0, var = 0.444) and 'size' (cluster size) variables</span></span>
+<span id="cb1-63"><a href="#cb1-63"></a>d <span class="ot">&lt;-</span> <span class="fu">defData</span>(<span class="at">varname =</span> <span class="st">"a"</span>, <span class="at">formula =</span> <span class="dv">0</span>, <span class="at">variance =</span> <span class="fl">0.4444</span>, <span class="at">id =</span> <span class="st">"grp"</span>)</span>
+<span id="cb1-64"><a href="#cb1-64"></a>d <span class="ot">&lt;-</span> <span class="fu">defData</span>(d, <span class="at">varname =</span> <span class="st">"size"</span>, <span class="at">formula =</span> <span class="dv">10</span>, <span class="at">dist =</span> <span class="st">"nonrandom"</span>)</span>
+<span id="cb1-65"><a href="#cb1-65"></a><span class="co"># 2. Define df to create formula for 'y' (outcome).</span></span>
+<span id="cb1-66"><a href="#cb1-66"></a>a <span class="ot">&lt;-</span> <span class="fu">defDataAdd</span>(<span class="at">varname =</span> <span class="st">"y"</span>, <span class="at">formula =</span> <span class="st">"5 + a"</span>, <span class="at">variance =</span> <span class="dv">4</span>, <span class="at">dist =</span> <span class="st">"normal"</span>)</span>
+<span id="cb1-67"><a href="#cb1-67"></a><span class="co"># 3. Replicate 10 times (each line is a cluster)</span></span>
+<span id="cb1-68"><a href="#cb1-68"></a>dT <span class="ot">&lt;-</span> <span class="fu">genData</span>(<span class="dv">100</span>, d)</span>
+<span id="cb1-69"><a href="#cb1-69"></a><span class="co"># 4. Expand df</span></span>
+<span id="cb1-70"><a href="#cb1-70"></a>dat <span class="ot">&lt;-</span> <span class="fu">genCluster</span>(<span class="at">dtClust =</span> dT, <span class="at">cLevelVar =</span> <span class="st">"grp"</span>, <span class="at">numIndsVar =</span> <span class="st">"size"</span>, <span class="at">level1ID =</span> <span class="st">"id"</span>)</span>
+<span id="cb1-71"><a href="#cb1-71"></a><span class="co"># 5. Generate and add 'y' values based on Step 2.</span></span>
+<span id="cb1-72"><a href="#cb1-72"></a>dat <span class="ot">&lt;-</span> <span class="fu">addColumns</span>(a, dat)</span>
+<span id="cb1-73"><a href="#cb1-73"></a><span class="co"># Run model</span></span>
+<span id="cb1-74"><a href="#cb1-74"></a>mod <span class="ot">&lt;-</span> <span class="fu">lmer</span>(y <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>grp), <span class="at">data =</span> dat)</span>
+<span id="cb1-75"><a href="#cb1-75"></a><span class="fu">summary</span>(mod)</span>
+<span id="cb1-76"><a href="#cb1-76"></a><span class="co"># Run standard model (ignore correlations)</span></span>
+<span id="cb1-77"><a href="#cb1-77"></a>mod <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> <span class="dv">1</span>, <span class="at">data =</span> dat)</span>
+<span id="cb1-78"><a href="#cb1-78"></a><span class="fu">summary</span>(mod)</span>
+<span id="cb1-79"><a href="#cb1-79"></a></span>
+<span id="cb1-80"><a href="#cb1-80"></a><span class="co">#++++++++++++++++++++++++++++++</span></span>
+<span id="cb1-81"><a href="#cb1-81"></a></span>
+<span id="cb1-82"><a href="#cb1-82"></a><span class="co"># ICC = 0.99 (m = 10, k = 10; n = 100)</span></span>
+<span id="cb1-83"><a href="#cb1-83"></a><span class="fu">set.seed</span>(<span class="dv">7368888</span>)</span>
+<span id="cb1-84"><a href="#cb1-84"></a><span class="co"># Create data</span></span>
+<span id="cb1-85"><a href="#cb1-85"></a><span class="co"># 1. Define df to create 'a' (precursor to y with mu = 0, var = 396) and 'size' (cluster size) variables</span></span>
+<span id="cb1-86"><a href="#cb1-86"></a>d <span class="ot">&lt;-</span> <span class="fu">defData</span>(<span class="at">varname =</span> <span class="st">"a"</span>, <span class="at">formula =</span> <span class="dv">0</span>, <span class="at">variance =</span> <span class="dv">396</span>, <span class="at">id =</span> <span class="st">"grp"</span>)</span>
+<span id="cb1-87"><a href="#cb1-87"></a>d <span class="ot">&lt;-</span> <span class="fu">defData</span>(d, <span class="at">varname =</span> <span class="st">"size"</span>, <span class="at">formula =</span> <span class="dv">10</span>, <span class="at">dist =</span> <span class="st">"nonrandom"</span>)</span>
+<span id="cb1-88"><a href="#cb1-88"></a><span class="co"># 2. Define df to create formula for 'y' (outcome).</span></span>
+<span id="cb1-89"><a href="#cb1-89"></a>a <span class="ot">&lt;-</span> <span class="fu">defDataAdd</span>(<span class="at">varname =</span> <span class="st">"y"</span>, <span class="at">formula =</span> <span class="st">"5 + a"</span>, <span class="at">variance =</span> <span class="dv">4</span>, <span class="at">dist =</span> <span class="st">"normal"</span>)</span>
+<span id="cb1-90"><a href="#cb1-90"></a><span class="co"># 3. Replicate 10 times (each line is a cluster)</span></span>
+<span id="cb1-91"><a href="#cb1-91"></a>dT <span class="ot">&lt;-</span> <span class="fu">genData</span>(<span class="dv">10</span>, d)</span>
+<span id="cb1-92"><a href="#cb1-92"></a><span class="co"># 4. Expand df</span></span>
+<span id="cb1-93"><a href="#cb1-93"></a>dat <span class="ot">&lt;-</span> <span class="fu">genCluster</span>(<span class="at">dtClust =</span> dT, <span class="at">cLevelVar =</span> <span class="st">"grp"</span>, <span class="at">numIndsVar =</span> <span class="st">"size"</span>, <span class="at">level1ID =</span> <span class="st">"id"</span>)</span>
+<span id="cb1-94"><a href="#cb1-94"></a><span class="co"># 5. Generate and add 'y' values based on Step 2.</span></span>
+<span id="cb1-95"><a href="#cb1-95"></a>dat <span class="ot">&lt;-</span> <span class="fu">addColumns</span>(a, dat)</span>
+<span id="cb1-96"><a href="#cb1-96"></a><span class="co"># Run model</span></span>
+<span id="cb1-97"><a href="#cb1-97"></a>mod <span class="ot">&lt;-</span> <span class="fu">lmer</span>(y <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>grp), <span class="at">data =</span> dat)</span>
+<span id="cb1-98"><a href="#cb1-98"></a><span class="fu">summary</span>(mod)</span>
+<span id="cb1-99"><a href="#cb1-99"></a><span class="co"># Run standard model (ignore correlations)</span></span>
+<span id="cb1-100"><a href="#cb1-100"></a>mod <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> <span class="dv">1</span>, <span class="at">data =</span> dat)</span>
+<span id="cb1-101"><a href="#cb1-101"></a><span class="fu">summary</span>(mod)</span>
+<span id="cb1-102"><a href="#cb1-102"></a></span>
+<span id="cb1-103"><a href="#cb1-103"></a><span class="co"># ICC = 0.99 (m = 100, k = 10; n = 1000)</span></span>
+<span id="cb1-104"><a href="#cb1-104"></a><span class="fu">set.seed</span>(<span class="dv">7368888</span>)</span>
+<span id="cb1-105"><a href="#cb1-105"></a><span class="co"># Create data</span></span>
+<span id="cb1-106"><a href="#cb1-106"></a><span class="co"># 1. Define df to create 'a' (precursor to y with mu = 0, var = 396) and 'size' (cluster size) variables</span></span>
+<span id="cb1-107"><a href="#cb1-107"></a>d <span class="ot">&lt;-</span> <span class="fu">defData</span>(<span class="at">varname =</span> <span class="st">"a"</span>, <span class="at">formula =</span> <span class="dv">0</span>, <span class="at">variance =</span> <span class="dv">396</span>, <span class="at">id =</span> <span class="st">"grp"</span>)</span>
+<span id="cb1-108"><a href="#cb1-108"></a>d <span class="ot">&lt;-</span> <span class="fu">defData</span>(d, <span class="at">varname =</span> <span class="st">"size"</span>, <span class="at">formula =</span> <span class="dv">100</span>, <span class="at">dist =</span> <span class="st">"nonrandom"</span>)</span>
+<span id="cb1-109"><a href="#cb1-109"></a><span class="co"># 2. Define df to create formula for 'y' (outcome).</span></span>
+<span id="cb1-110"><a href="#cb1-110"></a>a <span class="ot">&lt;-</span> <span class="fu">defDataAdd</span>(<span class="at">varname =</span> <span class="st">"y"</span>, <span class="at">formula =</span> <span class="st">"5 + a"</span>, <span class="at">variance =</span> <span class="dv">4</span>, <span class="at">dist =</span> <span class="st">"normal"</span>)</span>
+<span id="cb1-111"><a href="#cb1-111"></a><span class="co"># 3. Replicate 10 times (each line is a cluster)</span></span>
+<span id="cb1-112"><a href="#cb1-112"></a>dT <span class="ot">&lt;-</span> <span class="fu">genData</span>(<span class="dv">10</span>, d)</span>
+<span id="cb1-113"><a href="#cb1-113"></a><span class="co"># 4. Expand df</span></span>
+<span id="cb1-114"><a href="#cb1-114"></a>dat <span class="ot">&lt;-</span> <span class="fu">genCluster</span>(<span class="at">dtClust =</span> dT, <span class="at">cLevelVar =</span> <span class="st">"grp"</span>, <span class="at">numIndsVar =</span> <span class="st">"size"</span>, <span class="at">level1ID =</span> <span class="st">"id"</span>)</span>
+<span id="cb1-115"><a href="#cb1-115"></a><span class="co"># 5. Generate and add 'y' values based on Step 2.</span></span>
+<span id="cb1-116"><a href="#cb1-116"></a>dat <span class="ot">&lt;-</span> <span class="fu">addColumns</span>(a, dat)</span>
+<span id="cb1-117"><a href="#cb1-117"></a><span class="co"># Run model</span></span>
+<span id="cb1-118"><a href="#cb1-118"></a>mod <span class="ot">&lt;-</span> <span class="fu">lmer</span>(y <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>grp), <span class="at">data =</span> dat)</span>
+<span id="cb1-119"><a href="#cb1-119"></a><span class="fu">summary</span>(mod)</span>
+<span id="cb1-120"><a href="#cb1-120"></a><span class="co"># Run standard model (ignore correlations)</span></span>
+<span id="cb1-121"><a href="#cb1-121"></a>mod <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> <span class="dv">1</span>, <span class="at">data =</span> dat)</span>
+<span id="cb1-122"><a href="#cb1-122"></a><span class="fu">summary</span>(mod)</span>
+<span id="cb1-123"><a href="#cb1-123"></a></span>
+<span id="cb1-124"><a href="#cb1-124"></a><span class="co"># ICC = 0.99 (m = 10, k = 100; n = 1000)</span></span>
+<span id="cb1-125"><a href="#cb1-125"></a><span class="fu">set.seed</span>(<span class="dv">7368888</span>)</span>
+<span id="cb1-126"><a href="#cb1-126"></a><span class="co"># Create data</span></span>
+<span id="cb1-127"><a href="#cb1-127"></a><span class="co"># 1. Define df to create 'a' (precursor to y with mu = 0, var = 396) and 'size' (cluster size) variables</span></span>
+<span id="cb1-128"><a href="#cb1-128"></a>d <span class="ot">&lt;-</span> <span class="fu">defData</span>(<span class="at">varname =</span> <span class="st">"a"</span>, <span class="at">formula =</span> <span class="dv">0</span>, <span class="at">variance =</span> <span class="dv">396</span>, <span class="at">id =</span> <span class="st">"grp"</span>)</span>
+<span id="cb1-129"><a href="#cb1-129"></a>d <span class="ot">&lt;-</span> <span class="fu">defData</span>(d, <span class="at">varname =</span> <span class="st">"size"</span>, <span class="at">formula =</span> <span class="dv">10</span>, <span class="at">dist =</span> <span class="st">"nonrandom"</span>)</span>
+<span id="cb1-130"><a href="#cb1-130"></a><span class="co"># 2. Define df to create formula for 'y' (outcome).</span></span>
+<span id="cb1-131"><a href="#cb1-131"></a>a <span class="ot">&lt;-</span> <span class="fu">defDataAdd</span>(<span class="at">varname =</span> <span class="st">"y"</span>, <span class="at">formula =</span> <span class="st">"5 + a"</span>, <span class="at">variance =</span> <span class="dv">4</span>, <span class="at">dist =</span> <span class="st">"normal"</span>)</span>
+<span id="cb1-132"><a href="#cb1-132"></a><span class="co"># 3. Replicate 10 times (each line is a cluster)</span></span>
+<span id="cb1-133"><a href="#cb1-133"></a>dT <span class="ot">&lt;-</span> <span class="fu">genData</span>(<span class="dv">100</span>, d)</span>
+<span id="cb1-134"><a href="#cb1-134"></a><span class="co"># 4. Expand df</span></span>
+<span id="cb1-135"><a href="#cb1-135"></a>dat <span class="ot">&lt;-</span> <span class="fu">genCluster</span>(<span class="at">dtClust =</span> dT, <span class="at">cLevelVar =</span> <span class="st">"grp"</span>, <span class="at">numIndsVar =</span> <span class="st">"size"</span>, <span class="at">level1ID =</span> <span class="st">"id"</span>)</span>
+<span id="cb1-136"><a href="#cb1-136"></a><span class="co"># 5. Generate and add 'y' values based on Step 2.</span></span>
+<span id="cb1-137"><a href="#cb1-137"></a>dat <span class="ot">&lt;-</span> <span class="fu">addColumns</span>(a, dat)</span>
+<span id="cb1-138"><a href="#cb1-138"></a><span class="co"># Run model</span></span>
+<span id="cb1-139"><a href="#cb1-139"></a>mod <span class="ot">&lt;-</span> <span class="fu">lmer</span>(y <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>grp), <span class="at">data =</span> dat)</span>
+<span id="cb1-140"><a href="#cb1-140"></a><span class="fu">summary</span>(mod)</span>
+<span id="cb1-141"><a href="#cb1-141"></a><span class="co"># Run standard model (ignore correlations)</span></span>
+<span id="cb1-142"><a href="#cb1-142"></a>mod <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> <span class="dv">1</span>, <span class="at">data =</span> dat)</span>
+<span id="cb1-143"><a href="#cb1-143"></a><span class="fu">summary</span>(mod)</span>
+<span id="cb1-144"><a href="#cb1-144"></a></span>
+<span id="cb1-145"><a href="#cb1-145"></a><span class="co">#++++++++++++++++++++++++++++++</span></span>
+<span id="cb1-146"><a href="#cb1-146"></a></span>
+<span id="cb1-147"><a href="#cb1-147"></a><span class="co"># Sanity check between/within vals - allow for sampling variation</span></span>
+<span id="cb1-148"><a href="#cb1-148"></a>(vars_between <span class="ot">&lt;-</span>  dat <span class="sc">|&gt;</span> </span>
+<span id="cb1-149"><a href="#cb1-149"></a>    <span class="fu">group_by</span>(grp) <span class="sc">|&gt;</span> </span>
+<span id="cb1-150"><a href="#cb1-150"></a>    <span class="fu">summarise</span>(<span class="at">means =</span> <span class="fu">mean</span>(y)))</span>
+<span id="cb1-151"><a href="#cb1-151"></a>(var_between  <span class="ot">&lt;-</span>   vars_between <span class="sc">|&gt;</span> </span>
+<span id="cb1-152"><a href="#cb1-152"></a>    <span class="fu">summarise</span>(<span class="at">var_between =</span> <span class="fu">var</span>(means)) <span class="sc">|&gt;</span> </span>
+<span id="cb1-153"><a href="#cb1-153"></a>    <span class="fu">as.numeric</span>())</span>
+<span id="cb1-154"><a href="#cb1-154"></a>(vars_within <span class="ot">&lt;-</span>  dat <span class="sc">|&gt;</span> </span>
+<span id="cb1-155"><a href="#cb1-155"></a>    <span class="fu">group_by</span>(grp) <span class="sc">|&gt;</span> </span>
+<span id="cb1-156"><a href="#cb1-156"></a>    <span class="fu">summarise</span>(<span class="at">vars =</span> <span class="fu">var</span>(y)))</span>
+<span id="cb1-157"><a href="#cb1-157"></a>(var_within <span class="ot">&lt;-</span>  vars_within <span class="sc">|&gt;</span> </span>
+<span id="cb1-158"><a href="#cb1-158"></a>    <span class="fu">summarise</span>(<span class="at">var_within =</span> <span class="fu">mean</span>(vars)) <span class="sc">|&gt;</span> </span>
+<span id="cb1-159"><a href="#cb1-159"></a>    <span class="fu">as.numeric</span>())</span>
+<span id="cb1-160"><a href="#cb1-160"></a>var_between<span class="sc">/</span>(var_between <span class="sc">+</span> var_within)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+
+
+<!-- -->
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+    const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+    const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+    let newTheme = '';
+    if(darkModeDefault) {
+      newTheme = isAlternate ? baseTheme : alternateTheme;
+    } else {
+      newTheme = isAlternate ? alternateTheme : baseTheme;
+    }
+    const changeGiscusTheme = () => {
+      // From: https://github.com/giscus/giscus/issues/336
+      const sendMessage = (message) => {
+        const iframe = document.querySelector('iframe.giscus-frame');
+        if (!iframe) return;
+        iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+      }
+      sendMessage({
+        setConfig: {
+          theme: newTheme
+        }
+      });
+    }
+    const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+    if (isGiscussLoaded) {
+      changeGiscusTheme();
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  const darkModeDefault = false;
+  let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+    toggleGiscusIfUsed(toAlternate, darkModeDefault);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  const viewSource = window.document.getElementById('quarto-view-source') ||
+                     window.document.getElementById('quarto-code-tools-source');
+  if (viewSource) {
+    const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+    viewSource.addEventListener("click", function(e) {
+      if (sourceUrl) {
+        // rstudio viewer pane
+        if (/\bcapabilities=\b/.test(window.location)) {
+          window.open(sourceUrl);
+        } else {
+          window.location.href = sourceUrl;
+        }
+      } else {
+        const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+        modal.show();
+      }
+      return false;
+    });
+  }
+  function toggleCodeHandler(show) {
+    return function(e) {
+      const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
+      for (let i=0; i<detailsSrc.length; i++) {
+        const details = detailsSrc[i].parentElement;
+        if (show) {
+          details.open = true;
+        } else {
+          details.removeAttribute("open");
+        }
+      }
+      const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
+      const fromCls = show ? "hidden" : "unhidden";
+      const toCls = show ? "unhidden" : "hidden";
+      for (let i=0; i<cellCodeDivs.length; i++) {
+        const codeDiv = cellCodeDivs[i];
+        if (codeDiv.classList.contains(fromCls)) {
+          codeDiv.classList.remove(fromCls);
+          codeDiv.classList.add(toCls);
+        } 
+      }
+      return false;
+    }
+  }
+  const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+  if (hideAllCode) {
+    hideAllCode.addEventListener("click", toggleCodeHandler(false));
+  }
+  const showAllCode = window.document.getElementById("quarto-show-all-code");
+  if (showAllCode) {
+    showAllCode.addEventListener("click", toggleCodeHandler(true));
+  }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<script src="https://giscus.app/client.js" data-repo="pgseye/Weekly_Stats_Tips" data-repo-id="R_kgDOKvfOfQ" data-category="General" data-category-id="DIC_kwDOKvfOfc4CbFWq" data-mapping="title" data-reactions-enabled="1" data-emit-metadata="0" data-input-position="top" data-theme="light" data-lang="en" crossorigin="anonymous" async="">
+</script>
+<input type="hidden" id="giscus-base-theme" value="light">
+<input type="hidden" id="giscus-alt-theme" value="dark"><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="sourceCode" id="cb2" data-shortcodes="false"><pre class="sourceCode numberSource markdown number-lines code-with-copy"><code class="sourceCode markdown"><span id="cb2-1"><a href="#cb2-1"></a><span class="co">---</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a><span class="an">title:</span><span class="co"> "Correlated Data"</span></span>
+<span id="cb2-3"><a href="#cb2-3"></a><span class="an">date:</span><span class="co"> 2025-10-17</span></span>
+<span id="cb2-4"><a href="#cb2-4"></a><span class="an">categories:</span><span class="co"> [code, concept, modelling]</span></span>
+<span id="cb2-5"><a href="#cb2-5"></a><span class="an">image:</span><span class="co"> "images/clustered_vs_repeated.png"</span></span>
+<span id="cb2-6"><a href="#cb2-6"></a><span class="an">description:</span><span class="co"> "A broad overview of implications for power, sample size and precision."</span></span>
+<span id="cb2-7"><a href="#cb2-7"></a><span class="co">---</span></span>
+<span id="cb2-8"><a href="#cb2-8"></a></span>
+<span id="cb2-9"><a href="#cb2-9"></a>Today we're going to take a fairly high-level look at the idea of correlated data. I have no doubt that many of you are already aware that correlated data need to be properly accounted for in the analyses that you do. And to that end you probably know that you need to use something like a linear mixed-model instead of a vanilla linear regression if a regression model is called for, but perhaps you don't really understand why. What I am therefore hoping I can achieve with this post is to build a little intuition in to your stats thinking to help you recognise some of the implications of correlated data when it comes to power, sample size and precision, in your daily research.</span>
+<span id="cb2-10"><a href="#cb2-10"></a></span>
+<span id="cb2-11"><a href="#cb2-11"></a><span class="fu"># What are Correlated Data?</span></span>
+<span id="cb2-12"><a href="#cb2-12"></a></span>
+<span id="cb2-13"><a href="#cb2-13"></a>Ok, so what are correlated data in the context that we're talking about today? In very basic terms, think of them as **groups** or **clusters** of observations that share similarities with each other, so that observations within one group tend to be **more alike** than observations within another group. It's important to keep in mind that this grouping or clustering structure is usually not of scientific interest in its own right, but arises as a natural consequence of how we sample our data. For example we may take multiple outcome measurements on a subject because we are interested in change over time, or we may measure some outcome of interest on a subject only once but recruit our subjects through GP clinics or hospitals. In both of these cases there is an implicit grouping or clustering structure - the individual subject in the first and the GP clinic/hospital in the second.</span>
+<span id="cb2-14"><a href="#cb2-14"></a></span>
+<span id="cb2-15"><a href="#cb2-15"></a><span class="al">![](images/clustered_vs_repeated.png)</span>{height="400" fig-align="center"}</span>
+<span id="cb2-16"><a href="#cb2-16"></a></span>
+<span id="cb2-17"><a href="#cb2-17"></a>In the figure above I asked Google Gemini to generate a couple of images reflecting these concepts, using Lego figurines. It got the idea, but I couldn't help but think there was something a little malign in the algorithm that day, as it appeared to be channelling North Korean military in the case of repeated measures on the same individual (left), and psychopaths in the context of different individuals grouped by a common factor (right). Anyway, I'm sure you get the idea...</span>
+<span id="cb2-18"><a href="#cb2-18"></a></span>
+<span id="cb2-19"><a href="#cb2-19"></a><span class="fu">## What are Repeated Measures data?</span></span>
+<span id="cb2-20"><a href="#cb2-20"></a></span>
+<span id="cb2-21"><a href="#cb2-21"></a>Repeated measures data occur when you take multiple outcome measures from the same subjects (or experimental units), over time, space or condition. Now of these, data of the first type is probably the most common because many interesting research questions often involve a time component and discovering something about the trajectory of change in an outcome of interest over time - i.e. what we commonly refer to as longitudinal data. But repeated measures can also be made over 'space' - for example, we might be interested in comparing values on different measurement devices; OR under different conditions - treatment being a classic example here. In this context of repeated measures data, you can think of the individual, abstractly, as being the 'cluster'.</span>
+<span id="cb2-22"><a href="#cb2-22"></a></span>
+<span id="cb2-23"><a href="#cb2-23"></a><span class="fu">## What are Clustered data?</span></span>
+<span id="cb2-24"><a href="#cb2-24"></a></span>
+<span id="cb2-25"><a href="#cb2-25"></a>Clustered data differ from repeated measures in that outcome measures are taken from individuals usually just once, but where the individuals are related in some way to each other within a larger grouping structure. So when we talk about humans, clusters can be many things - families, schools, and GP clinics and hospitals are all common examples. But we can also talk about other grouping structures - animal litters and cages and bacterial plates in the lab; or cities and countries from a geographic perspective. If we return to people as being the experimental unit, in the context of clustered data, you can think of the individual as belonging to the cluster, rather than being the cluster as in the case of repeated measures.</span>
+<span id="cb2-26"><a href="#cb2-26"></a></span>
+<span id="cb2-27"><a href="#cb2-27"></a><span class="fu">## Repeated Measures AND Clustered data.</span></span>
+<span id="cb2-28"><a href="#cb2-28"></a></span>
+<span id="cb2-29"><a href="#cb2-29"></a>You may come across other terms in your readings regarding correlated data and probably the two most common ones are hierarchical and nested - and these terms make sense when you think about it. Whether data are repeated measures or clustered, or a combination of both, the general idea is that observations exist within groups which then exist at different 'levels'. The simplest grouping structure consists, by necessity, of just two levels but there can be more depending on the nature of the data. In the figure below I have made an example consisting of a 3-level hierarchy where we have repeated measures (level 1) nested within patients (level 2) which are further nested within hospitals (level 3).</span>
+<span id="cb2-30"><a href="#cb2-30"></a></span>
+<span id="cb2-31"><a href="#cb2-31"></a><span class="al">![](images/hierarchy.jpg)</span></span>
+<span id="cb2-32"><a href="#cb2-32"></a></span>
+<span id="cb2-33"><a href="#cb2-33"></a><span class="fu">## Why do we care?</span></span>
+<span id="cb2-34"><a href="#cb2-34"></a></span>
+<span id="cb2-35"><a href="#cb2-35"></a>So why do we care about potential correlations in our data structure? Well, because in all likelihood (pardon the stats pun), you'll be wrong if you don't. A fundamental tenet in statistics is that **data points are independent** - in other words, knowing the value of one data point doesn't inform you as to the value of any others. This assumption of independence is violated in the presence of repeated measures or clustering. In turn this can result in unreliable estimation because standard errors and p-values are incorrect - and they tend to be incorrect on the 'too low' side, leading to false positives and claims of statistical significance when in fact, none may actually exist. In practice we commonly see this when the naive analyst uses standard linear regression techniques, thus ignoring potential correlations, in data that are not independent. What one should be doing instead are using models that explicitly account for these correlation structures in the model specification - and that is most commonly the mixed-model where we can flexibly specify these correlations as random effects (Generalised Estimating Equations - GEE's - are another option but account for the correlations in a different way, mathematically).</span>
+<span id="cb2-36"><a href="#cb2-36"></a></span>
+<span id="cb2-37"><a href="#cb2-37"></a><span class="fu"># Some Basic Correlated Data Concepts.</span></span>
+<span id="cb2-38"><a href="#cb2-38"></a></span>
+<span id="cb2-39"><a href="#cb2-39"></a>There are some rare instances where we might not actually need a more complex mixed-model at all - although dare I say this is really an exception rather than the rule. In some cases, while a grouping structure exists, its effect is so weak that we can effectively treat the data as independent and leave the corresponding random effect out. In model terms this would essentially be a comparison between a mixed-model (accounting for potential correlations) and the simpler standard linear model (ignoring potential correlations). In practice we could test this simply by comparing the models in terms of likelihood ratios or fit criteria like the AIC, selecting the model with the 'better' fit. Now, the reason I am telling you about this is that the basis for these kinds of tests are related to the important idea of the *intraclass* - or *intracluster* - correlation, and that is something that we are going to discuss next.</span>
+<span id="cb2-40"><a href="#cb2-40"></a></span>
+<span id="cb2-41"><a href="#cb2-41"></a><span class="fu">## Intraclass (cluster) correlation - ICC</span></span>
+<span id="cb2-42"><a href="#cb2-42"></a></span>
+<span id="cb2-43"><a href="#cb2-43"></a>The ICC (or rho by it's Greek symbol) measures the relatedness of correlated data by comparing the between- and within-cluster variances. In other words:</span>
+<span id="cb2-44"><a href="#cb2-44"></a></span>
+<span id="cb2-45"><a href="#cb2-45"></a>$$\rho = \frac{\sigma_{(between)}}{\sigma_{(between)} + \sigma_{(within)}} = \frac{\sigma_{(between)}}{\sigma_{(total)}}$$</span>
+<span id="cb2-46"><a href="#cb2-46"></a></span>
+<span id="cb2-47"><a href="#cb2-47"></a>Mathematically, the ICC is the ratio of the between-cluster to total variance (where the total variance is the sum of the between- and within-cluster variances). The value of the ICC ranges from <span class="in">`0`</span> to <span class="in">`1`</span>; where an ICC of <span class="in">`0`</span> means that **observations within a group are as different as observations in other groups** - that is, they are independent; and an ICC of `1` means that **observations within a group are the same** - that is, they are completely dependent. Another way to think about this is that when the ICC = <span class="in">`0`</span>, knowing the value of any one observation within a group, gives you no clue as the value of the other observations within that group - they are just as likely to different as observations belonging to other groups. Contrast this to the opposite extreme when the ICC = <span class="in">`1`</span>. Now, if we know the value of any one observation within a group, we automatically know the values of all other observations within that group! If this is not quite making sense yet, I will expound on this notion over the next few sections, and I hope that will make things clearer for you.</span>
+<span id="cb2-48"><a href="#cb2-48"></a></span>
+<span id="cb2-49"><a href="#cb2-49"></a><span class="fu">### Relationship to ANOVA </span></span>
+<span id="cb2-50"><a href="#cb2-50"></a></span>
+<span id="cb2-51"><a href="#cb2-51"></a>Let's build on the ideas presented above by considering how the ICC relates to a traditional analysis of variance (ANOVA) <span class="sc">\[</span>For those who aren't as familiar with ANOVA, both ANOVA and regression are part of the same statistical framework (the General Linear Model), with the former being a special case of the latter, and the latter, ultimately, being more flexible in its application<span class="sc">\]</span>. To illustrate ANOVA, I am '<span class="co">[</span><span class="ot">borrowing</span><span class="co">](https://www.datanovia.com/en/lessons/anova-in-r/)</span>' the following image:</span>
+<span id="cb2-52"><a href="#cb2-52"></a></span>
+<span id="cb2-53"><a href="#cb2-53"></a><span class="al">![](images/between_within.png)</span></span>
+<span id="cb2-54"><a href="#cb2-54"></a></span>
+<span id="cb2-55"><a href="#cb2-55"></a>To work out the between-cluster variance we first calculate the mean of each cluster and then calculate the variance of those means. The within-cluster variance is a little different - here we calculate the variance of the observations within each cluster and then take an average of those variances.</span>
+<span id="cb2-56"><a href="#cb2-56"></a></span>
+<span id="cb2-57"><a href="#cb2-57"></a>Now, when we conduct an ANOVA all we are basically doing is comparing the between-group variance against the within-group variance. And if the between-group variance is larger than the within-group variance it tells us that the group means might differ in an important way (in other words that the signal is greater than the noise).</span>
+<span id="cb2-58"><a href="#cb2-58"></a></span>
+<span id="cb2-59"><a href="#cb2-59"></a><span class="fu">### A different way to imagine the same thing</span></span>
+<span id="cb2-60"><a href="#cb2-60"></a></span>
+<span id="cb2-61"><a href="#cb2-61"></a>Let's now consider the same concept visualised via abacus plots (again I am <span class="co">[</span><span class="ot">borrowing</span><span class="co">](https://en.wikipedia.org/wiki/Intraclass_correlation)</span> these images as I didn't feel the need to re-invent the wheel). So how does knowledge of the between- and within-cluster variances allow us to ballpark what the ICC might be? In each plot below the vertical line represents a group of observations (so in each plot we have <span class="in">`20`</span> groups each consisting of <span class="in">`4`</span> observations). On the left we have a situation where the **observations within a given group are as different as observations in other groups**. So here the grouping structure doesn't really matter. The between-cluster variance is therefore low relative to the within-cluster variance, and as a proportion of the total variance results in a small number divided by a bigger number **leading to a low ICC**. When you scan across that plot you can see that the points appear fairly randomly scattered.</span>
+<span id="cb2-62"><a href="#cb2-62"></a></span>
+<span id="cb2-63"><a href="#cb2-63"></a>Compare that to the plot on the right. Here we have the opposite situation where the **observations within any one group are very similar to each other**. In this case the grouping structure does matter. Now the between-cluster variance is high relative to the within-cluster variance, and as a proportion of the total variance results in a big number divided by a smaller number **leading to a high ICC**. Now when you scan across the plot you can see that the points are much more clustered together in their groups.</span>
+<span id="cb2-64"><a href="#cb2-64"></a></span>
+<span id="cb2-65"><a href="#cb2-65"></a><span class="al">![](images/iccs.png)</span></span>
+<span id="cb2-66"><a href="#cb2-66"></a></span>
+<span id="cb2-67"><a href="#cb2-67"></a><span class="fu">### Give me something tangible</span></span>
+<span id="cb2-68"><a href="#cb2-68"></a></span>
+<span id="cb2-69"><a href="#cb2-69"></a>OK, thus far I've talked about ICC's in a very abstract way, I know. But can we contextualise the concept in a real-world setting? You might be thinking - what are some actual examples of ICC's? Well, I haven't done an exhaustive literature search by any stretch, but my general sense is that there's not a lot of information out there because researchers just don't tend to publish these numbers, as they're not usually of direct interest in themselves. With what I did find, ICC's in bio-medical research tend to be low - correlations around <span class="in">`0.1`</span> seem to come up a bit. But of course this can vary widely and it obviously depends on the research question and specific cluster factor of interest.</span>
+<span id="cb2-70"><a href="#cb2-70"></a></span>
+<span id="cb2-71"><a href="#cb2-71"></a>So just as a couple of examples, one <span class="co">[</span><span class="ot">paper</span><span class="co">]</span>(https://www.jclinepi.com/article/S0895-4356(23)00071-9/fulltext) looking at student performance outcomes found an ICC of <span class="in">`0.06`</span> for class-room as a cluster factor. Another <span class="co">[</span><span class="ot">paper</span><span class="co">](https://trialsjournal.biomedcentral.com/articles/10.1186/s13063-020-04349-4)</span> looking at diabetes and hypertension outcomes in primary-care medicine found ICC's ranging from <span class="in">`0.01`</span> to <span class="in">`0.48`</span> with clinics as a cluster factor. And then another <span class="co">[</span><span class="ot">paper</span><span class="co">](https://bmchealthservres.biomedcentral.com/articles/10.1186/1472-6963-14-84)</span> looking at heart failure with hospital as a cluster factor - ICC's from <span class="in">`0.03`</span> to <span class="in">`0.06`</span> were documented.</span>
+<span id="cb2-72"><a href="#cb2-72"></a></span>
+<span id="cb2-73"><a href="#cb2-73"></a>Now, I also did try and do a search for MS related ICC's and couldn't really find anything out there unfortunately - but it could just be that I didn't look hard enough. How about I leave that as a task for you...</span>
+<span id="cb2-74"><a href="#cb2-74"></a></span>
+<span id="cb2-75"><a href="#cb2-75"></a><span class="fu">## ...Brief Intermission...</span></span>
+<span id="cb2-76"><a href="#cb2-76"></a></span>
+<span id="cb2-77"><a href="#cb2-77"></a>All good and well you say. I now understand what the ICC is and what some reasonable values for the parameter might be. But I'm still not sure what this all means for me in my day-to-day research!</span>
+<span id="cb2-78"><a href="#cb2-78"></a></span>
+<span id="cb2-79"><a href="#cb2-79"></a>Fair question.</span>
+<span id="cb2-80"><a href="#cb2-80"></a></span>
+<span id="cb2-81"><a href="#cb2-81"></a>And the answer can essentially be distilled down to the following; power and/or sample size, and precision. Let's talk about how each of these are related to the ICC, now.</span>
+<span id="cb2-82"><a href="#cb2-82"></a></span>
+<span id="cb2-83"><a href="#cb2-83"></a><span class="fu">## Design Effect (DE) and Effective Sample Size (ESS)</span></span>
+<span id="cb2-84"><a href="#cb2-84"></a></span>
+<span id="cb2-85"><a href="#cb2-85"></a>If you aren't already familiar with the Design Effect (DE) and Effective Sample Size (ESS), these concepts closely follow on from the ICC in providing a practical framework for the adjustment of a potential correlation structure in our data. Now, there are two points I want to make about this before we go any further:</span>
+<span id="cb2-86"><a href="#cb2-86"></a></span>
+<span id="cb2-87"><a href="#cb2-87"></a><span class="ss">1.  </span>The first is that this mostly applies to planning randomised controlled trials where subjects are recruited within larger groups (GP clinics/hospitals/etc) . This is what is typically known as a cluster randomised controlled trial. That's not to say that sample size calculations aren't important in observational research but we're often at the mercy of the data that we have available and so we just tend to take what we can get (and we don't get upset). The important point I want you to take away from this is that our study power may actually be less than what we imagine it to be if we're only ever thinking about it in terms of the number of subjects that we have (based on standard sample size calculations ignoring correlations).</span>
+<span id="cb2-88"><a href="#cb2-88"></a><span class="ss">2.  </span>To that end, while these ideas also loosely translate to repeated measures data, in the context we are talking about them today, it is only for clustered data. In this case, and as you will soon see, increasing the ICC decimates the actual sample size that we have. Repeated measures data are a little different because the individual **is** the cluster (rather than being part of the cluster) and in this case we are always adequately powered by the actual subjects that we have, regardless of whether the ICC is high or not (a topic for another day - but please trust me for now).</span>
+<span id="cb2-89"><a href="#cb2-89"></a></span>
+<span id="cb2-90"><a href="#cb2-90"></a>Now, let's get back on track. If you have clustering effects at play, because of potential similarities between subjects within a cluster, there is a **net loss of data**. In other words some patients bring little or even nothing new to the table in terms of unique information. What do I mean by this? Let's take an example of `100` patients from `4` hospitals (`25` from each) that we want to include in a study. Our sample size is `100` but it's quite possible that our **effective sample size (ESS) is less** - in other words we have fewer patients than <span class="in">`100`</span> from a statistical information perspective. It then follows that we might need to increase our actual sample size to greater than <span class="in">`100`</span> patients, to compensate (I'll give you some worked examples of this shortly). If the ICC is known (e.g. from a pilot study), it can be used at the design stage of the study to inform the sample size calculation.</span>
+<span id="cb2-91"><a href="#cb2-91"></a></span>
+<span id="cb2-92"><a href="#cb2-92"></a>The Design Effect (DE) is another important concept and forms part of the effective sample size calculation. Basically, the DE is an inflation factor that we multiply the actual sample size by to account for clustering effects. This gives us an adjusted sample size that contains the same amount of statistical information as our original sample size if no correlation structure were present.</span>
+<span id="cb2-93"><a href="#cb2-93"></a></span>
+<span id="cb2-94"><a href="#cb2-94"></a>$$ DE = 1 + \rho(m - 1) $$</span>
+<span id="cb2-95"><a href="#cb2-95"></a></span>
+<span id="cb2-96"><a href="#cb2-96"></a>$$ ESS = \frac{mk}{DE} $$</span>
+<span id="cb2-97"><a href="#cb2-97"></a></span>
+<span id="cb2-98"><a href="#cb2-98"></a>Alright, let's look at these two formulae, but don't let them intimidate you - they are really not that hard. The DE is just <span class="in">`1`</span> plus the ICC multiplied by *m* minus `1` - where ***m*** **is the average number of subjects in a cluster**. Then the ESS is simply *m* multiplied by *k* - **where *k* is the number of clusters** - divided by the DE.</span>
+<span id="cb2-99"><a href="#cb2-99"></a></span>
+<span id="cb2-100"><a href="#cb2-100"></a>Let us know apply these two formulae in some worked examples. We'll use the same idea of <span class="in">`100`</span> patients from <span class="in">`4`</span> hospitals and calcuate the ESS under <span class="in">`3`</span> different ICC's - a plausible value of <span class="in">`0.02`</span>; then we'll consider either extreme - <span class="in">`0`</span> if we assume complete independence and <span class="in">`1`</span> if we assume complete dependence. My aim is just to get you thinking about a situation where you might have <span class="in">`100`</span> patients, but you've also got some unrealised clustering which could reduce your ESS and give you less study power than you had imagined.</span>
+<span id="cb2-101"><a href="#cb2-101"></a></span>
+<span id="cb2-102"><a href="#cb2-102"></a><span class="fu">### Worked Example 1 - ICC = 0.02</span></span>
+<span id="cb2-103"><a href="#cb2-103"></a></span>
+<span id="cb2-104"><a href="#cb2-104"></a><span class="ss">-   </span>ICC = <span class="in">`0.02`</span>, *m* = `25`, *k* = `4`, *n* = <span class="in">`100`</span></span>
+<span id="cb2-105"><a href="#cb2-105"></a></span>
+<span id="cb2-106"><a href="#cb2-106"></a>Ok, so our first example uses an ICC of <span class="in">`0.02`</span>. The DE works out at <span class="in">`1.48`</span>. The ESS in this case would then reduce to <span class="in">`68`</span> patients. So while we have <span class="in">`100`</span> patients, statistically only <span class="in">`68`</span> patients worth are contributing information. We can then use the DE as an inflation factor to multiply by our original sample size to work out an adjusted sample size with equivalent study power in the presence of the clustering effects. And in this case we would need to recruit another <span class="in">`48`</span> patients.</span>
+<span id="cb2-107"><a href="#cb2-107"></a></span>
+<span id="cb2-108"><a href="#cb2-108"></a>$$ DE = 1 + 0.02(25 - 1) = 1.48 $$</span>
+<span id="cb2-109"><a href="#cb2-109"></a></span>
+<span id="cb2-110"><a href="#cb2-110"></a>$$ ESS = \frac{mk}{DE} = \frac{25 * 4}{1.48} = 68 $$</span>
+<span id="cb2-111"><a href="#cb2-111"></a></span>
+<span id="cb2-112"><a href="#cb2-112"></a>$$ ASS = n * DE = 100 * 1.48 = 148 $$</span>
+<span id="cb2-113"><a href="#cb2-113"></a></span>
+<span id="cb2-114"><a href="#cb2-114"></a><span class="fu">### Worked Example 2 - ICC = 0</span></span>
+<span id="cb2-115"><a href="#cb2-115"></a></span>
+<span id="cb2-116"><a href="#cb2-116"></a><span class="ss">-   </span>ICC = <span class="in">`0`</span>, *m* = `25`, *k* = `4`, *n* = <span class="in">`100`</span></span>
+<span id="cb2-117"><a href="#cb2-117"></a></span>
+<span id="cb2-118"><a href="#cb2-118"></a>An ICC of <span class="in">`0`</span> here effectively means that individuals within hospitals share no outcome similarities and represent completely independent observations - so, measuring one individual tells us nothing about the other individuals in that hospital.</span>
+<span id="cb2-119"><a href="#cb2-119"></a></span>
+<span id="cb2-120"><a href="#cb2-120"></a>So what happens if we assume independent data? This time the DE is <span class="in">`1`</span> and the ESS remains the same as the original sample. We don't need to adjust our sample size at all because the cluster structure doesn't impact the individual observations in any way.</span>
+<span id="cb2-121"><a href="#cb2-121"></a></span>
+<span id="cb2-122"><a href="#cb2-122"></a>$$ DE = 1 + 0(25 - 1) = 1 $$</span>
+<span id="cb2-123"><a href="#cb2-123"></a></span>
+<span id="cb2-124"><a href="#cb2-124"></a>$$ ESS = \frac{mk}{DE} = \frac{25 * 4}{1} = 100 $$</span>
+<span id="cb2-125"><a href="#cb2-125"></a></span>
+<span id="cb2-126"><a href="#cb2-126"></a>$$ ASS = n * DE = 100 * 1 = 100 $$</span>
+<span id="cb2-127"><a href="#cb2-127"></a></span>
+<span id="cb2-128"><a href="#cb2-128"></a><span class="fu">### Worked Example 3 - ICC = 1</span></span>
+<span id="cb2-129"><a href="#cb2-129"></a></span>
+<span id="cb2-130"><a href="#cb2-130"></a><span class="ss">-   </span>ICC = <span class="in">`1`</span>, *m* = `25`, *k* = `4`, *n* = <span class="in">`100`</span></span>
+<span id="cb2-131"><a href="#cb2-131"></a></span>
+<span id="cb2-132"><a href="#cb2-132"></a>An ICC of <span class="in">`1`</span> here now means that individuals within hospitals share identical outcomes and are completely dependent - this time, measuring one individual informs us about all individuals in that hospital. This is obviously an extremely unrealistic scenario.</span>
+<span id="cb2-133"><a href="#cb2-133"></a></span>
+<span id="cb2-134"><a href="#cb2-134"></a>Now the DE essentially becomes the cluster size and because every observation within a cluster is identical, the **ESS collapses to the number of clusters**. So we might have had <span class="in">`100`</span> patients, but statistically we only have <span class="in">`4`</span>. And under these conditions we'd need to recruit <span class="in">`2500`</span> patients to have the same study power as <span class="in">`100`</span> completely independent patients.</span>
+<span id="cb2-135"><a href="#cb2-135"></a></span>
+<span id="cb2-136"><a href="#cb2-136"></a>$$ DE = 1 + 1(25 - 1) = 25 $$</span>
+<span id="cb2-137"><a href="#cb2-137"></a></span>
+<span id="cb2-138"><a href="#cb2-138"></a>$$ ESS = \frac{mk}{DE} = \frac{25 * 4}{25} = 4 $$</span>
+<span id="cb2-139"><a href="#cb2-139"></a></span>
+<span id="cb2-140"><a href="#cb2-140"></a>$$ ASS = n * DE = 100 * 25 = 2500 $$</span>
+<span id="cb2-141"><a href="#cb2-141"></a></span>
+<span id="cb2-142"><a href="#cb2-142"></a><span class="fu">## Take Homes</span></span>
+<span id="cb2-143"><a href="#cb2-143"></a></span>
+<span id="cb2-144"><a href="#cb2-144"></a>Based on everything that we have learned thus far, here are a few important themes that might be useful to add to your stats knowledge toolkit for future reference:</span>
+<span id="cb2-145"><a href="#cb2-145"></a></span>
+<span id="cb2-146"><a href="#cb2-146"></a><span class="ss">-   </span>When ICC = <span class="in">`0`</span>, the DE = <span class="in">`1`</span> and the ESS = *n*. Observations within clusters are independent and the sample size doesn't need to be adjusted.</span>
+<span id="cb2-147"><a href="#cb2-147"></a></span>
+<span id="cb2-148"><a href="#cb2-148"></a><span class="ss">-   </span>When ICC = <span class="in">`1`</span>, the DE = *m* and the ESS reduces to the number of clusters. Observations within clusters are completely dependent and the sample size needs to be adjusted up by a factor of the DE.</span>
+<span id="cb2-149"><a href="#cb2-149"></a></span>
+<span id="cb2-150"><a href="#cb2-150"></a><span class="ss">-   </span>A high *k* (number of clusters) and a low *m* (number of subjects within a cluster) give the smallest DE.</span>
+<span id="cb2-151"><a href="#cb2-151"></a></span>
+<span id="cb2-152"><a href="#cb2-152"></a><span class="ss">-   </span>When designing studies, increasing the number of clusters (*k*) will improve study power more than increasing the number of subjects within a cluster (*m*).</span>
+<span id="cb2-153"><a href="#cb2-153"></a></span>
+<span id="cb2-154"><a href="#cb2-154"></a><span class="ss">-   </span>**More clusters are always better than larger clusters!**</span>
+<span id="cb2-155"><a href="#cb2-155"></a></span>
+<span id="cb2-156"><a href="#cb2-156"></a><span class="ss">-   </span>At the end of the day there might not be much you can actually do about your power/sample size when recruiting individuals from clinics, hospitals, etc. It is what it is and you take what you can get.</span>
+<span id="cb2-157"><a href="#cb2-157"></a></span>
+<span id="cb2-158"><a href="#cb2-158"></a><span class="ss">-   </span>But it's important to realise that when you have potential clustering effects in play, sample size and power are dependent on more than just the number of individuals in your study.</span>
+<span id="cb2-159"><a href="#cb2-159"></a></span>
+<span id="cb2-160"><a href="#cb2-160"></a><span class="fu"># Simulations - Effect of ICC on Standard Errors</span></span>
+<span id="cb2-161"><a href="#cb2-161"></a></span>
+<span id="cb2-162"><a href="#cb2-162"></a>You'll be pleased to know that we are almost finished. But, before we do, there is one final piece to this correlated data puzzle that I think is important to touch on. Remember when I said above that the implications for ignoring correlation stuctures in our data could be boiled down to power and/or sample size, and precision?</span>
+<span id="cb2-163"><a href="#cb2-163"></a></span>
+<span id="cb2-164"><a href="#cb2-164"></a>Power and sample size are certainly very important to consider when planning a study. But there's another side to this coin, and that is how the ICC potentially affects our analysis at the end of the study. I stated earlier that our analysis could be wrong because our standard errors (SE's) and p-values may be unreliable. This is what I'm referring to when I talk about *precision* - how 'tightly' a parameter is estimated. High precision translates to low SE's, small p-values and narrow 95% CI's. In contrast, low precision means that we have high SE's, larger p-values and wider CI's. Of course, we always like to see the former and not the latter when we run a regression model.</span>
+<span id="cb2-165"><a href="#cb2-165"></a></span>
+<span id="cb2-166"><a href="#cb2-166"></a>Let's briefly explore this with a couple of simulations to hopefully consolidate these ideas. Here I have simulated <span class="in">`6`</span> different data sets with varying ICC's, cluster size (*m*), and number of clusters (*k*) (the code is provided at the end of this post if you want to do this yourself, but it's not really necessary - you really just need the output). I then ran both a mixed-model - which accounts for any clustering effect; and a standard linear regression - which ignores any clustering effect, on each dataset. The aim of the exercise is to compare the SE's (and p-values less importantly) across datasets.</span>
+<span id="cb2-167"><a href="#cb2-167"></a></span>
+<span id="cb2-168"><a href="#cb2-168"></a><span class="fu">## Simulation 1 - ICC = 0.99, m = 10, k = 10</span></span>
+<span id="cb2-169"><a href="#cb2-169"></a></span>
+<span id="cb2-170"><a href="#cb2-170"></a>Let's start off by looking at the last <span class="in">`3`</span> rows of the table - where I have set the ICC very high. With <span class="in">`10`</span> people in each of <span class="in">`10`</span> clusters (i.e. n = <span class="in">`100`</span>) the SE is <span class="in">`4.71`</span> and the p-value <span class="in">`0.06`</span> with a mixed model. Compare this a much smaller SE of <span class="in">`1.43`</span> and a very low p-value when we ignore the correlation by using a standard model. Note that this is incorrect and would lead us to the wrong conclusion. The mixed-model correctly adjusts for the fact that observations within each cluster are almost identical, whereas the standard model considers them all unique and independent.</span>
+<span id="cb2-171"><a href="#cb2-171"></a></span>
+<span id="cb2-172"><a href="#cb2-172"></a><span class="al">![](images/models1.png)</span></span>
+<span id="cb2-173"><a href="#cb2-173"></a></span>
+<span id="cb2-174"><a href="#cb2-174"></a><span class="fu">## Simulation 2 - ICC = 0.99, m = 100, k = 10</span></span>
+<span id="cb2-175"><a href="#cb2-175"></a></span>
+<span id="cb2-176"><a href="#cb2-176"></a>Now imagine we had access to <span class="in">`1000`</span> patients instead of <span class="in">`100`</span>. In this scenario we still have <span class="in">`10`</span> clusters but the cluster size had increased from <span class="in">`10`</span> to <span class="in">`100`</span>. The SE for the mixed-model is basically the same - so increasing the cluster size hasn't made much difference. But contrast that to running a standard regression where the SE has now decreased even further because the model now thinks it's dealing with <span class="in">`1000`</span> bits of unique information, rather than <span class="in">`100`</span>.</span>
+<span id="cb2-177"><a href="#cb2-177"></a></span>
+<span id="cb2-178"><a href="#cb2-178"></a><span class="al">![](images/models2.png)</span></span>
+<span id="cb2-179"><a href="#cb2-179"></a></span>
+<span id="cb2-180"><a href="#cb2-180"></a><span class="fu">## Simulation 3 - ICC = 0.99, m = 10, k = 100</span></span>
+<span id="cb2-181"><a href="#cb2-181"></a></span>
+<span id="cb2-182"><a href="#cb2-182"></a>What if we still had <span class="in">`1000`</span> patients but this time we were able to increase the number of clusters keeping the cluster size the same - so now we've got <span class="in">`100`</span> clusters each with <span class="in">`10`</span> subjects. Now the SE has reduced in the mixed-model, indicating more power to separate the signal from the noise. This comes back to the 'more clusters is better than bigger clusters' take home that I mentioned before. The standard model hasn't really changed that much as would be expected.</span>
+<span id="cb2-183"><a href="#cb2-183"></a></span>
+<span id="cb2-184"><a href="#cb2-184"></a><span class="al">![](images/models3.png)</span></span>
+<span id="cb2-185"><a href="#cb2-185"></a></span>
+<span id="cb2-186"><a href="#cb2-186"></a><span class="fu">## Simulations 4-6 - ICC = 0.1</span></span>
+<span id="cb2-187"><a href="#cb2-187"></a></span>
+<span id="cb2-188"><a href="#cb2-188"></a>If we now look at the scenario with a low ICC, we see a similar pattern in the SE reducing in our mixed-model when we increase the number of clusters. The main difference here is that the SE's, in general, are much lower, because we are dealing with data that are much less correlated in the first place, so that each unique data point brings more new information to the statistical analysis.</span>
+<span id="cb2-189"><a href="#cb2-189"></a></span>
+<span id="cb2-190"><a href="#cb2-190"></a><span class="al">![](images/models4.png)</span></span>
+<span id="cb2-191"><a href="#cb2-191"></a></span>
+<span id="cb2-192"><a href="#cb2-192"></a><span class="fu"># Wrap-Up</span></span>
+<span id="cb2-193"><a href="#cb2-193"></a></span>
+<span id="cb2-194"><a href="#cb2-194"></a>I think that's well and truly enough for today and apologies if you have fallen asleep at your keyboards. Correlated data are prevalent in bio-medical research and so I hope this post has given you some intuition as to the implications and also how to navigate the practicalities in your day-to-day work. Until next time...</span>
+<span id="cb2-195"><a href="#cb2-195"></a></span>
+<span id="cb2-198"><a href="#cb2-198"></a><span class="in">```{r}</span></span>
+<span id="cb2-199"><a href="#cb2-199"></a><span class="co">#| eval: false</span></span>
+<span id="cb2-200"><a href="#cb2-200"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb2-201"><a href="#cb2-201"></a><span class="fu">library</span>(simstudy)</span>
+<span id="cb2-202"><a href="#cb2-202"></a><span class="fu">library</span>(lme4)</span>
+<span id="cb2-203"><a href="#cb2-203"></a><span class="fu">library</span>(lmerTest)</span>
+<span id="cb2-204"><a href="#cb2-204"></a><span class="fu">library</span>(sjstats)</span>
+<span id="cb2-205"><a href="#cb2-205"></a></span>
+<span id="cb2-206"><a href="#cb2-206"></a><span class="co"># Calculate the between variances for set target ICC's, given a within variance (here just set to 4)</span></span>
+<span id="cb2-207"><a href="#cb2-207"></a>targetICC <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.1</span>, <span class="fl">0.99</span>)</span>
+<span id="cb2-208"><a href="#cb2-208"></a>setVars <span class="ot">&lt;-</span> <span class="fu">iccRE</span>(<span class="at">ICC =</span> targetICC, <span class="at">dist =</span> <span class="st">"normal"</span>, <span class="at">varWithin =</span> <span class="dv">4</span>)</span>
+<span id="cb2-209"><a href="#cb2-209"></a><span class="fu">round</span>(setVars, <span class="dv">4</span>)</span>
+<span id="cb2-210"><a href="#cb2-210"></a></span>
+<span id="cb2-211"><a href="#cb2-211"></a><span class="co"># m = number of subjects in a cluster</span></span>
+<span id="cb2-212"><a href="#cb2-212"></a><span class="co"># k = number of clusters</span></span>
+<span id="cb2-213"><a href="#cb2-213"></a></span>
+<span id="cb2-214"><a href="#cb2-214"></a><span class="co">#++++++++++++++++++++++++++++++</span></span>
+<span id="cb2-215"><a href="#cb2-215"></a></span>
+<span id="cb2-216"><a href="#cb2-216"></a><span class="co"># ICC = 0.1 (m = 10, k = 10; n = 100)</span></span>
+<span id="cb2-217"><a href="#cb2-217"></a><span class="fu">set.seed</span>(<span class="dv">7368888</span>)</span>
+<span id="cb2-218"><a href="#cb2-218"></a><span class="co"># Create data</span></span>
+<span id="cb2-219"><a href="#cb2-219"></a><span class="co"># 1. Define df to create 'a' (precursor to y with mu = 0, var = 0.444) and 'size' (cluster size) variables</span></span>
+<span id="cb2-220"><a href="#cb2-220"></a>d <span class="ot">&lt;-</span> <span class="fu">defData</span>(<span class="at">varname =</span> <span class="st">"a"</span>, <span class="at">formula =</span> <span class="dv">0</span>, <span class="at">variance =</span> <span class="fl">0.4444</span>, <span class="at">id =</span> <span class="st">"grp"</span>)</span>
+<span id="cb2-221"><a href="#cb2-221"></a>d <span class="ot">&lt;-</span> <span class="fu">defData</span>(d, <span class="at">varname =</span> <span class="st">"size"</span>, <span class="at">formula =</span> <span class="dv">10</span>, <span class="at">dist =</span> <span class="st">"nonrandom"</span>)</span>
+<span id="cb2-222"><a href="#cb2-222"></a><span class="co"># 2. Define df to create formula for 'y' (outcome).</span></span>
+<span id="cb2-223"><a href="#cb2-223"></a>a <span class="ot">&lt;-</span> <span class="fu">defDataAdd</span>(<span class="at">varname =</span> <span class="st">"y"</span>, <span class="at">formula =</span> <span class="st">"5 + a"</span>, <span class="at">variance =</span> <span class="dv">4</span>, <span class="at">dist =</span> <span class="st">"normal"</span>)</span>
+<span id="cb2-224"><a href="#cb2-224"></a><span class="co"># 3. Replicate 10 times (each line is a cluster)</span></span>
+<span id="cb2-225"><a href="#cb2-225"></a>dT <span class="ot">&lt;-</span> <span class="fu">genData</span>(<span class="dv">10</span>, d)</span>
+<span id="cb2-226"><a href="#cb2-226"></a><span class="co"># 4. Expand df</span></span>
+<span id="cb2-227"><a href="#cb2-227"></a>dat <span class="ot">&lt;-</span> <span class="fu">genCluster</span>(<span class="at">dtClust =</span> dT, <span class="at">cLevelVar =</span> <span class="st">"grp"</span>, <span class="at">numIndsVar =</span> <span class="st">"size"</span>, <span class="at">level1ID =</span> <span class="st">"id"</span>)</span>
+<span id="cb2-228"><a href="#cb2-228"></a><span class="co"># 5. Generate and add 'y' values based on Step 2.</span></span>
+<span id="cb2-229"><a href="#cb2-229"></a>dat <span class="ot">&lt;-</span> <span class="fu">addColumns</span>(a, dat)</span>
+<span id="cb2-230"><a href="#cb2-230"></a><span class="co"># Run mixed-model</span></span>
+<span id="cb2-231"><a href="#cb2-231"></a>mod <span class="ot">&lt;-</span> <span class="fu">lmer</span>(y <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>grp), <span class="at">data =</span> dat)</span>
+<span id="cb2-232"><a href="#cb2-232"></a><span class="fu">summary</span>(mod)</span>
+<span id="cb2-233"><a href="#cb2-233"></a><span class="co"># Run standard model (ignore correlations)</span></span>
+<span id="cb2-234"><a href="#cb2-234"></a>mod <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> <span class="dv">1</span>, <span class="at">data =</span> dat)</span>
+<span id="cb2-235"><a href="#cb2-235"></a><span class="fu">summary</span>(mod)</span>
+<span id="cb2-236"><a href="#cb2-236"></a></span>
+<span id="cb2-237"><a href="#cb2-237"></a><span class="co"># ICC = 0.1 (m = 100, k = 10; n = 1000)</span></span>
+<span id="cb2-238"><a href="#cb2-238"></a><span class="fu">set.seed</span>(<span class="dv">7368888</span>)</span>
+<span id="cb2-239"><a href="#cb2-239"></a><span class="co"># Create data</span></span>
+<span id="cb2-240"><a href="#cb2-240"></a><span class="co"># 1. Define df to create 'a' (precursor to y with mu = 0, var = 0.444) and 'size' (cluster size) variables</span></span>
+<span id="cb2-241"><a href="#cb2-241"></a>d <span class="ot">&lt;-</span> <span class="fu">defData</span>(<span class="at">varname =</span> <span class="st">"a"</span>, <span class="at">formula =</span> <span class="dv">0</span>, <span class="at">variance =</span> <span class="fl">0.4444</span>, <span class="at">id =</span> <span class="st">"grp"</span>)</span>
+<span id="cb2-242"><a href="#cb2-242"></a>d <span class="ot">&lt;-</span> <span class="fu">defData</span>(d, <span class="at">varname =</span> <span class="st">"size"</span>, <span class="at">formula =</span> <span class="dv">100</span>, <span class="at">dist =</span> <span class="st">"nonrandom"</span>)</span>
+<span id="cb2-243"><a href="#cb2-243"></a><span class="co"># 2. Define df to create formula for 'y' (outcome).</span></span>
+<span id="cb2-244"><a href="#cb2-244"></a>a <span class="ot">&lt;-</span> <span class="fu">defDataAdd</span>(<span class="at">varname =</span> <span class="st">"y"</span>, <span class="at">formula =</span> <span class="st">"5 + a"</span>, <span class="at">variance =</span> <span class="dv">4</span>, <span class="at">dist =</span> <span class="st">"normal"</span>)</span>
+<span id="cb2-245"><a href="#cb2-245"></a><span class="co"># 3. Replicate 10 times (each line is a cluster)</span></span>
+<span id="cb2-246"><a href="#cb2-246"></a>dT <span class="ot">&lt;-</span> <span class="fu">genData</span>(<span class="dv">10</span>, d)</span>
+<span id="cb2-247"><a href="#cb2-247"></a><span class="co"># 4. Expand df</span></span>
+<span id="cb2-248"><a href="#cb2-248"></a>dat <span class="ot">&lt;-</span> <span class="fu">genCluster</span>(<span class="at">dtClust =</span> dT, <span class="at">cLevelVar =</span> <span class="st">"grp"</span>, <span class="at">numIndsVar =</span> <span class="st">"size"</span>, <span class="at">level1ID =</span> <span class="st">"id"</span>)</span>
+<span id="cb2-249"><a href="#cb2-249"></a><span class="co"># 5. Generate and add 'y' values based on Step 2.</span></span>
+<span id="cb2-250"><a href="#cb2-250"></a>dat <span class="ot">&lt;-</span> <span class="fu">addColumns</span>(a, dat)</span>
+<span id="cb2-251"><a href="#cb2-251"></a><span class="co"># Run model</span></span>
+<span id="cb2-252"><a href="#cb2-252"></a>mod <span class="ot">&lt;-</span> <span class="fu">lmer</span>(y <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>grp), <span class="at">data =</span> dat)</span>
+<span id="cb2-253"><a href="#cb2-253"></a><span class="fu">summary</span>(mod)</span>
+<span id="cb2-254"><a href="#cb2-254"></a><span class="co"># Run standard model (ignore correlations)</span></span>
+<span id="cb2-255"><a href="#cb2-255"></a>mod <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> <span class="dv">1</span>, <span class="at">data =</span> dat)</span>
+<span id="cb2-256"><a href="#cb2-256"></a><span class="fu">summary</span>(mod)</span>
+<span id="cb2-257"><a href="#cb2-257"></a></span>
+<span id="cb2-258"><a href="#cb2-258"></a><span class="co"># ICC = 0.1 (m = 10, k = 100; n = 1000)</span></span>
+<span id="cb2-259"><a href="#cb2-259"></a><span class="fu">set.seed</span>(<span class="dv">7368888</span>)</span>
+<span id="cb2-260"><a href="#cb2-260"></a><span class="co"># Create data</span></span>
+<span id="cb2-261"><a href="#cb2-261"></a><span class="co"># 1. Define df to create 'a' (precursor to y with mu = 0, var = 0.444) and 'size' (cluster size) variables</span></span>
+<span id="cb2-262"><a href="#cb2-262"></a>d <span class="ot">&lt;-</span> <span class="fu">defData</span>(<span class="at">varname =</span> <span class="st">"a"</span>, <span class="at">formula =</span> <span class="dv">0</span>, <span class="at">variance =</span> <span class="fl">0.4444</span>, <span class="at">id =</span> <span class="st">"grp"</span>)</span>
+<span id="cb2-263"><a href="#cb2-263"></a>d <span class="ot">&lt;-</span> <span class="fu">defData</span>(d, <span class="at">varname =</span> <span class="st">"size"</span>, <span class="at">formula =</span> <span class="dv">10</span>, <span class="at">dist =</span> <span class="st">"nonrandom"</span>)</span>
+<span id="cb2-264"><a href="#cb2-264"></a><span class="co"># 2. Define df to create formula for 'y' (outcome).</span></span>
+<span id="cb2-265"><a href="#cb2-265"></a>a <span class="ot">&lt;-</span> <span class="fu">defDataAdd</span>(<span class="at">varname =</span> <span class="st">"y"</span>, <span class="at">formula =</span> <span class="st">"5 + a"</span>, <span class="at">variance =</span> <span class="dv">4</span>, <span class="at">dist =</span> <span class="st">"normal"</span>)</span>
+<span id="cb2-266"><a href="#cb2-266"></a><span class="co"># 3. Replicate 10 times (each line is a cluster)</span></span>
+<span id="cb2-267"><a href="#cb2-267"></a>dT <span class="ot">&lt;-</span> <span class="fu">genData</span>(<span class="dv">100</span>, d)</span>
+<span id="cb2-268"><a href="#cb2-268"></a><span class="co"># 4. Expand df</span></span>
+<span id="cb2-269"><a href="#cb2-269"></a>dat <span class="ot">&lt;-</span> <span class="fu">genCluster</span>(<span class="at">dtClust =</span> dT, <span class="at">cLevelVar =</span> <span class="st">"grp"</span>, <span class="at">numIndsVar =</span> <span class="st">"size"</span>, <span class="at">level1ID =</span> <span class="st">"id"</span>)</span>
+<span id="cb2-270"><a href="#cb2-270"></a><span class="co"># 5. Generate and add 'y' values based on Step 2.</span></span>
+<span id="cb2-271"><a href="#cb2-271"></a>dat <span class="ot">&lt;-</span> <span class="fu">addColumns</span>(a, dat)</span>
+<span id="cb2-272"><a href="#cb2-272"></a><span class="co"># Run model</span></span>
+<span id="cb2-273"><a href="#cb2-273"></a>mod <span class="ot">&lt;-</span> <span class="fu">lmer</span>(y <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>grp), <span class="at">data =</span> dat)</span>
+<span id="cb2-274"><a href="#cb2-274"></a><span class="fu">summary</span>(mod)</span>
+<span id="cb2-275"><a href="#cb2-275"></a><span class="co"># Run standard model (ignore correlations)</span></span>
+<span id="cb2-276"><a href="#cb2-276"></a>mod <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> <span class="dv">1</span>, <span class="at">data =</span> dat)</span>
+<span id="cb2-277"><a href="#cb2-277"></a><span class="fu">summary</span>(mod)</span>
+<span id="cb2-278"><a href="#cb2-278"></a></span>
+<span id="cb2-279"><a href="#cb2-279"></a><span class="co">#++++++++++++++++++++++++++++++</span></span>
+<span id="cb2-280"><a href="#cb2-280"></a></span>
+<span id="cb2-281"><a href="#cb2-281"></a><span class="co"># ICC = 0.99 (m = 10, k = 10; n = 100)</span></span>
+<span id="cb2-282"><a href="#cb2-282"></a><span class="fu">set.seed</span>(<span class="dv">7368888</span>)</span>
+<span id="cb2-283"><a href="#cb2-283"></a><span class="co"># Create data</span></span>
+<span id="cb2-284"><a href="#cb2-284"></a><span class="co"># 1. Define df to create 'a' (precursor to y with mu = 0, var = 396) and 'size' (cluster size) variables</span></span>
+<span id="cb2-285"><a href="#cb2-285"></a>d <span class="ot">&lt;-</span> <span class="fu">defData</span>(<span class="at">varname =</span> <span class="st">"a"</span>, <span class="at">formula =</span> <span class="dv">0</span>, <span class="at">variance =</span> <span class="dv">396</span>, <span class="at">id =</span> <span class="st">"grp"</span>)</span>
+<span id="cb2-286"><a href="#cb2-286"></a>d <span class="ot">&lt;-</span> <span class="fu">defData</span>(d, <span class="at">varname =</span> <span class="st">"size"</span>, <span class="at">formula =</span> <span class="dv">10</span>, <span class="at">dist =</span> <span class="st">"nonrandom"</span>)</span>
+<span id="cb2-287"><a href="#cb2-287"></a><span class="co"># 2. Define df to create formula for 'y' (outcome).</span></span>
+<span id="cb2-288"><a href="#cb2-288"></a>a <span class="ot">&lt;-</span> <span class="fu">defDataAdd</span>(<span class="at">varname =</span> <span class="st">"y"</span>, <span class="at">formula =</span> <span class="st">"5 + a"</span>, <span class="at">variance =</span> <span class="dv">4</span>, <span class="at">dist =</span> <span class="st">"normal"</span>)</span>
+<span id="cb2-289"><a href="#cb2-289"></a><span class="co"># 3. Replicate 10 times (each line is a cluster)</span></span>
+<span id="cb2-290"><a href="#cb2-290"></a>dT <span class="ot">&lt;-</span> <span class="fu">genData</span>(<span class="dv">10</span>, d)</span>
+<span id="cb2-291"><a href="#cb2-291"></a><span class="co"># 4. Expand df</span></span>
+<span id="cb2-292"><a href="#cb2-292"></a>dat <span class="ot">&lt;-</span> <span class="fu">genCluster</span>(<span class="at">dtClust =</span> dT, <span class="at">cLevelVar =</span> <span class="st">"grp"</span>, <span class="at">numIndsVar =</span> <span class="st">"size"</span>, <span class="at">level1ID =</span> <span class="st">"id"</span>)</span>
+<span id="cb2-293"><a href="#cb2-293"></a><span class="co"># 5. Generate and add 'y' values based on Step 2.</span></span>
+<span id="cb2-294"><a href="#cb2-294"></a>dat <span class="ot">&lt;-</span> <span class="fu">addColumns</span>(a, dat)</span>
+<span id="cb2-295"><a href="#cb2-295"></a><span class="co"># Run model</span></span>
+<span id="cb2-296"><a href="#cb2-296"></a>mod <span class="ot">&lt;-</span> <span class="fu">lmer</span>(y <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>grp), <span class="at">data =</span> dat)</span>
+<span id="cb2-297"><a href="#cb2-297"></a><span class="fu">summary</span>(mod)</span>
+<span id="cb2-298"><a href="#cb2-298"></a><span class="co"># Run standard model (ignore correlations)</span></span>
+<span id="cb2-299"><a href="#cb2-299"></a>mod <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> <span class="dv">1</span>, <span class="at">data =</span> dat)</span>
+<span id="cb2-300"><a href="#cb2-300"></a><span class="fu">summary</span>(mod)</span>
+<span id="cb2-301"><a href="#cb2-301"></a></span>
+<span id="cb2-302"><a href="#cb2-302"></a><span class="co"># ICC = 0.99 (m = 100, k = 10; n = 1000)</span></span>
+<span id="cb2-303"><a href="#cb2-303"></a><span class="fu">set.seed</span>(<span class="dv">7368888</span>)</span>
+<span id="cb2-304"><a href="#cb2-304"></a><span class="co"># Create data</span></span>
+<span id="cb2-305"><a href="#cb2-305"></a><span class="co"># 1. Define df to create 'a' (precursor to y with mu = 0, var = 396) and 'size' (cluster size) variables</span></span>
+<span id="cb2-306"><a href="#cb2-306"></a>d <span class="ot">&lt;-</span> <span class="fu">defData</span>(<span class="at">varname =</span> <span class="st">"a"</span>, <span class="at">formula =</span> <span class="dv">0</span>, <span class="at">variance =</span> <span class="dv">396</span>, <span class="at">id =</span> <span class="st">"grp"</span>)</span>
+<span id="cb2-307"><a href="#cb2-307"></a>d <span class="ot">&lt;-</span> <span class="fu">defData</span>(d, <span class="at">varname =</span> <span class="st">"size"</span>, <span class="at">formula =</span> <span class="dv">100</span>, <span class="at">dist =</span> <span class="st">"nonrandom"</span>)</span>
+<span id="cb2-308"><a href="#cb2-308"></a><span class="co"># 2. Define df to create formula for 'y' (outcome).</span></span>
+<span id="cb2-309"><a href="#cb2-309"></a>a <span class="ot">&lt;-</span> <span class="fu">defDataAdd</span>(<span class="at">varname =</span> <span class="st">"y"</span>, <span class="at">formula =</span> <span class="st">"5 + a"</span>, <span class="at">variance =</span> <span class="dv">4</span>, <span class="at">dist =</span> <span class="st">"normal"</span>)</span>
+<span id="cb2-310"><a href="#cb2-310"></a><span class="co"># 3. Replicate 10 times (each line is a cluster)</span></span>
+<span id="cb2-311"><a href="#cb2-311"></a>dT <span class="ot">&lt;-</span> <span class="fu">genData</span>(<span class="dv">10</span>, d)</span>
+<span id="cb2-312"><a href="#cb2-312"></a><span class="co"># 4. Expand df</span></span>
+<span id="cb2-313"><a href="#cb2-313"></a>dat <span class="ot">&lt;-</span> <span class="fu">genCluster</span>(<span class="at">dtClust =</span> dT, <span class="at">cLevelVar =</span> <span class="st">"grp"</span>, <span class="at">numIndsVar =</span> <span class="st">"size"</span>, <span class="at">level1ID =</span> <span class="st">"id"</span>)</span>
+<span id="cb2-314"><a href="#cb2-314"></a><span class="co"># 5. Generate and add 'y' values based on Step 2.</span></span>
+<span id="cb2-315"><a href="#cb2-315"></a>dat <span class="ot">&lt;-</span> <span class="fu">addColumns</span>(a, dat)</span>
+<span id="cb2-316"><a href="#cb2-316"></a><span class="co"># Run model</span></span>
+<span id="cb2-317"><a href="#cb2-317"></a>mod <span class="ot">&lt;-</span> <span class="fu">lmer</span>(y <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>grp), <span class="at">data =</span> dat)</span>
+<span id="cb2-318"><a href="#cb2-318"></a><span class="fu">summary</span>(mod)</span>
+<span id="cb2-319"><a href="#cb2-319"></a><span class="co"># Run standard model (ignore correlations)</span></span>
+<span id="cb2-320"><a href="#cb2-320"></a>mod <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> <span class="dv">1</span>, <span class="at">data =</span> dat)</span>
+<span id="cb2-321"><a href="#cb2-321"></a><span class="fu">summary</span>(mod)</span>
+<span id="cb2-322"><a href="#cb2-322"></a></span>
+<span id="cb2-323"><a href="#cb2-323"></a><span class="co"># ICC = 0.99 (m = 10, k = 100; n = 1000)</span></span>
+<span id="cb2-324"><a href="#cb2-324"></a><span class="fu">set.seed</span>(<span class="dv">7368888</span>)</span>
+<span id="cb2-325"><a href="#cb2-325"></a><span class="co"># Create data</span></span>
+<span id="cb2-326"><a href="#cb2-326"></a><span class="co"># 1. Define df to create 'a' (precursor to y with mu = 0, var = 396) and 'size' (cluster size) variables</span></span>
+<span id="cb2-327"><a href="#cb2-327"></a>d <span class="ot">&lt;-</span> <span class="fu">defData</span>(<span class="at">varname =</span> <span class="st">"a"</span>, <span class="at">formula =</span> <span class="dv">0</span>, <span class="at">variance =</span> <span class="dv">396</span>, <span class="at">id =</span> <span class="st">"grp"</span>)</span>
+<span id="cb2-328"><a href="#cb2-328"></a>d <span class="ot">&lt;-</span> <span class="fu">defData</span>(d, <span class="at">varname =</span> <span class="st">"size"</span>, <span class="at">formula =</span> <span class="dv">10</span>, <span class="at">dist =</span> <span class="st">"nonrandom"</span>)</span>
+<span id="cb2-329"><a href="#cb2-329"></a><span class="co"># 2. Define df to create formula for 'y' (outcome).</span></span>
+<span id="cb2-330"><a href="#cb2-330"></a>a <span class="ot">&lt;-</span> <span class="fu">defDataAdd</span>(<span class="at">varname =</span> <span class="st">"y"</span>, <span class="at">formula =</span> <span class="st">"5 + a"</span>, <span class="at">variance =</span> <span class="dv">4</span>, <span class="at">dist =</span> <span class="st">"normal"</span>)</span>
+<span id="cb2-331"><a href="#cb2-331"></a><span class="co"># 3. Replicate 10 times (each line is a cluster)</span></span>
+<span id="cb2-332"><a href="#cb2-332"></a>dT <span class="ot">&lt;-</span> <span class="fu">genData</span>(<span class="dv">100</span>, d)</span>
+<span id="cb2-333"><a href="#cb2-333"></a><span class="co"># 4. Expand df</span></span>
+<span id="cb2-334"><a href="#cb2-334"></a>dat <span class="ot">&lt;-</span> <span class="fu">genCluster</span>(<span class="at">dtClust =</span> dT, <span class="at">cLevelVar =</span> <span class="st">"grp"</span>, <span class="at">numIndsVar =</span> <span class="st">"size"</span>, <span class="at">level1ID =</span> <span class="st">"id"</span>)</span>
+<span id="cb2-335"><a href="#cb2-335"></a><span class="co"># 5. Generate and add 'y' values based on Step 2.</span></span>
+<span id="cb2-336"><a href="#cb2-336"></a>dat <span class="ot">&lt;-</span> <span class="fu">addColumns</span>(a, dat)</span>
+<span id="cb2-337"><a href="#cb2-337"></a><span class="co"># Run model</span></span>
+<span id="cb2-338"><a href="#cb2-338"></a>mod <span class="ot">&lt;-</span> <span class="fu">lmer</span>(y <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>grp), <span class="at">data =</span> dat)</span>
+<span id="cb2-339"><a href="#cb2-339"></a><span class="fu">summary</span>(mod)</span>
+<span id="cb2-340"><a href="#cb2-340"></a><span class="co"># Run standard model (ignore correlations)</span></span>
+<span id="cb2-341"><a href="#cb2-341"></a>mod <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> <span class="dv">1</span>, <span class="at">data =</span> dat)</span>
+<span id="cb2-342"><a href="#cb2-342"></a><span class="fu">summary</span>(mod)</span>
+<span id="cb2-343"><a href="#cb2-343"></a></span>
+<span id="cb2-344"><a href="#cb2-344"></a><span class="co">#++++++++++++++++++++++++++++++</span></span>
+<span id="cb2-345"><a href="#cb2-345"></a></span>
+<span id="cb2-346"><a href="#cb2-346"></a><span class="co"># Sanity check between/within vals - allow for sampling variation</span></span>
+<span id="cb2-347"><a href="#cb2-347"></a>(vars_between <span class="ot">&lt;-</span>  dat <span class="sc">|&gt;</span> </span>
+<span id="cb2-348"><a href="#cb2-348"></a>    <span class="fu">group_by</span>(grp) <span class="sc">|&gt;</span> </span>
+<span id="cb2-349"><a href="#cb2-349"></a>    <span class="fu">summarise</span>(<span class="at">means =</span> <span class="fu">mean</span>(y)))</span>
+<span id="cb2-350"><a href="#cb2-350"></a>(var_between  <span class="ot">&lt;-</span>   vars_between <span class="sc">|&gt;</span> </span>
+<span id="cb2-351"><a href="#cb2-351"></a>    <span class="fu">summarise</span>(<span class="at">var_between =</span> <span class="fu">var</span>(means)) <span class="sc">|&gt;</span> </span>
+<span id="cb2-352"><a href="#cb2-352"></a>    <span class="fu">as.numeric</span>())</span>
+<span id="cb2-353"><a href="#cb2-353"></a>(vars_within <span class="ot">&lt;-</span>  dat <span class="sc">|&gt;</span> </span>
+<span id="cb2-354"><a href="#cb2-354"></a>    <span class="fu">group_by</span>(grp) <span class="sc">|&gt;</span> </span>
+<span id="cb2-355"><a href="#cb2-355"></a>    <span class="fu">summarise</span>(<span class="at">vars =</span> <span class="fu">var</span>(y)))</span>
+<span id="cb2-356"><a href="#cb2-356"></a>(var_within <span class="ot">&lt;-</span>  vars_within <span class="sc">|&gt;</span> </span>
+<span id="cb2-357"><a href="#cb2-357"></a>    <span class="fu">summarise</span>(<span class="at">var_within =</span> <span class="fu">mean</span>(vars)) <span class="sc">|&gt;</span> </span>
+<span id="cb2-358"><a href="#cb2-358"></a>    <span class="fu">as.numeric</span>())</span>
+<span id="cb2-359"><a href="#cb2-359"></a>var_between<span class="sc">/</span>(var_between <span class="sc">+</span> var_within)</span>
+<span id="cb2-360"><a href="#cb2-360"></a><span class="in">```</span></span>
+</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div></div></div></div></div>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
