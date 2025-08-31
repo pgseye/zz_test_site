@@ -46,7 +46,7 @@ $$\rho = \frac{\sigma_{(between)}}{\sigma_{(between)} + \sigma_{(within)}} = \fr
 
 Mathematically, the ICC is the ratio of the between-cluster to total variance (where the total variance is the sum of the between- and within-cluster variances). The value of the ICC ranges from `0` to `1`; where an ICC of `0` means that **observations within a group are as different as observations in other groups** - that is, they are independent; and an ICC of `1` means that **observations within a group are the same** - that is, they are completely dependent. Another way to think about this is that when the ICC = `0`, knowing the value of any one observation within a group, gives you no clue as the value of the other observations within that group - they are just as likely to different as observations belonging to other groups. Contrast this to the opposite extreme when the ICC = `1`. Now, if we know the value of any one observation within a group, we automatically know the values of all other observations within that group! If this is not quite making sense yet, I will expound on this notion over the next few sections, and I hope that will make things clearer for you.
 
-### Relationship to ANOVA 
+### Relationship to ANOVA
 
 Let's build on the ideas presented above by considering how the ICC relates to a traditional analysis of variance (ANOVA) \[For those who aren't as familiar with ANOVA, both ANOVA and regression are part of the same statistical framework (the General Linear Model), with the former being a special case of the latter, and the latter, ultimately, being more flexible in its application\]. To illustrate ANOVA, I am '[borrowing](https://www.datanovia.com/en/lessons/anova-in-r/)' the following image:
 
@@ -159,7 +159,7 @@ Based on everything that we have learned thus far, here are a few important them
 
 # Simulations - Effect of ICC on Standard Errors
 
-You'll be pleased to know that we are almost finished. But, before we do, there is one final piece to this correlated data puzzle that I think is important to touch on. Remember when I said above that the implications for ignoring correlation stuctures in our data could be boiled down to power and/or sample size, and precision?
+You'll be pleased to know that we are almost finished. But, before we do, there is one final piece to this correlated data puzzle that I think is important to touch on. Remember when I said above that the implications for ignoring correlation structures in our data could be boiled down to power and/or sample size, and precision?
 
 Power and sample size are certainly very important to consider when planning a study. But there's another side to this coin, and that is how the ICC potentially affects our analysis at the end of the study. I stated earlier that our analysis could be wrong because our standard errors (SE's) and p-values may be unreliable. This is what I'm referring to when I talk about *precision* - how 'tightly' a parameter is estimated. High precision translates to low SE's, small p-values and narrow 95% CI's. In contrast, low precision means that we have high SE's, larger p-values and wider CI's. Of course, we always like to see the former and not the latter when we run a regression model.
 

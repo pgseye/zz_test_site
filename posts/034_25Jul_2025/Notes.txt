@@ -1,10 +1,2 @@
 Notes:
 
-
-
-- Can you use an AFT Weibull model if proportional hazards don't hold? Apparently not:
-https://stats.stackexchange.com/questions/492263/hazards-in-aft-with-weibull-distribution
-https://stats.stackexchange.com/questions/612174/how-do-i-choose-correct-model-aft-or-ph-distribution-when-cox-proportional-h?noredirect=1&lq=1
-https://stats.stackexchange.com/questions/631309/violation-of-cox-proportional-hazard-assumption
-https://stats.stackexchange.com/questions/656893/cox-proportionall-hazards-compared-to-aft-and-the-proportional-hazards-assumptio
-https://discourse.datamethods.org/t/weibull-aft-survival-analysis-best-method-to-present-data-when-publising-presenting/2856/2
