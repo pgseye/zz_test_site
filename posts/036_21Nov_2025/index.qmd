@@ -15,7 +15,7 @@ Not the kind of statistics that tests hypotheses or produces p-values, but the k
 I find the intuition behind LLM's, fascinating. So I thought in today's post - the last for the year - we could have a bit more fun in taking a fairly high-level look at LLM's, how they work, and the fairly basic statistical concepts that underpin their function.
 
 ::: callout-note
-DISCLAIMER: While I have ready quite extensively around this topic in the preparation of this post, I am no expert in LLM's or AI in general. Even with my fact-checking errors may be present, so please take what you read with a grain of salt. Also note, the *in silico* mechanics of LLM's are much more complex than what I have presented here. My aim is purely to provide some insight into these models, if you, like me, have just used them without really understanding how they work. My hope is that after reading this you will at least have a little more intuition into the operations of these black box models when you next type a query into a prompt.
+DISCLAIMER: While I have read quite extensively around this topic in the preparation of this post, I am no expert in LLM's or AI in general. Even with my fact-checking errors may be present, so please take what you read with a grain of salt. Also note, the *in silico* mechanics of LLM's are much more complex than what I have presented here. My aim is purely to provide some insight into these models, if you, like me, have just used them without really understanding how they work. My hope is that after reading this you will at least have a little more intuition into the operations of these black box models when you next type a query into a prompt.
 :::
 
 # What is an LLM?
@@ -210,7 +210,7 @@ Whereas misinformation is usually considered as '*false or misleading informatio
 
 ### Chatbot Psychosis
 
-While not currently recognised as a clinical diagnosis, [chatbot psychosis](https://en.wikipedia.org/wiki/Chatbot_psychosis) is a phenomenon wherein individuals reportedly develop or experience worsening psychosis, such as paranoia and delusions, in connections with their use of chatbots. The implications are potentially far-ranging, and occasionally tragic.
+While not currently recognised as a clinical diagnosis, [chatbot psychosis](https://en.wikipedia.org/wiki/Chatbot_psychosis) is a phenomenon wherein individuals reportedly develop or experience worsening psychosis, such as paranoia and delusions, in connection with their use of chatbots. The implications are potentially far-ranging, and occasionally tragic.
 
 In one [recent case](https://futurism.com/chatgpt-chabot-severe-delusions), `47` year-old Allan Brooks from Toronto, spent hundreds of hours locked in intense conversations with ChatGPT. After three weeks, he was convinced by the LLM that he'd invented an entirely new field of mathematics – one that could enable force-field vests, levitation, and even break the cryptographic systems that underpin the digital security of the internet. It was what the New York Times came to report as a 'Delusional Spiral'. Part of the problem in this case was the incessant sycophancy that LLM's display out-of-the-box. At various points the individual attempted reality checks but was further encouraged by the chatbot:
 
