@@ -1,6 +1,6 @@
 ---
 title: "A Gentle Introduction to the Bootstrap"
-date: 2025-11-14
+date: 2026-01-30
 categories: [code, concept, modelling]
 image: "images/bootstrapping.png"
 description: "Primer and Intuition for Computational Non-Parametric Resampling"
@@ -136,7 +136,7 @@ The primary package in R for bootstrapping is the `boot` package. Calling the co
 
     -   R = Number of bootstrap replicates (min = 1000)
 
-Once you've done that, you can then ask for the bootstrap CI's, and that is fairly simple to do with the `boot.ci()` function. This can take up to `3` arguments where you first specify the returned boot object that you created in the previous step, then you can specify the CI if you want (althoug it defaults to `95%`), and finally you specify the 'type' of confidence interval you want to calculate. Now there are `5` of these - but it's probably easier to just specify 'all' and you can then compare among them.
+Once you've done that, you can then ask for the bootstrap CI's, and that is fairly simple to do with the `boot.ci()` function. This can take up to `3` arguments where you first specify the returned boot object that you created in the previous step, then you can specify the CI if you want (although it defaults to `95%`), and finally you specify the 'type' of confidence interval you want to calculate. Now there are `5` of these - but it's probably easier to just specify 'all' and you can then compare among them.
 
 -   `boot.ci(bootobject, conf =, type = )` where:
 
@@ -184,7 +184,7 @@ And these are the `95%` CI's from the various methods. The first one is the 'the
 
 ![](images/corplot.png){fig-align="center"}
 
-Ok - let's now consider a different sample statistic that we might be interested in - the correlation coefficient. This is a scatterplot with overlaid density plot of the previous variable (on the x-axis) and a second variable (on the y-axis) from the same dataset. The marginal distribution of the second variable is far from normal as I'm sure you can appreciate, by looking at the density curve on the right side. When we look at the bivariate relationship in terms of the scattterplot itself, it's not hard to imagine a negative relationship between the two variables.
+Ok - let's now consider a different sample statistic that we might be interested in - the correlation coefficient. This is a scatterplot with overlaid density plot of the previous variable (on the x-axis) and a second variable (on the y-axis) from the same dataset. The marginal distribution of the second variable is far from normal as I'm sure you can appreciate, by looking at the density curve on the right side. When we look at the bivariate relationship in terms of the scatterplot itself, it's not hard to imagine a negative relationship between the two variables.
 
 ## Sampling Distribution
 
@@ -202,7 +202,7 @@ As with the sample mean, if we want to obtain empirical `95%` CI's we can just r
 
 ![](images/boot_cor_cis.png){fig-align="center"}
 
-Confidence interval coverage with the correlation coefficient is also a little different to what we previously saw with the sample mean. The theoretical and two of the bootstrap intervals - the percentile and the bias-corrected percentile are quite similar, whereas the remaining two bootstrap intervals - the normal and basic are quite different. OK, so what do we believe here? Well, the normal and basic intervals should really only be trusted when we've got a large sample size and a well-behaved statistic - and you could make a good argument that we don't really have either of those two conditions being met here. Therefore it's either the percentile method or its bias-corrected variant and as I mentioned before the latter is probably the best method, in general, to choose. When we compare the bias-corrected interval to the theoretical interval, we can see that in fact they're not that different, but the bca is a little more conservative (i.e. the CI is wider) - which is always a good thing, I think, in quantifying uncertainty.
+Confidence interval coverage with the correlation coefficient is also a little different to what we previously saw with the sample mean. The theoretical and two of the bootstrap intervals - the percentile and the bias-corrected percentile are quite similar, whereas the remaining two bootstrap intervals - the normal and basic are quite different. OK, so what do we believe here? Well, the normal and basic intervals should really only be trusted when we've got a large sample size and a well-behaved statistic - and you could make a good argument that we don't really have either of those two conditions being met here. Therefore it's either the percentile method or its bias-corrected variant and as I mentioned before the latter is probably the best method, in general, to choose. When we compare the bias-corrected interval to the theoretical interval, we can see that in fact they're not that different, but the bias-corrected is a little more conservative (i.e. the CI is wider) - which is always a good thing, I think, in quantifying uncertainty.
 
 So at the end of the day, for these data, it's good to be able to report both types of CI's - theoretical and empirical from the bootstrap. And that's because we know from the outset that we're dealing with a sample statistic that might not conform to the theoretical assumptions for CI estimation as well as a 'better behaved' statistic like the sample mean.
 
@@ -210,9 +210,9 @@ So at the end of the day, for these data, it's good to be able to report both ty
 
 You'll be glad to know that we have reached the end. Ok, so you might be wondering, what are the main takeaways from today's post? Well, the first main point is that SE and CI estimation is really important in quantifying the uncertainty associated with a conclusion that we are trying to make from our research.
 
-Most of the time we don't have to think to deeply about this and just let our hypothesis test and/or model do the heavy lifting for us. That's fine, but it's also important to have some idea of what's happening behind the scenes, and that is for many sample statistics we are leveraging large sample assumptions about asymptotic normality to theoretically derive our Ci's. It never hurts in these cases to run a bootstrap as well, with the aim of enhancing the robustness of our conclusions if the theoretical and empirical intervals agree, or discussing differences if they don't.
+Most of the time we don't have to think to deeply about this and just let our hypothesis test and/or model do the heavy lifting for us. That's fine, but it's also important to have some idea of what's happening behind the scenes, and that is for many sample statistics we are leveraging large sample assumptions about asymptotic normality to theoretically derive our CI's. It never hurts in these cases to run a bootstrap as well, with the aim of enhancing the robustness of our conclusions if the theoretical and empirical intervals agree, or discussing differences if they don't.
 
-Furthermore, This is NOT an option for some sample statistics that break these large-sample assumptions, and in these cases, the bootstrap is about all that we have, and therefore all we can use to quanitfy and report uncertainty estimates. For that reason, having a basic understanding of the bootstrap is a good skill to have in your statistics toolbox - you never know when you might need to use it, but you've then got it as an option when you do.
+Furthermore, This is NOT an option for some sample statistics that break these large-sample assumptions, and in these cases, the bootstrap is about all that we have, and therefore all we can use to quantify and report uncertainty estimates. For that reason, having a basic understanding of the bootstrap is a good skill to have in your statistics toolbox - you never know when you might need to use it, but you've then got it as an option when you do.
 
 ```{r}
 #| eval: false

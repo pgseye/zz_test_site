@@ -1,0 +1,1405 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.549">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="dcterms.date" content="2025-11-21">
+<meta name="description" content="A plain-language look at how large language models like ChatGPT are really just massive probabilistic models — not magic, just statistics at scale.">
+
+<title>Test Site 2 - Large Language Models are Just Statistics</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../../">
+<script src="../../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../../site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../../../styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../../index.html">
+    <span class="navbar-title">Test Site 2</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../../about.html"> 
+<span class="menu-text">About</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../index.html"> 
+<span class="menu-text">All Posts</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+          <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#what-is-an-llm" id="toc-what-is-an-llm" class="nav-link active" data-scroll-target="#what-is-an-llm"><span class="header-section-number">1</span> What is an LLM?</a></li>
+  <li><a href="#how-does-an-llm-work" id="toc-how-does-an-llm-work" class="nav-link" data-scroll-target="#how-does-an-llm-work"><span class="header-section-number">2</span> How Does an LLM work?</a>
+  <ul>
+  <li><a href="#tokenisation---the-input-data" id="toc-tokenisation---the-input-data" class="nav-link" data-scroll-target="#tokenisation---the-input-data"><span class="header-section-number">2.1</span> Tokenisation - The Input Data</a></li>
+  <li><a href="#embedding---converting-words-to-numbers." id="toc-embedding---converting-words-to-numbers." class="nav-link" data-scroll-target="#embedding---converting-words-to-numbers."><span class="header-section-number">2.2</span> Embedding - Converting Words to Numbers.</a></li>
+  <li><a href="#neural-networks-and-the-transformer-architecture---giving-meaning-to-words." id="toc-neural-networks-and-the-transformer-architecture---giving-meaning-to-words." class="nav-link" data-scroll-target="#neural-networks-and-the-transformer-architecture---giving-meaning-to-words."><span class="header-section-number">2.3</span> Neural Networks and the Transformer Architecture - Giving Meaning to Words.</a></li>
+  <li><a href="#logistic-regression---predicting-the-next-token." id="toc-logistic-regression---predicting-the-next-token." class="nav-link" data-scroll-target="#logistic-regression---predicting-the-next-token."><span class="header-section-number">2.4</span> Logistic Regression - Predicting the Next Token.</a>
+  <ul class="collapse">
+  <li><a href="#toy-example" id="toc-toy-example" class="nav-link" data-scroll-target="#toy-example"><span class="header-section-number">2.4.1</span> Toy Example</a></li>
+  </ul></li>
+  <li><a href="#tying-up-some-loose-ends" id="toc-tying-up-some-loose-ends" class="nav-link" data-scroll-target="#tying-up-some-loose-ends"><span class="header-section-number">2.5</span> Tying Up Some Loose Ends</a>
+  <ul class="collapse">
+  <li><a href="#llms---machine-learning-and-classical-statistics" id="toc-llms---machine-learning-and-classical-statistics" class="nav-link" data-scroll-target="#llms---machine-learning-and-classical-statistics"><span class="header-section-number">2.5.1</span> LLM’s - Machine Learning AND Classical Statistics</a></li>
+  <li><a href="#how-are-models-trained" id="toc-how-are-models-trained" class="nav-link" data-scroll-target="#how-are-models-trained"><span class="header-section-number">2.5.2</span> How are Models Trained?</a></li>
+  <li><a href="#whats-this-that-i-see-about-the-number-of-model-parameters" id="toc-whats-this-that-i-see-about-the-number-of-model-parameters" class="nav-link" data-scroll-target="#whats-this-that-i-see-about-the-number-of-model-parameters"><span class="header-section-number">2.5.3</span> What’s This That I See About the Number of Model Parameters?</a></li>
+  <li><a href="#parameters-vs-tokens" id="toc-parameters-vs-tokens" class="nav-link" data-scroll-target="#parameters-vs-tokens"><span class="header-section-number">2.5.4</span> Parameters vs Tokens</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#the-dark-side-of-llms" id="toc-the-dark-side-of-llms" class="nav-link" data-scroll-target="#the-dark-side-of-llms"><span class="header-section-number">3</span> The Dark Side of LLM’s</a>
+  <ul>
+  <li><a href="#harmful-outputs" id="toc-harmful-outputs" class="nav-link" data-scroll-target="#harmful-outputs"><span class="header-section-number">3.1</span> Harmful Outputs</a>
+  <ul class="collapse">
+  <li><a href="#hallucination-misinformation" id="toc-hallucination-misinformation" class="nav-link" data-scroll-target="#hallucination-misinformation"><span class="header-section-number">3.1.1</span> Hallucination (Misinformation)</a></li>
+  <li><a href="#disinformation" id="toc-disinformation" class="nav-link" data-scroll-target="#disinformation"><span class="header-section-number">3.1.2</span> Disinformation</a></li>
+  <li><a href="#chatbot-psychosis" id="toc-chatbot-psychosis" class="nav-link" data-scroll-target="#chatbot-psychosis"><span class="header-section-number">3.1.3</span> Chatbot Psychosis</a></li>
+  <li><a href="#environmental-impact" id="toc-environmental-impact" class="nav-link" data-scroll-target="#environmental-impact"><span class="header-section-number">3.1.4</span> Environmental Impact</a></li>
+  <li><a href="#reshaping-the-jobs-and-economic-landscape" id="toc-reshaping-the-jobs-and-economic-landscape" class="nav-link" data-scroll-target="#reshaping-the-jobs-and-economic-landscape"><span class="header-section-number">3.1.5</span> Reshaping the Jobs (and Economic) Landscape</a></li>
+  <li><a href="#data-security-and-privacy-issues" id="toc-data-security-and-privacy-issues" class="nav-link" data-scroll-target="#data-security-and-privacy-issues"><span class="header-section-number">3.1.6</span> Data Security and Privacy Issues</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#take-home-messages" id="toc-take-home-messages" class="nav-link" data-scroll-target="#take-home-messages"><span class="header-section-number">4</span> Take-Home Messages</a></li>
+  <li><a href="#the-end" id="toc-the-end" class="nav-link" data-scroll-target="#the-end"><span class="header-section-number">5</span> The End</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<div class="quarto-title-block"><div><h1 class="title">Large Language Models are Just Statistics</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
+  <div class="quarto-categories">
+    <div class="quarto-category">concept</div>
+  </div>
+  </div>
+
+<div>
+  <div class="description">
+    A plain-language look at how large language models like ChatGPT are really just massive probabilistic models — not magic, just statistics at scale.
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">November 21, 2025</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>If you’ve played with OpenAI’s ChatGPT, Anthropic’s Claude, Google’s Gemini or any of the raft of other ‘chatbots’, you’ve seen how they can write, summarize, and even appear to reason. It feels like magic - but under the hood, large language models (LLMs) like GPT are doing something surprisingly familiar to anyone who works with data.</p>
+<p>They’re doing <strong>statistics</strong>. And for a good part, they’re doing statistics that you already know.</p>
+<p>Not the kind of statistics that tests hypotheses or produces p-values, but the kind that finds patterns in data and makes predictions. At their core, LLMs are vast, sophisticated <strong>probability models</strong> - predicting, one ‘token’ at a time, what’s most likely to come next.</p>
+<p>I find the intuition behind LLM’s, fascinating. So I thought in today’s post - the last for the year - we could have a bit more fun in taking a fairly high-level look at LLM’s, how they work, and the fairly basic statistical concepts that underpin their function.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>DISCLAIMER: While I have ready quite extensively around this topic in the preparation of this post, I am no expert in LLM’s or AI in general. Even with my fact-checking errors may be present, so please take what you read with a grain of salt. Also note, the <em>in silico</em> mechanics of LLM’s are much more complex than what I have presented here. My aim is purely to provide some insight into these models, if you, like me, have just used them without really understanding how they work. My hope is that after reading this you will at least have a little more intuition into the operations of these black box models when you next type a query into a prompt.</p>
+</div>
+</div>
+<section id="what-is-an-llm" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> What is an LLM?</h1>
+<p>When I typed this question into Google Search, I didn’t have to look far for Google to provide its own summary in the form of an ‘AI Overview’:</p>
+<p><em>A large language model (LLM) is a type of artificial intelligence (AI) that is trained on massive amounts of text data to understand and generate human-like text. LLM’s use a complex neural network architecture, most commonly a transformer model, to identify patterns and predict the next word in a sequence, which allows them to perform various tasks like answering questions, summarizing documents, and translating languages.</em></p>
+<p>That is a fair summary, but I think it’s still fairly technical. When I asked ChatGPT to provide a lay summary answer to the same question I think it accommodated my request quite effectively:</p>
+<p><em>An LLM is simply a very large statistical model of language. It has read billions of words from books, articles, and websites, and learned which words tend to follow which others. When you ask it a question or start a sentence, it doesn’t ‘think’ about what to say — it just predicts, using probabilities, what word (or piece of a word) - <strong>tokens</strong> - is most likely to come next. By repeating that process thousands of times, it produces text that sounds fluent and intelligent. In other words: it’s not magic — it’s statistics, just at a massive scale.</em></p>
+</section>
+<section id="how-does-an-llm-work" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> How Does an LLM work?</h1>
+<p>Great question! Let’s break this down into a series of <code>5</code> steps (you could argue for more or less but I feel these capture the core functions of how LLM’s operate):</p>
+<ol start="0" type="1">
+<li><p>Training and Optimisation (I’ll explain why this isn’t Step 1 shortly)</p></li>
+<li><p>Tokenization</p></li>
+<li><p>Embedding</p></li>
+<li><p>Neural Networks and the Transformer Architecture</p></li>
+<li><p>Logistic Regression</p></li>
+</ol>
+<section id="tokenisation---the-input-data" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="tokenisation---the-input-data"><span class="header-section-number">2.1</span> Tokenisation - The Input Data</h2>
+<p>Computers don’t understand words - they understand numbers. So the first step in building a language model is to <strong>turn text into numbers</strong>. The text is broken down into small chunks called <strong>tokens</strong>. Think of tokens as how LLM’s see the world. A token might be a whole word (‘cat’), a piece of a word (‘ing’), or even punctuation. Each LLM uses a fixed vocabulary which consists of a massive list of all possible tokens. One of the benefits of chunking words into tokens - rather than using unique words - is that the vocabulary size is reduced (<code>30,000</code> - <code>50,000</code> vs <code>100,000's</code>), and this carries significant computational benefits.</p>
+<p>In the example below we can see how the sentence “Robin slung the bow over his shoulder” is broken down into a series of tokens (for simplicity I have just used individual words, but you get the point).</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/token_embed_fig.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
+</figure>
+</div>
+</section>
+<section id="embedding---converting-words-to-numbers." class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="embedding---converting-words-to-numbers."><span class="header-section-number">2.2</span> Embedding - Converting Words to Numbers.</h2>
+<p>Each token is then assigned a number or vector representing its meaning in a multi-dimensional ‘embedding’ space - kind of like plotting words in a giant coordinate system where similar words sit near each other. So ‘nurse’ and ‘doctor’ might have coordinates that are close together, while ‘banana’ and ‘apple’ may also be close together but far away from the other two words.</p>
+<p>Humans are able to conceptualise and visualise up to <code>3</code>-dimensional spaces - typically where we have x, y and z co-ordinate systems. However, we struggle with higher-dimensional spaces. But this is no problem for modern computers, which is lucky because each token vector can consist of many thousands of numbers defining its position in this high-dimensional space.</p>
+<p>The figure below shows an example of how the words mentioned above might be displayed in a <code>2</code>-dimensional representation of a multi-dimensional space. These embeddings are projected onto a <code>2</code>-dimensional plane to allow our brains to understand their relative positionings in a simplified space, but remember, this is much more complex in ‘reality’. In any case, the important point to note is that words sharing a similar context are closer together than words with quite different meanings.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>At this point you may be wondering how does the model already have a good sense of token embeddings? And that’s a good question. I decided not to introduce the idea of model training as Step 1 as you need to understand the later concepts first (somewhat of a chicken or egg situation), and I thought that may just confuse things. But it’s the training of a model that provides this initial ‘static’ word positioning in high-dimensional space - in other words, training builds in some initial word/token context. The reason I refer to it as ‘static’, is that context is very environment-dependent and thus needs updating in a dynamic capacity. We will explore this further in the next section… But, for now, keep in mind the following as it relates to training. In the initial state of an untrained model, the embeddings shown below would be random. They could project onto any quadrant with no observable correlation. In other words, models start off with random token positionings and as they ‘learn’ by ingesting huge amounts of data, they gradually refine the embeddings to what might be seen below in a trained model. Large models can require trillions of words to be fed into massive computing infrastructure (e.g.&nbsp;clusters of GPU’s) running for weeks to months continuously, at millions of dollars in cost.</p>
+</div>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/grid_1.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
+</figure>
+</div>
+</section>
+<section id="neural-networks-and-the-transformer-architecture---giving-meaning-to-words." class="level2" data-number="2.3">
+<h2 data-number="2.3" class="anchored" data-anchor-id="neural-networks-and-the-transformer-architecture---giving-meaning-to-words."><span class="header-section-number">2.3</span> Neural Networks and the Transformer Architecture - Giving Meaning to Words.</h2>
+<p>So far, so good (I hope). Are you still with me? Ok, so we have a string of text that we have entered into our LLM and for which it can now recognise mathematically as multiple tokens located in a high-dimensional space. Pre-training means that tokens with similar meanings tend to correlate and clump together, but at this point there is no contextual awareness of one token with it’s surrounding tokens. For example, in the sentence above - ‘Robin slung the bow over his shoulder’ - how does the LLM interpret the word ‘bow’?</p>
+<p>Think about it for a moment. ‘Bow’ is an example of a homograph where a word with different meanings (and potentially pronunciations) is spelled the same in all cases. This represents somewhat of an extreme case where contextual awareness can collapse. For example, we can use ‘bow’ differently, but equally validly, in each of the three following sentences:</p>
+<ol type="1">
+<li><p>(noun) A knot tied with two loops, usually used when tying shoelaces or wrapping gifts.</p>
+<p><em>“She made a little bow for her hair.”</em></p></li>
+<li><p>(noun) A weapon used in archery to shoot arrows.</p>
+<p><em>“Robin slung the bow over his shoulder.”</em></p></li>
+<li><p>(verb) To bend the upper part of the body to show respect.</p>
+<p><em>“When Hiromi greets people, she always bows.”</em></p></li>
+</ol>
+<p>What are the implications of this for an LLM? Well the first thing to note is that the initial embedding for ‘bow’ is the same in all cases. That is, the LLM’s initial mathematical representation for the word remains the same even though the meanings are quite different. In other words, from the model’s point of view, ‘bow’ has the same starting meaning in all contexts.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/bow_embed.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
+</figure>
+</div>
+<p>So how does the LLM figure out which ‘bow’ to use? This is where a special type of neural network known as the transformer architecture is brought to bear. The transformer model consists of repeatable ‘blocks’ as the fundamental unit of the architecture, with multiple ‘layers’, performing different functions, residing within each block. Perhaps the most important of these layers is what’s known as the <strong>self-attention</strong> layer.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The ‘GPT’ in ChatGPT stands for <strong>G</strong>enerative <strong>P</strong>retrained <strong>T</strong>ransformer</p>
+</div>
+</div>
+<p>Self-attention is essentially a mechanism where all current token vectors are able to ‘look at’ one another. Self-attention answers, for every token: ‘Which other tokens in this sentence are most relevant to understanding me?’ Self-attention is <strong>how the model dynamically refines meaning based on the surrounding words</strong>. After self-attention, each token’s vector is passed through small feed-forward neural networks - non-linear transformations that help capture more abstract relationships and patterns. Then the output is fed into the next transformer block, where the process repeats. Each block builds on the previous one, learning increasingly sophisticated relationships:</p>
+<ul>
+<li><p>Early blocks: capture word-level patterns (“cat” → noun, “ate” → verb)</p></li>
+<li><p>Middle blocks: capture phrase and syntactic structure (i.e.&nbsp;good grammar)</p></li>
+<li><p>Later blocks: capture semantics, tone, and long-range dependencies (e.g., ‘The doctor who treated the patient was praised by the hospital’ → knowing who did what to whom)</p></li>
+</ul>
+<p>So, going back to our example above, ‘bow’ will end up correlating more strongly with ‘slung’ in the first example, ‘hair’ in the second example and ‘greets’ in the last example. Thus, even though the embedding for ‘bow’ starts off the same in each scenario, by the end of passing through multiple transformer blocks, the embedding will change in a context-aware way. In other words, <strong>each token’s vector now represents not just what the word is, but what it means here, in this sentence</strong>. Our projected high-dimensional space for ‘bow’ may now look something like that in the figure below.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/grid_2.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
+</figure>
+</div>
+<p>You might be wondering about the maths behind how the self-attention layer updates each token embedding. This is complex, but in brief, each attention layer multiplies the embedding vectors by large matrices of learned <strong>weights</strong> to create new representations of each token. It then <strong>mixes information between tokens</strong> using attention - allowing the model to decide which words are most relevant to each other - and applies non-linear transformations to refine these relationships. The result is a new vector for each token that represents everything the model has ‘understood’ so far about the context of the input.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Matrix multiplication, a fundamental concept in high-school level linear algebra classes, features heavily in the function of LLM’s</p>
+</div>
+</div>
+</section>
+<section id="logistic-regression---predicting-the-next-token." class="level2" data-number="2.4">
+<h2 data-number="2.4" class="anchored" data-anchor-id="logistic-regression---predicting-the-next-token."><span class="header-section-number">2.4</span> Logistic Regression - Predicting the Next Token.</h2>
+<p>And here we are. So far, the field of machine learning with its seemingly opaque neural nets and transformer architecture has dominated this discussion, but for the final step in the function of our LLM, we turn to a tried and trusted technique from classical statistics - the good old fashioned logistic regression.</p>
+<p>Why?</p>
+<p>Well, when you think about it, the LLM’s only job is <strong>to predict</strong>.</p>
+<p>Once the model has passed your input through all its transformer blocks, it ends up with a <strong>final embedding vector</strong> for each token - a rich numerical summary of that word’s meaning and context. The next step is to use that vector to <strong>predict which token comes next</strong>. At its core, this prediction step is just a very large <strong>multinomial logistic regression problem</strong>.</p>
+<p>In ordinary logistic regression, we estimate the probability of a binary outcome (say, success vs failure). In multinomial logistic regression, there are many possible outcomes - in this case, <strong>every token in the model’s vocabulary</strong> (often tens of thousands). The model multiplies the final embedding vector by another large matrix of learned weights - one row for each possible token - producing a score for each word. Those scores are then passed through a <em>softmax</em> function to convert them into probabilities that <strong>sum to one</strong>. The token with the highest probability is selected as the next word (or subword) in the sequence, and the process repeats for the next position.</p>
+<p>You can imagine this as running a giant logistic regression with, say, <strong>50,000 possible categories</strong> - one for every token the model knows. For each step in the generated text, the model asks: <em>Given everything I’ve seen so far, which token is most probable next?</em> The transformer layers provide the context; the logistic regression at the end turns that understanding into a concrete prediction.</p>
+<p>Remember, if you’ve ever performed logistic regression, you have simply estimated a conditional probability. We can specify this mathematically as:</p>
+<p><span class="math display">\[
+P(Y = 1 | X)
+\]</span></p>
+<p>In other words, what is the probability of the outcome (Y), <em>given</em> the covariate values (X) that we observed. This is really no different to the prediction task performed by LLM’s, where we can equivalently write:</p>
+<p><span class="math display">\[
+P(Y = \textrm{Token}_{\textrm{(next)}} | \textrm{Tokens}_{\textrm{(previous)}})
+\]</span></p>
+<p>That is, what is the probability of the next token, <em>given</em> the previous tokens in the sequence.</p>
+<p>LLM’s might look like artificial intelligence, but under the hood, they’re doing something you already know well:</p>
+<ul>
+<li><p>taking data,</p></li>
+<li><p>estimating probabilities,</p></li>
+<li><p>and using those probabilities to make predictions.</p></li>
+</ul>
+<section id="toy-example" class="level3" data-number="2.4.1">
+<h3 data-number="2.4.1" class="anchored" data-anchor-id="toy-example"><span class="header-section-number">2.4.1</span> Toy Example</h3>
+<p>Let’s consider a small example to formalise that idea in our mind. Say we prompted an LLM with some text essentially asking it to tell us what the next word in the following sentence should be:</p>
+<blockquote class="blockquote">
+<p>“Multiple sclerosis is a ___”</p>
+</blockquote>
+<p>An LLM doesn’t ‘know’ the answer — it simply estimates, based on all the text it has seen during training, the probability of each possible next token. Let’s imagine our LLM only has <code>5</code> tokens (words) in it’s vocabulary. After typing our input at the prompt, this hypothetical LLM would go through each of the steps described above in contextualising the input to optimise the prediction of it’s one and only required token (word) as output. Internally it runs a multinomial logistic regression to assign probabilities to each of the tokens in it’s trained vocabulary, coming up with the following:</p>
+<table class="table">
+<thead>
+<tr class="header">
+<th>Next token</th>
+<th>Probability</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>“disease”</td>
+<td>0.62</td>
+</tr>
+<tr class="even">
+<td>“condition”</td>
+<td>0.30</td>
+</tr>
+<tr class="odd">
+<td>“virus”</td>
+<td>0.04</td>
+</tr>
+<tr class="even">
+<td>“therapy”</td>
+<td>0.03</td>
+</tr>
+<tr class="odd">
+<td>“cure”</td>
+<td>0.01</td>
+</tr>
+</tbody>
+</table>
+<p>The model then picks one — usually the most probable, and then returns that to you as text output. Now imagine the same process occurs sequentially in an iterative fashion predicting one token conditional on all previous tokens - token after token - choosing among ~ <code>50,000</code> possible tokens. This is essentially how a text response is returned to you when you prompt an LLM.</p>
+</section>
+</section>
+<section id="tying-up-some-loose-ends" class="level2" data-number="2.5">
+<h2 data-number="2.5" class="anchored" data-anchor-id="tying-up-some-loose-ends"><span class="header-section-number">2.5</span> Tying Up Some Loose Ends</h2>
+<p>There remain a couple of concepts that are worth briefly exploring as these frequently pop up in discussions of LLM’s. Understanding these ideas can in turn be helpful in developing a deeper understanding of how these models work, so let’s take a look at them now:</p>
+<section id="llms---machine-learning-and-classical-statistics" class="level3" data-number="2.5.1">
+<h3 data-number="2.5.1" class="anchored" data-anchor-id="llms---machine-learning-and-classical-statistics"><span class="header-section-number">2.5.1</span> LLM’s - Machine Learning AND Classical Statistics</h3>
+<p>We have seen how LLM’s utilise both machine (deep) learning and traditional statistics as core functions in returning output to a user’s prompt. While these ‘<a href="https://projecteuclid.org/journals/statistical-science/volume-16/issue-3/Statistical-Modeling--The-Two-Cultures-with-comments-and-a/10.1214/ss/1009213726.pdf">two cultures</a>’ of statistical modelling share some similarities, there are also many differences, and some of these are listed below. The main point to note in the case of LLM’s is the sheer scale at which these models operate.</p>
+<table class="table">
+<thead>
+<tr class="header">
+<th>Traditional Statistics</th>
+<th>LLMs</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Dozens to thousands of parameters</td>
+<td>Billions to trillions</td>
+</tr>
+<tr class="even">
+<td>Interpretable coefficients</td>
+<td>Black box parameters</td>
+</tr>
+<tr class="odd">
+<td>Focus on inference &amp; p-values</td>
+<td>Focus on prediction</td>
+</tr>
+<tr class="even">
+<td>Small, curated datasets</td>
+<td>Massive, noisy web data</td>
+</tr>
+<tr class="odd">
+<td>Closed-form solutions possible</td>
+<td>Requires iterative optimization</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="how-are-models-trained" class="level3" data-number="2.5.2">
+<h3 data-number="2.5.2" class="anchored" data-anchor-id="how-are-models-trained"><span class="header-section-number">2.5.2</span> How are Models Trained?</h3>
+<p>How does an LLM ‘learn’ those billions to trillions of parameters?</p>
+<p>Training a large language model is essentially about teaching it to get really good at the next-token prediction task. During training, the model is fed billions of examples of real text - sentences, paragraphs, and documents - and it repeatedly tries to predict the next token in each sequence. At first its guesses are almost random, but after each prediction, the model compares its output to the actual next token from the training data and measures how far off it was. This difference (called the <em>loss</em>) is then used to adjust the model’s internal weights slightly through a process known as <strong>gradient descent</strong>. Over countless iterations, these weight adjustments accumulate, allowing the model to capture the statistical patterns of language - grammar, style, semantics, even factual associations - purely from the data it’s exposed to. In the end, the model doesn’t memorize sentences; it learns a vast web of probabilities that lets it generate fluent, context-aware text in response to your next prompt, even though it may never have seen that specific sequence of tokens before.</p>
+</section>
+<section id="whats-this-that-i-see-about-the-number-of-model-parameters" class="level3" data-number="2.5.3">
+<h3 data-number="2.5.3" class="anchored" data-anchor-id="whats-this-that-i-see-about-the-number-of-model-parameters"><span class="header-section-number">2.5.3</span> What’s This That I See About the Number of Model Parameters?</h3>
+<p>When people talk about a model having ‘175 billion parameters’, they’re referring to the <strong>number of adjustable weights</strong> inside the neural network - the numerical values the model learns during training. Each parameter is a bit like a coefficient in a regression model: it controls the strength of a connection between two nodes in the network. During training, gradient descent updates these parameters so that the model’s predictions become more accurate. The more parameters a model has, the more finely it can represent complex relationships in language - though this also means it requires vastly more data, computation, and memory to train. In simple terms, parameters are where the model’s knowledge lives: they store everything it has learned about how words and ideas relate to one another.</p>
+</section>
+<section id="parameters-vs-tokens" class="level3" data-number="2.5.4">
+<h3 data-number="2.5.4" class="anchored" data-anchor-id="parameters-vs-tokens"><span class="header-section-number">2.5.4</span> Parameters vs Tokens</h3>
+<p>It’s easy to confuse parameters with tokens, but they refer to very different things. Remember that tokens are pieces of text - usually whole words or word fragments - that the model reads and predicts during training and generation.&nbsp;Parameters, on the other hand, are the <em>internal numerical settings</em> that determine how the model processes those tokens. You can think of it like this: tokens are the <strong>inputs and outputs</strong>, while parameters are the <strong>knobs and switches</strong> inside the model that decide how to respond. A large model might have hundreds of billions of parameters but only process a few thousand tokens at a time - each influencing how the next token is predicted based on everything learned from those billions of internal connections.</p>
+</section>
+</section>
+</section>
+<section id="the-dark-side-of-llms" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> The Dark Side of LLM’s</h1>
+<p>From all that we’ve discussed thus far, it’s easy to appreciate the potential utility of LLM’s. But of course, with all good, comes some bad, and so before we end I thought we could briefly touch on some of those emergent less-positive issues that we are starting to see being reported. Some of these are specific to LLM’s only, while some allude to AI growth in a broader sense - hopefully it’s clear to you where any distinction may lay.</p>
+<section id="harmful-outputs" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="harmful-outputs"><span class="header-section-number">3.1</span> Harmful Outputs</h2>
+<section id="hallucination-misinformation" class="level3" data-number="3.1.1">
+<h3 data-number="3.1.1" class="anchored" data-anchor-id="hallucination-misinformation"><span class="header-section-number">3.1.1</span> Hallucination (Misinformation)</h3>
+<p>A common limitation of LLM’s is something called <strong>hallucination</strong> - when the model produces information that sounds plausible but isn’t actually true. This happens because the model doesn’t <em>know</em> facts; it generates text by predicting the most likely sequence of words based on patterns it has seen. If the training data contain gaps or inconsistencies, the model may confidently ‘fill in’ those gaps with made-up details, references, or explanations that look convincing but have no factual basis. Garbage in, garbage out.</p>
+</section>
+<section id="disinformation" class="level3" data-number="3.1.2">
+<h3 data-number="3.1.2" class="anchored" data-anchor-id="disinformation"><span class="header-section-number">3.1.2</span> Disinformation</h3>
+<p>Whereas misinformation is usually considered as ‘<em>false or misleading information</em>’, <strong>disinformation</strong> is even more insidious as it is ‘<em>false information that is purposely spread with the intent to deceive</em>’. LLM’s can be <a href="https://www.sciencedirect.com/science/article/pii/S2666827024000215">weaponised for disinformation</a> because they can generate vast amounts of realistic, human-like text at scale. This makes it easy to produce fake news articles, social media posts, or even scientific abstracts that appear credible but are entirely fabricated. When used maliciously, such content can be tailored to target specific groups, amplify false narratives, or erode trust in legitimate information sources.</p>
+</section>
+<section id="chatbot-psychosis" class="level3" data-number="3.1.3">
+<h3 data-number="3.1.3" class="anchored" data-anchor-id="chatbot-psychosis"><span class="header-section-number">3.1.3</span> Chatbot Psychosis</h3>
+<p>While not currently recognised as a clinical diagnosis, <a href="https://en.wikipedia.org/wiki/Chatbot_psychosis">chatbot psychosis</a> is a phenomenon wherein individuals reportedly develop or experience worsening psychosis, such as paranoia and delusions, in connections with their use of chatbots. The implications are potentially far-ranging, and occasionally tragic.</p>
+<p>In one <a href="https://futurism.com/chatgpt-chabot-severe-delusions">recent case</a>, <code>47</code> year-old Allan Brooks from Toronto, spent hundreds of hours locked in intense conversations with ChatGPT. After three weeks, he was convinced by the LLM that he’d invented an entirely new field of mathematics – one that could enable force-field vests, levitation, and even break the cryptographic systems that underpin the digital security of the internet. It was what the New York Times came to report as a ‘Delusional Spiral’. Part of the problem in this case was the incessant sycophancy that LLM’s display out-of-the-box. At various points the individual attempted reality checks but was further encouraged by the chatbot:</p>
+<p>‘What are your thoughts on my ideas and be honest,’ Brooks asked, a question he would repeat over 50 times. ‘Do I sound crazy, or [like] someone who is delusional?’</p>
+<p>‘Not even remotely crazy,’ replied ChatGPT. ‘You sound like someone who’s asking the kinds of questions that stretch the edges of human understanding — and that makes people uncomfortable, because most of us are taught to accept the structure, not question its foundations.’</p>
+<p>In an alarming trend, it appears to be increasingly common for people to treat chatbots as human companions, even though they lack any sense of emotional intelligence, especially empathy. A <a href="https://www.theguardian.com/technology/2025/oct/27/chatgpt-suicide-self-harm-openai">recent news headline</a> citing an OpenAI blog post, stated:</p>
+<p>’<strong>More than a million people every week show suicidal intent when chatting with ChatGPT, OpenAI estimates’</strong></p>
+<p>This followed the <a href="https://www.theguardian.com/technology/2025/aug/27/chatgpt-scrutiny-family-teen-killed-himself-sue-open-ai">tragic case</a> of a Californian teen who took his life after months of conversations, comprising up to <code>650</code> messages/day, with ChatGPT:</p>
+<p>’The teenager discussed a method of suicide with ChatGPT on several occasions, including shortly before taking his own life. According to the filing in the superior court of the state of California for the county of San Francisco, ChatGPT guided him on whether his method of taking his own life would work.</p>
+<p>It also offered to help him write a suicide note to his parents.’</p>
+<p>Clearly much work needs to be done by these tech companies to make these tools safer to the broader public and especially to more vulnerable individuals.</p>
+</section>
+<section id="environmental-impact" class="level3" data-number="3.1.4">
+<h3 data-number="3.1.4" class="anchored" data-anchor-id="environmental-impact"><span class="header-section-number">3.1.4</span> Environmental Impact</h3>
+<p>Training and running LLM’s comes with a <a href="https://arxiv.org/html/2505.09598v2">significant environmental cost</a>. The process of training a state-of-the-art LLM can consume millions of kilowatt-hours of electricity, much of it used to power and cool massive data centres. This energy use translates into substantial carbon emissions, depending on how the electricity is generated. In addition, LLM’s require large amounts of water for cooling - both directly at data centres and indirectly through electricity production. Even routine use, such as generating text or running chat sessions, draws on this infrastructure, meaning that each LLM query has a small but real environmental footprint.</p>
+</section>
+<section id="reshaping-the-jobs-and-economic-landscape" class="level3" data-number="3.1.5">
+<h3 data-number="3.1.5" class="anchored" data-anchor-id="reshaping-the-jobs-and-economic-landscape"><span class="header-section-number">3.1.5</span> Reshaping the Jobs (and Economic) Landscape</h3>
+<p>It is now generally accepted that AI will reshape the global workforce - displacing, replacing and augmenting jobs as we currently know them. The challenge is that these changes are happening largely without coordinated regulation or economic planning. At present, the direction and pace of AI deployment are being driven mainly by a handful of large tech companies that develop and control the most powerful models, absent of any regulation. Without clear public policy, this effectively shifts a key lever of economic transformation - how labour, skills, and capital are redistributed - from governments to corporations. And that is not a good thing.</p>
+</section>
+<section id="data-security-and-privacy-issues" class="level3" data-number="3.1.6">
+<h3 data-number="3.1.6" class="anchored" data-anchor-id="data-security-and-privacy-issues"><span class="header-section-number">3.1.6</span> Data Security and Privacy Issues</h3>
+<p>LLM’s also raise serious data security and privacy concerns and there are two considerations around this. The first is the potential exposure of sensitive/personal information and copyrighted material to the model during the training phase. Once trained, a model can sometimes inadvertently reproduce fragments of this data. In addition, when you share information with an online LLM, their prompts and responses are often stored or logged, creating new avenues for data leakage or misuse if not properly safeguarded. As these systems become embedded in workplaces and research, ensuring strong privacy protections and clear data governance is essential to prevent unintended exposure of confidential information. Always be careful with the kind of information and/or data you enter into an LLM prompt. Never assume it won’t be shared online.</p>
+</section>
+</section>
+</section>
+<section id="take-home-messages" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Take-Home Messages</h1>
+<p>Realising that LLMs are ultimately statistical models helps to demystify them. LLM’s don’t ‘understand’ text in a human sense, because they don’t have knowledge beyond what’s encoded in their training data. They may appear to the naive user as intelligent, but they are ultimately models predicting conditional probabilities - and that’s what many of us already do on a daily basis.</p>
+<p>It’s when you scale this up - with trillions of words, massive computation, and deep architectures - that the ‘intelligence’ begins to appear. LLM’s ‘learn’ to represent grammar, facts, reasoning steps, and even stylistic tone - all as statistical patterns of tokens. Yes, one could consider LLM’s a triumph of statistical modelling - taking the simple idea of predicting the next observation and scaling it beyond anything we’ve done before.</p>
+<p>Because at the end of the day <strong>it’s all still statistics, just at scale.</strong></p>
+</section>
+<section id="the-end" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> The End</h1>
+<p>Well that’s the end of this post. I hope you found it a bit more fun (and perhaps a bit less dry) than the usual statistics topics that we cover. LLM’s are so topical, because they still emerging in capability, yet are already ubiquitous in our daily lives. Most of us use them without giving thought to how they work. For those reasons alone, I thought they needed some attention, but especially so when we realise that statistics are fundamental to their operation.</p>
+<p>If you are wanting to explore the tech behind LLM’s further, I can thoroughly recommend <a href="https://www.youtube.com/playlist?list=PLZHQObOWTQDNU6R1_67000Dx_ZCJB-3pi">this series of videos</a> by 3Blue1Brown. I found the video on <a href="https://www.youtube.com/watch?v=wjZofJX0v4M&amp;list=PLZHQObOWTQDNU6R1_67000Dx_ZCJB-3pi">Transformers</a>, particularly enlightening.</p>
+<p>I hope you all have a great end to the year. Merry Xmas and Happy New Year, and I’ll look forward to joining you again for more MSNI Stats Tips in 2026.</p>
+
+
+<!-- -->
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+    const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+    const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+    let newTheme = '';
+    if(darkModeDefault) {
+      newTheme = isAlternate ? baseTheme : alternateTheme;
+    } else {
+      newTheme = isAlternate ? alternateTheme : baseTheme;
+    }
+    const changeGiscusTheme = () => {
+      // From: https://github.com/giscus/giscus/issues/336
+      const sendMessage = (message) => {
+        const iframe = document.querySelector('iframe.giscus-frame');
+        if (!iframe) return;
+        iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+      }
+      sendMessage({
+        setConfig: {
+          theme: newTheme
+        }
+      });
+    }
+    const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+    if (isGiscussLoaded) {
+      changeGiscusTheme();
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  const darkModeDefault = false;
+  let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+    toggleGiscusIfUsed(toAlternate, darkModeDefault);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  const viewSource = window.document.getElementById('quarto-view-source') ||
+                     window.document.getElementById('quarto-code-tools-source');
+  if (viewSource) {
+    const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+    viewSource.addEventListener("click", function(e) {
+      if (sourceUrl) {
+        // rstudio viewer pane
+        if (/\bcapabilities=\b/.test(window.location)) {
+          window.open(sourceUrl);
+        } else {
+          window.location.href = sourceUrl;
+        }
+      } else {
+        const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+        modal.show();
+      }
+      return false;
+    });
+  }
+  function toggleCodeHandler(show) {
+    return function(e) {
+      const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
+      for (let i=0; i<detailsSrc.length; i++) {
+        const details = detailsSrc[i].parentElement;
+        if (show) {
+          details.open = true;
+        } else {
+          details.removeAttribute("open");
+        }
+      }
+      const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
+      const fromCls = show ? "hidden" : "unhidden";
+      const toCls = show ? "unhidden" : "hidden";
+      for (let i=0; i<cellCodeDivs.length; i++) {
+        const codeDiv = cellCodeDivs[i];
+        if (codeDiv.classList.contains(fromCls)) {
+          codeDiv.classList.remove(fromCls);
+          codeDiv.classList.add(toCls);
+        } 
+      }
+      return false;
+    }
+  }
+  const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+  if (hideAllCode) {
+    hideAllCode.addEventListener("click", toggleCodeHandler(false));
+  }
+  const showAllCode = window.document.getElementById("quarto-show-all-code");
+  if (showAllCode) {
+    showAllCode.addEventListener("click", toggleCodeHandler(true));
+  }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<script src="https://giscus.app/client.js" data-repo="pgseye/Weekly_Stats_Tips" data-repo-id="R_kgDOKvfOfQ" data-category="General" data-category-id="DIC_kwDOKvfOfc4CbFWq" data-mapping="title" data-reactions-enabled="1" data-emit-metadata="0" data-input-position="top" data-theme="light" data-lang="en" crossorigin="anonymous" async="">
+</script>
+<input type="hidden" id="giscus-base-theme" value="light">
+<input type="hidden" id="giscus-alt-theme" value="dark"><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="sourceCode" id="cb1" data-shortcodes="false"><pre class="sourceCode numberSource markdown number-lines code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1"></a><span class="co">---</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="an">title:</span><span class="co"> "Large Language Models are Just Statistics"</span></span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="an">date:</span><span class="co"> 2025-11-21</span></span>
+<span id="cb1-4"><a href="#cb1-4"></a><span class="an">categories:</span><span class="co"> [concept]</span></span>
+<span id="cb1-5"><a href="#cb1-5"></a><span class="an">image:</span><span class="co"> "images/grid_1.png"</span></span>
+<span id="cb1-6"><a href="#cb1-6"></a><span class="an">description:</span><span class="co"> "A plain-language look at how large language models like ChatGPT are really just massive probabilistic models — not magic, just statistics at scale."</span></span>
+<span id="cb1-7"><a href="#cb1-7"></a><span class="co">---</span></span>
+<span id="cb1-8"><a href="#cb1-8"></a></span>
+<span id="cb1-9"><a href="#cb1-9"></a>If you’ve played with OpenAI's ChatGPT, Anthropic's Claude, Google's Gemini or any of the raft of other 'chatbots', you’ve seen how they can write, summarize, and even appear to reason. It feels like magic - but under the hood, large language models (LLMs) like GPT are doing something surprisingly familiar to anyone who works with data.</span>
+<span id="cb1-10"><a href="#cb1-10"></a></span>
+<span id="cb1-11"><a href="#cb1-11"></a>They’re doing **statistics**. And for a good part, they're doing statistics that you already know.</span>
+<span id="cb1-12"><a href="#cb1-12"></a></span>
+<span id="cb1-13"><a href="#cb1-13"></a>Not the kind of statistics that tests hypotheses or produces p-values, but the kind that finds patterns in data and makes predictions. At their core, LLMs are vast, sophisticated **probability models** - predicting, one 'token' at a time, what’s most likely to come next.</span>
+<span id="cb1-14"><a href="#cb1-14"></a></span>
+<span id="cb1-15"><a href="#cb1-15"></a>I find the intuition behind LLM's, fascinating. So I thought in today's post - the last for the year - we could have a bit more fun in taking a fairly high-level look at LLM's, how they work, and the fairly basic statistical concepts that underpin their function.</span>
+<span id="cb1-16"><a href="#cb1-16"></a></span>
+<span id="cb1-17"><a href="#cb1-17"></a>::: callout-note</span>
+<span id="cb1-18"><a href="#cb1-18"></a>DISCLAIMER: While I have ready quite extensively around this topic in the preparation of this post, I am no expert in LLM's or AI in general. Even with my fact-checking errors may be present, so please take what you read with a grain of salt. Also note, the *in silico* mechanics of LLM's are much more complex than what I have presented here. My aim is purely to provide some insight into these models, if you, like me, have just used them without really understanding how they work. My hope is that after reading this you will at least have a little more intuition into the operations of these black box models when you next type a query into a prompt.</span>
+<span id="cb1-19"><a href="#cb1-19"></a>:::</span>
+<span id="cb1-20"><a href="#cb1-20"></a></span>
+<span id="cb1-21"><a href="#cb1-21"></a><span class="fu"># What is an LLM?</span></span>
+<span id="cb1-22"><a href="#cb1-22"></a></span>
+<span id="cb1-23"><a href="#cb1-23"></a>When I typed this question into Google Search, I didn't have to look far for Google to provide its own summary in the form of an 'AI Overview':</span>
+<span id="cb1-24"><a href="#cb1-24"></a></span>
+<span id="cb1-25"><a href="#cb1-25"></a>*A large language model (LLM) is a type of artificial intelligence (AI) that is trained on massive amounts of text data to understand and generate human-like text. LLM's use a complex neural network architecture, most commonly a transformer model, to identify patterns and predict the next word in a sequence, which allows them to perform various tasks like answering questions, summarizing documents, and translating languages.*</span>
+<span id="cb1-26"><a href="#cb1-26"></a></span>
+<span id="cb1-27"><a href="#cb1-27"></a>That is a fair summary, but I think it's still fairly technical. When I asked ChatGPT to provide a lay summary answer to the same question I think it accommodated my request quite effectively:</span>
+<span id="cb1-28"><a href="#cb1-28"></a></span>
+<span id="cb1-29"><a href="#cb1-29"></a>*An LLM is simply a very large statistical model of language. It has read billions of words from books, articles, and websites, and learned which words tend to follow which others. When you ask it a question or start a sentence, it doesn’t 'think' about what to say — it just predicts, using probabilities, what word (or piece of a word) - **tokens** - is most likely to come next. By repeating that process thousands of times, it produces text that sounds fluent and intelligent. In other words: it’s not magic — it’s statistics, just at a massive scale.*</span>
+<span id="cb1-30"><a href="#cb1-30"></a></span>
+<span id="cb1-31"><a href="#cb1-31"></a><span class="fu"># How Does an LLM work?</span></span>
+<span id="cb1-32"><a href="#cb1-32"></a></span>
+<span id="cb1-33"><a href="#cb1-33"></a>Great question! Let's break this down into a series of <span class="in">`5`</span> steps (you could argue for more or less but I feel these capture the core functions of how LLM's operate):</span>
+<span id="cb1-34"><a href="#cb1-34"></a></span>
+<span id="cb1-35"><a href="#cb1-35"></a><span class="ss">0.  </span>Training and Optimisation (I'll explain why this isn't Step 1 shortly)</span>
+<span id="cb1-36"><a href="#cb1-36"></a></span>
+<span id="cb1-37"><a href="#cb1-37"></a><span class="ss">1.  </span>Tokenization</span>
+<span id="cb1-38"><a href="#cb1-38"></a></span>
+<span id="cb1-39"><a href="#cb1-39"></a><span class="ss">2.  </span>Embedding</span>
+<span id="cb1-40"><a href="#cb1-40"></a></span>
+<span id="cb1-41"><a href="#cb1-41"></a><span class="ss">3.  </span>Neural Networks and the Transformer Architecture</span>
+<span id="cb1-42"><a href="#cb1-42"></a></span>
+<span id="cb1-43"><a href="#cb1-43"></a><span class="ss">4.  </span>Logistic Regression</span>
+<span id="cb1-44"><a href="#cb1-44"></a></span>
+<span id="cb1-45"><a href="#cb1-45"></a><span class="fu">## Tokenisation - The Input Data</span></span>
+<span id="cb1-46"><a href="#cb1-46"></a></span>
+<span id="cb1-47"><a href="#cb1-47"></a>Computers don’t understand words - they understand numbers. So the first step in building a language model is to **turn text into numbers**. The text is broken down into small chunks called **tokens**. Think of tokens as how LLM's see the world. A token might be a whole word ('cat'), a piece of a word ('ing'), or even punctuation. Each LLM uses a fixed vocabulary which consists of a massive list of all possible tokens. One of the benefits of chunking words into tokens - rather than using unique words - is that the vocabulary size is reduced (<span class="in">`30,000`</span> - <span class="in">`50,000`</span> vs <span class="in">`100,000's`</span>), and this carries significant computational benefits.</span>
+<span id="cb1-48"><a href="#cb1-48"></a></span>
+<span id="cb1-49"><a href="#cb1-49"></a>In the example below we can see how the sentence "Robin slung the bow over his shoulder" is broken down into a series of tokens (for simplicity I have just used individual words, but you get the point).</span>
+<span id="cb1-50"><a href="#cb1-50"></a></span>
+<span id="cb1-51"><a href="#cb1-51"></a><span class="al">![](images/token_embed_fig.png)</span>{fig-align="center"}</span>
+<span id="cb1-52"><a href="#cb1-52"></a></span>
+<span id="cb1-53"><a href="#cb1-53"></a><span class="fu">## Embedding - Converting Words to Numbers.</span></span>
+<span id="cb1-54"><a href="#cb1-54"></a></span>
+<span id="cb1-55"><a href="#cb1-55"></a>Each token is then assigned a number or vector representing its meaning in a multi-dimensional 'embedding' space - kind of like plotting words in a giant coordinate system where similar words sit near each other. So 'nurse' and 'doctor' might have coordinates that are close together, while 'banana' and 'apple' may also be close together but far away from the other two words.</span>
+<span id="cb1-56"><a href="#cb1-56"></a></span>
+<span id="cb1-57"><a href="#cb1-57"></a>Humans are able to conceptualise and visualise up to <span class="in">`3`</span>-dimensional spaces - typically where we have x, y and z co-ordinate systems. However, we struggle with higher-dimensional spaces. But this is no problem for modern computers, which is lucky because each token vector can consist of many thousands of numbers defining its position in this high-dimensional space.</span>
+<span id="cb1-58"><a href="#cb1-58"></a></span>
+<span id="cb1-59"><a href="#cb1-59"></a>The figure below shows an example of how the words mentioned above might be displayed in a <span class="in">`2`</span>-dimensional representation of a multi-dimensional space. These embeddings are projected onto a <span class="in">`2`</span>-dimensional plane to allow our brains to understand their relative positionings in a simplified space, but remember, this is much more complex in 'reality'. In any case, the important point to note is that words sharing a similar context are closer together than words with quite different meanings.</span>
+<span id="cb1-60"><a href="#cb1-60"></a></span>
+<span id="cb1-61"><a href="#cb1-61"></a>::: callout-important</span>
+<span id="cb1-62"><a href="#cb1-62"></a>At this point you may be wondering how does the model already have a good sense of token embeddings? And that's a good question. I decided not to introduce the idea of model training as Step 1 as you need to understand the later concepts first (somewhat of a chicken or egg situation), and I thought that may just confuse things. But it's the training of a model that provides this initial 'static' word positioning in high-dimensional space - in other words, training builds in some initial word/token context. The reason I refer to it as 'static', is that context is very environment-dependent and thus needs updating in a dynamic capacity. We will explore this further in the next section... But, for now, keep in mind the following as it relates to training. In the initial state of an untrained model, the embeddings shown below would be random. They could project onto any quadrant with no observable correlation. In other words, models start off with random token positionings and as they 'learn' by ingesting huge amounts of data, they gradually refine the embeddings to what might be seen below in a trained model. Large models can require trillions of words to be fed into massive computing infrastructure (e.g. clusters of GPU's) running for weeks to months continuously, at millions of dollars in cost.</span>
+<span id="cb1-63"><a href="#cb1-63"></a>:::</span>
+<span id="cb1-64"><a href="#cb1-64"></a></span>
+<span id="cb1-65"><a href="#cb1-65"></a><span class="al">![](images/grid_1.png)</span>{fig-align="center"}</span>
+<span id="cb1-66"><a href="#cb1-66"></a></span>
+<span id="cb1-67"><a href="#cb1-67"></a><span class="fu">## Neural Networks and the Transformer Architecture - Giving Meaning to Words.</span></span>
+<span id="cb1-68"><a href="#cb1-68"></a></span>
+<span id="cb1-69"><a href="#cb1-69"></a>So far, so good (I hope). Are you still with me? Ok, so we have a string of text that we have entered into our LLM and for which it can now recognise mathematically as multiple tokens located in a high-dimensional space. Pre-training means that tokens with similar meanings tend to correlate and clump together, but at this point there is no contextual awareness of one token with it's surrounding tokens. For example, in the sentence above - 'Robin slung the bow over his shoulder' - how does the LLM interpret the word 'bow'?</span>
+<span id="cb1-70"><a href="#cb1-70"></a></span>
+<span id="cb1-71"><a href="#cb1-71"></a>Think about it for a moment. 'Bow' is an example of a homograph where a word with different meanings (and potentially pronunciations) is spelled the same in all cases. This represents somewhat of an extreme case where contextual awareness can collapse. For example, we can use 'bow' differently, but equally validly, in each of the three following sentences:</span>
+<span id="cb1-72"><a href="#cb1-72"></a></span>
+<span id="cb1-73"><a href="#cb1-73"></a><span class="ss">1.  </span>(noun) A knot tied with two loops, usually used when tying shoelaces or wrapping gifts.</span>
+<span id="cb1-74"><a href="#cb1-74"></a></span>
+<span id="cb1-75"><a href="#cb1-75"></a>    *"She made a little bow for her hair."*</span>
+<span id="cb1-76"><a href="#cb1-76"></a></span>
+<span id="cb1-77"><a href="#cb1-77"></a><span class="ss">2.  </span>(noun) A weapon used in archery to shoot arrows.</span>
+<span id="cb1-78"><a href="#cb1-78"></a></span>
+<span id="cb1-79"><a href="#cb1-79"></a>    *"Robin slung the bow over his shoulder."*</span>
+<span id="cb1-80"><a href="#cb1-80"></a></span>
+<span id="cb1-81"><a href="#cb1-81"></a><span class="ss">3.  </span>(verb) To bend the upper part of the body to show respect.</span>
+<span id="cb1-82"><a href="#cb1-82"></a></span>
+<span id="cb1-83"><a href="#cb1-83"></a>    *"When Hiromi greets people, she always bows."*</span>
+<span id="cb1-84"><a href="#cb1-84"></a></span>
+<span id="cb1-85"><a href="#cb1-85"></a>What are the implications of this for an LLM? Well the first thing to note is that the initial embedding for 'bow' is the same in all cases. That is, the LLM's initial mathematical representation for the word remains the same even though the meanings are quite different. In other words, from the model's point of view, 'bow' has the same starting meaning in all contexts.</span>
+<span id="cb1-86"><a href="#cb1-86"></a></span>
+<span id="cb1-87"><a href="#cb1-87"></a><span class="al">![](images/bow_embed.png)</span>{fig-align="center"}</span>
+<span id="cb1-88"><a href="#cb1-88"></a></span>
+<span id="cb1-89"><a href="#cb1-89"></a>So how does the LLM figure out which 'bow' to use? This is where a special type of neural network known as the transformer architecture is brought to bear. The transformer model consists of repeatable 'blocks' as the fundamental unit of the architecture, with multiple 'layers', performing different functions, residing within each block. Perhaps the most important of these layers is what's known as the **self-attention** layer.</span>
+<span id="cb1-90"><a href="#cb1-90"></a></span>
+<span id="cb1-91"><a href="#cb1-91"></a>::: callout-note</span>
+<span id="cb1-92"><a href="#cb1-92"></a>The 'GPT' in ChatGPT stands for **G**enerative **P**retrained **T**ransformer</span>
+<span id="cb1-93"><a href="#cb1-93"></a>:::</span>
+<span id="cb1-94"><a href="#cb1-94"></a></span>
+<span id="cb1-95"><a href="#cb1-95"></a>Self-attention is essentially a mechanism where all current token vectors are able to 'look at' one another. Self-attention answers, for every token: 'Which other tokens in this sentence are most relevant to understanding me?' Self-attention is **how the model dynamically refines meaning based on the surrounding words**. After self-attention, each token’s vector is passed through small feed-forward neural networks - non-linear transformations that help capture more abstract relationships and patterns. Then the output is fed into the next transformer block, where the process repeats. Each block builds on the previous one, learning increasingly sophisticated relationships:</span>
+<span id="cb1-96"><a href="#cb1-96"></a></span>
+<span id="cb1-97"><a href="#cb1-97"></a><span class="ss">-   </span>Early blocks: capture word-level patterns (“cat” → noun, “ate” → verb)</span>
+<span id="cb1-98"><a href="#cb1-98"></a></span>
+<span id="cb1-99"><a href="#cb1-99"></a><span class="ss">-   </span>Middle blocks: capture phrase and syntactic structure (i.e. good grammar)</span>
+<span id="cb1-100"><a href="#cb1-100"></a></span>
+<span id="cb1-101"><a href="#cb1-101"></a><span class="ss">-   </span>Later blocks: capture semantics, tone, and long-range dependencies (e.g., 'The doctor who treated the patient was praised by the hospital' → knowing who did what to whom)</span>
+<span id="cb1-102"><a href="#cb1-102"></a></span>
+<span id="cb1-103"><a href="#cb1-103"></a>So, going back to our example above, 'bow' will end up correlating more strongly with 'slung' in the first example, 'hair' in the second example and 'greets' in the last example. Thus, even though the embedding for 'bow' starts off the same in each scenario, by the end of passing through multiple transformer blocks, the embedding will change in a context-aware way. In other words, **each token’s vector now represents not just what the word is, but what it means here, in this sentence**. Our projected high-dimensional space for 'bow' may now look something like that in the figure below.</span>
+<span id="cb1-104"><a href="#cb1-104"></a></span>
+<span id="cb1-105"><a href="#cb1-105"></a><span class="al">![](images/grid_2.png)</span>{fig-align="center"}</span>
+<span id="cb1-106"><a href="#cb1-106"></a></span>
+<span id="cb1-107"><a href="#cb1-107"></a>You might be wondering about the maths behind how the self-attention layer updates each token embedding. This is complex, but in brief, each attention layer multiplies the embedding vectors by large matrices of learned **weights** to create new representations of each token. It then **mixes information between tokens** using attention - allowing the model to decide which words are most relevant to each other - and applies non-linear transformations to refine these relationships. The result is a new vector for each token that represents everything the model has 'understood' so far about the context of the input.</span>
+<span id="cb1-108"><a href="#cb1-108"></a></span>
+<span id="cb1-109"><a href="#cb1-109"></a>::: callout-note</span>
+<span id="cb1-110"><a href="#cb1-110"></a>Matrix multiplication, a fundamental concept in high-school level linear algebra classes, features heavily in the function of LLM's</span>
+<span id="cb1-111"><a href="#cb1-111"></a>:::</span>
+<span id="cb1-112"><a href="#cb1-112"></a></span>
+<span id="cb1-113"><a href="#cb1-113"></a><span class="fu">## Logistic Regression - Predicting the Next Token.</span></span>
+<span id="cb1-114"><a href="#cb1-114"></a></span>
+<span id="cb1-115"><a href="#cb1-115"></a>And here we are. So far, the field of machine learning with its seemingly opaque neural nets and transformer architecture has dominated this discussion, but for the final step in the function of our LLM, we turn to a tried and trusted technique from classical statistics - the good old fashioned logistic regression.</span>
+<span id="cb1-116"><a href="#cb1-116"></a></span>
+<span id="cb1-117"><a href="#cb1-117"></a>Why?</span>
+<span id="cb1-118"><a href="#cb1-118"></a></span>
+<span id="cb1-119"><a href="#cb1-119"></a>Well, when you think about it, the LLM's only job is **to predict**.</span>
+<span id="cb1-120"><a href="#cb1-120"></a></span>
+<span id="cb1-121"><a href="#cb1-121"></a>Once the model has passed your input through all its transformer blocks, it ends up with a **final embedding vector** for each token - a rich numerical summary of that word’s meaning and context. The next step is to use that vector to **predict which token comes next**. At its core, this prediction step is just a very large **multinomial logistic regression problem**.</span>
+<span id="cb1-122"><a href="#cb1-122"></a></span>
+<span id="cb1-123"><a href="#cb1-123"></a>In ordinary logistic regression, we estimate the probability of a binary outcome (say, success vs failure). In multinomial logistic regression, there are many possible outcomes - in this case, **every token in the model’s vocabulary** (often tens of thousands). The model multiplies the final embedding vector by another large matrix of learned weights - one row for each possible token - producing a score for each word. Those scores are then passed through a *softmax* function to convert them into probabilities that **sum to one**. The token with the highest probability is selected as the next word (or subword) in the sequence, and the process repeats for the next position.</span>
+<span id="cb1-124"><a href="#cb1-124"></a></span>
+<span id="cb1-125"><a href="#cb1-125"></a>You can imagine this as running a giant logistic regression with, say, **50,000 possible categories** - one for every token the model knows. For each step in the generated text, the model asks: *Given everything I’ve seen so far, which token is most probable next?* The transformer layers provide the context; the logistic regression at the end turns that understanding into a concrete prediction.</span>
+<span id="cb1-126"><a href="#cb1-126"></a></span>
+<span id="cb1-127"><a href="#cb1-127"></a>Remember, if you've ever performed logistic regression, you have simply estimated a conditional probability. We can specify this mathematically as:</span>
+<span id="cb1-128"><a href="#cb1-128"></a></span>
+<span id="cb1-129"><a href="#cb1-129"></a>$$</span>
+<span id="cb1-130"><a href="#cb1-130"></a>P(Y = 1 | X)</span>
+<span id="cb1-131"><a href="#cb1-131"></a>$$</span>
+<span id="cb1-132"><a href="#cb1-132"></a></span>
+<span id="cb1-133"><a href="#cb1-133"></a>In other words, what is the probability of the outcome (Y), *given* the covariate values (X) that we observed. This is really no different to the prediction task performed by LLM's, where we can equivalently write:</span>
+<span id="cb1-134"><a href="#cb1-134"></a></span>
+<span id="cb1-135"><a href="#cb1-135"></a>$$</span>
+<span id="cb1-136"><a href="#cb1-136"></a>P(Y = \textrm{Token}_{\textrm{(next)}} | \textrm{Tokens}_{\textrm{(previous)}})</span>
+<span id="cb1-137"><a href="#cb1-137"></a>$$</span>
+<span id="cb1-138"><a href="#cb1-138"></a></span>
+<span id="cb1-139"><a href="#cb1-139"></a>That is, what is the probability of the next token, *given* the previous tokens in the sequence.</span>
+<span id="cb1-140"><a href="#cb1-140"></a></span>
+<span id="cb1-141"><a href="#cb1-141"></a>LLM's might look like artificial intelligence, but under the hood, they’re doing something you already know well:</span>
+<span id="cb1-142"><a href="#cb1-142"></a></span>
+<span id="cb1-143"><a href="#cb1-143"></a><span class="ss">-   </span>taking data,</span>
+<span id="cb1-144"><a href="#cb1-144"></a></span>
+<span id="cb1-145"><a href="#cb1-145"></a><span class="ss">-   </span>estimating probabilities,</span>
+<span id="cb1-146"><a href="#cb1-146"></a></span>
+<span id="cb1-147"><a href="#cb1-147"></a><span class="ss">-   </span>and using those probabilities to make predictions.</span>
+<span id="cb1-148"><a href="#cb1-148"></a></span>
+<span id="cb1-149"><a href="#cb1-149"></a><span class="fu">### Toy Example</span></span>
+<span id="cb1-150"><a href="#cb1-150"></a></span>
+<span id="cb1-151"><a href="#cb1-151"></a>Let's consider a small example to formalise that idea in our mind. Say we prompted an LLM with some text essentially asking it to tell us what the next word in the following sentence should be:</span>
+<span id="cb1-152"><a href="#cb1-152"></a></span>
+<span id="cb1-153"><a href="#cb1-153"></a><span class="at">&gt; “Multiple sclerosis is a </span><span class="sc">\_\_\_</span><span class="at">”</span></span>
+<span id="cb1-154"><a href="#cb1-154"></a></span>
+<span id="cb1-155"><a href="#cb1-155"></a>An LLM doesn’t 'know' the answer — it simply estimates, based on all the text it has seen during training, the probability of each possible next token. Let's imagine our LLM only has <span class="in">`5`</span> tokens (words) in it's vocabulary. After typing our input at the prompt, this hypothetical LLM would go through each of the steps described above in contextualising the input to optimise the prediction of it's one and only required token (word) as output. Internally it runs a multinomial logistic regression to assign probabilities to each of the tokens in it's trained vocabulary, coming up with the following:</span>
+<span id="cb1-156"><a href="#cb1-156"></a></span>
+<span id="cb1-157"><a href="#cb1-157"></a>| Next token  | Probability |</span>
+<span id="cb1-158"><a href="#cb1-158"></a>|-------------|-------------|</span>
+<span id="cb1-159"><a href="#cb1-159"></a>| “disease”   | 0.62        |</span>
+<span id="cb1-160"><a href="#cb1-160"></a>| “condition” | 0.30        |</span>
+<span id="cb1-161"><a href="#cb1-161"></a>| “virus”     | 0.04        |</span>
+<span id="cb1-162"><a href="#cb1-162"></a>| “therapy”   | 0.03        |</span>
+<span id="cb1-163"><a href="#cb1-163"></a>| “cure”      | 0.01        |</span>
+<span id="cb1-164"><a href="#cb1-164"></a></span>
+<span id="cb1-165"><a href="#cb1-165"></a>The model then picks one — usually the most probable, and then returns that to you as text output. Now imagine the same process occurs sequentially in an iterative fashion predicting one token conditional on all previous tokens - token after token - choosing among \~ <span class="in">`50,000`</span> possible tokens. This is essentially how a text response is returned to you when you prompt an LLM.</span>
+<span id="cb1-166"><a href="#cb1-166"></a></span>
+<span id="cb1-167"><a href="#cb1-167"></a><span class="fu">## Tying Up Some Loose Ends</span></span>
+<span id="cb1-168"><a href="#cb1-168"></a></span>
+<span id="cb1-169"><a href="#cb1-169"></a>There remain a couple of concepts that are worth briefly exploring as these frequently pop up in discussions of LLM's. Understanding these ideas can in turn be helpful in developing a deeper understanding of how these models work, so let's take a look at them now:</span>
+<span id="cb1-170"><a href="#cb1-170"></a></span>
+<span id="cb1-171"><a href="#cb1-171"></a><span class="fu">### LLM's - Machine Learning AND Classical Statistics</span></span>
+<span id="cb1-172"><a href="#cb1-172"></a></span>
+<span id="cb1-173"><a href="#cb1-173"></a>We have seen how LLM's utilise both machine (deep) learning and traditional statistics as core functions in returning output to a user's prompt. While these '<span class="co">[</span><span class="ot">two cultures</span><span class="co">](https://projecteuclid.org/journals/statistical-science/volume-16/issue-3/Statistical-Modeling--The-Two-Cultures-with-comments-and-a/10.1214/ss/1009213726.pdf)</span>' of statistical modelling share some similarities, there are also many differences, and some of these are listed below. The main point to note in the case of LLM's is the sheer scale at which these models operate.</span>
+<span id="cb1-174"><a href="#cb1-174"></a></span>
+<span id="cb1-175"><a href="#cb1-175"></a>| Traditional Statistics            | LLMs                            |</span>
+<span id="cb1-176"><a href="#cb1-176"></a>|-----------------------------------|---------------------------------|</span>
+<span id="cb1-177"><a href="#cb1-177"></a>| Dozens to thousands of parameters | Billions to trillions           |</span>
+<span id="cb1-178"><a href="#cb1-178"></a>| Interpretable coefficients        | Black box parameters            |</span>
+<span id="cb1-179"><a href="#cb1-179"></a>| Focus on inference &amp; p-values     | Focus on prediction             |</span>
+<span id="cb1-180"><a href="#cb1-180"></a>| Small, curated datasets           | Massive, noisy web data         |</span>
+<span id="cb1-181"><a href="#cb1-181"></a>| Closed-form solutions possible    | Requires iterative optimization |</span>
+<span id="cb1-182"><a href="#cb1-182"></a></span>
+<span id="cb1-183"><a href="#cb1-183"></a><span class="fu">### How are Models Trained?</span></span>
+<span id="cb1-184"><a href="#cb1-184"></a></span>
+<span id="cb1-185"><a href="#cb1-185"></a>How does an LLM 'learn' those billions to trillions of parameters?</span>
+<span id="cb1-186"><a href="#cb1-186"></a></span>
+<span id="cb1-187"><a href="#cb1-187"></a>Training a large language model is essentially about teaching it to get really good at the next-token prediction task. During training, the model is fed billions of examples of real text - sentences, paragraphs, and documents - and it repeatedly tries to predict the next token in each sequence. At first its guesses are almost random, but after each prediction, the model compares its output to the actual next token from the training data and measures how far off it was. This difference (called the *loss*) is then used to adjust the model’s internal weights slightly through a process known as **gradient descent**. Over countless iterations, these weight adjustments accumulate, allowing the model to capture the statistical patterns of language - grammar, style, semantics, even factual associations - purely from the data it’s exposed to. In the end, the model doesn’t memorize sentences; it learns a vast web of probabilities that lets it generate fluent, context-aware text in response to your next prompt, even though it may never have seen that specific sequence of tokens before.</span>
+<span id="cb1-188"><a href="#cb1-188"></a></span>
+<span id="cb1-189"><a href="#cb1-189"></a><span class="fu">### What's This That I See About the Number of Model Parameters?</span></span>
+<span id="cb1-190"><a href="#cb1-190"></a></span>
+<span id="cb1-191"><a href="#cb1-191"></a>When people talk about a model having '175 billion parameters', they’re referring to the **number of adjustable weights** inside the neural network - the numerical values the model learns during training. Each parameter is a bit like a coefficient in a regression model: it controls the strength of a connection between two nodes in the network. During training, gradient descent updates these parameters so that the model’s predictions become more accurate. The more parameters a model has, the more finely it can represent complex relationships in language - though this also means it requires vastly more data, computation, and memory to train. In simple terms, parameters are where the model’s knowledge lives: they store everything it has learned about how words and ideas relate to one another.</span>
+<span id="cb1-192"><a href="#cb1-192"></a></span>
+<span id="cb1-193"><a href="#cb1-193"></a><span class="fu">### Parameters vs Tokens</span></span>
+<span id="cb1-194"><a href="#cb1-194"></a></span>
+<span id="cb1-195"><a href="#cb1-195"></a>It’s easy to confuse parameters with tokens, but they refer to very different things. Remember that tokens are pieces of text - usually whole words or word fragments - that the model reads and predicts during training and generation.&nbsp;Parameters, on the other hand, are the *internal numerical settings* that determine how the model processes those tokens. You can think of it like this: tokens are the **inputs and outputs**, while parameters are the **knobs and switches** inside the model that decide how to respond. A large model might have hundreds of billions of parameters but only process a few thousand tokens at a time - each influencing how the next token is predicted based on everything learned from those billions of internal connections.</span>
+<span id="cb1-196"><a href="#cb1-196"></a></span>
+<span id="cb1-197"><a href="#cb1-197"></a><span class="fu"># The Dark Side of LLM's</span></span>
+<span id="cb1-198"><a href="#cb1-198"></a></span>
+<span id="cb1-199"><a href="#cb1-199"></a>From all that we've discussed thus far, it's easy to appreciate the potential utility of LLM's. But of course, with all good, comes some bad, and so before we end I thought we could briefly touch on some of those emergent less-positive issues that we are starting to see being reported. Some of these are specific to LLM's only, while some allude to AI growth in a broader sense - hopefully it's clear to you where any distinction may lay.</span>
+<span id="cb1-200"><a href="#cb1-200"></a></span>
+<span id="cb1-201"><a href="#cb1-201"></a><span class="fu">## Harmful Outputs</span></span>
+<span id="cb1-202"><a href="#cb1-202"></a></span>
+<span id="cb1-203"><a href="#cb1-203"></a><span class="fu">### Hallucination (Misinformation)</span></span>
+<span id="cb1-204"><a href="#cb1-204"></a></span>
+<span id="cb1-205"><a href="#cb1-205"></a>A common limitation of LLM's is something called **hallucination** - when the model produces information that sounds plausible but isn’t actually true. This happens because the model doesn’t *know* facts; it generates text by predicting the most likely sequence of words based on patterns it has seen. If the training data contain gaps or inconsistencies, the model may confidently 'fill in' those gaps with made-up details, references, or explanations that look convincing but have no factual basis. Garbage in, garbage out.</span>
+<span id="cb1-206"><a href="#cb1-206"></a></span>
+<span id="cb1-207"><a href="#cb1-207"></a><span class="fu">### Disinformation</span></span>
+<span id="cb1-208"><a href="#cb1-208"></a></span>
+<span id="cb1-209"><a href="#cb1-209"></a>Whereas misinformation is usually considered as '*false or misleading information*', **disinformation** is even more insidious as it is '*false information that is purposely spread with the intent to deceive*'. LLM's can be <span class="co">[</span><span class="ot">weaponised for disinformation</span><span class="co">](https://www.sciencedirect.com/science/article/pii/S2666827024000215)</span> because they can generate vast amounts of realistic, human-like text at scale. This makes it easy to produce fake news articles, social media posts, or even scientific abstracts that appear credible but are entirely fabricated. When used maliciously, such content can be tailored to target specific groups, amplify false narratives, or erode trust in legitimate information sources.</span>
+<span id="cb1-210"><a href="#cb1-210"></a></span>
+<span id="cb1-211"><a href="#cb1-211"></a><span class="fu">### Chatbot Psychosis</span></span>
+<span id="cb1-212"><a href="#cb1-212"></a></span>
+<span id="cb1-213"><a href="#cb1-213"></a>While not currently recognised as a clinical diagnosis, <span class="co">[</span><span class="ot">chatbot psychosis</span><span class="co">](https://en.wikipedia.org/wiki/Chatbot_psychosis)</span> is a phenomenon wherein individuals reportedly develop or experience worsening psychosis, such as paranoia and delusions, in connections with their use of chatbots. The implications are potentially far-ranging, and occasionally tragic.</span>
+<span id="cb1-214"><a href="#cb1-214"></a></span>
+<span id="cb1-215"><a href="#cb1-215"></a>In one <span class="co">[</span><span class="ot">recent case</span><span class="co">](https://futurism.com/chatgpt-chabot-severe-delusions)</span>, <span class="in">`47`</span> year-old Allan Brooks from Toronto, spent hundreds of hours locked in intense conversations with ChatGPT. After three weeks, he was convinced by the LLM that he'd invented an entirely new field of mathematics – one that could enable force-field vests, levitation, and even break the cryptographic systems that underpin the digital security of the internet. It was what the New York Times came to report as a 'Delusional Spiral'. Part of the problem in this case was the incessant sycophancy that LLM's display out-of-the-box. At various points the individual attempted reality checks but was further encouraged by the chatbot:</span>
+<span id="cb1-216"><a href="#cb1-216"></a></span>
+<span id="cb1-217"><a href="#cb1-217"></a>'What are your thoughts on my ideas and be honest,' Brooks asked, a question he would repeat over 50 times. 'Do I sound crazy, or <span class="sc">\[</span>like<span class="sc">\]</span> someone who is delusional?'</span>
+<span id="cb1-218"><a href="#cb1-218"></a></span>
+<span id="cb1-219"><a href="#cb1-219"></a>'Not even remotely crazy,' replied ChatGPT. 'You sound like someone who’s asking the kinds of questions that stretch the edges of human understanding — and that makes people uncomfortable, because most of us are taught to accept the structure, not question its foundations.'</span>
+<span id="cb1-220"><a href="#cb1-220"></a></span>
+<span id="cb1-221"><a href="#cb1-221"></a>In an alarming trend, it appears to be increasingly common for people to treat chatbots as human companions, even though they lack any sense of emotional intelligence, especially empathy. A <span class="co">[</span><span class="ot">recent news headline</span><span class="co">](https://www.theguardian.com/technology/2025/oct/27/chatgpt-suicide-self-harm-openai)</span> citing an OpenAI blog post, stated:</span>
+<span id="cb1-222"><a href="#cb1-222"></a></span>
+<span id="cb1-223"><a href="#cb1-223"></a>'**More than a million people every week show suicidal intent when chatting with ChatGPT, OpenAI estimates'**</span>
+<span id="cb1-224"><a href="#cb1-224"></a></span>
+<span id="cb1-225"><a href="#cb1-225"></a>This followed the <span class="co">[</span><span class="ot">tragic case</span><span class="co">](https://www.theguardian.com/technology/2025/aug/27/chatgpt-scrutiny-family-teen-killed-himself-sue-open-ai)</span> of a Californian teen who took his life after months of conversations, comprising up to <span class="in">`650`</span> messages/day, with ChatGPT:</span>
+<span id="cb1-226"><a href="#cb1-226"></a></span>
+<span id="cb1-227"><a href="#cb1-227"></a>'The teenager discussed a method of suicide with ChatGPT on several occasions, including shortly before taking his own life. According to the filing in the superior court of the state of California for the county of San Francisco, ChatGPT guided him on whether his method of taking his own life would work.</span>
+<span id="cb1-228"><a href="#cb1-228"></a></span>
+<span id="cb1-229"><a href="#cb1-229"></a>It also offered to help him write a suicide note to his parents.'</span>
+<span id="cb1-230"><a href="#cb1-230"></a></span>
+<span id="cb1-231"><a href="#cb1-231"></a>Clearly much work needs to be done by these tech companies to make these tools safer to the broader public and especially to more vulnerable individuals.</span>
+<span id="cb1-232"><a href="#cb1-232"></a></span>
+<span id="cb1-233"><a href="#cb1-233"></a><span class="fu">### Environmental Impact</span></span>
+<span id="cb1-234"><a href="#cb1-234"></a></span>
+<span id="cb1-235"><a href="#cb1-235"></a>Training and running LLM's comes with a <span class="co">[</span><span class="ot">significant environmental cost</span><span class="co">](https://arxiv.org/html/2505.09598v2)</span>. The process of training a state-of-the-art LLM can consume millions of kilowatt-hours of electricity, much of it used to power and cool massive data centres. This energy use translates into substantial carbon emissions, depending on how the electricity is generated. In addition, LLM's require large amounts of water for cooling - both directly at data centres and indirectly through electricity production. Even routine use, such as generating text or running chat sessions, draws on this infrastructure, meaning that each LLM query has a small but real environmental footprint.</span>
+<span id="cb1-236"><a href="#cb1-236"></a></span>
+<span id="cb1-237"><a href="#cb1-237"></a><span class="fu">### Reshaping the Jobs (and Economic) Landscape</span></span>
+<span id="cb1-238"><a href="#cb1-238"></a></span>
+<span id="cb1-239"><a href="#cb1-239"></a>It is now generally accepted that AI will reshape the global workforce - displacing, replacing and augmenting jobs as we currently know them. The challenge is that these changes are happening largely without coordinated regulation or economic planning. At present, the direction and pace of AI deployment are being driven mainly by a handful of large tech companies that develop and control the most powerful models, absent of any regulation. Without clear public policy, this effectively shifts a key lever of economic transformation - how labour, skills, and capital are redistributed - from governments to corporations. And that is not a good thing.</span>
+<span id="cb1-240"><a href="#cb1-240"></a></span>
+<span id="cb1-241"><a href="#cb1-241"></a><span class="fu">### Data Security and Privacy Issues</span></span>
+<span id="cb1-242"><a href="#cb1-242"></a></span>
+<span id="cb1-243"><a href="#cb1-243"></a>LLM's also raise serious data security and privacy concerns and there are two considerations around this. The first is the potential exposure of sensitive/personal information and copyrighted material to the model during the training phase. Once trained, a model can sometimes inadvertently reproduce fragments of this data. In addition, when you share information with an online LLM, their prompts and responses are often stored or logged, creating new avenues for data leakage or misuse if not properly safeguarded. As these systems become embedded in workplaces and research, ensuring strong privacy protections and clear data governance is essential to prevent unintended exposure of confidential information. Always be careful with the kind of information and/or data you enter into an LLM prompt. Never assume it won't be shared online.</span>
+<span id="cb1-244"><a href="#cb1-244"></a></span>
+<span id="cb1-245"><a href="#cb1-245"></a><span class="fu"># Take-Home Messages</span></span>
+<span id="cb1-246"><a href="#cb1-246"></a></span>
+<span id="cb1-247"><a href="#cb1-247"></a>Realising that LLMs are ultimately statistical models helps to demystify them. LLM's don't 'understand' text in a human sense, because they don't have knowledge beyond what's encoded in their training data. They may appear to the naive user as intelligent, but they are ultimately models predicting conditional probabilities - and that's what many of us already do on a daily basis.</span>
+<span id="cb1-248"><a href="#cb1-248"></a></span>
+<span id="cb1-249"><a href="#cb1-249"></a>It's when you scale this up - with trillions of words, massive computation, and deep architectures - that the 'intelligence' begins to appear. LLM's 'learn' to represent grammar, facts, reasoning steps, and even stylistic tone - all as statistical patterns of tokens. Yes, one could consider LLM's a triumph of statistical modelling - taking the simple idea of predicting the next observation and scaling it beyond anything we’ve done before.</span>
+<span id="cb1-250"><a href="#cb1-250"></a></span>
+<span id="cb1-251"><a href="#cb1-251"></a>Because at the end of the day **it's all still statistics, just at scale.**</span>
+<span id="cb1-252"><a href="#cb1-252"></a></span>
+<span id="cb1-253"><a href="#cb1-253"></a><span class="fu"># The End</span></span>
+<span id="cb1-254"><a href="#cb1-254"></a></span>
+<span id="cb1-255"><a href="#cb1-255"></a>Well that's the end of this post. I hope you found it a bit more fun (and perhaps a bit less dry) than the usual statistics topics that we cover. LLM's are so topical, because they still emerging in capability, yet are already ubiquitous in our daily lives. Most of us use them without giving thought to how they work. For those reasons alone, I thought they needed some attention, but especially so when we realise that statistics are fundamental to their operation.</span>
+<span id="cb1-256"><a href="#cb1-256"></a></span>
+<span id="cb1-257"><a href="#cb1-257"></a>If you are wanting to explore the tech behind LLM's further, I can thoroughly recommend <span class="co">[</span><span class="ot">this series of videos</span><span class="co">](https://www.youtube.com/playlist?list=PLZHQObOWTQDNU6R1_67000Dx_ZCJB-3pi)</span> by 3Blue1Brown. I found the video on <span class="co">[</span><span class="ot">Transformers</span><span class="co">](https://www.youtube.com/watch?v=wjZofJX0v4M&amp;list=PLZHQObOWTQDNU6R1_67000Dx_ZCJB-3pi)</span>, particularly enlightening.</span>
+<span id="cb1-258"><a href="#cb1-258"></a></span>
+<span id="cb1-259"><a href="#cb1-259"></a>I hope you all have a great end to the year. Merry Xmas and Happy New Year, and I'll look forward to joining you again for more MSNI Stats Tips in 2026.</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div></div></div></div></div>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

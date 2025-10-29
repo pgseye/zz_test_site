@@ -160,5 +160,20 @@
   },
   "posts/036_14Nov_2025/index.qmd": {
     "index.html": "f8f67ae2"
+  },
+  "posts/036_21Nov_2025/index.qmd": {
+    "index.html": "f504eef8"
+  },
+  "posts/037_13Feb_2026/index.qmd": {
+    "index.html": "5844ab96"
+  },
+  "posts/2026 topics/037_13Feb_2026/index.qmd": {
+    "index.html": "d5081b33"
+  },
+  "posts/2026 topics/llm/index.qmd": {
+    "index.html": "7608f3d6"
+  },
+  "posts/2026 topics/bootstrap/index.qmd": {
+    "index.html": "31063ad2"
   }
 }
