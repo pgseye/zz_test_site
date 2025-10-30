@@ -80,7 +80,7 @@ Think about it for a moment. 'Bow' is an example of a homograph where a word wit
 
 3.  (verb) To bend the upper part of the body to show respect.
 
-    *"When Hiromi greets people, she always bows."*
+    *"When Hiromi greets people, she will bow."*
 
 What are the implications of this for an LLM? Well the first thing to note is that the initial embedding for 'bow' is the same in all cases. That is, the LLM's initial mathematical representation for the word remains the same even though the meanings are quite different. In other words, from the model's point of view, 'bow' has the same starting meaning in all contexts.
 
