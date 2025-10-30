@@ -236,7 +236,7 @@ Training and running LLM's comes with a [significant environmental cost](https:/
 
 ## Reshaping the Jobs (and Economic) Landscape
 
-It is now generally accepted that AI will reshape the global workforce - displacing, replacing and augmenting jobs as we currently know them. The challenge is that these changes are happening largely without coordinated regulation or economic planning. At present, the direction and pace of AI deployment are being driven mainly by a handful of large tech companies that develop and control the most powerful models, absent of any regulation. Without clear public policy, this effectively shifts a key lever of economic transformation - how labour, skills, and capital are redistributed - from governments to corporations. And that is not a good thing.
+It is now generally accepted that [AI will reshape the global workforce](https://www.weforum.org/stories/2025/04/linkedin-strategic-upskilling-ai-workplace-changes/) - displacing, replacing and augmenting jobs as we currently know them. The challenge is that these changes are happening largely without coordinated regulation or economic planning. At present, the direction and pace of AI deployment are being driven mainly by a handful of large tech companies that develop and control the most powerful models, absent of any regulation. Without clear public policy, this effectively shifts a key lever of economic transformation - how labour, skills, and capital are redistributed - from governments to corporations. And that is not a good thing.
 
 ## Data Security and Privacy Issues
 
