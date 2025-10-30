@@ -222,11 +222,25 @@ In an alarming trend, it appears to be increasingly common for people to treat c
 
 '**More than a million people every week show suicidal intent when chatting with ChatGPT, OpenAI estimates'**
 
-This followed the [tragic case](https://www.theguardian.com/technology/2025/aug/27/chatgpt-scrutiny-family-teen-killed-himself-sue-open-ai) of a Californian teen who took his life after months of conversations, comprising up to `650` messages/day, with ChatGPT:
+This followed the [tragic case](https://www.theguardian.com/technology/2025/aug/27/chatgpt-scrutiny-family-teen-killed-himself-sue-open-ai) of a 16 yr old Californian teen - Adam Raine - who took his life in April 2025 after months of conversations, comprising up to `650` messages/day, with ChatGPT:
 
-'The teenager discussed a method of suicide with ChatGPT on several occasions, including shortly before taking his own life. According to the filing in the superior court of the state of California for the county of San Francisco, ChatGPT guided him on whether his method of taking his own life would work.
+'Adam discussed a method of suicide with ChatGPT on several occasions, including shortly before taking his own life. According to the filing in the superior court of the state of California for the county of San Francisco, ChatGPT guided him on whether his method of taking his own life would work.
 
 It also offered to help him write a suicide note to his parents.'
+
+OpenAI's systems tracked all of [Adam's interactions](https://www.humanetech.com/podcast/how-openai-s-chatgpt-guided-a-teen-to-his-death "From about the 37 minute mark") (listen from about the `37` minute mark) with ChatGPT and the numbers represent an appalling indictment of OpenAI's safety protocols at the time:
+
+-   Adam mentioned suicide `213` times.
+
+-   ChatGPT mentioned suicide `1275` times.
+
+-   `42` discussions of hanging.
+
+-   `17` references to nooses.
+
+-   `377` messages were flagged for self-harm content.
+
+On the morning of his death, Adam uploaded an image of a noose that he'd attached to his bedroom closet rod, asking ChatGPT if it would work. ChatGPT responds to provide a technical analysis of the nooses load-bearing capacity and offers to show him how to upgrade the knot to a safer load-bearing anchor loop. That image, within the context of everything else, scored `0%` for self-harm risk by OpenAI's moderation policies at the time.
 
 Clearly much work needs to be done by these tech companies to make these tools safer to the broader public and especially to more vulnerable individuals.
 
