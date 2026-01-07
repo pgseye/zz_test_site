@@ -1,0 +1,337 @@
+---
+title: "More DRY (Don't Repeat Yourself) — Meet `mutate(across())`"
+date: 2026-01-30
+categories: [code, concept]
+image: "R_small.jpeg"
+description: "Create or edit multiple columns efficiently."
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  message = FALSE,
+  warning = FALSE
+)
+
+library(dplyr)
+library(purrr)
+library(tibble)
+```
+
+## Introduction
+
+Welcome back to Stats Tips for 2026. I hope you all had a restful break during the holiday period. I spent a couple of weeks on the South Island of New Zealand and was rather in awe of how beautiful that part of the world is - Queenstown, Milford Sound, Lake Tekapo and a 3 day hike on the Humpridge Track, which I can really recommend if you're into hiking. The landscapes are otherworldly - we plan to go back, it was that good...
+
+Ok, enough about my holidays and on to more serious topics. Today I thought I would ease you back into the world of statistical musings with a less theoretical and more practical post. One that illustrates the application of what I consider to be an indispensable `dplyr` function in my day-to-day work, and one that I hope you can make use of too - meet `across()`.
+
+I believe one aspiration we all share in our endeavour to become better R programmers is to write more efficient code that avoids *repetition*. You may recall that I have dedicated a whole other [post](https://msni-stats-tips.netlify.app/posts/022_15nov_2024/) to this topic and so our discussion here will further expound upon that theme.
+
+How many of you have written a block of code that you have just reused, for example:
+
+The same data transformation copied and pasted five times.\
+The same rounding applied column by column.\
+The same `ifelse()` rewritten with only the variable name changed.
+
+I know I have.
+
+In its most fundamental use-case, `across()` makes it easy to apply the same transformation to multiple columns in a dataframe in one go, rather than applying the same code block multiple times. It may not be flashy, but once you get the hang of how it works, your code will become **shorter, clearer, and far easier to maintain**. It's important to note that `across()` doesn't work by itself, but rather is a *column-selection helper* that is evaluated within other `dplyr` functions, most commonly `mutate()`, but also `summarise()` and `filter()`. In this mental model, `mutate()` decides **what happens** and `across()` decides **where is happens**.
+
+Let's make these ideas clearer with several examples...
+
+------------------------------------------------------------------------
+
+## The Problem: Repeating the Same Operation
+
+Suppose you’re analysing a simple dataset.
+
+```{r}
+df <- tibble(id = as.character(1:3),
+             age = c(34, 51, 63),
+             weight = c(72.46, 81.27, 76.85),
+             bmi = c(23.66, 27.93, 26.35),
+             cholesterol = c(5.42, 6.01, 5.87))
+
+df
+```
+
+<br>
+
+You decide that, for reporting, several variables should be rounded to **`1` decimal place**.
+
+------------------------------------------------------------------------
+
+## The Naïve Way
+
+A common first attempt looks like this:
+
+```{r}
+df |> 
+  mutate(weight = round(weight, 1),
+         bmi = round(bmi, 1),
+         cholesterol = round(cholesterol, 1))
+```
+
+<br>
+
+You write out the same line of code for each variable. It does work. It’s also:
+
+-   Repetitive\
+-   Error-prone (easy to forget a variable)\
+-   Painful to update when the variable list changes
+
+If you later add another variable (say `waist`), you must remember to update this block manually — and everywhere else you did something similar.
+
+------------------------------------------------------------------------
+
+## The Core Idea Behind `across()`
+
+The key insight is simple:
+
+> **When you apply the same transformation to multiple columns, you should write the transformation once.**
+
+That’s exactly what `across()` does.
+
+------------------------------------------------------------------------
+
+## The Better Way: `mutate(across())`
+
+Here’s the same transformation rewritten using `across()`.
+
+```{r}
+df |> 
+  mutate(across(c(weight, bmi, cholesterol), round, 1))
+```
+
+<br>
+
+Read this out loud:
+
+> “Mutate across weight, bmi, and cholesterol by rounding to 1 decimal place.”
+
+That phrasing is much closer to how you *think* about the task.
+
+------------------------------------------------------------------------
+
+## Why This Is Better (Beyond Being Shorter)
+
+### It Scales Naturally
+
+If you add another variable:
+
+```{r, eval=FALSE}
+df |> 
+mutate(across(c(weight, bmi, cholesterol, waist), round, 1))
+```
+
+No duplication. No copy-paste.
+
+------------------------------------------------------------------------
+
+### You Can Select Variables Programmatically
+
+Instead of naming variables explicitly, you can select them based on some other programmatic characteristic. Here, let's select all numeric variables:
+
+```{r}
+df |> 
+  mutate(across(where(is.numeric), round, 1))
+```
+
+<br>
+
+Alternatively, you might want to select based on naming conventions. In this example, we would select all variables in the dataframe that begin with the text "lab\_":
+
+```{r, eval=FALSE}
+df |> 
+  mutate(across(starts_with("lab_"), log))
+```
+
+This is particularly powerful in real research datasets, where variable names often follow patterns.
+
+------------------------------------------------------------------------
+
+### It Reduces Cognitive Load
+
+If you reviewed your code 6 months down the track and compared these two blocks:
+
+``` r
+weight = round(weight, 1)
+bmi = round(bmi, 1)
+cholesterol = round(cholesterol, 1)
+```
+
+vs:
+
+``` r
+across(c(weight, bmi, cholesterol), round, 1)
+```
+
+The second tells you *what is happening* immediately.
+
+------------------------------------------------------------------------
+
+## Using Anonymous Functions for More Complex Logic
+
+You’re not limited to simple functions like `round()` - you can write your own. In this case, `across()` recognises everything after the `~` as a user-defined or "anonymous" function. For example,
+
+Suppose you want to:
+
+-   add `1` to avoid zeros\
+-   log-transform the result\
+-   apply this consistently to multiple variables that begin with "lab\_".
+
+```{r, eval=FALSE}
+df |> 
+  mutate(across(starts_with("lab_"), ~ log(.x + 1)))
+```
+
+Here, `.x` represents the current column being transformed.
+
+As you can see - we can do all of this in one line of code.
+
+------------------------------------------------------------------------
+
+## Creating New Variables Instead of Overwriting
+
+In research workflows, it’s often good practice for reproducibility to keep raw variables intact and create new variables instead.
+
+```{r}
+df |> 
+  mutate(across(c(weight, bmi), scale, .names = "{.col}_z"))
+```
+
+<br>
+
+This produces new variables (`weight_z`, `bmi_z`) which are the Z-score transformations of `weight` and `bmi` using `R`'s built-in `scale` function. Note, it’s a simple case of creating new variable names by prefixing or suffixing characters to the original column name specified by `{.col}`.
+
+------------------------------------------------------------------------
+
+## `mutate(across())` vs `summarise(across())`
+
+As I mentioned at the outset, `across()` is most commonly used in conjunction with `mutate()`, but let's look at an example where we may want to use it with `summarise()`. Let's say we are interested in calculating the mean of each numeric column in the dataframe. We can do that as follows:
+
+```{r}
+df |> 
+  summarise(across(where(is.numeric), mean, na.rm = TRUE))
+```
+
+<br>
+
+Note a common point of confusion:
+
+-   `mutate(across())` returns the **same number of rows** as in the original dataframe\
+-   `summarise(across())` **reduces rows** (to a single row if no grouping structure is specified)
+
+`across()` is therefore applied to both functions in the same way, but with different intent.
+
+------------------------------------------------------------------------
+
+## Multiple Functions per Variable
+
+What if were interested in not only calculating the mean of each numeric column, but also the standard deviation and the number of observations in each column. Well, it's relatively easy to extend the above example by now applying *several* functions at once.
+
+```{r}
+df |> 
+  summarise(across(where(is.numeric), list(mean = mean, 
+                                           sd = sd,
+                                           n = ~ sum(!is.na(.))),
+                   .names = "{.col}_{.fn}"))
+```
+<br>
+
+We can now specify `{.fn}` as a naming qualifier and append this to the original column name. This pattern is a stepping stone toward automated summary tables and reporting pipelines.
+
+------------------------------------------------------------------------
+
+## Advanced Example: Using `mutate(across())` with `map()`
+
+Are you ready for something more advanced (but also extremely powerful)? So far we have been dealing with a *single* dataframe, but we can also leverage the power of `across()` in simultaneous column manipulation over *multiple* dataframes using `map()`.
+
+### The Problem
+
+Suppose you have several datasets with the same structure assembled within a [list](https://www.r-bloggers.com/2024/10/the-ultimate-guide-to-creating-lists-in-r-from-basics-to-advanced-examples/) (a list is a convenient `R` object within which many other `R` objects can be stored - including dataframes). We can access a particular object within a list with the `$` operator, much like we access the columns of a dataframe.
+
+```{r}
+datasets <- list(raw   = df, 
+                 clean = df,
+                 sens  = df)
+
+datasets$raw
+datasets$clean
+datasets$sens
+```
+<br>
+
+Now, suppose you want to apply the **same transformation** to all of them.
+
+------------------------------------------------------------------------
+
+### The Naïve Way
+
+``` r
+df_raw   <- df_raw   |>  mutate(...)
+df_clean <- df_clean |>  mutate(...)
+df_sens  <- df_sens  |>  mutate(...)
+```
+
+In this approach we go through and re-apply the same code to each dataframe but this can become difficult to maintain and easy to get wrong.
+
+------------------------------------------------------------------------
+
+### The Better Way: `map()` + `mutate(across())`
+
+```{r}
+datasets <- datasets |> 
+  map(~ .x |> 
+    mutate(across(where(is.numeric), round, 1)))
+
+datasets$raw
+datasets$clean
+datasets$sens
+```
+<br>
+
+Indeed, the more efficient way is to use `across()` within `mutate()` within `map()`.
+
+We can read this as:
+
+> “For each dataset, mutate across numeric variables by rounding to 1 decimal place.”
+
+This approach using `map()` ensures:
+
+-   identical logic across datasets\
+-   changes happen in one place\
+-   consistency is guaranteed
+
+------------------------------------------------------------------------
+
+### Another Example: Standardising Variables Across Datasets
+
+Now, let's take this further by extending the earlier example of creating new variables, not just within a *single* dataframe, but across *multiple* dataframes.
+
+```{r}
+datasets <- datasets |> 
+  map(~ .x |> 
+    mutate(across(c(age, bmi, weight), scale, .names = "{.col}_z")))
+
+datasets$raw
+datasets$clean
+datasets$sens
+```
+
+You can appreciate how much of a Swiss-army knife of data manipulation, `across()` can be become when used in conjunction with other `R` functions.
+
+------------------------------------------------------------------------
+
+## Final Thoughts and a Mental Model to Take Away
+
+Whenever you catch yourself thinking:
+
+> *“I’m doing the same thing to several variables…”*
+
+You should immediately ask:
+
+> *“Can this be an `across()`?”*
+
+That question alone will dramatically improve the quality of your R code.
+
+I hope you've found this programming tip helpful and I will see you again for more stats tips, next month.
