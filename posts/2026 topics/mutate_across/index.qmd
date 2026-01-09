@@ -334,4 +334,4 @@ You should immediately ask:
 
 That question alone will dramatically improve the quality of your R code.
 
-I hope you've found this programming tip helpful and I will see you again for more stats tips, next month.
+I hope you've found this programming tip helpful and I will see you again for more Stats Tips, next month.

@@ -1,0 +1,1626 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.549">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="dcterms.date" content="2026-01-30">
+<meta name="description" content="Data-driven variable selection does not represent best practice in applied statistics.">
+
+<title>Test Site 2 - The Perils of Stepwise Regression - And what to do instead</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../../">
+<script src="../../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../../site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../../../styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../../index.html">
+    <span class="navbar-title">Test Site 2</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../../about.html"> 
+<span class="menu-text">About</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../index.html"> 
+<span class="menu-text">All Posts</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+          <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">1</span> Introduction</a></li>
+  <li><a href="#why-stepwise-regression-persists" id="toc-why-stepwise-regression-persists" class="nav-link" data-scroll-target="#why-stepwise-regression-persists"><span class="header-section-number">2</span> Why Stepwise Regression Persists</a></li>
+  <li><a href="#what-is-stepwise-regression" id="toc-what-is-stepwise-regression" class="nav-link" data-scroll-target="#what-is-stepwise-regression"><span class="header-section-number">3</span> What is Stepwise Regression?</a></li>
+  <li><a href="#the-core-statistical-problems" id="toc-the-core-statistical-problems" class="nav-link" data-scroll-target="#the-core-statistical-problems"><span class="header-section-number">4</span> The Core Statistical Problems</a>
+  <ul>
+  <li><a href="#invalid-inference-after-selection" id="toc-invalid-inference-after-selection" class="nav-link" data-scroll-target="#invalid-inference-after-selection"><span class="header-section-number">4.1</span> Invalid Inference After Selection</a></li>
+  <li><a href="#multiple-testing-in-disguise" id="toc-multiple-testing-in-disguise" class="nav-link" data-scroll-target="#multiple-testing-in-disguise"><span class="header-section-number">4.2</span> Multiple Testing in Disguise</a></li>
+  <li><a href="#overfitting-and-optimism" id="toc-overfitting-and-optimism" class="nav-link" data-scroll-target="#overfitting-and-optimism"><span class="header-section-number">4.3</span> Overfitting and Optimism</a></li>
+  <li><a href="#model-instability" id="toc-model-instability" class="nav-link" data-scroll-target="#model-instability"><span class="header-section-number">4.4</span> Model Instability</a></li>
+  <li><a href="#biased-coefficient-estimates" id="toc-biased-coefficient-estimates" class="nav-link" data-scroll-target="#biased-coefficient-estimates"><span class="header-section-number">4.5</span> Biased Coefficient Estimates</a></li>
+  </ul></li>
+  <li><a href="#why-these-problems-matter-in-applied-research" id="toc-why-these-problems-matter-in-applied-research" class="nav-link" data-scroll-target="#why-these-problems-matter-in-applied-research"><span class="header-section-number">5</span> Why These Problems Matter in Applied Research</a>
+  <ul>
+  <li><a href="#clinical-and-epidemiological-studies" id="toc-clinical-and-epidemiological-studies" class="nav-link" data-scroll-target="#clinical-and-epidemiological-studies"><span class="header-section-number">5.1</span> Clinical and Epidemiological Studies</a></li>
+  <li><a href="#regulatory-and-reporting-contexts" id="toc-regulatory-and-reporting-contexts" class="nav-link" data-scroll-target="#regulatory-and-reporting-contexts"><span class="header-section-number">5.2</span> Regulatory and Reporting Contexts</a></li>
+  </ul></li>
+  <li><a href="#what-to-do-instead" id="toc-what-to-do-instead" class="nav-link" data-scroll-target="#what-to-do-instead"><span class="header-section-number">6</span> What to Do Instead</a>
+  <ul>
+  <li><a href="#explanation" id="toc-explanation" class="nav-link" data-scroll-target="#explanation"><span class="header-section-number">6.1</span> Explanation</a>
+  <ul class="collapse">
+  <li><a href="#pre-specification-and-subject-matter-knowledge" id="toc-pre-specification-and-subject-matter-knowledge" class="nav-link" data-scroll-target="#pre-specification-and-subject-matter-knowledge"><span class="header-section-number">6.1.1</span> Pre-Specification and Subject-Matter Knowledge</a></li>
+  <li><a href="#transparent-sensitivity-analyses" id="toc-transparent-sensitivity-analyses" class="nav-link" data-scroll-target="#transparent-sensitivity-analyses"><span class="header-section-number">6.1.2</span> Transparent Sensitivity Analyses</a></li>
+  </ul></li>
+  <li><a href="#prediction" id="toc-prediction" class="nav-link" data-scroll-target="#prediction"><span class="header-section-number">6.2</span> Prediction</a>
+  <ul class="collapse">
+  <li><a href="#full-models-with-shrinkage" id="toc-full-models-with-shrinkage" class="nav-link" data-scroll-target="#full-models-with-shrinkage"><span class="header-section-number">6.2.1</span> Full Models with Shrinkage</a></li>
+  <li><a href="#cross-validation-and-external-validation" id="toc-cross-validation-and-external-validation" class="nav-link" data-scroll-target="#cross-validation-and-external-validation"><span class="header-section-number">6.2.2</span> Cross-Validation and External Validation</a></li>
+  <li><a href="#model-averaging" id="toc-model-averaging" class="nav-link" data-scroll-target="#model-averaging"><span class="header-section-number">6.2.3</span> Model Averaging</a></li>
+  <li><a href="#elastic-net-example" id="toc-elastic-net-example" class="nav-link" data-scroll-target="#elastic-net-example"><span class="header-section-number">6.2.4</span> Elastic Net Example</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#a-pragmatic-takeaway" id="toc-a-pragmatic-takeaway" class="nav-link" data-scroll-target="#a-pragmatic-takeaway"><span class="header-section-number">7</span> A Pragmatic Takeaway</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<div class="quarto-title-block"><div><h1 class="title">The Perils of Stepwise Regression - And what to do instead</h1><button type="button" class="btn code-tools-button dropdown-toggle" id="quarto-code-tools-menu" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi"></i> Code</button><ul class="dropdown-menu dropdown-menu-end" aria-labelelledby="quarto-code-tools-menu"><li><a id="quarto-show-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Show All Code</a></li><li><a id="quarto-hide-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Hide All Code</a></li><li><hr class="dropdown-divider"></li><li><a id="quarto-view-source" class="dropdown-item" href="javascript:void(0)" role="button">View Source</a></li></ul></div></div>
+  <div class="quarto-categories">
+    <div class="quarto-category">code</div>
+    <div class="quarto-category">concept</div>
+  </div>
+  </div>
+
+<div>
+  <div class="description">
+    Data-driven variable selection does not represent best practice in applied statistics.
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">January 30, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="introduction" class="level2" data-number="1">
+<h2 data-number="1" class="anchored" data-anchor-id="introduction"><span class="header-section-number">1</span> Introduction</h2>
+<p>As a clinician/researcher you might not be aware that data-driven variable selection methods are widely regarded within the statistical community as the the equivalent of Facebook’s ‘Crazy Uncle’ - an individual who is misinformed, opinionated and someone we just can’t easily shed from our lives.</p>
+<p>So what’s the parallel I’m trying to draw, you might ask?</p>
+<p>Well, despite decades of criticism in the statistical literature, stepwise regression (as a form of data-driven variable selection) continues to appear in academic papers, regulatory submissions, and industry analyses, when it is universally recognised as plain wrong. Despite that, stepwise regression remains one of the most commonly taught and used model-building techniques in applied statistics. Indeed, I was taught these methods during my Masters of Biostatistics 10 years ago. The appeal is obvious: when faced with many candidate predictors and limited sample size, stepwise procedures promise an automated, objective way to “let the data decide” which variables matter.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>When I refer to “data-driven” or “stepwise” I am meaning any decision process leading to the addition or removal of candidate variables from a regression model that is based on data-derived statistics such as significance, R-squared, Akaike Information Criteria (AIC), etc…</p>
+</div>
+</div>
+<p>So then, what’s the problem?</p>
+<p>Well, there are many. The most notable I will summarise from page 68 of Frank Harrell’s modern statistical classic - <a href="https://hbiostat.org/rmsc/"><em>Regression Modelling Strategies</em></a>:</p>
+<ol type="1">
+<li><p>The R-squared or even adjusted R-squared values of the end model are biased high.</p></li>
+<li><p>The F and Chi-square test statistics of the final model do not have the claimed distribution.</p></li>
+<li><p>The standard errors of coefficient estimates are biased low and confidence intervals for effects and predictions are falsely narrow.</p></li>
+<li><p>The p values are too small (there are severe multiple comparison problems in addition to problems 2. and 3.) and do not have the proper meaning, and it is difficult to correct for this.</p></li>
+<li><p>The regression coefficients are biased high in absolute value and need shrinkage but this is rarely done.</p></li>
+<li><p>Variable selection is made arbitrary by collinearity.</p></li>
+<li><p>It allows us to not think about the problem.</p></li>
+</ol>
+<p>The net effect of the above is that we may end up making claims, assertions or clinical decisions based on incorrect evidence.</p>
+<p>In this post I will attempt to make the case that stepwise regression is not just suboptimal, but seriously flawed when used for inference, explanation, or decision-making. The problems are not subtle or academic; they directly undermine the validity, reproducibility, and interpretability of results. I will outline why stepwise regression fails, why these failures are amplified in applied research (particularly clinical and epidemiological settings), and what modern, defensible alternatives look like in practice.</p>
+<p>The goal is not to shame analysts who use stepwise regression — I too am guilty of the multitude of sins I am about to discuss — but to provide a clear roadmap towards best practice.</p>
+<hr>
+</section>
+<section id="why-stepwise-regression-persists" class="level2" data-number="2">
+<h2 data-number="2" class="anchored" data-anchor-id="why-stepwise-regression-persists"><span class="header-section-number">2</span> Why Stepwise Regression Persists</h2>
+<p>Let’s get the elephant in the room out of the way. If there are so many issues with stepwise regression why is it still so commonly used in the analysis of clinical data? Well, I don’t think there is a single answer to this question, but rather several potential factors that probably interplay in maintaining its veneer of contemporary methodological relevance:</p>
+<ul>
+<li><p>Historical inertia: it has been taught for decades and appears in older textbooks.</p></li>
+<li><p>Fear of change: researchers may worry that journal editors/reviewers do not appreciate new approaches.</p></li>
+<li><p>Cognitive appeal: produces a single, seemingly parsimonious model.</p></li>
+<li><p>Ease of implementation: many statistical packages make stepwise selection easy and prominent.</p></li>
+<li><p>Misplaced objectivity: automated procedures appear neutral, even when they enforce arbitrary thresholds on our data.</p></li>
+</ul>
+<p>These justifications, when considered on an individual basis, become hard to defend. But before we look at what we can do instead, let’s first delve a little deeper into the specific problems associated with stepwise regression.</p>
+<hr>
+</section>
+<section id="what-is-stepwise-regression" class="level2" data-number="3">
+<h2 data-number="3" class="anchored" data-anchor-id="what-is-stepwise-regression"><span class="header-section-number">3</span> What is Stepwise Regression?</h2>
+<p>Most of you already know what I’m talking about, but let’s recap the basics for those who don’t.</p>
+<p>Stepwise regression refers to a family of automated variable selection procedures applied to regression models. The most common variants are:</p>
+<ul>
+<li><p>Forward selection: start with no predictors, then add variables one at a time based on some criterion (often the smallest p-value or largest improvement in AIC).</p></li>
+<li><p>Backward elimination: start with all candidate predictors, then remove variables that fail to meet a significance threshold.</p></li>
+<li><p>Bidirectional (stepwise) selection: alternate between adding and removing variables at each step.</p></li>
+</ul>
+<p>These procedures are typically driven by hypothesis tests (e.g.&nbsp;p &lt; 0.05) or information criteria (AIC, BIC), and they terminate once no further steps improve the chosen criterion. The end result is a single model containing a data-driven subset of the original pool of available candidate predictor variables.</p>
+<hr>
+</section>
+<section id="the-core-statistical-problems" class="level2" data-number="4">
+<h2 data-number="4" class="anchored" data-anchor-id="the-core-statistical-problems"><span class="header-section-number">4</span> The Core Statistical Problems</h2>
+<p>Although I mentioned these at the outset of this post (based on Harrell’s text), let’s flesh some of them out in more detail now.</p>
+<section id="invalid-inference-after-selection" class="level3" data-number="4.1">
+<h3 data-number="4.1" class="anchored" data-anchor-id="invalid-inference-after-selection"><span class="header-section-number">4.1</span> Invalid Inference After Selection</h3>
+<p>Perhaps the most fundamental problem is that standard inferential quantities are wrong after stepwise selection. When using data-driven variable selection:</p>
+<blockquote class="blockquote">
+<p>P-values, confidence intervals, and standard errors are computed as if the model had been <strong>specified in advance</strong>.</p>
+</blockquote>
+<p>But in reality, the data were used at least twice: once to select variables, and again to estimate their effects.</p>
+<p>This reuse of data leads to:</p>
+<ul>
+<li><p>underestimated standard errors,</p></li>
+<li><p>overly narrow confidence intervals,</p></li>
+<li><p>and inflated statistical significance.</p></li>
+</ul>
+<p>You may not be aware that statistical inference methods using p values, standard errors and confidence intervals were designed to be <strong>valid when applied once to a pre-specified model</strong>, not iteratively reapplied to a model where chance partly informs the decision at each step. This invalidates the nominal properties of a statistical test, giving us as researchers, a false sense of certainty.</p>
+</section>
+<section id="multiple-testing-in-disguise" class="level3" data-number="4.2">
+<h3 data-number="4.2" class="anchored" data-anchor-id="multiple-testing-in-disguise"><span class="header-section-number">4.2</span> Multiple Testing in Disguise</h3>
+<p>Stepwise regression performs a large number of implicit hypothesis tests while pretending to conduct only a few. Each step involves testing multiple candidate variables, but no adjustment is made for multiplicity.</p>
+<p>Viewed correctly, stepwise selection is a form of uncorrected multiple testing with a stopping rule. The resulting family-wise Type I error rate can be dramatically higher than the nominal level, especially when predictors are correlated.</p>
+<p>This means that “statistically significant” predictors selected by stepwise methods are often artifacts of chance rather than real signals.</p>
+</section>
+<section id="overfitting-and-optimism" class="level3" data-number="4.3">
+<h3 data-number="4.3" class="anchored" data-anchor-id="overfitting-and-optimism"><span class="header-section-number">4.3</span> Overfitting and Optimism</h3>
+<p>Stepwise procedures are designed to optimise in-sample fit. As a result, they tend to overfit, especially when:</p>
+<ul>
+<li><p>the number of predictors is large relative to the sample size,</p></li>
+<li><p>predictors are correlated,</p></li>
+<li><p>or the true signal-to-noise ratio is modest.</p></li>
+</ul>
+<p>Overfitted models appear impressive in the training data but perform poorly on new data. This optimism is rarely quantified or acknowledged when stepwise regression is used.</p>
+</section>
+<section id="model-instability" class="level3" data-number="4.4">
+<h3 data-number="4.4" class="anchored" data-anchor-id="model-instability"><span class="header-section-number">4.4</span> Model Instability</h3>
+<p>One of the most damaging properties of stepwise regression is instability. Small perturbations in the data - e.g.&nbsp;removing a few observations, changing a significance threshold, or using a different random split - can produce entirely different selected models.</p>
+<p>This instability arises because stepwise selection operates near decision boundaries. When predictors are correlated or effects are weak, tiny changes can flip inclusion decisions.</p>
+<p>An unstable model cannot be trusted for interpretation, explanation, or clinical decision-making.</p>
+</section>
+<section id="biased-coefficient-estimates" class="level3" data-number="4.5">
+<h3 data-number="4.5" class="anchored" data-anchor-id="biased-coefficient-estimates"><span class="header-section-number">4.5</span> Biased Coefficient Estimates</h3>
+<p>Even when a predictor truly has an effect, stepwise regression tends to overestimate its magnitude if it is selected. This phenomenon - sometimes called the “winner’s curse” - occurs because variables are selected given they look large in the sample. The result is that reported effect sizes tend to be exaggerated, with subsequent studies often failing to replicate the findings.</p>
+<hr>
+</section>
+</section>
+<section id="why-these-problems-matter-in-applied-research" class="level2" data-number="5">
+<h2 data-number="5" class="anchored" data-anchor-id="why-these-problems-matter-in-applied-research"><span class="header-section-number">5</span> Why These Problems Matter in Applied Research</h2>
+<p>In some purely predictive settings, poor inference may be tolerable. In most applied research, however, regression models are used to:</p>
+<ul>
+<li><p>draw causal conclusions,</p></li>
+<li><p>inform clinical or policy decisions,</p></li>
+<li><p>support regulatory submissions,</p></li>
+<li><p>or generate scientific knowledge.</p></li>
+</ul>
+<p>In these contexts, stepwise regression is especially problematic.</p>
+<section id="clinical-and-epidemiological-studies" class="level3" data-number="5.1">
+<h3 data-number="5.1" class="anchored" data-anchor-id="clinical-and-epidemiological-studies"><span class="header-section-number">5.1</span> Clinical and Epidemiological Studies</h3>
+<p>In medical research, variable inclusion is often interpreted causally - even when analysts disclaim causal intent. A covariate that survives stepwise selection may be described as a “risk factor” or “independent predictor”, while excluded variables are implicitly treated as unimportant.</p>
+<p>But this is deeply misleading. Stepwise regression does not distinguish between confounders, mediators, and colliders, and it frequently excludes clinically important variables simply because their effects are imprecisely estimated.</p>
+</section>
+<section id="regulatory-and-reporting-contexts" class="level3" data-number="5.2">
+<h3 data-number="5.2" class="anchored" data-anchor-id="regulatory-and-reporting-contexts"><span class="header-section-number">5.2</span> Regulatory and Reporting Contexts</h3>
+<p>In regulatory settings, such as clinical trial reporting, transparency and reproducibility are paramount. Stepwise regression undermines both, because:</p>
+<ul>
+<li><p>the analysis path is data-driven and difficult to justify prospectively,</p></li>
+<li><p>results may not reproduce across datasets or populations,</p></li>
+<li><p>and inferential quantities lack a clear interpretation.</p></li>
+</ul>
+<p>For these reasons, many regulatory guidelines explicitly discourage data-driven variable selection.</p>
+<hr>
+</section>
+</section>
+<section id="what-to-do-instead" class="level2" data-number="6">
+<h2 data-number="6" class="anchored" data-anchor-id="what-to-do-instead"><span class="header-section-number">6</span> What to Do Instead</h2>
+<p>Ok, we’ve spent a fair amount of time talking about the problem. Let’s now discuss what we can actually do about it. The good news is that we are not short of alternatives. In fact, modern approaches are often simpler, more transparent, and more defensible.</p>
+<p>I am going to discuss these approaches in the context of “model intent” - i.e.&nbsp;what is the purpose for your regression model? This ultimately boils down to one of two options - <strong>explanation</strong> vs <strong>prediction</strong>. Model explanation and model prediction answer fundamentally different questions. Explanatory models aim to estimate and interpret the effect of variables, often with a causal lens, which makes pre-specification, subject-matter knowledge, and valid inference essential. An example research question that such a model could answer might be:</p>
+<blockquote class="blockquote">
+<p>“What is the effect of DMT x on the risk of disease relapse, after adjusting for age, sex, smoking status, and baseline disease severity?”</p>
+</blockquote>
+<p>i.e.&nbsp;we are interested primarily in the explanatory ‘effect’ of a new DMT on disease relapse.</p>
+<p>Predictive models, by contrast, are judged by how well they perform on new data, not by whether their coefficients are interpretable or causally meaningful - in other words, we don’t really care about individual variable ‘effects’ but rather just the overall predictive power of the model. Here, the commensurate research question takes a different form:</p>
+<blockquote class="blockquote">
+<p>“Using age, sex, smoking status, current therapy and disease severity data at baseline, what is an individual’s 5-year risk of disease relapse?”</p>
+</blockquote>
+<p>i.e.&nbsp;we want to predict relapse risk but don’t really care about any individual pedictor.</p>
+<section id="explanation" class="level3" data-number="6.1">
+<h3 data-number="6.1" class="anchored" data-anchor-id="explanation"><span class="header-section-number">6.1</span> Explanation</h3>
+<section id="pre-specification-and-subject-matter-knowledge" class="level4" data-number="6.1.1">
+<h4 data-number="6.1.1" class="anchored" data-anchor-id="pre-specification-and-subject-matter-knowledge"><span class="header-section-number">6.1.1</span> Pre-Specification and Subject-Matter Knowledge</h4>
+<p>When we are interested in model explanation, the most robust approach is also the least glamorous: decide in advance (i.e.&nbsp;prior to seeing the data) which variables belong in the model, and make that our <strong>one and only model</strong>.</p>
+<p>Here, variable inclusion should be guided by:</p>
+<ul>
+<li><p>scientific understanding,</p></li>
+<li><p>causal reasoning,</p></li>
+<li><p>and study design.</p></li>
+</ul>
+<p>Consideration should be given to sythesising these justifications in a supporting causal diagram (DAG).</p>
+<p>Note that if a variable is a known confounder, it should be included regardless of its p-value. In contrast, if it is irrelevant to the scientific question, it should not be tested for inclusion.</p>
+<p>This approach prioritises validity over convenience. We are very interested in understanding the characteristics of each individual predictor variable (i.e.&nbsp;is it a potential confounder, collider, mediator, etc in the exposure -&gt; outcome relationship), and the interplay between all such variables. Again, this is where a causal diagram, even if we are not planning an explicit causal analysis, can be very helpful. But this is where the hard work ends in explanatory modelling. From a coding perspective, things are easier than ever - we just run whatever model we have decided on (and nothing more), comfortable in the fact that our p-values and confidence intervals are correct.</p>
+</section>
+<section id="transparent-sensitivity-analyses" class="level4" data-number="6.1.2">
+<h4 data-number="6.1.2" class="anchored" data-anchor-id="transparent-sensitivity-analyses"><span class="header-section-number">6.1.2</span> Transparent Sensitivity Analyses</h4>
+<p>If, for whatever reason, pre-specification is not possible and variable selection cannot be avoided, resultant models should be treated as exploratory and accompanied by:</p>
+<ul>
+<li><p>sensitivity analyses,</p></li>
+<li><p>stability assessments,</p></li>
+<li><p>and clear disclaimers about inferential limitations.</p></li>
+</ul>
+<p>This is still inferior to pre-specification, but far better than unqualified stepwise regression.</p>
+</section>
+</section>
+<section id="prediction" class="level3" data-number="6.2">
+<h3 data-number="6.2" class="anchored" data-anchor-id="prediction"><span class="header-section-number">6.2</span> Prediction</h3>
+<section id="full-models-with-shrinkage" class="level4" data-number="6.2.1">
+<h4 data-number="6.2.1" class="anchored" data-anchor-id="full-models-with-shrinkage"><span class="header-section-number">6.2.1</span> Full Models with Shrinkage</h4>
+<p>In contrast, when we are interested in model prediction our goals change. We are simply after raw predictive performance and it matters less about the individual variables that comprise the model or how they were chosen. There is actually a fairly nice solution to the problem of variable selection in the context of prediction modelling, and that is “regularisation” or “penalised regression” methods. These methods acknowledge uncertainty more honestly than stepwise procedures.</p>
+<p>Regularisation is central to prediction because it controls overfitting by shrinking model coefficients, trading a small amount of bias for a large reduction in variance and thus improving performance on new data. <strong>Ridge regression</strong> shrinks all coefficients toward zero and is particularly effective when many predictors have small, correlated effects. <strong>Lasso</strong> applies stronger shrinkage that can set some coefficients exactly to zero, producing sparse models that are easier to deploy but can be unstable when predictors are highly correlated. <strong>Elastic net</strong> combines ridge and lasso penalties, often giving the best predictive performance in practice by encouraging sparsity while retaining groups of correlated predictors.</p>
+<p>Keep reading to the end of this section to see an example of how penalised regression with Elastic net is used.</p>
+</section>
+<section id="cross-validation-and-external-validation" class="level4" data-number="6.2.2">
+<h4 data-number="6.2.2" class="anchored" data-anchor-id="cross-validation-and-external-validation"><span class="header-section-number">6.2.2</span> Cross-Validation and External Validation</h4>
+<p>Because we are ultimately interested in predictive power, once we have established a prediction model we should evaluate its performance. There are multiple ways to do this (see <a href="https://www.bmj.com/content/384/bmj-2023-074819">here</a> for a good primer), with the main techniques being:</p>
+<ul>
+<li><p>cross-validation,</p></li>
+<li><p>bootstrap resampling,</p></li>
+<li><p>or, ideally, external validation datasets.</p></li>
+</ul>
+<p>The general idea in each case is that we “train” our model on a dataset and then “test” its predictive power on new data. The reason for this is that it is not uncommon when we create a model from a single dataset that the model usually fits the peculiarities of that dataset much better than one it hasn’t seen before (i.e.&nbsp;it overfits). Thus, predictive performance will often be less on a “test” compared to a “train” dataset. In cross-validation and bootstrapping we are using sleight of hand to create “train” and “test” data from the only dataset we have - these are referred to as internal validation methods. While external validation is better because we can train the model on all of our data and then test on a completely unseen dataset, it is harder to achieve in practice for obvious reasons.</p>
+<p>Whatever the method of model performance evaluation, the focus now changes from p-values and confidence intervals to predictive accuracy and generalisability.</p>
+</section>
+<section id="model-averaging" class="level4" data-number="6.2.3">
+<h4 data-number="6.2.3" class="anchored" data-anchor-id="model-averaging"><span class="header-section-number">6.2.3</span> Model Averaging</h4>
+<p>Sometimes we may end up with more than one candidate prediction model that have similar predictive power but are based on different modelling strategies (e.g.&nbsp;lasso vs random forest vs GAM). Model averaging is an approach that accounts for uncertainty about model choice by combining predictions or estimates from multiple plausible prediction models rather than relying on a single selected model. Instead of treating one model as “the truth,” it weights each model according to a measure of support - such as predictive performance, information criteria, or posterior probability - and averages across them. This can improve predictive accuracy and reduce overconfidence, particularly when several models perform similarly well. Model averaging is most natural when there is genuine uncertainty among a discrete set of competing models, and it contrasts with single-model selection approaches that ignore this uncertainty.</p>
+</section>
+<section id="elastic-net-example" class="level4" data-number="6.2.4">
+<h4 data-number="6.2.4" class="anchored" data-anchor-id="elastic-net-example"><span class="header-section-number">6.2.4</span> Elastic Net Example</h4>
+<p>Alright, let’s put some of what we’ve learned into practice. Let’s simulate some data and run both a stepwise regression and an elastic net, comparing the performance of each. For the simulation I will create a dataset with <code>500</code> observations and <code>20</code> predictors. I’ll make the regression coefficients for the first <code>5</code> predictors non-zero (representing real effects) and set the coefficients for the last <code>15</code> to zero (representing noise). I’ll also specify that all predictors are moderately correlated with each other (r = <code>0.4</code>). With this data-generating process we can then meaningfully compare how stepwise regression and elastic net behave when only a few predictors truly matter (and hopefully find that the latter approach performs better).</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb1-2"><a href="#cb1-2"></a></span>
+<span id="cb1-3"><a href="#cb1-3"></a>n <span class="ot">&lt;-</span> <span class="dv">500</span></span>
+<span id="cb1-4"><a href="#cb1-4"></a>p <span class="ot">&lt;-</span> <span class="dv">20</span></span>
+<span id="cb1-5"><a href="#cb1-5"></a></span>
+<span id="cb1-6"><a href="#cb1-6"></a>Sigma <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fl">0.4</span>, p, p)</span>
+<span id="cb1-7"><a href="#cb1-7"></a><span class="fu">diag</span>(Sigma) <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb1-8"><a href="#cb1-8"></a></span>
+<span id="cb1-9"><a href="#cb1-9"></a><span class="fu">library</span>(MASS)</span>
+<span id="cb1-10"><a href="#cb1-10"></a>X <span class="ot">&lt;-</span> <span class="fu">mvrnorm</span>(n, <span class="at">mu =</span> <span class="fu">rep</span>(<span class="dv">0</span>, p), <span class="at">Sigma =</span> Sigma)</span>
+<span id="cb1-11"><a href="#cb1-11"></a></span>
+<span id="cb1-12"><a href="#cb1-12"></a>beta <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">2</span>, <span class="sc">-</span><span class="fl">1.5</span>, <span class="sc">-</span><span class="fl">1.5</span>, <span class="fu">rep</span>(<span class="dv">0</span>, p <span class="sc">-</span> <span class="dv">5</span>))</span>
+<span id="cb1-13"><a href="#cb1-13"></a>y <span class="ot">&lt;-</span> X <span class="sc">%*%</span> beta <span class="sc">+</span> <span class="fu">rnorm</span>(n, <span class="at">sd =</span> <span class="dv">2</span>)</span>
+<span id="cb1-14"><a href="#cb1-14"></a></span>
+<span id="cb1-15"><a href="#cb1-15"></a>dat <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(y, X)</span>
+<span id="cb1-16"><a href="#cb1-16"></a><span class="fu">colnames</span>(dat) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"y"</span>, <span class="fu">paste0</span>(<span class="st">"X"</span>, <span class="dv">1</span><span class="sc">:</span>p))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Now let’s create train and test datasets from the simulated data. To do this we’ll randomly choose <code>70%</code> of the observations for the train dataset and allocate the remaining <code>30%</code> to the test dataset.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="fu">set.seed</span>(<span class="dv">456</span>)</span>
+<span id="cb2-2"><a href="#cb2-2"></a>idx <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">seq_len</span>(n), <span class="at">size =</span> <span class="fl">0.7</span> <span class="sc">*</span> n)</span>
+<span id="cb2-3"><a href="#cb2-3"></a></span>
+<span id="cb2-4"><a href="#cb2-4"></a>train <span class="ot">&lt;-</span> dat[idx, ]</span>
+<span id="cb2-5"><a href="#cb2-5"></a>test  <span class="ot">&lt;-</span> dat[<span class="sc">-</span>idx, ]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>We will now perform a classic stepwise regression using <code>step()</code> to automate the process. <code>step()</code> fits multiple models moving back and forth between a model with no predictors (intercept only model) and one with all <code>20</code> predictors (full model). At each stage it computes the AIC for each candidate model, moves to the model with the lowest AIC and then stops when no further addition or deletion of variables improves the AIC.</p>
+<p>We can see that the first five predictors are correctly selected, but the algorithm also selects four noise predictors, two of which are deemed statistically significant.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>full_mod <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> ., <span class="at">data =</span> train)</span>
+<span id="cb3-2"><a href="#cb3-2"></a>null_mod <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> <span class="dv">1</span>, <span class="at">data =</span> train)</span>
+<span id="cb3-3"><a href="#cb3-3"></a>  </span>
+<span id="cb3-4"><a href="#cb3-4"></a>step_mod <span class="ot">&lt;-</span> <span class="fu">step</span>(</span>
+<span id="cb3-5"><a href="#cb3-5"></a>  null_mod,</span>
+<span id="cb3-6"><a href="#cb3-6"></a>  <span class="at">scope =</span> <span class="fu">list</span>(<span class="at">lower =</span> null_mod, <span class="at">upper =</span> full_mod),</span>
+<span id="cb3-7"><a href="#cb3-7"></a>  <span class="at">direction =</span> <span class="st">"both"</span>,</span>
+<span id="cb3-8"><a href="#cb3-8"></a>  <span class="at">trace =</span> <span class="cn">FALSE</span></span>
+<span id="cb3-9"><a href="#cb3-9"></a>)</span>
+<span id="cb3-10"><a href="#cb3-10"></a></span>
+<span id="cb3-11"><a href="#cb3-11"></a><span class="fu">summary</span>(step_mod)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = y ~ X1 + X3 + X5 + X2 + X4 + X15 + X10 + X14 + X18, 
+    data = train)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-5.6759 -1.2016  0.0696  1.2556  5.7055 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)  0.07313    0.10297   0.710   0.4781    
+X1           2.08653    0.11979  17.418   &lt;2e-16 ***
+X3           2.12815    0.13199  16.123   &lt;2e-16 ***
+X5          -1.61482    0.12589 -12.827   &lt;2e-16 ***
+X2           2.02325    0.12951  15.622   &lt;2e-16 ***
+X4          -1.58574    0.12656 -12.530   &lt;2e-16 ***
+X15          0.30294    0.13056   2.320   0.0209 *  
+X10         -0.32018    0.12951  -2.472   0.0139 *  
+X14          0.22121    0.13102   1.688   0.0922 .  
+X18         -0.20767    0.13261  -1.566   0.1183    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 1.907 on 340 degrees of freedom
+Multiple R-squared:  0.7858,    Adjusted R-squared:  0.7802 
+F-statistic: 138.6 on 9 and 340 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+</div>
+<p>Let’s check the performance by using the model to predict on the test data, then calculating a common regression performance measure - the root mean square error (RMSE). The lower the RMSE, the better.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>y_pred_step <span class="ot">&lt;-</span> <span class="fu">predict</span>(step_mod, <span class="at">newdata =</span> test)</span>
+<span id="cb5-2"><a href="#cb5-2"></a>rmse_step <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="fu">mean</span>((test<span class="sc">$</span>y <span class="sc">-</span> y_pred_step)<span class="sc">^</span><span class="dv">2</span>))</span>
+<span id="cb5-3"><a href="#cb5-3"></a>rmse_step</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 2.018798</code></pre>
+</div>
+</div>
+<p>Now let’s compare this to an elastic net, using the <code>glmnet</code> package, which fits penalised regression models (ridge, lasso, elastic net). We can break this code block down into a series of steps as follows:</p>
+<ul>
+<li><p><code>glmnet</code> fits many elastic net models, each with:</p>
+<ul>
+<li><p>the same predictors,</p></li>
+<li><p>the same alpha = 0.5 (mix of ridge and lasso),</p></li>
+<li><p>different values of lambda (penalty strength).</p></li>
+</ul></li>
+<li><p>It then performs <code>10</code>-fold cross-validation:</p>
+<ul>
+<li><p>the training data are split into 10 folds,</p></li>
+<li><p>each fold is held out in turn,</p></li>
+<li><p>prediction error is estimated for each lambda.</p></li>
+</ul></li>
+<li><p>And finally, chooses the optimal penalty:</p>
+<ul>
+<li><p>lambda.min → lowest cross-validated error,</p></li>
+<li><p>lambda.1se → largest λ within 1 SE of the minimum (simpler model).</p></li>
+</ul></li>
+</ul>
+<p>This step answers: “How much regularisation gives the best out-of-sample performance?”</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a><span class="fu">library</span>(glmnet)</span>
+<span id="cb7-2"><a href="#cb7-2"></a></span>
+<span id="cb7-3"><a href="#cb7-3"></a><span class="co"># glmnet requires predictors as a numeric matrix, not a data frame.</span></span>
+<span id="cb7-4"><a href="#cb7-4"></a>X_train <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(train[, <span class="sc">-</span><span class="dv">1</span>]) <span class="co"># contains all predictors but remove the outcome variable (y)</span></span>
+<span id="cb7-5"><a href="#cb7-5"></a>y_train <span class="ot">&lt;-</span> train<span class="sc">$</span>y                <span class="co"># response</span></span>
+<span id="cb7-6"><a href="#cb7-6"></a>X_test  <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(test[, <span class="sc">-</span><span class="dv">1</span>])</span>
+<span id="cb7-7"><a href="#cb7-7"></a>y_test  <span class="ot">&lt;-</span> test<span class="sc">$</span>y</span>
+<span id="cb7-8"><a href="#cb7-8"></a></span>
+<span id="cb7-9"><a href="#cb7-9"></a>cv_enet <span class="ot">&lt;-</span> <span class="fu">cv.glmnet</span>(</span>
+<span id="cb7-10"><a href="#cb7-10"></a>  X_train, y_train,</span>
+<span id="cb7-11"><a href="#cb7-11"></a>  <span class="at">alpha =</span> <span class="fl">0.5</span>,                    <span class="co"># elastic net</span></span>
+<span id="cb7-12"><a href="#cb7-12"></a>  <span class="at">nfolds =</span> <span class="dv">10</span></span>
+<span id="cb7-13"><a href="#cb7-13"></a>)</span>
+<span id="cb7-14"><a href="#cb7-14"></a></span>
+<span id="cb7-15"><a href="#cb7-15"></a><span class="co"># Extract the coefficients from the single elastic net model corresponding to the optimal λ.</span></span>
+<span id="cb7-16"><a href="#cb7-16"></a><span class="fu">coef</span>(cv_enet, <span class="at">s =</span> <span class="st">"lambda.min"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>21 x 1 sparse Matrix of class "dgCMatrix"
+              lambda.min
+(Intercept)  0.066848837
+X1           2.012777264
+X2           1.921988809
+X3           2.043667440
+X4          -1.469708904
+X5          -1.503814250
+X6           0.010503422
+X7          -0.111528143
+X8          -0.065850506
+X9          -0.080697600
+X10         -0.232749640
+X11          0.010956657
+X12          .          
+X13          0.120277174
+X14          0.166942224
+X15          0.237722152
+X16          0.030739719
+X17          0.058957699
+X18         -0.115478884
+X19         -0.046143403
+X20          0.004132131</code></pre>
+</div>
+</div>
+<p>Note that even when the true data-generating process is sparse, elastic net does not necessarily recover the true set of predictors, particularly when predictors are correlated. This is not a failure: the elastic net objective is to minimise prediction error, not to identify the true model. At the penalty that optimises cross-validated performance, elastic net may retain many small coefficients because correlated noise variables still carry predictive information. In other words, if allowing small non-zero coefficients on “noise” predictors improves prediction even slightly, elastic net will do that.</p>
+<p>Now let’s compare the prediction error from both modelling approaches.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a>y_pred_enet <span class="ot">&lt;-</span> <span class="fu">predict</span>(cv_enet, X_test, <span class="at">s =</span> <span class="st">"lambda.min"</span>)</span>
+<span id="cb9-2"><a href="#cb9-2"></a>rmse_enet <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="fu">mean</span>((y_test <span class="sc">-</span> y_pred_enet)<span class="sc">^</span><span class="dv">2</span>))</span>
+<span id="cb9-3"><a href="#cb9-3"></a>rmse_enet</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1.999773</code></pre>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a><span class="fu">c</span>(</span>
+<span id="cb11-2"><a href="#cb11-2"></a>  <span class="at">Stepwise_RMSE   =</span> rmse_step,</span>
+<span id="cb11-3"><a href="#cb11-3"></a>  <span class="at">ElasticNet_RMSE =</span> rmse_enet</span>
+<span id="cb11-4"><a href="#cb11-4"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>  Stepwise_RMSE ElasticNet_RMSE 
+       2.018798        1.999773 </code></pre>
+</div>
+</div>
+<p>We can see that it’s actually pretty similar. But that doesn’t mean that this exercise has been a waste of time. Even when stepwise regression and elastic net achieve similar RMSE on a given test set, elastic net is preferable because it achieves this performance through explicit regularisation rather than discrete variable selection.</p>
+<p>Penalised models are:</p>
+<ul>
+<li><p>more stable to sampling variation,</p></li>
+<li><p>handle correlated predictors more gracefully,</p></li>
+<li><p>and control overfitting directly.</p></li>
+</ul>
+<p>The apparent equivalence in point performance masks important differences in reliability and robustness, which become evident under resampling or repeated evaluation. Penalised regression does not eliminate sampling variability, but it responds to it smoothly. Unlike stepwise regression, which makes brittle include–exclude decisions, elastic net adjusts coefficients continuously, allowing predictive performance to remain stable even when individual coefficients fluctuate.</p>
+<p>All of this is to say that if we ran these models many times across different datasets, penalised regression will still give us a relatively stable model and predictive performance - stepwise methods won’t.</p>
+</section>
+</section>
+</section>
+<section id="a-pragmatic-takeaway" class="level2" data-number="7">
+<h2 data-number="7" class="anchored" data-anchor-id="a-pragmatic-takeaway"><span class="header-section-number">7</span> A Pragmatic Takeaway</h2>
+<p>Stepwise regression persists because it is easy, familiar, and superficially tidy. But its apparent simplicity masks deep statistical flaws that undermine inference, reproducibility, and scientific credibility.</p>
+<p>Modern alternatives - pre-specification for explanatory modelling; and shrinkage, validation ± model-averaging for prediction modelling - are not only more principled, they are often easier to explain and defend.</p>
+<p>The question is no longer whether stepwise regression is flawed. The question is why we continue to use it when better tools are readily available.</p>
+<p>Well that’s pretty much it for this post folks. Hopefully you can start to incorporate some of these techniques into your next regression modelling endeavour. See you next month.</p>
+
+
+<!-- -->
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+    const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+    const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+    let newTheme = '';
+    if(darkModeDefault) {
+      newTheme = isAlternate ? baseTheme : alternateTheme;
+    } else {
+      newTheme = isAlternate ? alternateTheme : baseTheme;
+    }
+    const changeGiscusTheme = () => {
+      // From: https://github.com/giscus/giscus/issues/336
+      const sendMessage = (message) => {
+        const iframe = document.querySelector('iframe.giscus-frame');
+        if (!iframe) return;
+        iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+      }
+      sendMessage({
+        setConfig: {
+          theme: newTheme
+        }
+      });
+    }
+    const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+    if (isGiscussLoaded) {
+      changeGiscusTheme();
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  const darkModeDefault = false;
+  let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+    toggleGiscusIfUsed(toAlternate, darkModeDefault);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  const viewSource = window.document.getElementById('quarto-view-source') ||
+                     window.document.getElementById('quarto-code-tools-source');
+  if (viewSource) {
+    const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+    viewSource.addEventListener("click", function(e) {
+      if (sourceUrl) {
+        // rstudio viewer pane
+        if (/\bcapabilities=\b/.test(window.location)) {
+          window.open(sourceUrl);
+        } else {
+          window.location.href = sourceUrl;
+        }
+      } else {
+        const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+        modal.show();
+      }
+      return false;
+    });
+  }
+  function toggleCodeHandler(show) {
+    return function(e) {
+      const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
+      for (let i=0; i<detailsSrc.length; i++) {
+        const details = detailsSrc[i].parentElement;
+        if (show) {
+          details.open = true;
+        } else {
+          details.removeAttribute("open");
+        }
+      }
+      const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
+      const fromCls = show ? "hidden" : "unhidden";
+      const toCls = show ? "unhidden" : "hidden";
+      for (let i=0; i<cellCodeDivs.length; i++) {
+        const codeDiv = cellCodeDivs[i];
+        if (codeDiv.classList.contains(fromCls)) {
+          codeDiv.classList.remove(fromCls);
+          codeDiv.classList.add(toCls);
+        } 
+      }
+      return false;
+    }
+  }
+  const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+  if (hideAllCode) {
+    hideAllCode.addEventListener("click", toggleCodeHandler(false));
+  }
+  const showAllCode = window.document.getElementById("quarto-show-all-code");
+  if (showAllCode) {
+    showAllCode.addEventListener("click", toggleCodeHandler(true));
+  }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<script src="https://giscus.app/client.js" data-repo="pgseye/Weekly_Stats_Tips" data-repo-id="R_kgDOKvfOfQ" data-category="General" data-category-id="DIC_kwDOKvfOfc4CbFWq" data-mapping="title" data-reactions-enabled="1" data-emit-metadata="0" data-input-position="top" data-theme="light" data-lang="en" crossorigin="anonymous" async="">
+</script>
+<input type="hidden" id="giscus-base-theme" value="light">
+<input type="hidden" id="giscus-alt-theme" value="dark"><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="sourceCode" id="cb13" data-shortcodes="false"><pre class="sourceCode numberSource markdown number-lines code-with-copy"><code class="sourceCode markdown"><span id="cb13-1"><a href="#cb13-1"></a><span class="co">---</span></span>
+<span id="cb13-2"><a href="#cb13-2"></a><span class="an">title:</span><span class="co"> "The Perils of Stepwise Regression - And what to do instead"</span></span>
+<span id="cb13-3"><a href="#cb13-3"></a><span class="an">date:</span><span class="co"> 2026-01-30</span></span>
+<span id="cb13-4"><a href="#cb13-4"></a><span class="an">categories:</span><span class="co"> [code, concept]</span></span>
+<span id="cb13-5"><a href="#cb13-5"></a><span class="an">image:</span><span class="co"> "elastic.png"</span></span>
+<span id="cb13-6"><a href="#cb13-6"></a><span class="an">description:</span><span class="co"> "Data-driven variable selection does not represent best practice in applied statistics."</span></span>
+<span id="cb13-7"><a href="#cb13-7"></a><span class="co">---</span></span>
+<span id="cb13-8"><a href="#cb13-8"></a></span>
+<span id="cb13-9"><a href="#cb13-9"></a><span class="in">```{r setup, include=FALSE}</span></span>
+<span id="cb13-10"><a href="#cb13-10"></a><span class="in">knitr::opts_chunk$set(</span></span>
+<span id="cb13-11"><a href="#cb13-11"></a><span class="in">  echo = TRUE,</span></span>
+<span id="cb13-12"><a href="#cb13-12"></a><span class="in">  message = FALSE,</span></span>
+<span id="cb13-13"><a href="#cb13-13"></a><span class="in">  warning = FALSE</span></span>
+<span id="cb13-14"><a href="#cb13-14"></a><span class="in">)</span></span>
+<span id="cb13-15"><a href="#cb13-15"></a></span>
+<span id="cb13-16"><a href="#cb13-16"></a><span class="in">library(dplyr)</span></span>
+<span id="cb13-17"><a href="#cb13-17"></a><span class="in">library(purrr)</span></span>
+<span id="cb13-18"><a href="#cb13-18"></a><span class="in">library(tibble)</span></span>
+<span id="cb13-19"><a href="#cb13-19"></a><span class="in">```</span></span>
+<span id="cb13-20"><a href="#cb13-20"></a></span>
+<span id="cb13-21"><a href="#cb13-21"></a><span class="fu">## Introduction</span></span>
+<span id="cb13-22"><a href="#cb13-22"></a></span>
+<span id="cb13-23"><a href="#cb13-23"></a>As a clinician/researcher you might not be aware that data-driven variable selection methods are widely regarded within the statistical community as the the equivalent of Facebook's 'Crazy Uncle' - an individual who is misinformed, opinionated and someone we just can't easily shed from our lives.</span>
+<span id="cb13-24"><a href="#cb13-24"></a></span>
+<span id="cb13-25"><a href="#cb13-25"></a>So what's the parallel I'm trying to draw, you might ask?</span>
+<span id="cb13-26"><a href="#cb13-26"></a></span>
+<span id="cb13-27"><a href="#cb13-27"></a>Well, despite decades of criticism in the statistical literature, stepwise regression (as a form of data-driven variable selection) continues to appear in academic papers, regulatory submissions, and industry analyses, when it is universally recognised as plain wrong. Despite that, stepwise regression remains one of the most commonly taught and used model-building techniques in applied statistics. Indeed, I was taught these methods during my Masters of Biostatistics 10 years ago. The appeal is obvious: when faced with many candidate predictors and limited sample size, stepwise procedures promise an automated, objective way to "let the data decide" which variables matter.</span>
+<span id="cb13-28"><a href="#cb13-28"></a></span>
+<span id="cb13-29"><a href="#cb13-29"></a>::: callout-note</span>
+<span id="cb13-30"><a href="#cb13-30"></a>When I refer to "data-driven" or "stepwise" I am meaning any decision process leading to the addition or removal of candidate variables from a regression model that is based on data-derived statistics such as significance, R-squared, Akaike Information Criteria (AIC), etc...</span>
+<span id="cb13-31"><a href="#cb13-31"></a>:::</span>
+<span id="cb13-32"><a href="#cb13-32"></a></span>
+<span id="cb13-33"><a href="#cb13-33"></a>So then, what's the problem?</span>
+<span id="cb13-34"><a href="#cb13-34"></a></span>
+<span id="cb13-35"><a href="#cb13-35"></a>Well, there are many. The most notable I will summarise from page 68 of Frank Harrell's modern statistical classic - <span class="co">[</span><span class="ot">*Regression Modelling Strategies*</span><span class="co">](https://hbiostat.org/rmsc/)</span>:</span>
+<span id="cb13-36"><a href="#cb13-36"></a></span>
+<span id="cb13-37"><a href="#cb13-37"></a><span class="ss">1.  </span>The R-squared or even adjusted R-squared values of the end model are biased high.</span>
+<span id="cb13-38"><a href="#cb13-38"></a></span>
+<span id="cb13-39"><a href="#cb13-39"></a><span class="ss">2.  </span>The F and Chi-square test statistics of the final model do not have the claimed distribution.</span>
+<span id="cb13-40"><a href="#cb13-40"></a></span>
+<span id="cb13-41"><a href="#cb13-41"></a><span class="ss">3.  </span>The standard errors of coefficient estimates are biased low and confidence intervals for effects and predictions are falsely narrow.</span>
+<span id="cb13-42"><a href="#cb13-42"></a></span>
+<span id="cb13-43"><a href="#cb13-43"></a><span class="ss">4.  </span>The p values are too small (there are severe multiple comparison problems in addition to problems 2. and 3.) and do not have the proper meaning, and it is difficult to correct for this.</span>
+<span id="cb13-44"><a href="#cb13-44"></a></span>
+<span id="cb13-45"><a href="#cb13-45"></a><span class="ss">5.  </span>The regression coefficients are biased high in absolute value and need shrinkage but this is rarely done.</span>
+<span id="cb13-46"><a href="#cb13-46"></a></span>
+<span id="cb13-47"><a href="#cb13-47"></a><span class="ss">6.  </span>Variable selection is made arbitrary by collinearity.</span>
+<span id="cb13-48"><a href="#cb13-48"></a></span>
+<span id="cb13-49"><a href="#cb13-49"></a><span class="ss">7.  </span>It allows us to not think about the problem.</span>
+<span id="cb13-50"><a href="#cb13-50"></a></span>
+<span id="cb13-51"><a href="#cb13-51"></a>The net effect of the above is that we may end up making claims, assertions or clinical decisions based on incorrect evidence.</span>
+<span id="cb13-52"><a href="#cb13-52"></a></span>
+<span id="cb13-53"><a href="#cb13-53"></a>In this post I will attempt to make the case that stepwise regression is not just suboptimal, but seriously flawed when used for inference, explanation, or decision-making. The problems are not subtle or academic; they directly undermine the validity, reproducibility, and interpretability of results. I will outline why stepwise regression fails, why these failures are amplified in applied research (particularly clinical and epidemiological settings), and what modern, defensible alternatives look like in practice.</span>
+<span id="cb13-54"><a href="#cb13-54"></a></span>
+<span id="cb13-55"><a href="#cb13-55"></a>The goal is not to shame analysts who use stepwise regression — I too am guilty of the multitude of sins I am about to discuss — but to provide a clear roadmap towards best practice.</span>
+<span id="cb13-56"><a href="#cb13-56"></a></span>
+<span id="cb13-57"><a href="#cb13-57"></a>------------------------------------------------------------------------</span>
+<span id="cb13-58"><a href="#cb13-58"></a></span>
+<span id="cb13-59"><a href="#cb13-59"></a><span class="fu">## Why Stepwise Regression Persists</span></span>
+<span id="cb13-60"><a href="#cb13-60"></a></span>
+<span id="cb13-61"><a href="#cb13-61"></a>Let's get the elephant in the room out of the way. If there are so many issues with stepwise regression why is it still so commonly used in the analysis of clinical data? Well, I don't think there is a single answer to this question, but rather several potential factors that probably interplay in maintaining its veneer of contemporary methodological relevance:</span>
+<span id="cb13-62"><a href="#cb13-62"></a></span>
+<span id="cb13-63"><a href="#cb13-63"></a><span class="ss">-   </span>Historical inertia: it has been taught for decades and appears in older textbooks.</span>
+<span id="cb13-64"><a href="#cb13-64"></a></span>
+<span id="cb13-65"><a href="#cb13-65"></a><span class="ss">-   </span>Fear of change: researchers may worry that journal editors/reviewers do not appreciate new approaches.</span>
+<span id="cb13-66"><a href="#cb13-66"></a></span>
+<span id="cb13-67"><a href="#cb13-67"></a><span class="ss">-   </span>Cognitive appeal: produces a single, seemingly parsimonious model.</span>
+<span id="cb13-68"><a href="#cb13-68"></a></span>
+<span id="cb13-69"><a href="#cb13-69"></a><span class="ss">-   </span>Ease of implementation: many statistical packages make stepwise selection easy and prominent.</span>
+<span id="cb13-70"><a href="#cb13-70"></a></span>
+<span id="cb13-71"><a href="#cb13-71"></a><span class="ss">-   </span>Misplaced objectivity: automated procedures appear neutral, even when they enforce arbitrary thresholds on our data.</span>
+<span id="cb13-72"><a href="#cb13-72"></a></span>
+<span id="cb13-73"><a href="#cb13-73"></a>These justifications, when considered on an individual basis, become hard to defend. But before we look at what we can do instead, let's first delve a little deeper into the specific problems associated with stepwise regression.</span>
+<span id="cb13-74"><a href="#cb13-74"></a></span>
+<span id="cb13-75"><a href="#cb13-75"></a>------------------------------------------------------------------------</span>
+<span id="cb13-76"><a href="#cb13-76"></a></span>
+<span id="cb13-77"><a href="#cb13-77"></a><span class="fu">## What is Stepwise Regression?</span></span>
+<span id="cb13-78"><a href="#cb13-78"></a></span>
+<span id="cb13-79"><a href="#cb13-79"></a>Most of you already know what I'm talking about, but let's recap the basics for those who don't.</span>
+<span id="cb13-80"><a href="#cb13-80"></a></span>
+<span id="cb13-81"><a href="#cb13-81"></a>Stepwise regression refers to a family of automated variable selection procedures applied to regression models. The most common variants are:</span>
+<span id="cb13-82"><a href="#cb13-82"></a></span>
+<span id="cb13-83"><a href="#cb13-83"></a><span class="ss">-   </span>Forward selection: start with no predictors, then add variables one at a time based on some criterion (often the smallest p-value or largest improvement in AIC).</span>
+<span id="cb13-84"><a href="#cb13-84"></a></span>
+<span id="cb13-85"><a href="#cb13-85"></a><span class="ss">-   </span>Backward elimination: start with all candidate predictors, then remove variables that fail to meet a significance threshold.</span>
+<span id="cb13-86"><a href="#cb13-86"></a></span>
+<span id="cb13-87"><a href="#cb13-87"></a><span class="ss">-   </span>Bidirectional (stepwise) selection: alternate between adding and removing variables at each step.</span>
+<span id="cb13-88"><a href="#cb13-88"></a></span>
+<span id="cb13-89"><a href="#cb13-89"></a>These procedures are typically driven by hypothesis tests (e.g. p <span class="sc">\&lt;</span> 0.05) or information criteria (AIC, BIC), and they terminate once no further steps improve the chosen criterion. The end result is a single model containing a data-driven subset of the original pool of available candidate predictor variables.</span>
+<span id="cb13-90"><a href="#cb13-90"></a></span>
+<span id="cb13-91"><a href="#cb13-91"></a>------------------------------------------------------------------------</span>
+<span id="cb13-92"><a href="#cb13-92"></a></span>
+<span id="cb13-93"><a href="#cb13-93"></a><span class="fu">## The Core Statistical Problems</span></span>
+<span id="cb13-94"><a href="#cb13-94"></a></span>
+<span id="cb13-95"><a href="#cb13-95"></a>Although I mentioned these at the outset of this post (based on Harrell's text), let's flesh some of them out in more detail now.</span>
+<span id="cb13-96"><a href="#cb13-96"></a></span>
+<span id="cb13-97"><a href="#cb13-97"></a><span class="fu">### Invalid Inference After Selection</span></span>
+<span id="cb13-98"><a href="#cb13-98"></a></span>
+<span id="cb13-99"><a href="#cb13-99"></a>Perhaps the most fundamental problem is that standard inferential quantities are wrong after stepwise selection. When using data-driven variable selection:</span>
+<span id="cb13-100"><a href="#cb13-100"></a></span>
+<span id="cb13-101"><a href="#cb13-101"></a><span class="at">&gt; P-values, confidence intervals, and standard errors are computed as if the model had been **specified in advance**.</span></span>
+<span id="cb13-102"><a href="#cb13-102"></a></span>
+<span id="cb13-103"><a href="#cb13-103"></a>But in reality, the data were used at least twice: once to select variables, and again to estimate their effects.</span>
+<span id="cb13-104"><a href="#cb13-104"></a></span>
+<span id="cb13-105"><a href="#cb13-105"></a>This reuse of data leads to:</span>
+<span id="cb13-106"><a href="#cb13-106"></a></span>
+<span id="cb13-107"><a href="#cb13-107"></a><span class="ss">-   </span>underestimated standard errors,</span>
+<span id="cb13-108"><a href="#cb13-108"></a></span>
+<span id="cb13-109"><a href="#cb13-109"></a><span class="ss">-   </span>overly narrow confidence intervals,</span>
+<span id="cb13-110"><a href="#cb13-110"></a></span>
+<span id="cb13-111"><a href="#cb13-111"></a><span class="ss">-   </span>and inflated statistical significance.</span>
+<span id="cb13-112"><a href="#cb13-112"></a></span>
+<span id="cb13-113"><a href="#cb13-113"></a>You may not be aware that statistical inference methods using p values, standard errors and confidence intervals were designed to be **valid when applied once to a pre-specified model**, not iteratively reapplied to a model where chance partly informs the decision at each step. This invalidates the nominal properties of a statistical test, giving us as researchers, a false sense of certainty.</span>
+<span id="cb13-114"><a href="#cb13-114"></a></span>
+<span id="cb13-115"><a href="#cb13-115"></a><span class="fu">### Multiple Testing in Disguise</span></span>
+<span id="cb13-116"><a href="#cb13-116"></a></span>
+<span id="cb13-117"><a href="#cb13-117"></a>Stepwise regression performs a large number of implicit hypothesis tests while pretending to conduct only a few. Each step involves testing multiple candidate variables, but no adjustment is made for multiplicity.</span>
+<span id="cb13-118"><a href="#cb13-118"></a></span>
+<span id="cb13-119"><a href="#cb13-119"></a>Viewed correctly, stepwise selection is a form of uncorrected multiple testing with a stopping rule. The resulting family-wise Type I error rate can be dramatically higher than the nominal level, especially when predictors are correlated.</span>
+<span id="cb13-120"><a href="#cb13-120"></a></span>
+<span id="cb13-121"><a href="#cb13-121"></a>This means that "statistically significant" predictors selected by stepwise methods are often artifacts of chance rather than real signals.</span>
+<span id="cb13-122"><a href="#cb13-122"></a></span>
+<span id="cb13-123"><a href="#cb13-123"></a><span class="fu">### Overfitting and Optimism</span></span>
+<span id="cb13-124"><a href="#cb13-124"></a></span>
+<span id="cb13-125"><a href="#cb13-125"></a>Stepwise procedures are designed to optimise in-sample fit. As a result, they tend to overfit, especially when:</span>
+<span id="cb13-126"><a href="#cb13-126"></a></span>
+<span id="cb13-127"><a href="#cb13-127"></a><span class="ss">-   </span>the number of predictors is large relative to the sample size,</span>
+<span id="cb13-128"><a href="#cb13-128"></a></span>
+<span id="cb13-129"><a href="#cb13-129"></a><span class="ss">-   </span>predictors are correlated,</span>
+<span id="cb13-130"><a href="#cb13-130"></a></span>
+<span id="cb13-131"><a href="#cb13-131"></a><span class="ss">-   </span>or the true signal-to-noise ratio is modest.</span>
+<span id="cb13-132"><a href="#cb13-132"></a></span>
+<span id="cb13-133"><a href="#cb13-133"></a>Overfitted models appear impressive in the training data but perform poorly on new data. This optimism is rarely quantified or acknowledged when stepwise regression is used.</span>
+<span id="cb13-134"><a href="#cb13-134"></a></span>
+<span id="cb13-135"><a href="#cb13-135"></a><span class="fu">### Model Instability</span></span>
+<span id="cb13-136"><a href="#cb13-136"></a></span>
+<span id="cb13-137"><a href="#cb13-137"></a>One of the most damaging properties of stepwise regression is instability. Small perturbations in the data - e.g. removing a few observations, changing a significance threshold, or using a different random split - can produce entirely different selected models.</span>
+<span id="cb13-138"><a href="#cb13-138"></a></span>
+<span id="cb13-139"><a href="#cb13-139"></a>This instability arises because stepwise selection operates near decision boundaries. When predictors are correlated or effects are weak, tiny changes can flip inclusion decisions.</span>
+<span id="cb13-140"><a href="#cb13-140"></a></span>
+<span id="cb13-141"><a href="#cb13-141"></a>An unstable model cannot be trusted for interpretation, explanation, or clinical decision-making.</span>
+<span id="cb13-142"><a href="#cb13-142"></a></span>
+<span id="cb13-143"><a href="#cb13-143"></a><span class="fu">### Biased Coefficient Estimates</span></span>
+<span id="cb13-144"><a href="#cb13-144"></a></span>
+<span id="cb13-145"><a href="#cb13-145"></a>Even when a predictor truly has an effect, stepwise regression tends to overestimate its magnitude if it is selected. This phenomenon - sometimes called the "winner’s curse" - occurs because variables are selected given they look large in the sample. The result is that reported effect sizes tend to be exaggerated, with subsequent studies often failing to replicate the findings.</span>
+<span id="cb13-146"><a href="#cb13-146"></a></span>
+<span id="cb13-147"><a href="#cb13-147"></a>------------------------------------------------------------------------</span>
+<span id="cb13-148"><a href="#cb13-148"></a></span>
+<span id="cb13-149"><a href="#cb13-149"></a><span class="fu">## Why These Problems Matter in Applied Research</span></span>
+<span id="cb13-150"><a href="#cb13-150"></a></span>
+<span id="cb13-151"><a href="#cb13-151"></a>In some purely predictive settings, poor inference may be tolerable. In most applied research, however, regression models are used to:</span>
+<span id="cb13-152"><a href="#cb13-152"></a></span>
+<span id="cb13-153"><a href="#cb13-153"></a><span class="ss">-   </span>draw causal conclusions,</span>
+<span id="cb13-154"><a href="#cb13-154"></a></span>
+<span id="cb13-155"><a href="#cb13-155"></a><span class="ss">-   </span>inform clinical or policy decisions,</span>
+<span id="cb13-156"><a href="#cb13-156"></a></span>
+<span id="cb13-157"><a href="#cb13-157"></a><span class="ss">-   </span>support regulatory submissions,</span>
+<span id="cb13-158"><a href="#cb13-158"></a></span>
+<span id="cb13-159"><a href="#cb13-159"></a><span class="ss">-   </span>or generate scientific knowledge.</span>
+<span id="cb13-160"><a href="#cb13-160"></a></span>
+<span id="cb13-161"><a href="#cb13-161"></a>In these contexts, stepwise regression is especially problematic.</span>
+<span id="cb13-162"><a href="#cb13-162"></a></span>
+<span id="cb13-163"><a href="#cb13-163"></a><span class="fu">### Clinical and Epidemiological Studies</span></span>
+<span id="cb13-164"><a href="#cb13-164"></a></span>
+<span id="cb13-165"><a href="#cb13-165"></a>In medical research, variable inclusion is often interpreted causally - even when analysts disclaim causal intent. A covariate that survives stepwise selection may be described as a "risk factor" or "independent predictor", while excluded variables are implicitly treated as unimportant.</span>
+<span id="cb13-166"><a href="#cb13-166"></a></span>
+<span id="cb13-167"><a href="#cb13-167"></a>But this is deeply misleading. Stepwise regression does not distinguish between confounders, mediators, and colliders, and it frequently excludes clinically important variables simply because their effects are imprecisely estimated.</span>
+<span id="cb13-168"><a href="#cb13-168"></a></span>
+<span id="cb13-169"><a href="#cb13-169"></a><span class="fu">### Regulatory and Reporting Contexts</span></span>
+<span id="cb13-170"><a href="#cb13-170"></a></span>
+<span id="cb13-171"><a href="#cb13-171"></a>In regulatory settings, such as clinical trial reporting, transparency and reproducibility are paramount. Stepwise regression undermines both, because:</span>
+<span id="cb13-172"><a href="#cb13-172"></a></span>
+<span id="cb13-173"><a href="#cb13-173"></a><span class="ss">-   </span>the analysis path is data-driven and difficult to justify prospectively,</span>
+<span id="cb13-174"><a href="#cb13-174"></a></span>
+<span id="cb13-175"><a href="#cb13-175"></a><span class="ss">-   </span>results may not reproduce across datasets or populations,</span>
+<span id="cb13-176"><a href="#cb13-176"></a></span>
+<span id="cb13-177"><a href="#cb13-177"></a><span class="ss">-   </span>and inferential quantities lack a clear interpretation.</span>
+<span id="cb13-178"><a href="#cb13-178"></a></span>
+<span id="cb13-179"><a href="#cb13-179"></a>For these reasons, many regulatory guidelines explicitly discourage data-driven variable selection.</span>
+<span id="cb13-180"><a href="#cb13-180"></a></span>
+<span id="cb13-181"><a href="#cb13-181"></a>------------------------------------------------------------------------</span>
+<span id="cb13-182"><a href="#cb13-182"></a></span>
+<span id="cb13-183"><a href="#cb13-183"></a><span class="fu">## What to Do Instead</span></span>
+<span id="cb13-184"><a href="#cb13-184"></a></span>
+<span id="cb13-185"><a href="#cb13-185"></a>Ok, we've spent a fair amount of time talking about the problem. Let's now discuss what we can actually do about it. The good news is that we are not short of alternatives. In fact, modern approaches are often simpler, more transparent, and more defensible.</span>
+<span id="cb13-186"><a href="#cb13-186"></a></span>
+<span id="cb13-187"><a href="#cb13-187"></a>I am going to discuss these approaches in the context of "model intent" - i.e. what is the purpose for your regression model? This ultimately boils down to one of two options - **explanation** vs **prediction**. Model explanation and model prediction answer fundamentally different questions. Explanatory models aim to estimate and interpret the effect of variables, often with a causal lens, which makes pre-specification, subject-matter knowledge, and valid inference essential. An example research question that such a model could answer might be:</span>
+<span id="cb13-188"><a href="#cb13-188"></a></span>
+<span id="cb13-189"><a href="#cb13-189"></a><span class="at">&gt; "What is the effect of DMT x on the risk of disease relapse, after adjusting for age, sex, smoking status, and baseline disease severity?"</span></span>
+<span id="cb13-190"><a href="#cb13-190"></a></span>
+<span id="cb13-191"><a href="#cb13-191"></a>i.e. we are interested primarily in the explanatory 'effect' of a new DMT on disease relapse.</span>
+<span id="cb13-192"><a href="#cb13-192"></a></span>
+<span id="cb13-193"><a href="#cb13-193"></a>Predictive models, by contrast, are judged by how well they perform on new data, not by whether their coefficients are interpretable or causally meaningful - in other words, we don't really care about individual variable 'effects' but rather just the overall predictive power of the model. Here, the commensurate research question takes a different form:</span>
+<span id="cb13-194"><a href="#cb13-194"></a></span>
+<span id="cb13-195"><a href="#cb13-195"></a><span class="at">&gt; "Using age, sex, smoking status, current therapy and disease severity data at baseline, what is an individual's 5-year risk of disease relapse?"</span></span>
+<span id="cb13-196"><a href="#cb13-196"></a></span>
+<span id="cb13-197"><a href="#cb13-197"></a>i.e. we want to predict relapse risk but don't really care about any individual pedictor.</span>
+<span id="cb13-198"><a href="#cb13-198"></a></span>
+<span id="cb13-199"><a href="#cb13-199"></a><span class="fu">### Explanation</span></span>
+<span id="cb13-200"><a href="#cb13-200"></a></span>
+<span id="cb13-201"><a href="#cb13-201"></a><span class="fu">#### Pre-Specification and Subject-Matter Knowledge</span></span>
+<span id="cb13-202"><a href="#cb13-202"></a></span>
+<span id="cb13-203"><a href="#cb13-203"></a>When we are interested in model explanation, the most robust approach is also the least glamorous: decide in advance (i.e. prior to seeing the data) which variables belong in the model, and make that our **one and only model**.</span>
+<span id="cb13-204"><a href="#cb13-204"></a></span>
+<span id="cb13-205"><a href="#cb13-205"></a>Here, variable inclusion should be guided by:</span>
+<span id="cb13-206"><a href="#cb13-206"></a></span>
+<span id="cb13-207"><a href="#cb13-207"></a><span class="ss">-   </span>scientific understanding,</span>
+<span id="cb13-208"><a href="#cb13-208"></a></span>
+<span id="cb13-209"><a href="#cb13-209"></a><span class="ss">-   </span>causal reasoning,</span>
+<span id="cb13-210"><a href="#cb13-210"></a></span>
+<span id="cb13-211"><a href="#cb13-211"></a><span class="ss">-   </span>and study design.</span>
+<span id="cb13-212"><a href="#cb13-212"></a></span>
+<span id="cb13-213"><a href="#cb13-213"></a>Consideration should be given to sythesising these justifications in a supporting causal diagram (DAG).</span>
+<span id="cb13-214"><a href="#cb13-214"></a></span>
+<span id="cb13-215"><a href="#cb13-215"></a>Note that if a variable is a known confounder, it should be included regardless of its p-value. In contrast, if it is irrelevant to the scientific question, it should not be tested for inclusion.</span>
+<span id="cb13-216"><a href="#cb13-216"></a></span>
+<span id="cb13-217"><a href="#cb13-217"></a>This approach prioritises validity over convenience. We are very interested in understanding the characteristics of each individual predictor variable (i.e. is it a potential confounder, collider, mediator, etc in the exposure -<span class="sc">\&gt;</span> outcome relationship), and the interplay between all such variables. Again, this is where a causal diagram, even if we are not planning an explicit causal analysis, can be very helpful. But this is where the hard work ends in explanatory modelling. From a coding perspective, things are easier than ever - we just run whatever model we have decided on (and nothing more), comfortable in the fact that our p-values and confidence intervals are correct.</span>
+<span id="cb13-218"><a href="#cb13-218"></a></span>
+<span id="cb13-219"><a href="#cb13-219"></a><span class="fu">#### Transparent Sensitivity Analyses</span></span>
+<span id="cb13-220"><a href="#cb13-220"></a></span>
+<span id="cb13-221"><a href="#cb13-221"></a>If, for whatever reason, pre-specification is not possible and variable selection cannot be avoided, resultant models should be treated as exploratory and accompanied by:</span>
+<span id="cb13-222"><a href="#cb13-222"></a></span>
+<span id="cb13-223"><a href="#cb13-223"></a><span class="ss">-   </span>sensitivity analyses,</span>
+<span id="cb13-224"><a href="#cb13-224"></a></span>
+<span id="cb13-225"><a href="#cb13-225"></a><span class="ss">-   </span>stability assessments,</span>
+<span id="cb13-226"><a href="#cb13-226"></a></span>
+<span id="cb13-227"><a href="#cb13-227"></a><span class="ss">-   </span>and clear disclaimers about inferential limitations.</span>
+<span id="cb13-228"><a href="#cb13-228"></a></span>
+<span id="cb13-229"><a href="#cb13-229"></a>This is still inferior to pre-specification, but far better than unqualified stepwise regression.</span>
+<span id="cb13-230"><a href="#cb13-230"></a></span>
+<span id="cb13-231"><a href="#cb13-231"></a><span class="fu">### Prediction</span></span>
+<span id="cb13-232"><a href="#cb13-232"></a></span>
+<span id="cb13-233"><a href="#cb13-233"></a><span class="fu">#### Full Models with Shrinkage</span></span>
+<span id="cb13-234"><a href="#cb13-234"></a></span>
+<span id="cb13-235"><a href="#cb13-235"></a>In contrast, when we are interested in model prediction our goals change. We are simply after raw predictive performance and it matters less about the individual variables that comprise the model or how they were chosen. There is actually a fairly nice solution to the problem of variable selection in the context of prediction modelling, and that is "regularisation" or "penalised regression" methods. These methods acknowledge uncertainty more honestly than stepwise procedures.</span>
+<span id="cb13-236"><a href="#cb13-236"></a></span>
+<span id="cb13-237"><a href="#cb13-237"></a>Regularisation is central to prediction because it controls overfitting by shrinking model coefficients, trading a small amount of bias for a large reduction in variance and thus improving performance on new data. **Ridge regression** shrinks all coefficients toward zero and is particularly effective when many predictors have small, correlated effects. **Lasso** applies stronger shrinkage that can set some coefficients exactly to zero, producing sparse models that are easier to deploy but can be unstable when predictors are highly correlated. **Elastic net** combines ridge and lasso penalties, often giving the best predictive performance in practice by encouraging sparsity while retaining groups of correlated predictors.</span>
+<span id="cb13-238"><a href="#cb13-238"></a></span>
+<span id="cb13-239"><a href="#cb13-239"></a>Keep reading to the end of this section to see an example of how penalised regression with Elastic net is used.</span>
+<span id="cb13-240"><a href="#cb13-240"></a></span>
+<span id="cb13-241"><a href="#cb13-241"></a><span class="fu">#### Cross-Validation and External Validation</span></span>
+<span id="cb13-242"><a href="#cb13-242"></a></span>
+<span id="cb13-243"><a href="#cb13-243"></a>Because we are ultimately interested in predictive power, once we have established a prediction model we should evaluate its performance. There are multiple ways to do this (see <span class="co">[</span><span class="ot">here</span><span class="co">](https://www.bmj.com/content/384/bmj-2023-074819)</span> for a good primer), with the main techniques being:</span>
+<span id="cb13-244"><a href="#cb13-244"></a></span>
+<span id="cb13-245"><a href="#cb13-245"></a><span class="ss">- </span>cross-validation,</span>
+<span id="cb13-246"><a href="#cb13-246"></a></span>
+<span id="cb13-247"><a href="#cb13-247"></a><span class="ss">- </span>bootstrap resampling,</span>
+<span id="cb13-248"><a href="#cb13-248"></a></span>
+<span id="cb13-249"><a href="#cb13-249"></a><span class="ss">- </span>or, ideally, external validation datasets.</span>
+<span id="cb13-250"><a href="#cb13-250"></a></span>
+<span id="cb13-251"><a href="#cb13-251"></a>The general idea in each case is that we "train" our model on a dataset and then "test" its predictive power on new data. The reason for this is that it is not uncommon when we create a model from a single dataset that the model usually fits the peculiarities of that dataset much better than one it hasn't seen before (i.e. it overfits). Thus, predictive performance will often be less on a "test" compared to a "train" dataset. In cross-validation and bootstrapping we are using sleight of hand to create "train" and "test" data from the only dataset we have - these are referred to as internal validation methods. While external validation is better because we can train the model on all of our data and then test on a completely unseen dataset, it is harder to achieve in practice for obvious reasons.</span>
+<span id="cb13-252"><a href="#cb13-252"></a></span>
+<span id="cb13-253"><a href="#cb13-253"></a>Whatever the method of model performance evaluation, the focus now changes from p-values and confidence intervals  to predictive accuracy and generalisability.</span>
+<span id="cb13-254"><a href="#cb13-254"></a></span>
+<span id="cb13-255"><a href="#cb13-255"></a><span class="fu">#### Model Averaging</span></span>
+<span id="cb13-256"><a href="#cb13-256"></a></span>
+<span id="cb13-257"><a href="#cb13-257"></a>Sometimes we may end up with more than one candidate prediction model that have similar predictive power but are based on different modelling strategies (e.g. lasso vs random forest vs GAM). Model averaging is an approach that accounts for uncertainty about model choice by combining predictions or estimates from multiple plausible prediction models rather than relying on a single selected model. Instead of treating one model as “the truth,” it weights each model according to a measure of support - such as predictive performance, information criteria, or posterior probability - and averages across them. This can improve predictive accuracy and reduce overconfidence, particularly when several models perform similarly well. Model averaging is most natural when there is genuine uncertainty among a discrete set of competing models, and it contrasts with single-model selection approaches that ignore this uncertainty.</span>
+<span id="cb13-258"><a href="#cb13-258"></a></span>
+<span id="cb13-259"><a href="#cb13-259"></a><span class="fu">#### Elastic Net Example</span></span>
+<span id="cb13-260"><a href="#cb13-260"></a></span>
+<span id="cb13-261"><a href="#cb13-261"></a>Alright, let's put some of what we've learned into practice. Let's simulate some data and run both a stepwise regression and an elastic net, comparing the performance of each. For the simulation I will create a dataset with <span class="in">`500`</span> observations and <span class="in">`20`</span> predictors. I'll make the regression coefficients for the first <span class="in">`5`</span> predictors non-zero (representing real effects) and set the coefficients for the last <span class="in">`15`</span> to zero (representing noise). I'll also specify that all predictors are moderately correlated with each other (r = <span class="in">`0.4`</span>). With this data-generating process we can then meaningfully compare how stepwise regression and elastic net behave when only a few predictors truly matter (and hopefully find that the latter approach performs better).</span>
+<span id="cb13-262"><a href="#cb13-262"></a></span>
+<span id="cb13-265"><a href="#cb13-265"></a><span class="in">```{r}</span></span>
+<span id="cb13-266"><a href="#cb13-266"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb13-267"><a href="#cb13-267"></a></span>
+<span id="cb13-268"><a href="#cb13-268"></a>n <span class="ot">&lt;-</span> <span class="dv">500</span></span>
+<span id="cb13-269"><a href="#cb13-269"></a>p <span class="ot">&lt;-</span> <span class="dv">20</span></span>
+<span id="cb13-270"><a href="#cb13-270"></a></span>
+<span id="cb13-271"><a href="#cb13-271"></a>Sigma <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fl">0.4</span>, p, p)</span>
+<span id="cb13-272"><a href="#cb13-272"></a><span class="fu">diag</span>(Sigma) <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb13-273"><a href="#cb13-273"></a></span>
+<span id="cb13-274"><a href="#cb13-274"></a><span class="fu">library</span>(MASS)</span>
+<span id="cb13-275"><a href="#cb13-275"></a>X <span class="ot">&lt;-</span> <span class="fu">mvrnorm</span>(n, <span class="at">mu =</span> <span class="fu">rep</span>(<span class="dv">0</span>, p), <span class="at">Sigma =</span> Sigma)</span>
+<span id="cb13-276"><a href="#cb13-276"></a></span>
+<span id="cb13-277"><a href="#cb13-277"></a>beta <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">2</span>, <span class="sc">-</span><span class="fl">1.5</span>, <span class="sc">-</span><span class="fl">1.5</span>, <span class="fu">rep</span>(<span class="dv">0</span>, p <span class="sc">-</span> <span class="dv">5</span>))</span>
+<span id="cb13-278"><a href="#cb13-278"></a>y <span class="ot">&lt;-</span> X <span class="sc">%*%</span> beta <span class="sc">+</span> <span class="fu">rnorm</span>(n, <span class="at">sd =</span> <span class="dv">2</span>)</span>
+<span id="cb13-279"><a href="#cb13-279"></a></span>
+<span id="cb13-280"><a href="#cb13-280"></a>dat <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(y, X)</span>
+<span id="cb13-281"><a href="#cb13-281"></a><span class="fu">colnames</span>(dat) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"y"</span>, <span class="fu">paste0</span>(<span class="st">"X"</span>, <span class="dv">1</span><span class="sc">:</span>p))</span>
+<span id="cb13-282"><a href="#cb13-282"></a><span class="in">```</span></span>
+<span id="cb13-283"><a href="#cb13-283"></a></span>
+<span id="cb13-284"><a href="#cb13-284"></a>Now let's create train and test datasets from the simulated data. To do this we'll randomly choose <span class="in">`70%`</span> of the observations for the train dataset and allocate the remaining <span class="in">`30%`</span> to the test dataset.</span>
+<span id="cb13-285"><a href="#cb13-285"></a></span>
+<span id="cb13-288"><a href="#cb13-288"></a><span class="in">```{r}</span></span>
+<span id="cb13-289"><a href="#cb13-289"></a><span class="fu">set.seed</span>(<span class="dv">456</span>)</span>
+<span id="cb13-290"><a href="#cb13-290"></a>idx <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">seq_len</span>(n), <span class="at">size =</span> <span class="fl">0.7</span> <span class="sc">*</span> n)</span>
+<span id="cb13-291"><a href="#cb13-291"></a></span>
+<span id="cb13-292"><a href="#cb13-292"></a>train <span class="ot">&lt;-</span> dat[idx, ]</span>
+<span id="cb13-293"><a href="#cb13-293"></a>test  <span class="ot">&lt;-</span> dat[<span class="sc">-</span>idx, ]</span>
+<span id="cb13-294"><a href="#cb13-294"></a><span class="in">```</span></span>
+<span id="cb13-295"><a href="#cb13-295"></a></span>
+<span id="cb13-296"><a href="#cb13-296"></a>We will now perform a classic stepwise regression using <span class="in">`step()`</span> to automate the process. <span class="in">`step()`</span> fits multiple models moving back and forth between a model with no predictors (intercept only model) and one with all <span class="in">`20`</span> predictors (full model). At each stage it computes the AIC for each candidate model, moves to the model with the lowest AIC and then stops when no further addition or deletion of variables improves the AIC.</span>
+<span id="cb13-297"><a href="#cb13-297"></a></span>
+<span id="cb13-298"><a href="#cb13-298"></a>We can see that the first five predictors are correctly selected, but the algorithm also selects four noise predictors, two of which are deemed statistically significant.</span>
+<span id="cb13-299"><a href="#cb13-299"></a></span>
+<span id="cb13-302"><a href="#cb13-302"></a><span class="in">```{r}</span></span>
+<span id="cb13-303"><a href="#cb13-303"></a>full_mod <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> ., <span class="at">data =</span> train)</span>
+<span id="cb13-304"><a href="#cb13-304"></a>null_mod <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> <span class="dv">1</span>, <span class="at">data =</span> train)</span>
+<span id="cb13-305"><a href="#cb13-305"></a>  </span>
+<span id="cb13-306"><a href="#cb13-306"></a>step_mod <span class="ot">&lt;-</span> <span class="fu">step</span>(</span>
+<span id="cb13-307"><a href="#cb13-307"></a>  null_mod,</span>
+<span id="cb13-308"><a href="#cb13-308"></a>  <span class="at">scope =</span> <span class="fu">list</span>(<span class="at">lower =</span> null_mod, <span class="at">upper =</span> full_mod),</span>
+<span id="cb13-309"><a href="#cb13-309"></a>  <span class="at">direction =</span> <span class="st">"both"</span>,</span>
+<span id="cb13-310"><a href="#cb13-310"></a>  <span class="at">trace =</span> <span class="cn">FALSE</span></span>
+<span id="cb13-311"><a href="#cb13-311"></a>)</span>
+<span id="cb13-312"><a href="#cb13-312"></a></span>
+<span id="cb13-313"><a href="#cb13-313"></a><span class="fu">summary</span>(step_mod)</span>
+<span id="cb13-314"><a href="#cb13-314"></a><span class="in">```</span></span>
+<span id="cb13-315"><a href="#cb13-315"></a></span>
+<span id="cb13-316"><a href="#cb13-316"></a>Let's check the performance by using the model to predict on the test data, then calculating a common regression performance measure - the root mean square error (RMSE). The lower the RMSE, the better.</span>
+<span id="cb13-317"><a href="#cb13-317"></a></span>
+<span id="cb13-318"><a href="#cb13-318"></a></span>
+<span id="cb13-321"><a href="#cb13-321"></a><span class="in">```{r}</span></span>
+<span id="cb13-322"><a href="#cb13-322"></a>y_pred_step <span class="ot">&lt;-</span> <span class="fu">predict</span>(step_mod, <span class="at">newdata =</span> test)</span>
+<span id="cb13-323"><a href="#cb13-323"></a>rmse_step <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="fu">mean</span>((test<span class="sc">$</span>y <span class="sc">-</span> y_pred_step)<span class="sc">^</span><span class="dv">2</span>))</span>
+<span id="cb13-324"><a href="#cb13-324"></a>rmse_step</span>
+<span id="cb13-325"><a href="#cb13-325"></a><span class="in">```</span></span>
+<span id="cb13-326"><a href="#cb13-326"></a></span>
+<span id="cb13-327"><a href="#cb13-327"></a>Now let's compare this to an elastic net, using the <span class="in">`glmnet`</span> package, which fits penalised regression models (ridge, lasso, elastic net). We can break this code block down into a series of steps as follows:</span>
+<span id="cb13-328"><a href="#cb13-328"></a></span>
+<span id="cb13-329"><a href="#cb13-329"></a><span class="ss">- </span><span class="in">`glmnet`</span> fits many elastic net models, each with:</span>
+<span id="cb13-330"><a href="#cb13-330"></a></span>
+<span id="cb13-331"><a href="#cb13-331"></a><span class="ss">    - </span>the same predictors,</span>
+<span id="cb13-332"><a href="#cb13-332"></a></span>
+<span id="cb13-333"><a href="#cb13-333"></a><span class="ss">    - </span>the same alpha = 0.5 (mix of ridge and lasso),</span>
+<span id="cb13-334"><a href="#cb13-334"></a></span>
+<span id="cb13-335"><a href="#cb13-335"></a><span class="ss">    - </span>different values of lambda (penalty strength).</span>
+<span id="cb13-336"><a href="#cb13-336"></a></span>
+<span id="cb13-337"><a href="#cb13-337"></a><span class="ss">- </span>It then performs <span class="in">`10`</span>-fold cross-validation:</span>
+<span id="cb13-338"><a href="#cb13-338"></a></span>
+<span id="cb13-339"><a href="#cb13-339"></a><span class="ss">    - </span>the training data are split into 10 folds,</span>
+<span id="cb13-340"><a href="#cb13-340"></a></span>
+<span id="cb13-341"><a href="#cb13-341"></a><span class="ss">    - </span>each fold is held out in turn,</span>
+<span id="cb13-342"><a href="#cb13-342"></a></span>
+<span id="cb13-343"><a href="#cb13-343"></a><span class="ss">    - </span>prediction error is estimated for each lambda.</span>
+<span id="cb13-344"><a href="#cb13-344"></a></span>
+<span id="cb13-345"><a href="#cb13-345"></a><span class="ss">- </span>And finally, chooses the optimal penalty:</span>
+<span id="cb13-346"><a href="#cb13-346"></a></span>
+<span id="cb13-347"><a href="#cb13-347"></a><span class="ss">    - </span>lambda.min → lowest cross-validated error,</span>
+<span id="cb13-348"><a href="#cb13-348"></a></span>
+<span id="cb13-349"><a href="#cb13-349"></a><span class="ss">    - </span>lambda.1se → largest λ within 1 SE of the minimum (simpler model).</span>
+<span id="cb13-350"><a href="#cb13-350"></a></span>
+<span id="cb13-351"><a href="#cb13-351"></a>This step answers:</span>
+<span id="cb13-352"><a href="#cb13-352"></a>"How much regularisation gives the best out-of-sample performance?"</span>
+<span id="cb13-353"><a href="#cb13-353"></a></span>
+<span id="cb13-356"><a href="#cb13-356"></a><span class="in">```{r}</span></span>
+<span id="cb13-357"><a href="#cb13-357"></a><span class="fu">library</span>(glmnet)</span>
+<span id="cb13-358"><a href="#cb13-358"></a></span>
+<span id="cb13-359"><a href="#cb13-359"></a><span class="co"># glmnet requires predictors as a numeric matrix, not a data frame.</span></span>
+<span id="cb13-360"><a href="#cb13-360"></a>X_train <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(train[, <span class="sc">-</span><span class="dv">1</span>]) <span class="co"># contains all predictors but remove the outcome variable (y)</span></span>
+<span id="cb13-361"><a href="#cb13-361"></a>y_train <span class="ot">&lt;-</span> train<span class="sc">$</span>y                <span class="co"># response</span></span>
+<span id="cb13-362"><a href="#cb13-362"></a>X_test  <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(test[, <span class="sc">-</span><span class="dv">1</span>])</span>
+<span id="cb13-363"><a href="#cb13-363"></a>y_test  <span class="ot">&lt;-</span> test<span class="sc">$</span>y</span>
+<span id="cb13-364"><a href="#cb13-364"></a></span>
+<span id="cb13-365"><a href="#cb13-365"></a>cv_enet <span class="ot">&lt;-</span> <span class="fu">cv.glmnet</span>(</span>
+<span id="cb13-366"><a href="#cb13-366"></a>  X_train, y_train,</span>
+<span id="cb13-367"><a href="#cb13-367"></a>  <span class="at">alpha =</span> <span class="fl">0.5</span>,                    <span class="co"># elastic net</span></span>
+<span id="cb13-368"><a href="#cb13-368"></a>  <span class="at">nfolds =</span> <span class="dv">10</span></span>
+<span id="cb13-369"><a href="#cb13-369"></a>)</span>
+<span id="cb13-370"><a href="#cb13-370"></a></span>
+<span id="cb13-371"><a href="#cb13-371"></a><span class="co"># Extract the coefficients from the single elastic net model corresponding to the optimal λ.</span></span>
+<span id="cb13-372"><a href="#cb13-372"></a><span class="fu">coef</span>(cv_enet, <span class="at">s =</span> <span class="st">"lambda.min"</span>)</span>
+<span id="cb13-373"><a href="#cb13-373"></a><span class="in">```</span></span>
+<span id="cb13-374"><a href="#cb13-374"></a></span>
+<span id="cb13-375"><a href="#cb13-375"></a>Note that even when the true data-generating process is sparse, elastic net does not necessarily recover the true set of predictors, particularly when predictors are correlated. This is not a failure: the elastic net objective is to minimise prediction error, not to identify the true model. At the penalty that optimises cross-validated performance, elastic net may retain many small coefficients because correlated noise variables still carry predictive information. In other words, if allowing small non-zero coefficients on "noise" predictors improves prediction even slightly, elastic net will do that.</span>
+<span id="cb13-376"><a href="#cb13-376"></a></span>
+<span id="cb13-377"><a href="#cb13-377"></a>Now let's compare the prediction error from both modelling approaches.</span>
+<span id="cb13-378"><a href="#cb13-378"></a></span>
+<span id="cb13-381"><a href="#cb13-381"></a><span class="in">```{r}</span></span>
+<span id="cb13-382"><a href="#cb13-382"></a>y_pred_enet <span class="ot">&lt;-</span> <span class="fu">predict</span>(cv_enet, X_test, <span class="at">s =</span> <span class="st">"lambda.min"</span>)</span>
+<span id="cb13-383"><a href="#cb13-383"></a>rmse_enet <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="fu">mean</span>((y_test <span class="sc">-</span> y_pred_enet)<span class="sc">^</span><span class="dv">2</span>))</span>
+<span id="cb13-384"><a href="#cb13-384"></a>rmse_enet</span>
+<span id="cb13-385"><a href="#cb13-385"></a></span>
+<span id="cb13-386"><a href="#cb13-386"></a></span>
+<span id="cb13-387"><a href="#cb13-387"></a><span class="fu">c</span>(</span>
+<span id="cb13-388"><a href="#cb13-388"></a>  <span class="at">Stepwise_RMSE   =</span> rmse_step,</span>
+<span id="cb13-389"><a href="#cb13-389"></a>  <span class="at">ElasticNet_RMSE =</span> rmse_enet</span>
+<span id="cb13-390"><a href="#cb13-390"></a>)</span>
+<span id="cb13-391"><a href="#cb13-391"></a><span class="in">```</span></span>
+<span id="cb13-392"><a href="#cb13-392"></a></span>
+<span id="cb13-393"><a href="#cb13-393"></a>We can see that it's actually pretty similar. But that doesn't mean that this exercise has been a waste of time. Even when stepwise regression and elastic net achieve similar RMSE on a given test set, elastic net is preferable because it achieves this performance through explicit regularisation rather than discrete variable selection. </span>
+<span id="cb13-394"><a href="#cb13-394"></a></span>
+<span id="cb13-395"><a href="#cb13-395"></a>Penalised models are:</span>
+<span id="cb13-396"><a href="#cb13-396"></a></span>
+<span id="cb13-397"><a href="#cb13-397"></a><span class="ss">- </span>more stable to sampling variation, </span>
+<span id="cb13-398"><a href="#cb13-398"></a></span>
+<span id="cb13-399"><a href="#cb13-399"></a><span class="ss">- </span>handle correlated predictors more gracefully, </span>
+<span id="cb13-400"><a href="#cb13-400"></a></span>
+<span id="cb13-401"><a href="#cb13-401"></a><span class="ss">- </span>and control overfitting directly. </span>
+<span id="cb13-402"><a href="#cb13-402"></a></span>
+<span id="cb13-403"><a href="#cb13-403"></a>The apparent equivalence in point performance masks important differences in reliability and robustness, which become evident under resampling or repeated evaluation. Penalised regression does not eliminate sampling variability, but it responds to it smoothly. Unlike stepwise regression, which makes brittle include–exclude decisions, elastic net adjusts coefficients continuously, allowing predictive performance to remain stable even when individual coefficients fluctuate.</span>
+<span id="cb13-404"><a href="#cb13-404"></a></span>
+<span id="cb13-405"><a href="#cb13-405"></a>All of this is to say that if we ran these models many times across different datasets, penalised regression will still give us a relatively stable model and predictive performance - stepwise methods won't.</span>
+<span id="cb13-406"><a href="#cb13-406"></a></span>
+<span id="cb13-407"><a href="#cb13-407"></a><span class="fu">## A Pragmatic Takeaway</span></span>
+<span id="cb13-408"><a href="#cb13-408"></a></span>
+<span id="cb13-409"><a href="#cb13-409"></a>Stepwise regression persists because it is easy, familiar, and superficially tidy. But its apparent simplicity masks deep statistical flaws that undermine inference, reproducibility, and scientific credibility.</span>
+<span id="cb13-410"><a href="#cb13-410"></a></span>
+<span id="cb13-411"><a href="#cb13-411"></a>Modern alternatives - pre-specification for explanatory modelling; and shrinkage, validation ± model-averaging for prediction modelling - are not only more principled, they are often easier to explain and defend.</span>
+<span id="cb13-412"><a href="#cb13-412"></a></span>
+<span id="cb13-413"><a href="#cb13-413"></a>The question is no longer whether stepwise regression is flawed. The question is why we continue to use it when better tools are readily available. </span>
+<span id="cb13-414"><a href="#cb13-414"></a></span>
+<span id="cb13-415"><a href="#cb13-415"></a>Well that's pretty much it for this post folks. Hopefully you can start to incorporate some of these techniques into your next regression modelling endeavour. See you next month.</span>
+</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div></div></div></div></div>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
