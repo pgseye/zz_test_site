@@ -1,0 +1,7 @@
+---
+title: "A Gentle Introduction to Directed Acyclic Graphs (DAG's)"
+date: 2026-02-27
+categories: [code, concept, modelling]
+image: ""
+description: "What they are and one way to draw them"
+---

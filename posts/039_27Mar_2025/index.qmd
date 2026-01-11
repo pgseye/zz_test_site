@@ -1,6 +1,6 @@
 ---
 title: "The Perils of Stepwise Regression - And what to do instead"
-date: 2026-01-30
+date: 2026-03-27
 categories: [code, concept]
 image: "elastic.png"
 description: "Data-driven variable selection does not represent best practice in applied statistics."
@@ -210,7 +210,7 @@ Here, variable inclusion should be guided by:
 
 -   and study design.
 
-Consideration should be given to sythesising these justifications in a supporting causal diagram (DAG).
+Consideration should be given to sythesising these justifications in a supporting causal diagram (DAG - see the previous post).
 
 Note that if a variable is a known confounder, it should be included regardless of its p-value. In contrast, if it is irrelevant to the scientific question, it should not be tested for inclusion.
 
@@ -238,19 +238,19 @@ Regularisation is central to prediction because it controls overfitting by shrin
 
 Keep reading to the end of this section to see an example of how penalised regression with Elastic net is used.
 
-#### Cross-Validation and External Validation
+#### Internal vs External Validation
 
 Because we are ultimately interested in predictive power, once we have established a prediction model we should evaluate its performance. There are multiple ways to do this (see [here](https://www.bmj.com/content/384/bmj-2023-074819) for a good primer), with the main techniques being:
 
-- cross-validation,
+-   cross-validation,
 
-- bootstrap resampling,
+-   bootstrap resampling,
 
-- or, ideally, external validation datasets.
+-   or, ideally, external validation datasets.
 
 The general idea in each case is that we "train" our model on a dataset and then "test" its predictive power on new data. The reason for this is that it is not uncommon when we create a model from a single dataset that the model usually fits the peculiarities of that dataset much better than one it hasn't seen before (i.e. it overfits). Thus, predictive performance will often be less on a "test" compared to a "train" dataset. In cross-validation and bootstrapping we are using sleight of hand to create "train" and "test" data from the only dataset we have - these are referred to as internal validation methods. While external validation is better because we can train the model on all of our data and then test on a completely unseen dataset, it is harder to achieve in practice for obvious reasons.
 
-Whatever the method of model performance evaluation, the focus now changes from p-values and confidence intervals  to predictive accuracy and generalisability.
+Whatever the method of model performance evaluation, the focus now changes from p-values and confidence intervals to predictive accuracy and generalisability.
 
 #### Model Averaging
 
@@ -309,7 +309,6 @@ summary(step_mod)
 
 Let's check the performance by using the model to predict on the test data, then calculating a common regression performance measure - the root mean square error (RMSE). The lower the RMSE, the better.
 
-
 ```{r}
 y_pred_step <- predict(step_mod, newdata = test)
 rmse_step <- sqrt(mean((test$y - y_pred_step)^2))
@@ -318,30 +317,29 @@ rmse_step
 
 Now let's compare this to an elastic net, using the `glmnet` package, which fits penalised regression models (ridge, lasso, elastic net). We can break this code block down into a series of steps as follows:
 
-- `glmnet` fits many elastic net models, each with:
+-   `glmnet` fits many elastic net models, each with:
 
-    - the same predictors,
+    -   the same predictors,
 
-    - the same alpha = 0.5 (mix of ridge and lasso),
+    -   the same alpha = 0.5 (mix of ridge and lasso),
 
-    - different values of lambda (penalty strength).
+    -   different values of lambda (penalty strength).
 
-- It then performs `10`-fold cross-validation:
+-   It then performs `10`-fold cross-validation:
 
-    - the training data are split into 10 folds,
+    -   the training data are split into 10 folds,
 
-    - each fold is held out in turn,
+    -   each fold is held out in turn,
 
-    - prediction error is estimated for each lambda.
+    -   prediction error is estimated for each lambda.
 
-- And finally, chooses the optimal penalty:
+-   And finally, chooses the optimal penalty:
 
-    - lambda.min → lowest cross-validated error,
+    -   lambda.min → lowest cross-validated error,
 
-    - lambda.1se → largest λ within 1 SE of the minimum (simpler model).
+    -   lambda.1se → largest λ within 1 SE of the minimum (simpler model).
 
-This step answers:
-"How much regularisation gives the best out-of-sample performance?"
+This step answers: "How much regularisation gives the best out-of-sample performance?"
 
 ```{r}
 library(glmnet)
@@ -378,15 +376,15 @@ c(
 )
 ```
 
-We can see that it's actually pretty similar. But that doesn't mean that this exercise has been a waste of time. Even when stepwise regression and elastic net achieve similar RMSE on a given test set, elastic net is preferable because it achieves this performance through explicit regularisation rather than discrete variable selection. 
+The elastic net is slightly better, but ultimately they're pretty similar. But that doesn't mean that this exercise has been a waste of time. Even when stepwise regression and elastic net achieve similar RMSE on a given test set, elastic net is preferable because it achieves this performance through explicit regularisation rather than discrete variable selection.
 
 Penalised models are:
 
-- more stable to sampling variation, 
+-   more stable to sampling variation,
 
-- handle correlated predictors more gracefully, 
+-   handle correlated predictors more gracefully,
 
-- and control overfitting directly. 
+-   and control overfitting directly.
 
 The apparent equivalence in point performance masks important differences in reliability and robustness, which become evident under resampling or repeated evaluation. Penalised regression does not eliminate sampling variability, but it responds to it smoothly. Unlike stepwise regression, which makes brittle include–exclude decisions, elastic net adjusts coefficients continuously, allowing predictive performance to remain stable even when individual coefficients fluctuate.
 
@@ -398,6 +396,13 @@ Stepwise regression persists because it is easy, familiar, and superficially tid
 
 Modern alternatives - pre-specification for explanatory modelling; and shrinkage, validation ± model-averaging for prediction modelling - are not only more principled, they are often easier to explain and defend.
 
-The question is no longer whether stepwise regression is flawed. The question is why we continue to use it when better tools are readily available. 
+The question is no longer whether stepwise regression is flawed. The question is why we continue to use it when better tools are readily available.
+
+If you want to read more about this topic I'd suggest having a look at the following papers:
+
+1.  [Greenland S. Invited commentary: variable selection versus shrinkage in the control of multiple confounders. Am J Epidemiol. 2008 Mar 1;167(5):523-9; discussion 530-1. doi: 10.1093/aje/kwm355. Epub 2008 Jan 27. Erratum in: Am J Epidemiol. 2008 May 1;167(9):1142. PMID: 18227100.](https://pubmed.ncbi.nlm.nih.gov/18227100/)
+2.  [Walter S, Tiemeier H. Variable selection: current practice in epidemiological studies. Eur J Epidemiol. 2009;24(12):733-6. doi: 10.1007/s10654-009-9411-2. Epub 2009 Dec 5. PMID: 19967429; PMCID: PMC2791468.](https://pubmed.ncbi.nlm.nih.gov/19967429/)
+3.  [Heinze G, Wallisch C, Dunkler D. Variable selection - A review and recommendations for the practicing statistician. Biom J. 2018 May;60(3):431-449. doi: 10.1002/bimj.201700067. Epub 2018 Jan 2. PMID: 29292533; PMCID: PMC5969114.](https://pubmed.ncbi.nlm.nih.gov/29292533/)
+4.  [Sauerbrei W, Perperoglou A, Schmid M, Abrahamowicz M, Becher H, Binder H, Dunkler D, Harrell FE Jr, Royston P, Heinze G; for TG2 of the STRATOS initiative. State of the art in selection of variables and functional forms in multivariable analysis-outstanding issues. Diagn Progn Res. 2020 Apr 2;4:3. doi: 10.1186/s41512-020-00074-3. PMID: 32266321; PMCID: PMC7114804.](https://pubmed.ncbi.nlm.nih.gov/32266321/)
 
 Well that's pretty much it for this post folks. Hopefully you can start to incorporate some of these techniques into your next regression modelling endeavour. See you next month.

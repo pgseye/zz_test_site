@@ -1,0 +1,2152 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.549">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="dcterms.date" content="2026-01-30">
+<meta name="description" content="Create or edit multiple columns efficiently.">
+
+<title>Test Site 2 - More DRY (Don’t Repeat Yourself) — Meet mutate(across())</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Test Site 2</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html"> 
+<span class="menu-text">About</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html"> 
+<span class="menu-text">All Posts</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+          <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">1</span> Introduction</a></li>
+  <li><a href="#the-problem-repeating-the-same-operation" id="toc-the-problem-repeating-the-same-operation" class="nav-link" data-scroll-target="#the-problem-repeating-the-same-operation"><span class="header-section-number">2</span> The Problem: Repeating the Same Operation</a></li>
+  <li><a href="#the-naïve-way" id="toc-the-naïve-way" class="nav-link" data-scroll-target="#the-naïve-way"><span class="header-section-number">3</span> The Naïve Way</a></li>
+  <li><a href="#the-core-idea-behind-across" id="toc-the-core-idea-behind-across" class="nav-link" data-scroll-target="#the-core-idea-behind-across"><span class="header-section-number">4</span> The Core Idea Behind <code>across()</code></a></li>
+  <li><a href="#the-better-way-mutateacross" id="toc-the-better-way-mutateacross" class="nav-link" data-scroll-target="#the-better-way-mutateacross"><span class="header-section-number">5</span> The Better Way: <code>mutate(across())</code></a></li>
+  <li><a href="#why-this-is-better-beyond-being-shorter" id="toc-why-this-is-better-beyond-being-shorter" class="nav-link" data-scroll-target="#why-this-is-better-beyond-being-shorter"><span class="header-section-number">6</span> Why This Is Better (Beyond Being Shorter)</a>
+  <ul>
+  <li><a href="#it-scales-naturally" id="toc-it-scales-naturally" class="nav-link" data-scroll-target="#it-scales-naturally"><span class="header-section-number">6.1</span> It Scales Naturally</a></li>
+  <li><a href="#you-can-select-variables-programmatically" id="toc-you-can-select-variables-programmatically" class="nav-link" data-scroll-target="#you-can-select-variables-programmatically"><span class="header-section-number">6.2</span> You Can Select Variables Programmatically</a></li>
+  <li><a href="#it-reduces-cognitive-load" id="toc-it-reduces-cognitive-load" class="nav-link" data-scroll-target="#it-reduces-cognitive-load"><span class="header-section-number">6.3</span> It Reduces Cognitive Load</a></li>
+  </ul></li>
+  <li><a href="#using-anonymous-functions-for-more-complex-logic" id="toc-using-anonymous-functions-for-more-complex-logic" class="nav-link" data-scroll-target="#using-anonymous-functions-for-more-complex-logic"><span class="header-section-number">7</span> Using Anonymous Functions for More Complex Logic</a></li>
+  <li><a href="#creating-new-variables-instead-of-overwriting" id="toc-creating-new-variables-instead-of-overwriting" class="nav-link" data-scroll-target="#creating-new-variables-instead-of-overwriting"><span class="header-section-number">8</span> Creating New Variables Instead of Overwriting</a></li>
+  <li><a href="#mutateacross-vs-summariseacross" id="toc-mutateacross-vs-summariseacross" class="nav-link" data-scroll-target="#mutateacross-vs-summariseacross"><span class="header-section-number">9</span> <code>mutate(across())</code> vs <code>summarise(across())</code></a></li>
+  <li><a href="#multiple-functions-per-variable" id="toc-multiple-functions-per-variable" class="nav-link" data-scroll-target="#multiple-functions-per-variable"><span class="header-section-number">10</span> Multiple Functions per Variable</a></li>
+  <li><a href="#advanced-example-using-mutateacross-with-map" id="toc-advanced-example-using-mutateacross-with-map" class="nav-link" data-scroll-target="#advanced-example-using-mutateacross-with-map"><span class="header-section-number">11</span> Advanced Example: Using <code>mutate(across())</code> with <code>map()</code></a>
+  <ul>
+  <li><a href="#the-problem" id="toc-the-problem" class="nav-link" data-scroll-target="#the-problem"><span class="header-section-number">11.1</span> The Problem</a></li>
+  <li><a href="#the-naïve-way-1" id="toc-the-naïve-way-1" class="nav-link" data-scroll-target="#the-naïve-way-1"><span class="header-section-number">11.2</span> The Naïve Way</a></li>
+  <li><a href="#the-better-way-map-mutateacross" id="toc-the-better-way-map-mutateacross" class="nav-link" data-scroll-target="#the-better-way-map-mutateacross"><span class="header-section-number">11.3</span> The Better Way: <code>map()</code> + <code>mutate(across())</code></a></li>
+  <li><a href="#another-example-standardising-variables-across-datasets" id="toc-another-example-standardising-variables-across-datasets" class="nav-link" data-scroll-target="#another-example-standardising-variables-across-datasets"><span class="header-section-number">11.4</span> Another Example: Standardising Variables Across Datasets</a></li>
+  </ul></li>
+  <li><a href="#final-thoughts-and-a-mental-model-to-take-away" id="toc-final-thoughts-and-a-mental-model-to-take-away" class="nav-link" data-scroll-target="#final-thoughts-and-a-mental-model-to-take-away"><span class="header-section-number">12</span> Final Thoughts and a Mental Model to Take Away</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<div class="quarto-title-block"><div><h1 class="title">More DRY (Don’t Repeat Yourself) — Meet <code>mutate(across())</code></h1><button type="button" class="btn code-tools-button dropdown-toggle" id="quarto-code-tools-menu" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi"></i> Code</button><ul class="dropdown-menu dropdown-menu-end" aria-labelelledby="quarto-code-tools-menu"><li><a id="quarto-show-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Show All Code</a></li><li><a id="quarto-hide-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Hide All Code</a></li><li><hr class="dropdown-divider"></li><li><a id="quarto-view-source" class="dropdown-item" href="javascript:void(0)" role="button">View Source</a></li></ul></div></div>
+  <div class="quarto-categories">
+    <div class="quarto-category">code</div>
+    <div class="quarto-category">concept</div>
+  </div>
+  </div>
+
+<div>
+  <div class="description">
+    Create or edit multiple columns efficiently.
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">January 30, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="introduction" class="level2" data-number="1">
+<h2 data-number="1" class="anchored" data-anchor-id="introduction"><span class="header-section-number">1</span> Introduction</h2>
+<p>Welcome back to Stats Tips for 2026. I hope you all had a restful break during the holiday period. I spent a couple of weeks on the South Island of New Zealand and was rather in awe of how beautiful that part of the world is - Queenstown, Milford Sound, Lake Tekapo and a 3 day hike on the Humpridge Track, which I can really recommend if you’re into hiking. The landscapes are otherworldly - we plan to go back, it was that good…</p>
+<p>Ok, enough about my holidays and on to more serious topics. Today I thought I would ease you back into the world of statistical musings with a less theoretical and more practical post. One that illustrates the application of what I consider to be an indispensable <code>dplyr</code> function in my day-to-day work, and one that I hope you can make use of too - meet <code>across()</code>.</p>
+<p>I believe one aspiration we all share in our endeavour to become better R programmers is to write more efficient code that avoids <em>repetition</em>. You may recall that I have dedicated a whole other <a href="https://msni-stats-tips.netlify.app/posts/022_15nov_2024/">post</a> to this topic and so our discussion here will further expound upon that theme.</p>
+<p>How many of you have written a block of code that you have just reused, for example:</p>
+<p>The same data transformation copied and pasted five times.<br>
+The same rounding applied column by column.<br>
+The same <code>ifelse()</code> rewritten with only the variable name changed.</p>
+<p>I know I have.</p>
+<p>In its most fundamental use-case, <code>across()</code> makes it easy to apply the same transformation to multiple columns in a dataframe in one go, rather than applying the same code block multiple times. It may not be flashy, but once you get the hang of how it works, your code will become <strong>shorter, clearer, and far easier to maintain</strong>. It’s important to note that <code>across()</code> doesn’t work by itself, but rather is a <em>column-selection helper</em> that is evaluated within other <code>dplyr</code> functions, most commonly <code>mutate()</code>, but also <code>summarise()</code> and <code>filter()</code>. In this mental model, <code>mutate()</code> decides <strong>what happens</strong> and <code>across()</code> decides <strong>where is happens</strong>.</p>
+<p>Let’s make these ideas clearer with several examples…</p>
+<hr>
+</section>
+<section id="the-problem-repeating-the-same-operation" class="level2" data-number="2">
+<h2 data-number="2" class="anchored" data-anchor-id="the-problem-repeating-the-same-operation"><span class="header-section-number">2</span> The Problem: Repeating the Same Operation</h2>
+<p>Suppose you’re analysing a simple dataset.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a>df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">id =</span> <span class="fu">as.character</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>),</span>
+<span id="cb1-2"><a href="#cb1-2"></a>             <span class="at">age =</span> <span class="fu">c</span>(<span class="dv">34</span>, <span class="dv">51</span>, <span class="dv">63</span>),</span>
+<span id="cb1-3"><a href="#cb1-3"></a>             <span class="at">weight =</span> <span class="fu">c</span>(<span class="fl">72.46</span>, <span class="fl">81.27</span>, <span class="fl">76.85</span>),</span>
+<span id="cb1-4"><a href="#cb1-4"></a>             <span class="at">bmi =</span> <span class="fu">c</span>(<span class="fl">23.66</span>, <span class="fl">27.93</span>, <span class="fl">26.35</span>),</span>
+<span id="cb1-5"><a href="#cb1-5"></a>             <span class="at">cholesterol =</span> <span class="fu">c</span>(<span class="fl">5.42</span>, <span class="fl">6.01</span>, <span class="fl">5.87</span>))</span>
+<span id="cb1-6"><a href="#cb1-6"></a></span>
+<span id="cb1-7"><a href="#cb1-7"></a>df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">id</th>
+<th style="text-align: right;">age</th>
+<th style="text-align: right;">weight</th>
+<th style="text-align: right;">bmi</th>
+<th style="text-align: right;">cholesterol</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">34</td>
+<td style="text-align: right;">72.46</td>
+<td style="text-align: right;">23.66</td>
+<td style="text-align: right;">5.42</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2</td>
+<td style="text-align: right;">51</td>
+<td style="text-align: right;">81.27</td>
+<td style="text-align: right;">27.93</td>
+<td style="text-align: right;">6.01</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">3</td>
+<td style="text-align: right;">63</td>
+<td style="text-align: right;">76.85</td>
+<td style="text-align: right;">26.35</td>
+<td style="text-align: right;">5.87</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<p><br></p>
+<p>You decide that, for reporting, several variables should be rounded to <strong><code>1</code> decimal place</strong>.</p>
+<hr>
+</section>
+<section id="the-naïve-way" class="level2" data-number="3">
+<h2 data-number="3" class="anchored" data-anchor-id="the-naïve-way"><span class="header-section-number">3</span> The Naïve Way</h2>
+<p>A common first attempt looks like this:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>df <span class="sc">|&gt;</span> </span>
+<span id="cb2-2"><a href="#cb2-2"></a>  <span class="fu">mutate</span>(<span class="at">weight =</span> <span class="fu">round</span>(weight, <span class="dv">1</span>),</span>
+<span id="cb2-3"><a href="#cb2-3"></a>         <span class="at">bmi =</span> <span class="fu">round</span>(bmi, <span class="dv">1</span>),</span>
+<span id="cb2-4"><a href="#cb2-4"></a>         <span class="at">cholesterol =</span> <span class="fu">round</span>(cholesterol, <span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">id</th>
+<th style="text-align: right;">age</th>
+<th style="text-align: right;">weight</th>
+<th style="text-align: right;">bmi</th>
+<th style="text-align: right;">cholesterol</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">34</td>
+<td style="text-align: right;">72.5</td>
+<td style="text-align: right;">23.7</td>
+<td style="text-align: right;">5.4</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2</td>
+<td style="text-align: right;">51</td>
+<td style="text-align: right;">81.3</td>
+<td style="text-align: right;">27.9</td>
+<td style="text-align: right;">6.0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">3</td>
+<td style="text-align: right;">63</td>
+<td style="text-align: right;">76.8</td>
+<td style="text-align: right;">26.4</td>
+<td style="text-align: right;">5.9</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<p><br></p>
+<p>You write out the same line of code for each variable. It does work. It’s also:</p>
+<ul>
+<li>Repetitive<br>
+</li>
+<li>Error-prone (easy to forget a variable)<br>
+</li>
+<li>Painful to update when the variable list changes</li>
+</ul>
+<p>If you later add another variable (say <code>waist</code>), you must remember to update this block manually — and everywhere else you did something similar.</p>
+<hr>
+</section>
+<section id="the-core-idea-behind-across" class="level2" data-number="4">
+<h2 data-number="4" class="anchored" data-anchor-id="the-core-idea-behind-across"><span class="header-section-number">4</span> The Core Idea Behind <code>across()</code></h2>
+<p>The key insight is simple:</p>
+<blockquote class="blockquote">
+<p><strong>When you apply the same transformation to multiple columns, you should write the transformation once.</strong></p>
+</blockquote>
+<p>That’s exactly what <code>across()</code> does.</p>
+<hr>
+</section>
+<section id="the-better-way-mutateacross" class="level2" data-number="5">
+<h2 data-number="5" class="anchored" data-anchor-id="the-better-way-mutateacross"><span class="header-section-number">5</span> The Better Way: <code>mutate(across())</code></h2>
+<p>Here’s the same transformation rewritten using <code>across()</code>.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>df <span class="sc">|&gt;</span> </span>
+<span id="cb3-2"><a href="#cb3-2"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">c</span>(weight, bmi, cholesterol), round, <span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">id</th>
+<th style="text-align: right;">age</th>
+<th style="text-align: right;">weight</th>
+<th style="text-align: right;">bmi</th>
+<th style="text-align: right;">cholesterol</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">34</td>
+<td style="text-align: right;">72.5</td>
+<td style="text-align: right;">23.7</td>
+<td style="text-align: right;">5.4</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2</td>
+<td style="text-align: right;">51</td>
+<td style="text-align: right;">81.3</td>
+<td style="text-align: right;">27.9</td>
+<td style="text-align: right;">6.0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">3</td>
+<td style="text-align: right;">63</td>
+<td style="text-align: right;">76.8</td>
+<td style="text-align: right;">26.4</td>
+<td style="text-align: right;">5.9</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<p><br></p>
+<p>Read this out loud:</p>
+<blockquote class="blockquote">
+<p>“Mutate across weight, bmi, and cholesterol by rounding to 1 decimal place.”</p>
+</blockquote>
+<p>That phrasing is much closer to how you <em>think</em> about the task.</p>
+<hr>
+</section>
+<section id="why-this-is-better-beyond-being-shorter" class="level2" data-number="6">
+<h2 data-number="6" class="anchored" data-anchor-id="why-this-is-better-beyond-being-shorter"><span class="header-section-number">6</span> Why This Is Better (Beyond Being Shorter)</h2>
+<section id="it-scales-naturally" class="level3" data-number="6.1">
+<h3 data-number="6.1" class="anchored" data-anchor-id="it-scales-naturally"><span class="header-section-number">6.1</span> It Scales Naturally</h3>
+<p>If you add another variable:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>df <span class="sc">|&gt;</span> </span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">c</span>(weight, bmi, cholesterol, waist), round, <span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>No duplication. No copy-paste.</p>
+<hr>
+</section>
+<section id="you-can-select-variables-programmatically" class="level3" data-number="6.2">
+<h3 data-number="6.2" class="anchored" data-anchor-id="you-can-select-variables-programmatically"><span class="header-section-number">6.2</span> You Can Select Variables Programmatically</h3>
+<p>Instead of naming variables explicitly, you can select them based on some other programmatic characteristic. Here, let’s select all numeric variables:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>df <span class="sc">|&gt;</span> </span>
+<span id="cb5-2"><a href="#cb5-2"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">where</span>(is.numeric), round, <span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">id</th>
+<th style="text-align: right;">age</th>
+<th style="text-align: right;">weight</th>
+<th style="text-align: right;">bmi</th>
+<th style="text-align: right;">cholesterol</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">34</td>
+<td style="text-align: right;">72.5</td>
+<td style="text-align: right;">23.7</td>
+<td style="text-align: right;">5.4</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2</td>
+<td style="text-align: right;">51</td>
+<td style="text-align: right;">81.3</td>
+<td style="text-align: right;">27.9</td>
+<td style="text-align: right;">6.0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">3</td>
+<td style="text-align: right;">63</td>
+<td style="text-align: right;">76.8</td>
+<td style="text-align: right;">26.4</td>
+<td style="text-align: right;">5.9</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<p><br></p>
+<p>Alternatively, you might want to select based on naming conventions. In this example, we would select all variables in the dataframe that begin with the text “lab_”:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a>df <span class="sc">|&gt;</span> </span>
+<span id="cb6-2"><a href="#cb6-2"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">starts_with</span>(<span class="st">"lab_"</span>), log))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>This is particularly powerful in real research datasets, where variable names often follow patterns.</p>
+<hr>
+</section>
+<section id="it-reduces-cognitive-load" class="level3" data-number="6.3">
+<h3 data-number="6.3" class="anchored" data-anchor-id="it-reduces-cognitive-load"><span class="header-section-number">6.3</span> It Reduces Cognitive Load</h3>
+<p>If you reviewed your code 6 months down the track and compared these two blocks:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>weight <span class="ot">=</span> <span class="fu">round</span>(weight, <span class="dv">1</span>)</span>
+<span id="cb7-2"><a href="#cb7-2"></a>bmi <span class="ot">=</span> <span class="fu">round</span>(bmi, <span class="dv">1</span>)</span>
+<span id="cb7-3"><a href="#cb7-3"></a>cholesterol <span class="ot">=</span> <span class="fu">round</span>(cholesterol, <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>vs:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a><span class="fu">across</span>(<span class="fu">c</span>(weight, bmi, cholesterol), round, <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The second tells you <em>what is happening</em> immediately.</p>
+<hr>
+</section>
+</section>
+<section id="using-anonymous-functions-for-more-complex-logic" class="level2" data-number="7">
+<h2 data-number="7" class="anchored" data-anchor-id="using-anonymous-functions-for-more-complex-logic"><span class="header-section-number">7</span> Using Anonymous Functions for More Complex Logic</h2>
+<p>You’re not limited to simple functions like <code>round()</code> - you can write your own. In this case, <code>across()</code> recognises everything after the <code>~</code> as a user-defined or “anonymous” function. For example,</p>
+<p>Suppose you want to:</p>
+<ul>
+<li>add <code>1</code> to avoid zeros<br>
+</li>
+<li>log-transform the result<br>
+</li>
+<li>apply this consistently to multiple variables that begin with “lab_”.</li>
+</ul>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a>df <span class="sc">|&gt;</span> </span>
+<span id="cb9-2"><a href="#cb9-2"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">starts_with</span>(<span class="st">"lab_"</span>), <span class="sc">~</span> <span class="fu">log</span>(.x <span class="sc">+</span> <span class="dv">1</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Here, <code>.x</code> represents the current column being transformed.</p>
+<p>As you can see - we can do all of this in one line of code.</p>
+<hr>
+</section>
+<section id="creating-new-variables-instead-of-overwriting" class="level2" data-number="8">
+<h2 data-number="8" class="anchored" data-anchor-id="creating-new-variables-instead-of-overwriting"><span class="header-section-number">8</span> Creating New Variables Instead of Overwriting</h2>
+<p>In research workflows, it’s often good practice for reproducibility to keep raw variables intact and create new variables instead.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a>df <span class="sc">|&gt;</span> </span>
+<span id="cb10-2"><a href="#cb10-2"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">c</span>(weight, bmi), scale, <span class="at">.names =</span> <span class="st">"{.col}_z"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">id</th>
+<th style="text-align: right;">age</th>
+<th style="text-align: right;">weight</th>
+<th style="text-align: right;">bmi</th>
+<th style="text-align: right;">cholesterol</th>
+<th style="text-align: right;">weight_z</th>
+<th style="text-align: right;">bmi_z</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">34</td>
+<td style="text-align: right;">72.46</td>
+<td style="text-align: right;">23.66</td>
+<td style="text-align: right;">5.42</td>
+<td style="text-align: right;">-0.998862996</td>
+<td style="text-align: right;">-1.0746155</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2</td>
+<td style="text-align: right;">51</td>
+<td style="text-align: right;">81.27</td>
+<td style="text-align: right;">27.93</td>
+<td style="text-align: right;">6.01</td>
+<td style="text-align: right;">1.001133139</td>
+<td style="text-align: right;">0.9032328</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">3</td>
+<td style="text-align: right;">63</td>
+<td style="text-align: right;">76.85</td>
+<td style="text-align: right;">26.35</td>
+<td style="text-align: right;">5.87</td>
+<td style="text-align: right;">-0.002270143</td>
+<td style="text-align: right;">0.1713826</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<p><br></p>
+<p>This produces new variables (<code>weight_z</code>, <code>bmi_z</code>) which are the Z-score transformations of <code>weight</code> and <code>bmi</code> using <code>R</code>’s built-in <code>scale</code> function. Note, it’s a simple case of creating new variable names by prefixing or suffixing characters to the original column name specified by <code>{.col}</code>.</p>
+<hr>
+</section>
+<section id="mutateacross-vs-summariseacross" class="level2" data-number="9">
+<h2 data-number="9" class="anchored" data-anchor-id="mutateacross-vs-summariseacross"><span class="header-section-number">9</span> <code>mutate(across())</code> vs <code>summarise(across())</code></h2>
+<p>As I mentioned at the outset, <code>across()</code> is most commonly used in conjunction with <code>mutate()</code>, but let’s look at an example where we may want to use it with <code>summarise()</code>. Let’s say we are interested in calculating the mean of each numeric column in the dataframe. We can do that as follows:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a>df <span class="sc">|&gt;</span> </span>
+<span id="cb11-2"><a href="#cb11-2"></a>  <span class="fu">summarise</span>(<span class="fu">across</span>(<span class="fu">where</span>(is.numeric), mean, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: right;">age</th>
+<th style="text-align: right;">weight</th>
+<th style="text-align: right;">bmi</th>
+<th style="text-align: right;">cholesterol</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">49.33333</td>
+<td style="text-align: right;">76.86</td>
+<td style="text-align: right;">25.98</td>
+<td style="text-align: right;">5.766667</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<p><br></p>
+<p>Note a common point of confusion:</p>
+<ul>
+<li><code>mutate(across())</code> returns the <strong>same number of rows</strong> as in the original dataframe<br>
+</li>
+<li><code>summarise(across())</code> <strong>reduces rows</strong> (to a single row if no grouping structure is specified)</li>
+</ul>
+<p><code>across()</code> is therefore applied to both functions in the same way, but with different intent.</p>
+<hr>
+</section>
+<section id="multiple-functions-per-variable" class="level2" data-number="10">
+<h2 data-number="10" class="anchored" data-anchor-id="multiple-functions-per-variable"><span class="header-section-number">10</span> Multiple Functions per Variable</h2>
+<p>What if were interested in not only calculating the mean of each numeric column, but also the standard deviation and the number of observations in each column. Well, it’s relatively easy to extend the above example by now applying <em>several</em> functions at once.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a>df <span class="sc">|&gt;</span> </span>
+<span id="cb12-2"><a href="#cb12-2"></a>  <span class="fu">summarise</span>(<span class="fu">across</span>(<span class="fu">where</span>(is.numeric), <span class="fu">list</span>(<span class="at">mean =</span> mean, </span>
+<span id="cb12-3"><a href="#cb12-3"></a>                                           <span class="at">sd =</span> sd,</span>
+<span id="cb12-4"><a href="#cb12-4"></a>                                           <span class="at">n =</span> <span class="sc">~</span> <span class="fu">sum</span>(<span class="sc">!</span><span class="fu">is.na</span>(.))),</span>
+<span id="cb12-5"><a href="#cb12-5"></a>                   <span class="at">.names =</span> <span class="st">"{.col}_{.fn}"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="table table-sm table-striped small">
+<colgroup>
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 4%">
+<col style="width: 9%">
+<col style="width: 8%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 7%">
+<col style="width: 4%">
+<col style="width: 13%">
+<col style="width: 12%">
+<col style="width: 11%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: right;">age_mean</th>
+<th style="text-align: right;">age_sd</th>
+<th style="text-align: right;">age_n</th>
+<th style="text-align: right;">weight_mean</th>
+<th style="text-align: right;">weight_sd</th>
+<th style="text-align: right;">weight_n</th>
+<th style="text-align: right;">bmi_mean</th>
+<th style="text-align: right;">bmi_sd</th>
+<th style="text-align: right;">bmi_n</th>
+<th style="text-align: right;">cholesterol_mean</th>
+<th style="text-align: right;">cholesterol_sd</th>
+<th style="text-align: right;">cholesterol_n</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">49.33333</td>
+<td style="text-align: right;">14.57166</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">76.86</td>
+<td style="text-align: right;">4.405009</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">25.98</td>
+<td style="text-align: right;">2.158912</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">5.766667</td>
+<td style="text-align: right;">0.3082748</td>
+<td style="text-align: right;">3</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<p><br></p>
+<p>We can now specify <code>{.fn}</code> as a naming qualifier and append this to the original column name. This pattern is a stepping stone toward automated summary tables and reporting pipelines.</p>
+<hr>
+</section>
+<section id="advanced-example-using-mutateacross-with-map" class="level2" data-number="11">
+<h2 data-number="11" class="anchored" data-anchor-id="advanced-example-using-mutateacross-with-map"><span class="header-section-number">11</span> Advanced Example: Using <code>mutate(across())</code> with <code>map()</code></h2>
+<p>Are you ready for something more advanced (but also extremely powerful)? So far we have been dealing with a <em>single</em> dataframe, but we can also leverage the power of <code>across()</code> in simultaneous column manipulation over <em>multiple</em> dataframes using <code>map()</code>.</p>
+<section id="the-problem" class="level3" data-number="11.1">
+<h3 data-number="11.1" class="anchored" data-anchor-id="the-problem"><span class="header-section-number">11.1</span> The Problem</h3>
+<p>Suppose you have several datasets with the same structure assembled within a <a href="https://www.r-bloggers.com/2024/10/the-ultimate-guide-to-creating-lists-in-r-from-basics-to-advanced-examples/">list</a> (a list is a convenient <code>R</code> object within which many other <code>R</code> objects can be stored - including dataframes). We can access a particular object within a list with the <code>$</code> operator, much like we access the columns of a dataframe.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a>datasets <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">raw   =</span> df, </span>
+<span id="cb13-2"><a href="#cb13-2"></a>                 <span class="at">clean =</span> df,</span>
+<span id="cb13-3"><a href="#cb13-3"></a>                 <span class="at">sens  =</span> df)</span>
+<span id="cb13-4"><a href="#cb13-4"></a></span>
+<span id="cb13-5"><a href="#cb13-5"></a>datasets<span class="sc">$</span>raw</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">id</th>
+<th style="text-align: right;">age</th>
+<th style="text-align: right;">weight</th>
+<th style="text-align: right;">bmi</th>
+<th style="text-align: right;">cholesterol</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">34</td>
+<td style="text-align: right;">72.46</td>
+<td style="text-align: right;">23.66</td>
+<td style="text-align: right;">5.42</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2</td>
+<td style="text-align: right;">51</td>
+<td style="text-align: right;">81.27</td>
+<td style="text-align: right;">27.93</td>
+<td style="text-align: right;">6.01</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">3</td>
+<td style="text-align: right;">63</td>
+<td style="text-align: right;">76.85</td>
+<td style="text-align: right;">26.35</td>
+<td style="text-align: right;">5.87</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a>datasets<span class="sc">$</span>clean</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">id</th>
+<th style="text-align: right;">age</th>
+<th style="text-align: right;">weight</th>
+<th style="text-align: right;">bmi</th>
+<th style="text-align: right;">cholesterol</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">34</td>
+<td style="text-align: right;">72.46</td>
+<td style="text-align: right;">23.66</td>
+<td style="text-align: right;">5.42</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2</td>
+<td style="text-align: right;">51</td>
+<td style="text-align: right;">81.27</td>
+<td style="text-align: right;">27.93</td>
+<td style="text-align: right;">6.01</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">3</td>
+<td style="text-align: right;">63</td>
+<td style="text-align: right;">76.85</td>
+<td style="text-align: right;">26.35</td>
+<td style="text-align: right;">5.87</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1"></a>datasets<span class="sc">$</span>sens</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">id</th>
+<th style="text-align: right;">age</th>
+<th style="text-align: right;">weight</th>
+<th style="text-align: right;">bmi</th>
+<th style="text-align: right;">cholesterol</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">34</td>
+<td style="text-align: right;">72.46</td>
+<td style="text-align: right;">23.66</td>
+<td style="text-align: right;">5.42</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2</td>
+<td style="text-align: right;">51</td>
+<td style="text-align: right;">81.27</td>
+<td style="text-align: right;">27.93</td>
+<td style="text-align: right;">6.01</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">3</td>
+<td style="text-align: right;">63</td>
+<td style="text-align: right;">76.85</td>
+<td style="text-align: right;">26.35</td>
+<td style="text-align: right;">5.87</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<p><br></p>
+<p>Now, suppose you want to apply the <strong>same transformation</strong> to all of them.</p>
+<hr>
+</section>
+<section id="the-naïve-way-1" class="level3" data-number="11.2">
+<h3 data-number="11.2" class="anchored" data-anchor-id="the-naïve-way-1"><span class="header-section-number">11.2</span> The Naïve Way</h3>
+<div class="sourceCode" id="cb16"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1"></a>df_raw   <span class="ot">&lt;-</span> df_raw   <span class="sc">|&gt;</span>  <span class="fu">mutate</span>(...)</span>
+<span id="cb16-2"><a href="#cb16-2"></a>df_clean <span class="ot">&lt;-</span> df_clean <span class="sc">|&gt;</span>  <span class="fu">mutate</span>(...)</span>
+<span id="cb16-3"><a href="#cb16-3"></a>df_sens  <span class="ot">&lt;-</span> df_sens  <span class="sc">|&gt;</span>  <span class="fu">mutate</span>(...)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>In this approach we go through and re-apply the same code to each dataframe but this can become difficult to maintain and easy to get wrong.</p>
+<hr>
+</section>
+<section id="the-better-way-map-mutateacross" class="level3" data-number="11.3">
+<h3 data-number="11.3" class="anchored" data-anchor-id="the-better-way-map-mutateacross"><span class="header-section-number">11.3</span> The Better Way: <code>map()</code> + <code>mutate(across())</code></h3>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1"></a>datasets <span class="ot">&lt;-</span> datasets <span class="sc">|&gt;</span> </span>
+<span id="cb17-2"><a href="#cb17-2"></a>  <span class="fu">map</span>(<span class="sc">~</span> .x <span class="sc">|&gt;</span> </span>
+<span id="cb17-3"><a href="#cb17-3"></a>    <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">where</span>(is.numeric), round, <span class="dv">1</span>)))</span>
+<span id="cb17-4"><a href="#cb17-4"></a></span>
+<span id="cb17-5"><a href="#cb17-5"></a>datasets<span class="sc">$</span>raw</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">id</th>
+<th style="text-align: right;">age</th>
+<th style="text-align: right;">weight</th>
+<th style="text-align: right;">bmi</th>
+<th style="text-align: right;">cholesterol</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">34</td>
+<td style="text-align: right;">72.5</td>
+<td style="text-align: right;">23.7</td>
+<td style="text-align: right;">5.4</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2</td>
+<td style="text-align: right;">51</td>
+<td style="text-align: right;">81.3</td>
+<td style="text-align: right;">27.9</td>
+<td style="text-align: right;">6.0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">3</td>
+<td style="text-align: right;">63</td>
+<td style="text-align: right;">76.8</td>
+<td style="text-align: right;">26.4</td>
+<td style="text-align: right;">5.9</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1"></a>datasets<span class="sc">$</span>clean</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">id</th>
+<th style="text-align: right;">age</th>
+<th style="text-align: right;">weight</th>
+<th style="text-align: right;">bmi</th>
+<th style="text-align: right;">cholesterol</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">34</td>
+<td style="text-align: right;">72.5</td>
+<td style="text-align: right;">23.7</td>
+<td style="text-align: right;">5.4</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2</td>
+<td style="text-align: right;">51</td>
+<td style="text-align: right;">81.3</td>
+<td style="text-align: right;">27.9</td>
+<td style="text-align: right;">6.0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">3</td>
+<td style="text-align: right;">63</td>
+<td style="text-align: right;">76.8</td>
+<td style="text-align: right;">26.4</td>
+<td style="text-align: right;">5.9</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1"></a>datasets<span class="sc">$</span>sens</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">id</th>
+<th style="text-align: right;">age</th>
+<th style="text-align: right;">weight</th>
+<th style="text-align: right;">bmi</th>
+<th style="text-align: right;">cholesterol</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">34</td>
+<td style="text-align: right;">72.5</td>
+<td style="text-align: right;">23.7</td>
+<td style="text-align: right;">5.4</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2</td>
+<td style="text-align: right;">51</td>
+<td style="text-align: right;">81.3</td>
+<td style="text-align: right;">27.9</td>
+<td style="text-align: right;">6.0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">3</td>
+<td style="text-align: right;">63</td>
+<td style="text-align: right;">76.8</td>
+<td style="text-align: right;">26.4</td>
+<td style="text-align: right;">5.9</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<p><br></p>
+<p>Indeed, the more efficient way is to use <code>across()</code> within <code>mutate()</code> within <code>map()</code>.</p>
+<p>We can read this as:</p>
+<blockquote class="blockquote">
+<p>“For each dataset, mutate across numeric variables by rounding to 1 decimal place.”</p>
+</blockquote>
+<p>This approach using <code>map()</code> ensures:</p>
+<ul>
+<li>identical logic across datasets<br>
+</li>
+<li>changes happen in one place<br>
+</li>
+<li>consistency is guaranteed</li>
+</ul>
+<hr>
+</section>
+<section id="another-example-standardising-variables-across-datasets" class="level3" data-number="11.4">
+<h3 data-number="11.4" class="anchored" data-anchor-id="another-example-standardising-variables-across-datasets"><span class="header-section-number">11.4</span> Another Example: Standardising Variables Across Datasets</h3>
+<p>Now, let’s take this further by extending the earlier example of creating new variables, not just within a <em>single</em> dataframe, but across <em>multiple</em> dataframes.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1"></a>datasets <span class="ot">&lt;-</span> datasets <span class="sc">|&gt;</span> </span>
+<span id="cb20-2"><a href="#cb20-2"></a>  <span class="fu">map</span>(<span class="sc">~</span> .x <span class="sc">|&gt;</span> </span>
+<span id="cb20-3"><a href="#cb20-3"></a>    <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">c</span>(age, bmi, weight), scale, <span class="at">.names =</span> <span class="st">"{.col}_z"</span>)))</span>
+<span id="cb20-4"><a href="#cb20-4"></a></span>
+<span id="cb20-5"><a href="#cb20-5"></a>datasets<span class="sc">$</span>raw</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="table table-sm table-striped small">
+<colgroup>
+<col style="width: 4%">
+<col style="width: 6%">
+<col style="width: 10%">
+<col style="width: 7%">
+<col style="width: 18%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 18%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">id</th>
+<th style="text-align: right;">age</th>
+<th style="text-align: right;">weight</th>
+<th style="text-align: right;">bmi</th>
+<th style="text-align: right;">cholesterol</th>
+<th style="text-align: right;">age_z</th>
+<th style="text-align: right;">bmi_z</th>
+<th style="text-align: right;">weight_z</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">34</td>
+<td style="text-align: right;">72.5</td>
+<td style="text-align: right;">23.7</td>
+<td style="text-align: right;">5.4</td>
+<td style="text-align: right;">-1.0522707</td>
+<td style="text-align: right;">-1.0806343</td>
+<td style="text-align: right;">-0.99233882</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2</td>
+<td style="text-align: right;">51</td>
+<td style="text-align: right;">81.3</td>
+<td style="text-align: right;">27.9</td>
+<td style="text-align: right;">6.0</td>
+<td style="text-align: right;">0.1143773</td>
+<td style="text-align: right;">0.8926979</td>
+<td style="text-align: right;">1.00748903</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">3</td>
+<td style="text-align: right;">63</td>
+<td style="text-align: right;">76.8</td>
+<td style="text-align: right;">26.4</td>
+<td style="text-align: right;">5.9</td>
+<td style="text-align: right;">0.9378935</td>
+<td style="text-align: right;">0.1879364</td>
+<td style="text-align: right;">-0.01515021</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1"></a>datasets<span class="sc">$</span>clean</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="table table-sm table-striped small">
+<colgroup>
+<col style="width: 4%">
+<col style="width: 6%">
+<col style="width: 10%">
+<col style="width: 7%">
+<col style="width: 18%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 18%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">id</th>
+<th style="text-align: right;">age</th>
+<th style="text-align: right;">weight</th>
+<th style="text-align: right;">bmi</th>
+<th style="text-align: right;">cholesterol</th>
+<th style="text-align: right;">age_z</th>
+<th style="text-align: right;">bmi_z</th>
+<th style="text-align: right;">weight_z</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">34</td>
+<td style="text-align: right;">72.5</td>
+<td style="text-align: right;">23.7</td>
+<td style="text-align: right;">5.4</td>
+<td style="text-align: right;">-1.0522707</td>
+<td style="text-align: right;">-1.0806343</td>
+<td style="text-align: right;">-0.99233882</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2</td>
+<td style="text-align: right;">51</td>
+<td style="text-align: right;">81.3</td>
+<td style="text-align: right;">27.9</td>
+<td style="text-align: right;">6.0</td>
+<td style="text-align: right;">0.1143773</td>
+<td style="text-align: right;">0.8926979</td>
+<td style="text-align: right;">1.00748903</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">3</td>
+<td style="text-align: right;">63</td>
+<td style="text-align: right;">76.8</td>
+<td style="text-align: right;">26.4</td>
+<td style="text-align: right;">5.9</td>
+<td style="text-align: right;">0.9378935</td>
+<td style="text-align: right;">0.1879364</td>
+<td style="text-align: right;">-0.01515021</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1"></a>datasets<span class="sc">$</span>sens</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div class="kable-table">
+<table class="table table-sm table-striped small">
+<colgroup>
+<col style="width: 4%">
+<col style="width: 6%">
+<col style="width: 10%">
+<col style="width: 7%">
+<col style="width: 18%">
+<col style="width: 16%">
+<col style="width: 16%">
+<col style="width: 18%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">id</th>
+<th style="text-align: right;">age</th>
+<th style="text-align: right;">weight</th>
+<th style="text-align: right;">bmi</th>
+<th style="text-align: right;">cholesterol</th>
+<th style="text-align: right;">age_z</th>
+<th style="text-align: right;">bmi_z</th>
+<th style="text-align: right;">weight_z</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">34</td>
+<td style="text-align: right;">72.5</td>
+<td style="text-align: right;">23.7</td>
+<td style="text-align: right;">5.4</td>
+<td style="text-align: right;">-1.0522707</td>
+<td style="text-align: right;">-1.0806343</td>
+<td style="text-align: right;">-0.99233882</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2</td>
+<td style="text-align: right;">51</td>
+<td style="text-align: right;">81.3</td>
+<td style="text-align: right;">27.9</td>
+<td style="text-align: right;">6.0</td>
+<td style="text-align: right;">0.1143773</td>
+<td style="text-align: right;">0.8926979</td>
+<td style="text-align: right;">1.00748903</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">3</td>
+<td style="text-align: right;">63</td>
+<td style="text-align: right;">76.8</td>
+<td style="text-align: right;">26.4</td>
+<td style="text-align: right;">5.9</td>
+<td style="text-align: right;">0.9378935</td>
+<td style="text-align: right;">0.1879364</td>
+<td style="text-align: right;">-0.01515021</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<p>You can appreciate how much of a Swiss-army knife of data manipulation, <code>across()</code> can be become when used in conjunction with other <code>R</code> functions.</p>
+<hr>
+</section>
+</section>
+<section id="final-thoughts-and-a-mental-model-to-take-away" class="level2" data-number="12">
+<h2 data-number="12" class="anchored" data-anchor-id="final-thoughts-and-a-mental-model-to-take-away"><span class="header-section-number">12</span> Final Thoughts and a Mental Model to Take Away</h2>
+<p>Whenever you catch yourself thinking:</p>
+<blockquote class="blockquote">
+<p><em>“I’m doing the same thing to several variables…”</em></p>
+</blockquote>
+<p>You should immediately ask:</p>
+<blockquote class="blockquote">
+<p><em>“Can this be an <code>across()</code>?”</em></p>
+</blockquote>
+<p>That question alone will dramatically improve the quality of your R code.</p>
+<p>I hope you’ve found this programming tip helpful and I will see you again for more Stats Tips, next month.</p>
+
+
+<!-- -->
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+    const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+    const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+    let newTheme = '';
+    if(darkModeDefault) {
+      newTheme = isAlternate ? baseTheme : alternateTheme;
+    } else {
+      newTheme = isAlternate ? alternateTheme : baseTheme;
+    }
+    const changeGiscusTheme = () => {
+      // From: https://github.com/giscus/giscus/issues/336
+      const sendMessage = (message) => {
+        const iframe = document.querySelector('iframe.giscus-frame');
+        if (!iframe) return;
+        iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+      }
+      sendMessage({
+        setConfig: {
+          theme: newTheme
+        }
+      });
+    }
+    const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+    if (isGiscussLoaded) {
+      changeGiscusTheme();
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  const darkModeDefault = false;
+  let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+    toggleGiscusIfUsed(toAlternate, darkModeDefault);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  const viewSource = window.document.getElementById('quarto-view-source') ||
+                     window.document.getElementById('quarto-code-tools-source');
+  if (viewSource) {
+    const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+    viewSource.addEventListener("click", function(e) {
+      if (sourceUrl) {
+        // rstudio viewer pane
+        if (/\bcapabilities=\b/.test(window.location)) {
+          window.open(sourceUrl);
+        } else {
+          window.location.href = sourceUrl;
+        }
+      } else {
+        const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+        modal.show();
+      }
+      return false;
+    });
+  }
+  function toggleCodeHandler(show) {
+    return function(e) {
+      const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
+      for (let i=0; i<detailsSrc.length; i++) {
+        const details = detailsSrc[i].parentElement;
+        if (show) {
+          details.open = true;
+        } else {
+          details.removeAttribute("open");
+        }
+      }
+      const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
+      const fromCls = show ? "hidden" : "unhidden";
+      const toCls = show ? "unhidden" : "hidden";
+      for (let i=0; i<cellCodeDivs.length; i++) {
+        const codeDiv = cellCodeDivs[i];
+        if (codeDiv.classList.contains(fromCls)) {
+          codeDiv.classList.remove(fromCls);
+          codeDiv.classList.add(toCls);
+        } 
+      }
+      return false;
+    }
+  }
+  const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+  if (hideAllCode) {
+    hideAllCode.addEventListener("click", toggleCodeHandler(false));
+  }
+  const showAllCode = window.document.getElementById("quarto-show-all-code");
+  if (showAllCode) {
+    showAllCode.addEventListener("click", toggleCodeHandler(true));
+  }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<script src="https://giscus.app/client.js" data-repo="pgseye/Weekly_Stats_Tips" data-repo-id="R_kgDOKvfOfQ" data-category="General" data-category-id="DIC_kwDOKvfOfc4CbFWq" data-mapping="title" data-reactions-enabled="1" data-emit-metadata="0" data-input-position="top" data-theme="light" data-lang="en" crossorigin="anonymous" async="">
+</script>
+<input type="hidden" id="giscus-base-theme" value="light">
+<input type="hidden" id="giscus-alt-theme" value="dark"><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="sourceCode" id="cb23" data-shortcodes="false"><pre class="sourceCode numberSource markdown number-lines code-with-copy"><code class="sourceCode markdown"><span id="cb23-1"><a href="#cb23-1"></a><span class="co">---</span></span>
+<span id="cb23-2"><a href="#cb23-2"></a><span class="an">title:</span><span class="co"> "More DRY (Don't Repeat Yourself) — Meet `mutate(across())`"</span></span>
+<span id="cb23-3"><a href="#cb23-3"></a><span class="an">date:</span><span class="co"> 2026-01-30</span></span>
+<span id="cb23-4"><a href="#cb23-4"></a><span class="an">categories:</span><span class="co"> [code, concept]</span></span>
+<span id="cb23-5"><a href="#cb23-5"></a><span class="an">image:</span><span class="co"> "R_small.jpeg"</span></span>
+<span id="cb23-6"><a href="#cb23-6"></a><span class="an">description:</span><span class="co"> "Create or edit multiple columns efficiently."</span></span>
+<span id="cb23-7"><a href="#cb23-7"></a><span class="co">---</span></span>
+<span id="cb23-8"><a href="#cb23-8"></a></span>
+<span id="cb23-9"><a href="#cb23-9"></a><span class="in">```{r setup, include=FALSE}</span></span>
+<span id="cb23-10"><a href="#cb23-10"></a><span class="in">knitr::opts_chunk$set(</span></span>
+<span id="cb23-11"><a href="#cb23-11"></a><span class="in">  echo = TRUE,</span></span>
+<span id="cb23-12"><a href="#cb23-12"></a><span class="in">  message = FALSE,</span></span>
+<span id="cb23-13"><a href="#cb23-13"></a><span class="in">  warning = FALSE</span></span>
+<span id="cb23-14"><a href="#cb23-14"></a><span class="in">)</span></span>
+<span id="cb23-15"><a href="#cb23-15"></a></span>
+<span id="cb23-16"><a href="#cb23-16"></a><span class="in">library(dplyr)</span></span>
+<span id="cb23-17"><a href="#cb23-17"></a><span class="in">library(purrr)</span></span>
+<span id="cb23-18"><a href="#cb23-18"></a><span class="in">library(tibble)</span></span>
+<span id="cb23-19"><a href="#cb23-19"></a><span class="in">```</span></span>
+<span id="cb23-20"><a href="#cb23-20"></a></span>
+<span id="cb23-21"><a href="#cb23-21"></a><span class="fu">## Introduction</span></span>
+<span id="cb23-22"><a href="#cb23-22"></a></span>
+<span id="cb23-23"><a href="#cb23-23"></a>Welcome back to Stats Tips for 2026. I hope you all had a restful break during the holiday period. I spent a couple of weeks on the South Island of New Zealand and was rather in awe of how beautiful that part of the world is - Queenstown, Milford Sound, Lake Tekapo and a 3 day hike on the Humpridge Track, which I can really recommend if you're into hiking. The landscapes are otherworldly - we plan to go back, it was that good...</span>
+<span id="cb23-24"><a href="#cb23-24"></a></span>
+<span id="cb23-25"><a href="#cb23-25"></a>Ok, enough about my holidays and on to more serious topics. Today I thought I would ease you back into the world of statistical musings with a less theoretical and more practical post. One that illustrates the application of what I consider to be an indispensable <span class="in">`dplyr`</span> function in my day-to-day work, and one that I hope you can make use of too - meet <span class="in">`across()`</span>.</span>
+<span id="cb23-26"><a href="#cb23-26"></a></span>
+<span id="cb23-27"><a href="#cb23-27"></a>I believe one aspiration we all share in our endeavour to become better R programmers is to write more efficient code that avoids *repetition*. You may recall that I have dedicated a whole other <span class="co">[</span><span class="ot">post</span><span class="co">](https://msni-stats-tips.netlify.app/posts/022_15nov_2024/)</span> to this topic and so our discussion here will further expound upon that theme.</span>
+<span id="cb23-28"><a href="#cb23-28"></a></span>
+<span id="cb23-29"><a href="#cb23-29"></a>How many of you have written a block of code that you have just reused, for example:</span>
+<span id="cb23-30"><a href="#cb23-30"></a></span>
+<span id="cb23-31"><a href="#cb23-31"></a>The same data transformation copied and pasted five times.\</span>
+<span id="cb23-32"><a href="#cb23-32"></a>The same rounding applied column by column.\</span>
+<span id="cb23-33"><a href="#cb23-33"></a>The same <span class="in">`ifelse()`</span> rewritten with only the variable name changed.</span>
+<span id="cb23-34"><a href="#cb23-34"></a></span>
+<span id="cb23-35"><a href="#cb23-35"></a>I know I have.</span>
+<span id="cb23-36"><a href="#cb23-36"></a></span>
+<span id="cb23-37"><a href="#cb23-37"></a>In its most fundamental use-case, <span class="in">`across()`</span> makes it easy to apply the same transformation to multiple columns in a dataframe in one go, rather than applying the same code block multiple times. It may not be flashy, but once you get the hang of how it works, your code will become **shorter, clearer, and far easier to maintain**. It's important to note that `across()` doesn't work by itself, but rather is a *column-selection helper* that is evaluated within other `dplyr` functions, most commonly `mutate()`, but also `summarise()` and `filter()`. In this mental model, `mutate()` decides **what happens** and `across()` decides **where is happens**.</span>
+<span id="cb23-38"><a href="#cb23-38"></a></span>
+<span id="cb23-39"><a href="#cb23-39"></a>Let's make these ideas clearer with several examples...</span>
+<span id="cb23-40"><a href="#cb23-40"></a></span>
+<span id="cb23-41"><a href="#cb23-41"></a>------------------------------------------------------------------------</span>
+<span id="cb23-42"><a href="#cb23-42"></a></span>
+<span id="cb23-43"><a href="#cb23-43"></a><span class="fu">## The Problem: Repeating the Same Operation</span></span>
+<span id="cb23-44"><a href="#cb23-44"></a></span>
+<span id="cb23-45"><a href="#cb23-45"></a>Suppose you’re analysing a simple dataset.</span>
+<span id="cb23-46"><a href="#cb23-46"></a></span>
+<span id="cb23-49"><a href="#cb23-49"></a><span class="in">```{r}</span></span>
+<span id="cb23-50"><a href="#cb23-50"></a>df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">id =</span> <span class="fu">as.character</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>),</span>
+<span id="cb23-51"><a href="#cb23-51"></a>             <span class="at">age =</span> <span class="fu">c</span>(<span class="dv">34</span>, <span class="dv">51</span>, <span class="dv">63</span>),</span>
+<span id="cb23-52"><a href="#cb23-52"></a>             <span class="at">weight =</span> <span class="fu">c</span>(<span class="fl">72.46</span>, <span class="fl">81.27</span>, <span class="fl">76.85</span>),</span>
+<span id="cb23-53"><a href="#cb23-53"></a>             <span class="at">bmi =</span> <span class="fu">c</span>(<span class="fl">23.66</span>, <span class="fl">27.93</span>, <span class="fl">26.35</span>),</span>
+<span id="cb23-54"><a href="#cb23-54"></a>             <span class="at">cholesterol =</span> <span class="fu">c</span>(<span class="fl">5.42</span>, <span class="fl">6.01</span>, <span class="fl">5.87</span>))</span>
+<span id="cb23-55"><a href="#cb23-55"></a></span>
+<span id="cb23-56"><a href="#cb23-56"></a>df</span>
+<span id="cb23-57"><a href="#cb23-57"></a><span class="in">```</span></span>
+<span id="cb23-58"><a href="#cb23-58"></a></span>
+<span id="cb23-59"><a href="#cb23-59"></a>&lt;br&gt;</span>
+<span id="cb23-60"><a href="#cb23-60"></a></span>
+<span id="cb23-61"><a href="#cb23-61"></a>You decide that, for reporting, several variables should be rounded to **`1` decimal place**.</span>
+<span id="cb23-62"><a href="#cb23-62"></a></span>
+<span id="cb23-63"><a href="#cb23-63"></a>------------------------------------------------------------------------</span>
+<span id="cb23-64"><a href="#cb23-64"></a></span>
+<span id="cb23-65"><a href="#cb23-65"></a><span class="fu">## The Naïve Way</span></span>
+<span id="cb23-66"><a href="#cb23-66"></a></span>
+<span id="cb23-67"><a href="#cb23-67"></a>A common first attempt looks like this:</span>
+<span id="cb23-68"><a href="#cb23-68"></a></span>
+<span id="cb23-71"><a href="#cb23-71"></a><span class="in">```{r}</span></span>
+<span id="cb23-72"><a href="#cb23-72"></a>df <span class="sc">|&gt;</span> </span>
+<span id="cb23-73"><a href="#cb23-73"></a>  <span class="fu">mutate</span>(<span class="at">weight =</span> <span class="fu">round</span>(weight, <span class="dv">1</span>),</span>
+<span id="cb23-74"><a href="#cb23-74"></a>         <span class="at">bmi =</span> <span class="fu">round</span>(bmi, <span class="dv">1</span>),</span>
+<span id="cb23-75"><a href="#cb23-75"></a>         <span class="at">cholesterol =</span> <span class="fu">round</span>(cholesterol, <span class="dv">1</span>))</span>
+<span id="cb23-76"><a href="#cb23-76"></a><span class="in">```</span></span>
+<span id="cb23-77"><a href="#cb23-77"></a></span>
+<span id="cb23-78"><a href="#cb23-78"></a>&lt;br&gt;</span>
+<span id="cb23-79"><a href="#cb23-79"></a></span>
+<span id="cb23-80"><a href="#cb23-80"></a>You write out the same line of code for each variable. It does work. It’s also:</span>
+<span id="cb23-81"><a href="#cb23-81"></a></span>
+<span id="cb23-82"><a href="#cb23-82"></a><span class="ss">-   </span>Repetitive\</span>
+<span id="cb23-83"><a href="#cb23-83"></a><span class="ss">-   </span>Error-prone (easy to forget a variable)\</span>
+<span id="cb23-84"><a href="#cb23-84"></a><span class="ss">-   </span>Painful to update when the variable list changes</span>
+<span id="cb23-85"><a href="#cb23-85"></a></span>
+<span id="cb23-86"><a href="#cb23-86"></a>If you later add another variable (say <span class="in">`waist`</span>), you must remember to update this block manually — and everywhere else you did something similar.</span>
+<span id="cb23-87"><a href="#cb23-87"></a></span>
+<span id="cb23-88"><a href="#cb23-88"></a>------------------------------------------------------------------------</span>
+<span id="cb23-89"><a href="#cb23-89"></a></span>
+<span id="cb23-90"><a href="#cb23-90"></a><span class="fu">## The Core Idea Behind `across()`</span></span>
+<span id="cb23-91"><a href="#cb23-91"></a></span>
+<span id="cb23-92"><a href="#cb23-92"></a>The key insight is simple:</span>
+<span id="cb23-93"><a href="#cb23-93"></a></span>
+<span id="cb23-94"><a href="#cb23-94"></a><span class="at">&gt; **When you apply the same transformation to multiple columns, you should write the transformation once.**</span></span>
+<span id="cb23-95"><a href="#cb23-95"></a></span>
+<span id="cb23-96"><a href="#cb23-96"></a>That’s exactly what <span class="in">`across()`</span> does.</span>
+<span id="cb23-97"><a href="#cb23-97"></a></span>
+<span id="cb23-98"><a href="#cb23-98"></a>------------------------------------------------------------------------</span>
+<span id="cb23-99"><a href="#cb23-99"></a></span>
+<span id="cb23-100"><a href="#cb23-100"></a><span class="fu">## The Better Way: `mutate(across())`</span></span>
+<span id="cb23-101"><a href="#cb23-101"></a></span>
+<span id="cb23-102"><a href="#cb23-102"></a>Here’s the same transformation rewritten using <span class="in">`across()`</span>.</span>
+<span id="cb23-103"><a href="#cb23-103"></a></span>
+<span id="cb23-106"><a href="#cb23-106"></a><span class="in">```{r}</span></span>
+<span id="cb23-107"><a href="#cb23-107"></a>df <span class="sc">|&gt;</span> </span>
+<span id="cb23-108"><a href="#cb23-108"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">c</span>(weight, bmi, cholesterol), round, <span class="dv">1</span>))</span>
+<span id="cb23-109"><a href="#cb23-109"></a><span class="in">```</span></span>
+<span id="cb23-110"><a href="#cb23-110"></a></span>
+<span id="cb23-111"><a href="#cb23-111"></a>&lt;br&gt;</span>
+<span id="cb23-112"><a href="#cb23-112"></a></span>
+<span id="cb23-113"><a href="#cb23-113"></a>Read this out loud:</span>
+<span id="cb23-114"><a href="#cb23-114"></a></span>
+<span id="cb23-115"><a href="#cb23-115"></a><span class="at">&gt; “Mutate across weight, bmi, and cholesterol by rounding to 1 decimal place.”</span></span>
+<span id="cb23-116"><a href="#cb23-116"></a></span>
+<span id="cb23-117"><a href="#cb23-117"></a>That phrasing is much closer to how you *think* about the task.</span>
+<span id="cb23-118"><a href="#cb23-118"></a></span>
+<span id="cb23-119"><a href="#cb23-119"></a>------------------------------------------------------------------------</span>
+<span id="cb23-120"><a href="#cb23-120"></a></span>
+<span id="cb23-121"><a href="#cb23-121"></a><span class="fu">## Why This Is Better (Beyond Being Shorter)</span></span>
+<span id="cb23-122"><a href="#cb23-122"></a></span>
+<span id="cb23-123"><a href="#cb23-123"></a><span class="fu">### It Scales Naturally</span></span>
+<span id="cb23-124"><a href="#cb23-124"></a></span>
+<span id="cb23-125"><a href="#cb23-125"></a>If you add another variable:</span>
+<span id="cb23-126"><a href="#cb23-126"></a></span>
+<span id="cb23-127"><a href="#cb23-127"></a><span class="in">```{r, eval=FALSE}</span></span>
+<span id="cb23-128"><a href="#cb23-128"></a><span class="in">df |&gt; </span></span>
+<span id="cb23-129"><a href="#cb23-129"></a><span class="in">mutate(across(c(weight, bmi, cholesterol, waist), round, 1))</span></span>
+<span id="cb23-130"><a href="#cb23-130"></a><span class="in">```</span></span>
+<span id="cb23-131"><a href="#cb23-131"></a></span>
+<span id="cb23-132"><a href="#cb23-132"></a>No duplication. No copy-paste.</span>
+<span id="cb23-133"><a href="#cb23-133"></a></span>
+<span id="cb23-134"><a href="#cb23-134"></a>------------------------------------------------------------------------</span>
+<span id="cb23-135"><a href="#cb23-135"></a></span>
+<span id="cb23-136"><a href="#cb23-136"></a><span class="fu">### You Can Select Variables Programmatically</span></span>
+<span id="cb23-137"><a href="#cb23-137"></a></span>
+<span id="cb23-138"><a href="#cb23-138"></a>Instead of naming variables explicitly, you can select them based on some other programmatic characteristic. Here, let's select all numeric variables:</span>
+<span id="cb23-139"><a href="#cb23-139"></a></span>
+<span id="cb23-142"><a href="#cb23-142"></a><span class="in">```{r}</span></span>
+<span id="cb23-143"><a href="#cb23-143"></a>df <span class="sc">|&gt;</span> </span>
+<span id="cb23-144"><a href="#cb23-144"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">where</span>(is.numeric), round, <span class="dv">1</span>))</span>
+<span id="cb23-145"><a href="#cb23-145"></a><span class="in">```</span></span>
+<span id="cb23-146"><a href="#cb23-146"></a></span>
+<span id="cb23-147"><a href="#cb23-147"></a>&lt;br&gt;</span>
+<span id="cb23-148"><a href="#cb23-148"></a></span>
+<span id="cb23-149"><a href="#cb23-149"></a>Alternatively, you might want to select based on naming conventions. In this example, we would select all variables in the dataframe that begin with the text "lab<span class="sc">\_</span>":</span>
+<span id="cb23-150"><a href="#cb23-150"></a></span>
+<span id="cb23-151"><a href="#cb23-151"></a><span class="in">```{r, eval=FALSE}</span></span>
+<span id="cb23-152"><a href="#cb23-152"></a><span class="in">df |&gt; </span></span>
+<span id="cb23-153"><a href="#cb23-153"></a><span class="in">  mutate(across(starts_with("lab_"), log))</span></span>
+<span id="cb23-154"><a href="#cb23-154"></a><span class="in">```</span></span>
+<span id="cb23-155"><a href="#cb23-155"></a></span>
+<span id="cb23-156"><a href="#cb23-156"></a>This is particularly powerful in real research datasets, where variable names often follow patterns.</span>
+<span id="cb23-157"><a href="#cb23-157"></a></span>
+<span id="cb23-158"><a href="#cb23-158"></a>------------------------------------------------------------------------</span>
+<span id="cb23-159"><a href="#cb23-159"></a></span>
+<span id="cb23-160"><a href="#cb23-160"></a><span class="fu">### It Reduces Cognitive Load</span></span>
+<span id="cb23-161"><a href="#cb23-161"></a></span>
+<span id="cb23-162"><a href="#cb23-162"></a>If you reviewed your code 6 months down the track and compared these two blocks:</span>
+<span id="cb23-163"><a href="#cb23-163"></a></span>
+<span id="cb23-164"><a href="#cb23-164"></a><span class="in">``` r</span></span>
+<span id="cb23-165"><a href="#cb23-165"></a>weight <span class="ot">=</span> <span class="fu">round</span>(weight, <span class="dv">1</span>)</span>
+<span id="cb23-166"><a href="#cb23-166"></a>bmi <span class="ot">=</span> <span class="fu">round</span>(bmi, <span class="dv">1</span>)</span>
+<span id="cb23-167"><a href="#cb23-167"></a>cholesterol <span class="ot">=</span> <span class="fu">round</span>(cholesterol, <span class="dv">1</span>)</span>
+<span id="cb23-168"><a href="#cb23-168"></a><span class="in">```</span></span>
+<span id="cb23-169"><a href="#cb23-169"></a></span>
+<span id="cb23-170"><a href="#cb23-170"></a>vs:</span>
+<span id="cb23-171"><a href="#cb23-171"></a></span>
+<span id="cb23-172"><a href="#cb23-172"></a><span class="in">``` r</span></span>
+<span id="cb23-173"><a href="#cb23-173"></a><span class="fu">across</span>(<span class="fu">c</span>(weight, bmi, cholesterol), round, <span class="dv">1</span>)</span>
+<span id="cb23-174"><a href="#cb23-174"></a><span class="in">```</span></span>
+<span id="cb23-175"><a href="#cb23-175"></a></span>
+<span id="cb23-176"><a href="#cb23-176"></a>The second tells you *what is happening* immediately.</span>
+<span id="cb23-177"><a href="#cb23-177"></a></span>
+<span id="cb23-178"><a href="#cb23-178"></a>------------------------------------------------------------------------</span>
+<span id="cb23-179"><a href="#cb23-179"></a></span>
+<span id="cb23-180"><a href="#cb23-180"></a><span class="fu">## Using Anonymous Functions for More Complex Logic</span></span>
+<span id="cb23-181"><a href="#cb23-181"></a></span>
+<span id="cb23-182"><a href="#cb23-182"></a>You’re not limited to simple functions like <span class="in">`round()`</span> - you can write your own. In this case, <span class="in">`across()`</span> recognises everything after the <span class="in">`~`</span> as a user-defined or "anonymous" function. For example,</span>
+<span id="cb23-183"><a href="#cb23-183"></a></span>
+<span id="cb23-184"><a href="#cb23-184"></a>Suppose you want to:</span>
+<span id="cb23-185"><a href="#cb23-185"></a></span>
+<span id="cb23-186"><a href="#cb23-186"></a><span class="ss">-   </span>add <span class="in">`1`</span> to avoid zeros\</span>
+<span id="cb23-187"><a href="#cb23-187"></a><span class="ss">-   </span>log-transform the result\</span>
+<span id="cb23-188"><a href="#cb23-188"></a><span class="ss">-   </span>apply this consistently to multiple variables that begin with "lab<span class="sc">\_</span>".</span>
+<span id="cb23-189"><a href="#cb23-189"></a></span>
+<span id="cb23-190"><a href="#cb23-190"></a><span class="in">```{r, eval=FALSE}</span></span>
+<span id="cb23-191"><a href="#cb23-191"></a><span class="in">df |&gt; </span></span>
+<span id="cb23-192"><a href="#cb23-192"></a><span class="in">  mutate(across(starts_with("lab_"), ~ log(.x + 1)))</span></span>
+<span id="cb23-193"><a href="#cb23-193"></a><span class="in">```</span></span>
+<span id="cb23-194"><a href="#cb23-194"></a></span>
+<span id="cb23-195"><a href="#cb23-195"></a>Here, <span class="in">`.x`</span> represents the current column being transformed.</span>
+<span id="cb23-196"><a href="#cb23-196"></a></span>
+<span id="cb23-197"><a href="#cb23-197"></a>As you can see - we can do all of this in one line of code.</span>
+<span id="cb23-198"><a href="#cb23-198"></a></span>
+<span id="cb23-199"><a href="#cb23-199"></a>------------------------------------------------------------------------</span>
+<span id="cb23-200"><a href="#cb23-200"></a></span>
+<span id="cb23-201"><a href="#cb23-201"></a><span class="fu">## Creating New Variables Instead of Overwriting</span></span>
+<span id="cb23-202"><a href="#cb23-202"></a></span>
+<span id="cb23-203"><a href="#cb23-203"></a>In research workflows, it’s often good practice for reproducibility to keep raw variables intact and create new variables instead.</span>
+<span id="cb23-204"><a href="#cb23-204"></a></span>
+<span id="cb23-207"><a href="#cb23-207"></a><span class="in">```{r}</span></span>
+<span id="cb23-208"><a href="#cb23-208"></a>df <span class="sc">|&gt;</span> </span>
+<span id="cb23-209"><a href="#cb23-209"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">c</span>(weight, bmi), scale, <span class="at">.names =</span> <span class="st">"{.col}_z"</span>))</span>
+<span id="cb23-210"><a href="#cb23-210"></a><span class="in">```</span></span>
+<span id="cb23-211"><a href="#cb23-211"></a></span>
+<span id="cb23-212"><a href="#cb23-212"></a>&lt;br&gt;</span>
+<span id="cb23-213"><a href="#cb23-213"></a></span>
+<span id="cb23-214"><a href="#cb23-214"></a>This produces new variables (<span class="in">`weight_z`</span>, <span class="in">`bmi_z`</span>) which are the Z-score transformations of <span class="in">`weight`</span> and <span class="in">`bmi`</span> using <span class="in">`R`</span>'s built-in <span class="in">`scale`</span> function. Note, it’s a simple case of creating new variable names by prefixing or suffixing characters to the original column name specified by <span class="in">`{.col}`</span>.</span>
+<span id="cb23-215"><a href="#cb23-215"></a></span>
+<span id="cb23-216"><a href="#cb23-216"></a>------------------------------------------------------------------------</span>
+<span id="cb23-217"><a href="#cb23-217"></a></span>
+<span id="cb23-218"><a href="#cb23-218"></a><span class="fu">## `mutate(across())` vs `summarise(across())`</span></span>
+<span id="cb23-219"><a href="#cb23-219"></a></span>
+<span id="cb23-220"><a href="#cb23-220"></a>As I mentioned at the outset, <span class="in">`across()`</span> is most commonly used in conjunction with <span class="in">`mutate()`</span>, but let's look at an example where we may want to use it with <span class="in">`summarise()`</span>. Let's say we are interested in calculating the mean of each numeric column in the dataframe. We can do that as follows:</span>
+<span id="cb23-221"><a href="#cb23-221"></a></span>
+<span id="cb23-224"><a href="#cb23-224"></a><span class="in">```{r}</span></span>
+<span id="cb23-225"><a href="#cb23-225"></a>df <span class="sc">|&gt;</span> </span>
+<span id="cb23-226"><a href="#cb23-226"></a>  <span class="fu">summarise</span>(<span class="fu">across</span>(<span class="fu">where</span>(is.numeric), mean, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb23-227"><a href="#cb23-227"></a><span class="in">```</span></span>
+<span id="cb23-228"><a href="#cb23-228"></a></span>
+<span id="cb23-229"><a href="#cb23-229"></a>&lt;br&gt;</span>
+<span id="cb23-230"><a href="#cb23-230"></a></span>
+<span id="cb23-231"><a href="#cb23-231"></a>Note a common point of confusion:</span>
+<span id="cb23-232"><a href="#cb23-232"></a></span>
+<span id="cb23-233"><a href="#cb23-233"></a><span class="ss">-   </span><span class="in">`mutate(across())`</span> returns the **same number of rows** as in the original dataframe\</span>
+<span id="cb23-234"><a href="#cb23-234"></a><span class="ss">-   </span><span class="in">`summarise(across())`</span> **reduces rows** (to a single row if no grouping structure is specified)</span>
+<span id="cb23-235"><a href="#cb23-235"></a></span>
+<span id="cb23-236"><a href="#cb23-236"></a><span class="in">`across()`</span> is therefore applied to both functions in the same way, but with different intent.</span>
+<span id="cb23-237"><a href="#cb23-237"></a></span>
+<span id="cb23-238"><a href="#cb23-238"></a>------------------------------------------------------------------------</span>
+<span id="cb23-239"><a href="#cb23-239"></a></span>
+<span id="cb23-240"><a href="#cb23-240"></a><span class="fu">## Multiple Functions per Variable</span></span>
+<span id="cb23-241"><a href="#cb23-241"></a></span>
+<span id="cb23-242"><a href="#cb23-242"></a>What if were interested in not only calculating the mean of each numeric column, but also the standard deviation and the number of observations in each column. Well, it's relatively easy to extend the above example by now applying *several* functions at once.</span>
+<span id="cb23-243"><a href="#cb23-243"></a></span>
+<span id="cb23-246"><a href="#cb23-246"></a><span class="in">```{r}</span></span>
+<span id="cb23-247"><a href="#cb23-247"></a>df <span class="sc">|&gt;</span> </span>
+<span id="cb23-248"><a href="#cb23-248"></a>  <span class="fu">summarise</span>(<span class="fu">across</span>(<span class="fu">where</span>(is.numeric), <span class="fu">list</span>(<span class="at">mean =</span> mean, </span>
+<span id="cb23-249"><a href="#cb23-249"></a>                                           <span class="at">sd =</span> sd,</span>
+<span id="cb23-250"><a href="#cb23-250"></a>                                           <span class="at">n =</span> <span class="sc">~</span> <span class="fu">sum</span>(<span class="sc">!</span><span class="fu">is.na</span>(.))),</span>
+<span id="cb23-251"><a href="#cb23-251"></a>                   <span class="at">.names =</span> <span class="st">"{.col}_{.fn}"</span>))</span>
+<span id="cb23-252"><a href="#cb23-252"></a><span class="in">```</span></span>
+<span id="cb23-253"><a href="#cb23-253"></a></span>
+<span id="cb23-254"><a href="#cb23-254"></a>&lt;br&gt;</span>
+<span id="cb23-255"><a href="#cb23-255"></a></span>
+<span id="cb23-256"><a href="#cb23-256"></a>We can now specify <span class="in">`{.fn}`</span> as a naming qualifier and append this to the original column name. This pattern is a stepping stone toward automated summary tables and reporting pipelines.</span>
+<span id="cb23-257"><a href="#cb23-257"></a></span>
+<span id="cb23-258"><a href="#cb23-258"></a>------------------------------------------------------------------------</span>
+<span id="cb23-259"><a href="#cb23-259"></a></span>
+<span id="cb23-260"><a href="#cb23-260"></a><span class="fu">## Advanced Example: Using `mutate(across())` with `map()`</span></span>
+<span id="cb23-261"><a href="#cb23-261"></a></span>
+<span id="cb23-262"><a href="#cb23-262"></a>Are you ready for something more advanced (but also extremely powerful)? So far we have been dealing with a *single* dataframe, but we can also leverage the power of `across()` in simultaneous column manipulation over *multiple* dataframes using <span class="in">`map()`</span>.</span>
+<span id="cb23-263"><a href="#cb23-263"></a></span>
+<span id="cb23-264"><a href="#cb23-264"></a><span class="fu">### The Problem</span></span>
+<span id="cb23-265"><a href="#cb23-265"></a></span>
+<span id="cb23-266"><a href="#cb23-266"></a>Suppose you have several datasets with the same structure assembled within a <span class="co">[</span><span class="ot">list</span><span class="co">](https://www.r-bloggers.com/2024/10/the-ultimate-guide-to-creating-lists-in-r-from-basics-to-advanced-examples/)</span> (a list is a convenient <span class="in">`R`</span> object within which many other <span class="in">`R`</span> objects can be stored - including dataframes). We can access a particular object within a list with the <span class="in">`$`</span> operator, much like we access the columns of a dataframe.</span>
+<span id="cb23-267"><a href="#cb23-267"></a></span>
+<span id="cb23-270"><a href="#cb23-270"></a><span class="in">```{r}</span></span>
+<span id="cb23-271"><a href="#cb23-271"></a>datasets <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">raw   =</span> df, </span>
+<span id="cb23-272"><a href="#cb23-272"></a>                 <span class="at">clean =</span> df,</span>
+<span id="cb23-273"><a href="#cb23-273"></a>                 <span class="at">sens  =</span> df)</span>
+<span id="cb23-274"><a href="#cb23-274"></a></span>
+<span id="cb23-275"><a href="#cb23-275"></a>datasets<span class="sc">$</span>raw</span>
+<span id="cb23-276"><a href="#cb23-276"></a>datasets<span class="sc">$</span>clean</span>
+<span id="cb23-277"><a href="#cb23-277"></a>datasets<span class="sc">$</span>sens</span>
+<span id="cb23-278"><a href="#cb23-278"></a><span class="in">```</span></span>
+<span id="cb23-279"><a href="#cb23-279"></a></span>
+<span id="cb23-280"><a href="#cb23-280"></a>&lt;br&gt;</span>
+<span id="cb23-281"><a href="#cb23-281"></a></span>
+<span id="cb23-282"><a href="#cb23-282"></a>Now, suppose you want to apply the **same transformation** to all of them.</span>
+<span id="cb23-283"><a href="#cb23-283"></a></span>
+<span id="cb23-284"><a href="#cb23-284"></a>------------------------------------------------------------------------</span>
+<span id="cb23-285"><a href="#cb23-285"></a></span>
+<span id="cb23-286"><a href="#cb23-286"></a><span class="fu">### The Naïve Way</span></span>
+<span id="cb23-287"><a href="#cb23-287"></a></span>
+<span id="cb23-288"><a href="#cb23-288"></a><span class="in">``` r</span></span>
+<span id="cb23-289"><a href="#cb23-289"></a>df_raw   <span class="ot">&lt;-</span> df_raw   <span class="sc">|&gt;</span>  <span class="fu">mutate</span>(...)</span>
+<span id="cb23-290"><a href="#cb23-290"></a>df_clean <span class="ot">&lt;-</span> df_clean <span class="sc">|&gt;</span>  <span class="fu">mutate</span>(...)</span>
+<span id="cb23-291"><a href="#cb23-291"></a>df_sens  <span class="ot">&lt;-</span> df_sens  <span class="sc">|&gt;</span>  <span class="fu">mutate</span>(...)</span>
+<span id="cb23-292"><a href="#cb23-292"></a><span class="in">```</span></span>
+<span id="cb23-293"><a href="#cb23-293"></a></span>
+<span id="cb23-294"><a href="#cb23-294"></a>In this approach we go through and re-apply the same code to each dataframe but this can become difficult to maintain and easy to get wrong.</span>
+<span id="cb23-295"><a href="#cb23-295"></a></span>
+<span id="cb23-296"><a href="#cb23-296"></a>------------------------------------------------------------------------</span>
+<span id="cb23-297"><a href="#cb23-297"></a></span>
+<span id="cb23-298"><a href="#cb23-298"></a><span class="fu">### The Better Way: `map()` + `mutate(across())`</span></span>
+<span id="cb23-299"><a href="#cb23-299"></a></span>
+<span id="cb23-302"><a href="#cb23-302"></a><span class="in">```{r}</span></span>
+<span id="cb23-303"><a href="#cb23-303"></a>datasets <span class="ot">&lt;-</span> datasets <span class="sc">|&gt;</span> </span>
+<span id="cb23-304"><a href="#cb23-304"></a>  <span class="fu">map</span>(<span class="sc">~</span> .x <span class="sc">|&gt;</span> </span>
+<span id="cb23-305"><a href="#cb23-305"></a>    <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">where</span>(is.numeric), round, <span class="dv">1</span>)))</span>
+<span id="cb23-306"><a href="#cb23-306"></a></span>
+<span id="cb23-307"><a href="#cb23-307"></a>datasets<span class="sc">$</span>raw</span>
+<span id="cb23-308"><a href="#cb23-308"></a>datasets<span class="sc">$</span>clean</span>
+<span id="cb23-309"><a href="#cb23-309"></a>datasets<span class="sc">$</span>sens</span>
+<span id="cb23-310"><a href="#cb23-310"></a><span class="in">```</span></span>
+<span id="cb23-311"><a href="#cb23-311"></a></span>
+<span id="cb23-312"><a href="#cb23-312"></a>&lt;br&gt;</span>
+<span id="cb23-313"><a href="#cb23-313"></a></span>
+<span id="cb23-314"><a href="#cb23-314"></a>Indeed, the more efficient way is to use <span class="in">`across()`</span> within <span class="in">`mutate()`</span> within <span class="in">`map()`</span>.</span>
+<span id="cb23-315"><a href="#cb23-315"></a></span>
+<span id="cb23-316"><a href="#cb23-316"></a>We can read this as:</span>
+<span id="cb23-317"><a href="#cb23-317"></a></span>
+<span id="cb23-318"><a href="#cb23-318"></a><span class="at">&gt; “For each dataset, mutate across numeric variables by rounding to 1 decimal place.”</span></span>
+<span id="cb23-319"><a href="#cb23-319"></a></span>
+<span id="cb23-320"><a href="#cb23-320"></a>This approach using <span class="in">`map()`</span> ensures:</span>
+<span id="cb23-321"><a href="#cb23-321"></a></span>
+<span id="cb23-322"><a href="#cb23-322"></a><span class="ss">-   </span>identical logic across datasets\</span>
+<span id="cb23-323"><a href="#cb23-323"></a><span class="ss">-   </span>changes happen in one place\</span>
+<span id="cb23-324"><a href="#cb23-324"></a><span class="ss">-   </span>consistency is guaranteed</span>
+<span id="cb23-325"><a href="#cb23-325"></a></span>
+<span id="cb23-326"><a href="#cb23-326"></a>------------------------------------------------------------------------</span>
+<span id="cb23-327"><a href="#cb23-327"></a></span>
+<span id="cb23-328"><a href="#cb23-328"></a><span class="fu">### Another Example: Standardising Variables Across Datasets</span></span>
+<span id="cb23-329"><a href="#cb23-329"></a></span>
+<span id="cb23-330"><a href="#cb23-330"></a>Now, let's take this further by extending the earlier example of creating new variables, not just within a *single* dataframe, but across *multiple* dataframes.</span>
+<span id="cb23-331"><a href="#cb23-331"></a></span>
+<span id="cb23-334"><a href="#cb23-334"></a><span class="in">```{r}</span></span>
+<span id="cb23-335"><a href="#cb23-335"></a>datasets <span class="ot">&lt;-</span> datasets <span class="sc">|&gt;</span> </span>
+<span id="cb23-336"><a href="#cb23-336"></a>  <span class="fu">map</span>(<span class="sc">~</span> .x <span class="sc">|&gt;</span> </span>
+<span id="cb23-337"><a href="#cb23-337"></a>    <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">c</span>(age, bmi, weight), scale, <span class="at">.names =</span> <span class="st">"{.col}_z"</span>)))</span>
+<span id="cb23-338"><a href="#cb23-338"></a></span>
+<span id="cb23-339"><a href="#cb23-339"></a>datasets<span class="sc">$</span>raw</span>
+<span id="cb23-340"><a href="#cb23-340"></a>datasets<span class="sc">$</span>clean</span>
+<span id="cb23-341"><a href="#cb23-341"></a>datasets<span class="sc">$</span>sens</span>
+<span id="cb23-342"><a href="#cb23-342"></a><span class="in">```</span></span>
+<span id="cb23-343"><a href="#cb23-343"></a></span>
+<span id="cb23-344"><a href="#cb23-344"></a>You can appreciate how much of a Swiss-army knife of data manipulation, <span class="in">`across()`</span> can be become when used in conjunction with other <span class="in">`R`</span> functions.</span>
+<span id="cb23-345"><a href="#cb23-345"></a></span>
+<span id="cb23-346"><a href="#cb23-346"></a>------------------------------------------------------------------------</span>
+<span id="cb23-347"><a href="#cb23-347"></a></span>
+<span id="cb23-348"><a href="#cb23-348"></a><span class="fu">## Final Thoughts and a Mental Model to Take Away</span></span>
+<span id="cb23-349"><a href="#cb23-349"></a></span>
+<span id="cb23-350"><a href="#cb23-350"></a>Whenever you catch yourself thinking:</span>
+<span id="cb23-351"><a href="#cb23-351"></a></span>
+<span id="cb23-352"><a href="#cb23-352"></a><span class="at">&gt; *“I’m doing the same thing to several variables…”*</span></span>
+<span id="cb23-353"><a href="#cb23-353"></a></span>
+<span id="cb23-354"><a href="#cb23-354"></a>You should immediately ask:</span>
+<span id="cb23-355"><a href="#cb23-355"></a></span>
+<span id="cb23-356"><a href="#cb23-356"></a><span class="at">&gt; *“Can this be an `across()`?”*</span></span>
+<span id="cb23-357"><a href="#cb23-357"></a></span>
+<span id="cb23-358"><a href="#cb23-358"></a>That question alone will dramatically improve the quality of your R code.</span>
+<span id="cb23-359"><a href="#cb23-359"></a></span>
+<span id="cb23-360"><a href="#cb23-360"></a>I hope you've found this programming tip helpful and I will see you again for more Stats Tips, next month.</span>
+</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div></div></div></div></div>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

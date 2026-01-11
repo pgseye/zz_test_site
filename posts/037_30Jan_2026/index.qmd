@@ -236,6 +236,7 @@ df |>
                                            n = ~ sum(!is.na(.))),
                    .names = "{.col}_{.fn}"))
 ```
+
 <br>
 
 We can now specify `{.fn}` as a naming qualifier and append this to the original column name. This pattern is a stepping stone toward automated summary tables and reporting pipelines.
@@ -259,6 +260,7 @@ datasets$raw
 datasets$clean
 datasets$sens
 ```
+
 <br>
 
 Now, suppose you want to apply the **same transformation** to all of them.
@@ -288,6 +290,7 @@ datasets$raw
 datasets$clean
 datasets$sens
 ```
+
 <br>
 
 Indeed, the more efficient way is to use `across()` within `mutate()` within `map()`.

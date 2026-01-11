@@ -1,6 +1,6 @@
 ---
 title: "A Gentle Introduction to the Bootstrap"
-date: 2026-01-30
+date: 2026-08-28
 categories: [code, concept, modelling]
 image: "images/bootstrapping.png"
 description: "Primer and Intuition for Computational Non-Parametric Resampling"
