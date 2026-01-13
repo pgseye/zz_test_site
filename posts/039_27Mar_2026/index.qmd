@@ -2,7 +2,7 @@
 title: "Multiple Comparisons"
 date: 2026-03-27
 categories: [concept]
-image: ""
+image: "images/multiple.png"
 description: "To adjust, or not to adjust - that is the question."
 ---
 
