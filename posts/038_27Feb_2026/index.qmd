@@ -203,7 +203,7 @@ Let's now illustrate all of these concepts with a simulated example of a researc
 
 ## A Realistic Epidemiologic Example
 
-The example we're going to use today is based on actual research investigating the effect of air pollution on cardiovascular disease - the question we are asking is: "What is the causal effect of long-term PM2.5 exposure on cardiovascular mortality?" For the sake of brevity, I am not going to discuss the background literature. While I haven't drawn on any particular piece of research in creating this example, if you are interested in reading more about the topic, [this](https://www.sciencedirect.com/science/article/pii/S2772487523000508) would be a good place to start. 
+The example we're going to use today is based on actual research investigating the effect of air pollution on cardiovascular disease - the question we are asking is: "What is the causal effect of long-term PM2.5 exposure on cardiovascular mortality?" For the sake of brevity, I am not going to discuss the background literature. While I haven't drawn on any particular piece of research in creating this example, if you are interested in reading more about the topic, [this](https://www.sciencedirect.com/science/article/pii/S2772487523000508) would be a good place to start.
 
 ::: callout-note
 PM2.5 refers to particulate matter in air that is less than 2.5 μm or less in diameter. The reason that small particulate matter is significant is that it can be inhaled into the lungs and lead to adverse health effects.
@@ -211,19 +211,19 @@ PM2.5 refers to particulate matter in air that is less than 2.5 μm or less in d
 
 We've spent a bit of time thinking about this research question in terms of all potential variables that might be involved in the relationship between PM2.5 exposure, its causal risk effect for cardiovascular mortality, and their interplay with each other. In the end we've come up with the following list of variables, which thankfully, we also have data available for:
 
-- `PM25`: air pollution exposure
+-   `PM25`: air pollution exposure
 
-- `Mortality`: cardiovascular death
+-   `Mortality`: cardiovascular death
 
-- `Age`
+-   `Age`
 
-- `Smoking`
+-   `Smoking`
 
-- `SES`: socioeconomic status
+-   `SES`: socioeconomic status
 
-- `CVD`: pre-existing cardiovascular disease
+-   `CVD`: pre-existing cardiovascular disease
 
-- `Healthcare`: healthcare utilisation
+-   `Healthcare`: healthcare utilisation
 
 ### Encoding the Causal Assumptions and DAG Visualisation
 
@@ -266,7 +266,7 @@ airpollution_dag |>
 
 We then want to interpret the DAG so we can make some logical attempt to justify what variables to include, exclude, adjust and not adjust for in our regression model. To do this, at least initially, it is helpful to enumerate all possible paths contained in the DAG that exist between the exposure (PM25) and the outcome (mortality).
 
-There are two ways to do this - the easy way and the hard way. The hard way involves manually tracing out every path based on the DAG and writing them down. For obvious reasons this is error-prone and subject to missing some of the paths, but it can be helpful as a learning exercise. The easy way is as simple as asking the `daggity` package to do it for you. In the code block below, you'll see that I have extended this functionality by writing a function to also output "status" (path open vs closed) and "type" (frontdoor vs backdoor) information. Running this on the current DAG object generates the following table:
+There are two ways to do this - the easy way and the hard way. The hard way involves manually tracing out every path based on the DAG and writing them down. For obvious reasons this is error-prone and subject to missing some of the paths, but it can be helpful as a learning exercise. The easy way is as simple as asking the `daggity` package to do it for you, using the `paths()` function. In the code block below, you'll see that I have extended this functionality by writing a function to also output "status" (path open vs closed) and "type" (frontdoor vs backdoor) information. Running this on the current DAG object generates the following table:
 
 ```{r}
 # Function to enumerate all paths, status and type
@@ -343,17 +343,17 @@ The first set blocks all backdoor paths without conditioning on anything downstr
 
 When `dagitty` gives you multiple valid sets, you can apply this hierarchy to hopefully make a more reasoned decision:
 
-- Prefer pre-exposure variables over post-exposure or downstream variables
+-   Prefer pre-exposure variables over post-exposure or downstream variables
 
-- Prefer true common causes over descendants of common causes
+-   Prefer true common causes over descendants of common causes
 
-- Avoid mediators and their descendants if estimating total effects
+-   Avoid mediators and their descendants if estimating total effects
 
-- Avoid colliders or "selection" variables even if they appear in valid sets
+-   Avoid colliders or "selection" variables even if they appear in valid sets
 
-- Choose the smallest, simplest set that aligns with the scientific question
+-   Choose the smallest, simplest set that aligns with the scientific question
 
-- Under these principles, {`Age`, `SES`} clearly dominates any alternative.
+-   Under these principles, {`Age`, `SES`} clearly dominates any alternative.
 
 ## Some Final Thoughts
 
@@ -373,13 +373,13 @@ I don't think we're at the stage where journals are *requiring* DAGs be supplied
 
 Even when not required, DAGs:
 
-- justify confounder selection,
+-   justify confounder selection,
 
-- expose inappropriate adjustment,
+-   expose inappropriate adjustment,
 
-- clarify estimands,
+-   clarify estimands,
 
-- and reduce reviewer disagreement.
+-   and reduce reviewer disagreement.
 
 It is not a stretch to say that a single DAG can replace pages of methodological explanation.
 

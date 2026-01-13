@@ -1,0 +1,195 @@
+---
+title: "Multiple Comparisons"
+date: 2026-03-27
+categories: [concept]
+image: ""
+description: "To adjust, or not to adjust - that is the question."
+---
+
+## Introduction
+
+A manuscript that you have worked really hard on and was very proud to submit to a high impact-factor journal comes back from review. Reviewer \# 2 (why, oh why is it always Reviewer \# 2) asks:
+
+> "Did you adjust for multiple testing?"
+
+You freeze. Should you have? Would adjusting make your significant finding disappear? More importantly - should it? You try not to imagine how this one simple comment could potentially add hours and hours to a manuscript rework, potentially changing the statistical inference and therefore conclusions that can be drawn from your research. OK, that doesn't matter you think. "I'm a good scientist, and I will follow the science, and the statistics that determine it. Just point me to the literature that helps me decide what to do." Well, you will soon frustratingly and unsatisfyingly discover that for every paper you find that tells you it's necessary to adjust for multiple comparisons, you will find another paper that says the opposite.
+
+The TLDR for what follows in the rest of this blog piece is that there are two components to this topic that make it really difficult for students and clinicians (and statisticians for that matter) to know what to do. And that's because the answer to the question of "Should I adjust for multiple testing?" is **"It depends"**. You will soon discover that this is very much a context-dependent decision process. But even considering that and perhaps even having decided that you **should** adjust, there still remains a lot of controversy within the statistical community as to **how**.
+
+My aim in this blog is to have you feel more comfortable in making a decision regarding multiple testing in your own research and having the knowledge tools available to justify that decision if Reviewer \# 2 once again decides to make your life difficult for their own smug satisfaction.
+
+------------------------------------------------------------------------
+
+## The Core Problem: Why Multiple Testing Matters
+
+The logic behind multiple testing is straightforward. If you test a single null hypothesis at the `5%` significance level, you accept a `5%` chance of a false positive (Type I error). If you test many independent null hypotheses, the chance of *at least one* false positive increases rapidly.
+
+For example, if you perform `20` independent tests at ($\alpha$ = `0.05`), the probability of at least one false positive is:
+
+$$ 1 - (1 - 0.05)^{20} \approx 0.64 $$
+
+So even if **all null hypotheses are true**, there is a `64%` chance you will declare something "statistically significant", when it clearly isn't. This inflation of false positives is what multiple testing adjustments are designed to control.
+
+But this framing already hides several important subtleties:
+
+-   Tests are rarely independent
+-   Not all analyses have the same inferential goal
+-   Not all errors are equally costly
+-   Not all tests belong to the same “family”
+
+Understanding these nuances is key to making sensible decisions.
+
+------------------------------------------------------------------------
+
+## What Error Rate Are You Trying to Control?
+
+Before discussing methods, it is crucial to clarify *which* error rate you care about, because different adjustments control different quantities.
+
+### Family-Wise Error Rate (FWER)
+
+The **family-wise error rate** is the probability of making *at least one* Type I error in a family of tests:
+
+$$ \text{FWER} = P(\text{one or more false positives}) $$
+
+It is important to keep in mind that the FWER control is strict and conservative - think of it as a "zero-tolerance" approach. The FWER is appropriate when *any* false positive across your entire set of tests would be highly problematic. In other words by controlling the FWER at 0.05, you are saying there is only a `5%` chance that any of your significant results are actually false. Common methods of FWER correction include:
+
+-   Bonferroni correction
+-   Tukey's procedure
+-   Holm (step-down) procedure
+-   Hochberg (step-up) procedure
+-   Dunnett's correction
+
+### False Discovery Rate (FDR)
+
+The **false discovery rate** is the expected proportion of false positives among all rejected null hypotheses:
+
+$$ \text{FDR} = E\left( \frac{\text{false positives}}{\text{total positives}} \right) $$
+
+In contrast to the FWER, the FDR control is less stringent and more powerful when many tests are performed and some true effects are expected. This is the expected proportion of false discoveries among all the results you declare significant. If you control the FDR at `0.05`, you are saying that, on average, `5%` of your "hits" will be false alarms, while the other `95%` are likely real. Common methods of FDR correction include:
+
+-   Benjamini–Hochberg (BH)
+-   Benjamini–Yekutieli (BY)
+
+If the differences still aren't clear, let me give you a ChatGPT inspired analogy:
+
+> Think of FWER as a high-security checkpoint where one mistake shuts down the building, while FDR is like a spam filter that aims to keep most of your inbox clean but allows a few junk emails through so you don't miss important messages.
+
+### No Formal Error Rate (Exploratory Contexts)
+
+In some analyses, the goal is hypothesis generation rather than formal inference. In these cases, strict control of FWER or FDR may not be appropriate at all.
+
+------------------------------------------------------------------------
+
+## What Is a "Family" of Tests?
+
+Remember when I mentioned above that there is still a lot of controversy within the statistical community regarding both the *when* and *how* of multiple comparisons adjustment. Well, I believe it's this very question asking what constitutes a "family" of tests that remains the biggest unresolved issue, and something mathematics alone can't answer. And it is also singly, the issue I think that creates the most confusion when one has to think about how they will adjust for multiple tests.
+
+In theory, multiplicity adjustments control an error rate over a specified set of hypotheses, but in practice the challenge is deciding *which hypotheses meaningfully belong together*. This is not something that can be determined by a formula or a software option alone; it depends on the scientific question being asked and how the results will be interpreted or acted upon.
+
+A sensible definition of a family usually reflects a *common inferential purpose*. Tests belong to the same family when they address the same overarching research question, are interpreted jointly, or feed into a single decision-making process. For example, all secondary endpoints in a clinical trial, all pairwise group comparisons following a single omnibus test, or all biomarkers tested for association with the same outcome can reasonably be treated as families. In each case, a false positive anywhere in the set would be interpreted as evidence against a shared null narrative.
+
+Problems arise when families are defined too broadly or too mechanically. Treating every hypothesis test in a thesis, paper, or dataset as a single family typically leads to excessive conservatism and loss of power, without corresponding gains in scientific credibility. At the other extreme, defining families so narrowly that each test stands alone undermines the very purpose of multiplicity control. Striking the right balance requires judgement and transparency: researchers should be able to explain why a particular group of tests belongs together and why controlling a specific error rate over that group is scientifically meaningful. Ultimately, defining the family is not a purely statistical decision - it requires scientific judgement.
+
+At this point I'm going to introduce an [editorial](https://www.annalsthoracicsurgery.org/article/S0003-4975(15)01873-1/pdf) by a well-regarded biostatistician who does a lot of statistical research work in the area of RCT's.
+
+::: {.callout-note}
+Althouse, A. D. (2016). Adjust for Multiple Comparisons? It’s Not That Simple. Ann Thorac Surg, 101(5), 1644-1645. (if anything happens to the link)
+:::
+
+I think this paper is extremely useful when it comes to defending decisions relating to multiple comparisons adjustments and I'd encourage you to read it and keep a copy on hand. I believe the viewpoint is balanced and pragmatic, providing a sensible framework within which to think about and act (or not) upon multiple comparisons in one's own work. But here, specifically relating to the topic of families of tests, the author points out that:
+
+> "Choosing the number of tests that must be adjusted for is itself a spurious decision".
+
+And then to support this statement points out the potential absurdity of adjusting without thinking: 
+
+> Suppose an investigator publishes the first paper for a study, with additional substudies and ancillary studies to follow that will use the same dataset. Would the investigator be required update the “old” papers with“updated” p values and signicance decisions as further analyses are done on thesame study data?"
+
+and:
+
+> "If one stipulates that the researcher need not consider the above, but still must adjust for the multiple comparisons done within a single paper, that begs researchers to slice data into as many single-hypothesis papers as possible to avoid criticism and increase their chances of a “significant” finding in any individual paper."
+
+These are valid criticisms against blindly following a set of statistical rules without scientific judgement to guide the decision making process. 
+
+------------------------------------------------------------------------
+
+## When You Should Adjust for Multiple Testing
+
+In some settings, multiple testing adjustment is clearly warranted and, in certain domains, effectively unavoidable. The most straightforward case is confirmatory research with multiple endpoints, particularly in clinical trials. When a study includes multiple primary endpoints, several treatment doses compared with a common control, or a set of pre-specified secondary endpoints intended to support formal claims, adjustment for multiplicity is essential. These analyses are typically fixed in advance, tied to explicit decision-making, and often have regulatory or clinical consequences. In such contexts, controlling the FWER through methods such as Bonferroni, Holm, or structured testing strategies like gatekeeping is usually appropriate, because even a single false positive can have serious implications.
+
+Another clear case for adjustment arises in large-scale screening studies, such as those encountered in genomics, proteomics, neuroimaging, or other high-dimensional data settings. Here, thousands of hypotheses may be tested simultaneously, and without adjustment, false positives would overwhelm the results. In these contexts, the scientific goal is not to avoid all false positives, but to limit their proportion among reported findings. FDR control has therefore become the dominant paradigm, with the Benjamini–Hochberg procedure widely used due to its balance between error control and statistical power. Importantly, these analyses are usually understood as part of a broader discovery pipeline, with independent validation expected downstream.
+
+Multiplicity adjustment is also generally appropriate when multiple comparisons are interpreted symmetrically. If a researcher intends to interpret any statistically significant result from a set of related tests as equally meaningful - for example, when examining all pairwise group differences and highlighting those with p-values below a fixed threshold - then adjustment is necessary to avoid systematically overstating evidence. Without correction, this practice almost guarantees that at least some reported differences will be spurious, even in moderately sized studies.
+
+------------------------------------------------------------------------
+
+## How to Adjust: Practical Guidance
+
+The simplest and most familiar adjustment is the Bonferroni correction, which replaces the nominal significance level with the significance level divided by the number of tests. Its appeal lies in its simplicity and its robustness: it controls the family-wise error rate under any dependence structure. However, this robustness comes at a cost. Bonferroni is often extremely conservative, particularly when the number of tests is large, leading to a substantial loss of power. For this reason, it is best viewed as a safety bound rather than a default strategy.
+
+Holm’s step-down procedure offers a uniformly more powerful alternative while still controlling the FWER. By adjusting p-values sequentially rather than uniformly, Holm’s method avoids some of the unnecessary conservatism of Bonferroni and is often a sensible choice when strong error control is required but power is at a premium.
+
+When the goal shifts from avoiding any false positives to limiting their proportion, FDR methods become more attractive. The Benjamini–Hochberg procedure controls the expected proportion of false discoveries under independence and many forms of positive dependence, and it is both easy to implement and widely accepted. In large testing problems where some true effects are anticipated, BH often provides a pragmatic balance between credibility and sensitivity. When there is uncertainty, or when dependence structures are complex, it is frequently a reasonable starting point.
+
+------------------------------------------------------------------------
+
+## When You Should Not Adjust
+
+There are also important situations in which multiple testing adjustment is unnecessary or even counterproductive. If a study has a single, clearly defined primary hypothesis that is tested once, no adjustment is required, regardless of how much exploratory work preceded the final analysis. In this case, there is no multiplicity problem to solve, and adjusting the p-value would only dilute the intended inference.
+
+Clearly labelled exploratory analyses represent another context where adjustment may do more harm than good. When the purpose of an analysis is hypothesis generation rather than confirmation, strict control of formal error rates can increase false negatives and obscure potentially interesting signals. In such settings, a transparent approach - reporting unadjusted p-values, emphasising effect sizes and uncertainty, and explicitly acknowledging the exploratory nature of the findings - is often more scientifically honest than mechanical correction.
+
+Finally, in some analytic frameworks, multiplicity is already addressed implicitly through the modelling strategy. Hierarchical or multilevel models, Bayesian analyses with partial pooling, and penalised regression approaches all borrow strength across parameters and naturally shrink extreme estimates. Applying post-hoc p-value adjustments on top of these methods can distort inference rather than improve it. In these cases, careful interpretation of model-based uncertainty is usually preferable to additional multiplicity correction.
+
+------------------------------------------------------------------------
+
+## Don't Blindly Follow "Rules"
+
+I hope a theme has now emerged that we shouldn't just mechanically apply multiple testing adjustments without first thinking about the nature of the analyses we are performing within the context of the aims of our research. As much as we need to justify why we *haven't* performed a multiplicity correction, we should also need to justify why we *have*.
+
+So please don't blindly apply a Bonferroni correction to your next set of loosely-related t-tests. Similarly, don't spend hours reworking a manuscript to incorporate corrections requested by reviewers without first clarifying the estimand and being clear about what they think they want in your analysis. And then be prepared to push back if you don't agree. Remember that multiplicity adjustment should be scientifically defensible, not ritualistic, otherwise you may very well end up with the worst of both worlds: analyses hamstrung by reduced power and no meaningful control of a scientifically relevant error rate.
+
+------------------------------------------------------------------------
+
+## Reporting Recommendations
+
+If you have made the decision to employ a multiple testing procedure in your work, you need to explain that in your methods. Good reporting should include:
+
+-   A clear definition of the family of tests
+-   The error rate being controlled (FWER, FDR, or none)
+-   The adjustment method used
+-   Both adjusted and unadjusted p-values (when helpful)
+-   Emphasis on effect sizes and confidence intervals
+
+If you've made the decision NOT to employ a multiple testing procedure - that is ok too. Remember that p-values do not exist in isolation - they are part of a broader inferential narrative. Here I will directly quote once again from the Althouse viewpoint:
+
+> "In this reader’s opinion, the best approach is simply to (1) describe what was done in a study; (2) report effect sizes, conﬁdence intervals, and p values; and (3) let readers use their own judgment about the relative weight of the conclusions. Scientiﬁcally literate researchers should be able to interpret study results without a cookie-cutter statement that the p value was “signiﬁcant” or “not signiﬁcant” at an arbitrary threshold."
+
+------------------------------------------------------------------------
+
+## Take-Home Messages
+
+Let me summarise everything we've talked about today in just a few points:
+
+1.  Multiple testing is a *contextual* problem, not a universal rule.
+2.  The first question is **what error rate matters for this scientific question**.
+3.  FWER methods suit confirmatory settings; FDR suits large-scale screening.
+4.  Not all analyses require adjustment - and some are harmed by it.
+5.  Thoughtful justification beats automatic correction every time.
+
+If you can clearly explain *why* you did (or did not) adjust for multiple testing, you are already ahead of the curve. Don't ever let Reviewer # 2 have the upper hand again.
+
+------------------------------------------------------------------------
+
+## References and Further Reading
+
+I don't normally include references but I thought for this topic a few might be helpful if you are interested in reading more. Until next month...
+
+-   Benjamini, Y., & Hochberg, Y. (1995). Controlling the false discovery rate: A practical and powerful approach to multiple testing. *Journal of the Royal Statistical Society: Series B*, 57(1), 289–300.
+-   Rothman, K. J. (1990). No adjustments are needed for multiple comparisons. *Epidemiology*, 1(1), 43–46.
+-   Bender, R., & Lange, S. (2001). Adjusting for multiple testing—when and how? *Journal of Clinical Epidemiology*, 54(4), 343–349.
+-   Greenland, S., Senn, S. J., Rothman, K. J., et al. (2016). Statistical tests, P values, confidence intervals, and power: a guide to misinterpretations. *European Journal of Epidemiology*, 31, 337–350.
+-   Hochberg, Y., & Tamhane, A. C. (1987). *Multiple Comparison Procedures*. Wiley.
+
+------------------------------------------------------------------------
+
+

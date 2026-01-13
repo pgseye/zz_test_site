@@ -468,7 +468,7 @@ Note
 <section id="interpreting-the-dag" class="level3" data-number="4.2">
 <h3 data-number="4.2" class="anchored" data-anchor-id="interpreting-the-dag"><span class="header-section-number">4.2</span> Interpreting the DAG</h3>
 <p>We then want to interpret the DAG so we can make some logical attempt to justify what variables to include, exclude, adjust and not adjust for in our regression model. To do this, at least initially, it is helpful to enumerate all possible paths contained in the DAG that exist between the exposure (PM25) and the outcome (mortality).</p>
-<p>There are two ways to do this - the easy way and the hard way. The hard way involves manually tracing out every path based on the DAG and writing them down. For obvious reasons this is error-prone and subject to missing some of the paths, but it can be helpful as a learning exercise. The easy way is as simple as asking the <code>daggity</code> package to do it for you. In the code block below, you’ll see that I have extended this functionality by writing a function to also output “status” (path open vs closed) and “type” (frontdoor vs backdoor) information. Running this on the current DAG object generates the following table:</p>
+<p>There are two ways to do this - the easy way and the hard way. The hard way involves manually tracing out every path based on the DAG and writing them down. For obvious reasons this is error-prone and subject to missing some of the paths, but it can be helpful as a learning exercise. The easy way is as simple as asking the <code>daggity</code> package to do it for you, using the <code>paths()</code> function. In the code block below, you’ll see that I have extended this functionality by writing a function to also output “status” (path open vs closed) and “type” (frontdoor vs backdoor) information. Running this on the current DAG object generates the following table:</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -1463,7 +1463,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb6-203"><a href="#cb6-203"></a></span>
 <span id="cb6-204"><a href="#cb6-204"></a><span class="fu">## A Realistic Epidemiologic Example</span></span>
 <span id="cb6-205"><a href="#cb6-205"></a></span>
-<span id="cb6-206"><a href="#cb6-206"></a>The example we're going to use today is based on actual research investigating the effect of air pollution on cardiovascular disease - the question we are asking is: "What is the causal effect of long-term PM2.5 exposure on cardiovascular mortality?" For the sake of brevity, I am not going to discuss the background literature. While I haven't drawn on any particular piece of research in creating this example, if you are interested in reading more about the topic, <span class="co">[</span><span class="ot">this</span><span class="co">](https://www.sciencedirect.com/science/article/pii/S2772487523000508)</span> would be a good place to start. </span>
+<span id="cb6-206"><a href="#cb6-206"></a>The example we're going to use today is based on actual research investigating the effect of air pollution on cardiovascular disease - the question we are asking is: "What is the causal effect of long-term PM2.5 exposure on cardiovascular mortality?" For the sake of brevity, I am not going to discuss the background literature. While I haven't drawn on any particular piece of research in creating this example, if you are interested in reading more about the topic, <span class="co">[</span><span class="ot">this</span><span class="co">](https://www.sciencedirect.com/science/article/pii/S2772487523000508)</span> would be a good place to start.</span>
 <span id="cb6-207"><a href="#cb6-207"></a></span>
 <span id="cb6-208"><a href="#cb6-208"></a>::: callout-note</span>
 <span id="cb6-209"><a href="#cb6-209"></a>PM2.5 refers to particulate matter in air that is less than 2.5 μm or less in diameter. The reason that small particulate matter is significant is that it can be inhaled into the lungs and lead to adverse health effects.</span>
@@ -1471,19 +1471,19 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb6-211"><a href="#cb6-211"></a></span>
 <span id="cb6-212"><a href="#cb6-212"></a>We've spent a bit of time thinking about this research question in terms of all potential variables that might be involved in the relationship between PM2.5 exposure, its causal risk effect for cardiovascular mortality, and their interplay with each other. In the end we've come up with the following list of variables, which thankfully, we also have data available for:</span>
 <span id="cb6-213"><a href="#cb6-213"></a></span>
-<span id="cb6-214"><a href="#cb6-214"></a><span class="ss">- </span><span class="in">`PM25`</span>: air pollution exposure</span>
+<span id="cb6-214"><a href="#cb6-214"></a><span class="ss">-   </span><span class="in">`PM25`</span>: air pollution exposure</span>
 <span id="cb6-215"><a href="#cb6-215"></a></span>
-<span id="cb6-216"><a href="#cb6-216"></a><span class="ss">- </span><span class="in">`Mortality`</span>: cardiovascular death</span>
+<span id="cb6-216"><a href="#cb6-216"></a><span class="ss">-   </span><span class="in">`Mortality`</span>: cardiovascular death</span>
 <span id="cb6-217"><a href="#cb6-217"></a></span>
-<span id="cb6-218"><a href="#cb6-218"></a><span class="ss">- </span><span class="in">`Age`</span></span>
+<span id="cb6-218"><a href="#cb6-218"></a><span class="ss">-   </span><span class="in">`Age`</span></span>
 <span id="cb6-219"><a href="#cb6-219"></a></span>
-<span id="cb6-220"><a href="#cb6-220"></a><span class="ss">- </span><span class="in">`Smoking`</span></span>
+<span id="cb6-220"><a href="#cb6-220"></a><span class="ss">-   </span><span class="in">`Smoking`</span></span>
 <span id="cb6-221"><a href="#cb6-221"></a></span>
-<span id="cb6-222"><a href="#cb6-222"></a><span class="ss">- </span><span class="in">`SES`</span>: socioeconomic status</span>
+<span id="cb6-222"><a href="#cb6-222"></a><span class="ss">-   </span><span class="in">`SES`</span>: socioeconomic status</span>
 <span id="cb6-223"><a href="#cb6-223"></a></span>
-<span id="cb6-224"><a href="#cb6-224"></a><span class="ss">- </span><span class="in">`CVD`</span>: pre-existing cardiovascular disease</span>
+<span id="cb6-224"><a href="#cb6-224"></a><span class="ss">-   </span><span class="in">`CVD`</span>: pre-existing cardiovascular disease</span>
 <span id="cb6-225"><a href="#cb6-225"></a></span>
-<span id="cb6-226"><a href="#cb6-226"></a><span class="ss">- </span><span class="in">`Healthcare`</span>: healthcare utilisation</span>
+<span id="cb6-226"><a href="#cb6-226"></a><span class="ss">-   </span><span class="in">`Healthcare`</span>: healthcare utilisation</span>
 <span id="cb6-227"><a href="#cb6-227"></a></span>
 <span id="cb6-228"><a href="#cb6-228"></a><span class="fu">### Encoding the Causal Assumptions and DAG Visualisation</span></span>
 <span id="cb6-229"><a href="#cb6-229"></a></span>
@@ -1526,7 +1526,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb6-266"><a href="#cb6-266"></a></span>
 <span id="cb6-267"><a href="#cb6-267"></a>We then want to interpret the DAG so we can make some logical attempt to justify what variables to include, exclude, adjust and not adjust for in our regression model. To do this, at least initially, it is helpful to enumerate all possible paths contained in the DAG that exist between the exposure (PM25) and the outcome (mortality).</span>
 <span id="cb6-268"><a href="#cb6-268"></a></span>
-<span id="cb6-269"><a href="#cb6-269"></a>There are two ways to do this - the easy way and the hard way. The hard way involves manually tracing out every path based on the DAG and writing them down. For obvious reasons this is error-prone and subject to missing some of the paths, but it can be helpful as a learning exercise. The easy way is as simple as asking the <span class="in">`daggity`</span> package to do it for you. In the code block below, you'll see that I have extended this functionality by writing a function to also output "status" (path open vs closed) and "type" (frontdoor vs backdoor) information. Running this on the current DAG object generates the following table:</span>
+<span id="cb6-269"><a href="#cb6-269"></a>There are two ways to do this - the easy way and the hard way. The hard way involves manually tracing out every path based on the DAG and writing them down. For obvious reasons this is error-prone and subject to missing some of the paths, but it can be helpful as a learning exercise. The easy way is as simple as asking the <span class="in">`daggity`</span> package to do it for you, using the <span class="in">`paths()`</span> function. In the code block below, you'll see that I have extended this functionality by writing a function to also output "status" (path open vs closed) and "type" (frontdoor vs backdoor) information. Running this on the current DAG object generates the following table:</span>
 <span id="cb6-270"><a href="#cb6-270"></a></span>
 <span id="cb6-273"><a href="#cb6-273"></a><span class="in">```{r}</span></span>
 <span id="cb6-274"><a href="#cb6-274"></a><span class="co"># Function to enumerate all paths, status and type</span></span>
@@ -1603,17 +1603,17 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb6-345"><a href="#cb6-345"></a></span>
 <span id="cb6-346"><a href="#cb6-346"></a>When <span class="in">`dagitty`</span> gives you multiple valid sets, you can apply this hierarchy to hopefully make a more reasoned decision:</span>
 <span id="cb6-347"><a href="#cb6-347"></a></span>
-<span id="cb6-348"><a href="#cb6-348"></a><span class="ss">- </span>Prefer pre-exposure variables over post-exposure or downstream variables</span>
+<span id="cb6-348"><a href="#cb6-348"></a><span class="ss">-   </span>Prefer pre-exposure variables over post-exposure or downstream variables</span>
 <span id="cb6-349"><a href="#cb6-349"></a></span>
-<span id="cb6-350"><a href="#cb6-350"></a><span class="ss">- </span>Prefer true common causes over descendants of common causes</span>
+<span id="cb6-350"><a href="#cb6-350"></a><span class="ss">-   </span>Prefer true common causes over descendants of common causes</span>
 <span id="cb6-351"><a href="#cb6-351"></a></span>
-<span id="cb6-352"><a href="#cb6-352"></a><span class="ss">- </span>Avoid mediators and their descendants if estimating total effects</span>
+<span id="cb6-352"><a href="#cb6-352"></a><span class="ss">-   </span>Avoid mediators and their descendants if estimating total effects</span>
 <span id="cb6-353"><a href="#cb6-353"></a></span>
-<span id="cb6-354"><a href="#cb6-354"></a><span class="ss">- </span>Avoid colliders or "selection" variables even if they appear in valid sets</span>
+<span id="cb6-354"><a href="#cb6-354"></a><span class="ss">-   </span>Avoid colliders or "selection" variables even if they appear in valid sets</span>
 <span id="cb6-355"><a href="#cb6-355"></a></span>
-<span id="cb6-356"><a href="#cb6-356"></a><span class="ss">- </span>Choose the smallest, simplest set that aligns with the scientific question</span>
+<span id="cb6-356"><a href="#cb6-356"></a><span class="ss">-   </span>Choose the smallest, simplest set that aligns with the scientific question</span>
 <span id="cb6-357"><a href="#cb6-357"></a></span>
-<span id="cb6-358"><a href="#cb6-358"></a><span class="ss">- </span>Under these principles, {<span class="in">`Age`</span>, <span class="in">`SES`</span>} clearly dominates any alternative.</span>
+<span id="cb6-358"><a href="#cb6-358"></a><span class="ss">-   </span>Under these principles, {<span class="in">`Age`</span>, <span class="in">`SES`</span>} clearly dominates any alternative.</span>
 <span id="cb6-359"><a href="#cb6-359"></a></span>
 <span id="cb6-360"><a href="#cb6-360"></a><span class="fu">## Some Final Thoughts</span></span>
 <span id="cb6-361"><a href="#cb6-361"></a></span>
@@ -1633,13 +1633,13 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb6-375"><a href="#cb6-375"></a></span>
 <span id="cb6-376"><a href="#cb6-376"></a>Even when not required, DAGs:</span>
 <span id="cb6-377"><a href="#cb6-377"></a></span>
-<span id="cb6-378"><a href="#cb6-378"></a><span class="ss">- </span>justify confounder selection,</span>
+<span id="cb6-378"><a href="#cb6-378"></a><span class="ss">-   </span>justify confounder selection,</span>
 <span id="cb6-379"><a href="#cb6-379"></a></span>
-<span id="cb6-380"><a href="#cb6-380"></a><span class="ss">- </span>expose inappropriate adjustment,</span>
+<span id="cb6-380"><a href="#cb6-380"></a><span class="ss">-   </span>expose inappropriate adjustment,</span>
 <span id="cb6-381"><a href="#cb6-381"></a></span>
-<span id="cb6-382"><a href="#cb6-382"></a><span class="ss">- </span>clarify estimands,</span>
+<span id="cb6-382"><a href="#cb6-382"></a><span class="ss">-   </span>clarify estimands,</span>
 <span id="cb6-383"><a href="#cb6-383"></a></span>
-<span id="cb6-384"><a href="#cb6-384"></a><span class="ss">- </span>and reduce reviewer disagreement.</span>
+<span id="cb6-384"><a href="#cb6-384"></a><span class="ss">-   </span>and reduce reviewer disagreement.</span>
 <span id="cb6-385"><a href="#cb6-385"></a></span>
 <span id="cb6-386"><a href="#cb6-386"></a>It is not a stretch to say that a single DAG can replace pages of methodological explanation.</span>
 <span id="cb6-387"><a href="#cb6-387"></a></span>
