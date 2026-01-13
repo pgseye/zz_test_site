@@ -1,6 +1,6 @@
 ---
 title: "The Perils of Stepwise Regression - And what to do instead"
-date: 2026-03-27
+date: 2026-05-29
 categories: [code, concept]
 image: "elastic.png"
 description: "Data-driven variable selection does not represent best practice in applied statistics."

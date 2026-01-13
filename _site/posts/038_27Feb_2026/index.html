@@ -7,9 +7,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="dcterms.date" content="2026-02-27">
-<meta name="description" content="What they are and one way to draw them">
+<meta name="description" content="Don’t be a DAG, draw one instead.">
 
-<title>Test Site 2 - A Gentle Introduction to Directed Acyclic Graphs (DAG’s)</title>
+<title>Test Site 2 - A Gentle Introduction to Directed Acyclic Graphs (DAGs)</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -147,14 +147,40 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <!-- sidebar -->
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">1</span> Introduction</a></li>
+  <li><a href="#association-vs-causation" id="toc-association-vs-causation" class="nav-link" data-scroll-target="#association-vs-causation"><span class="header-section-number">2</span> Association vs Causation</a></li>
+  <li><a href="#the-basics" id="toc-the-basics" class="nav-link" data-scroll-target="#the-basics"><span class="header-section-number">3</span> The Basics</a>
+  <ul>
+  <li><a href="#what-are-directed-acyclic-graphs" id="toc-what-are-directed-acyclic-graphs" class="nav-link" data-scroll-target="#what-are-directed-acyclic-graphs"><span class="header-section-number">3.1</span> What are Directed Acyclic Graphs?</a></li>
+  <li><a href="#the-building-block-paths-of-a-dag" id="toc-the-building-block-paths-of-a-dag" class="nav-link" data-scroll-target="#the-building-block-paths-of-a-dag"><span class="header-section-number">3.2</span> The Building Block Paths of a DAG</a></li>
+  <li><a href="#backdoor-frontdoor-open-and-closed-paths" id="toc-backdoor-frontdoor-open-and-closed-paths" class="nav-link" data-scroll-target="#backdoor-frontdoor-open-and-closed-paths"><span class="header-section-number">3.3</span> Backdoor, Frontdoor, Open and Closed Paths</a></li>
+  </ul></li>
+  <li><a href="#a-realistic-epidemiologic-example" id="toc-a-realistic-epidemiologic-example" class="nav-link" data-scroll-target="#a-realistic-epidemiologic-example"><span class="header-section-number">4</span> A Realistic Epidemiologic Example</a>
+  <ul>
+  <li><a href="#encoding-the-causal-assumptions-and-dag-visualisation" id="toc-encoding-the-causal-assumptions-and-dag-visualisation" class="nav-link" data-scroll-target="#encoding-the-causal-assumptions-and-dag-visualisation"><span class="header-section-number">4.1</span> Encoding the Causal Assumptions and DAG Visualisation</a></li>
+  <li><a href="#interpreting-the-dag" id="toc-interpreting-the-dag" class="nav-link" data-scroll-target="#interpreting-the-dag"><span class="header-section-number">4.2</span> Interpreting the DAG</a></li>
+  <li><a href="#identifying-the-minimally-sufficient-adjustment-set" id="toc-identifying-the-minimally-sufficient-adjustment-set" class="nav-link" data-scroll-target="#identifying-the-minimally-sufficient-adjustment-set"><span class="header-section-number">4.3</span> Identifying the Minimally Sufficient Adjustment Set</a></li>
+  </ul></li>
+  <li><a href="#some-final-thoughts" id="toc-some-final-thoughts" class="nav-link" data-scroll-target="#some-final-thoughts"><span class="header-section-number">5</span> Some Final Thoughts</a>
+  <ul>
+  <li><a href="#why-not-adjust-for-everything" id="toc-why-not-adjust-for-everything" class="nav-link" data-scroll-target="#why-not-adjust-for-everything"><span class="header-section-number">5.1</span> Why Not Adjust for Everything?</a></li>
+  <li><a href="#what-dags-dont-do" id="toc-what-dags-dont-do" class="nav-link" data-scroll-target="#what-dags-dont-do"><span class="header-section-number">5.2</span> What DAGs Don’t Do</a></li>
+  <li><a href="#should-you-include-a-dag-in-your-next-paper" id="toc-should-you-include-a-dag-in-your-next-paper" class="nav-link" data-scroll-target="#should-you-include-a-dag-in-your-next-paper"><span class="header-section-number">5.3</span> Should You Include a DAG in Your Next Paper?</a></li>
+  <li><a href="#really-the-end" id="toc-really-the-end" class="nav-link" data-scroll-target="#really-the-end"><span class="header-section-number">5.4</span> Really, The End!</a></li>
+  </ul></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<div class="quarto-title-block"><div><h1 class="title">A Gentle Introduction to Directed Acyclic Graphs (DAG’s)</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
+<div class="quarto-title-block"><div><h1 class="title">A Gentle Introduction to Directed Acyclic Graphs (DAGs)</h1><button type="button" class="btn code-tools-button dropdown-toggle" id="quarto-code-tools-menu" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi"></i> Code</button><ul class="dropdown-menu dropdown-menu-end" aria-labelelledby="quarto-code-tools-menu"><li><a id="quarto-show-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Show All Code</a></li><li><a id="quarto-hide-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Hide All Code</a></li><li><hr class="dropdown-divider"></li><li><a id="quarto-view-source" class="dropdown-item" href="javascript:void(0)" role="button">View Source</a></li></ul></div></div>
   <div class="quarto-categories">
     <div class="quarto-category">code</div>
     <div class="quarto-category">concept</div>
@@ -164,7 +190,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <div>
   <div class="description">
-    What they are and one way to draw them
+    Don’t be a DAG, draw one instead.
   </div>
 </div>
 
@@ -187,10 +213,463 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
+<section id="introduction" class="level2" data-number="1">
+<h2 data-number="1" class="anchored" data-anchor-id="introduction"><span class="header-section-number">1</span> Introduction</h2>
+<p>A good part of the research that we do in the unit is observational in nature. Rather than the highly controlled environments of laboratory-based experimental designs and randomised clinical trials, observational research is really the “Wild West” cousin, where both its virtue and vice is in the fact that we gain knowledge by observing the “chaos” of the natural world. Consequently, observational research lives and dies by assumptions. We assume certain variables cause others, assume some relationships matter and others don’t, and assume that statistical adjustment corresponds to causal control. Directed acyclic graphs (DAGs) force these assumptions out into the open.</p>
+<p>In this post, we’ll move beyond theory and show how to construct, visualise, and interrogate DAGs in <code>R</code> using the <code>ggdag</code> and <code>daggity</code> packages. Along the way, we’ll revisit why DAGs are essential for observational research and how they clarify the roles of confounders, mediators, and colliders.</p>
+</section>
+<section id="association-vs-causation" class="level2" data-number="2">
+<h2 data-number="2" class="anchored" data-anchor-id="association-vs-causation"><span class="header-section-number">2</span> Association vs Causation</h2>
+<p>Before diving into DAGs, let’s briefly explore the idea that we often have unrealistic expectations for the intent of our work. In my early research career I was pulled up at least once by a journal reviewer (hopefully I never made the same mistake again) for describing my results as an “effect”, without the use of quotation marks in the manuscript at the time. I received a relatively lengthy screed in review chastising me that use of the term in that context implied causation between the exposure and outcome, and all I could really report was an association. The reviewer had a point and so I now never write “effect” without the quotation marks, hopefully implying my usage of the word as a colloquial proxy for association or correlation.</p>
+<p>Part of the problem is that it’s hard to disabuse ourselves of what we’re taught in statistics classes. When we specify something like the following regression model:</p>
+<p><code>lm(outcome ~ exposure + covariates, data = df)</code></p>
+<p>we are implicitly making causal claims about: which variables precede exposure, which variables influence outcome, and which associations we want to block or preserve. But we need to stop thinking like that.</p>
+<p>While the ultimate goal of most observational research is to inform interventions by identifying “cause and effect”, the vast majority of published analyses remain strictly association studies due to the inherent limitations of non-experimental data. Although our ingrained motivations as scientists want us to argue that one thing leads to another (i.e.&nbsp;the exposure causes the outcome), it is important to keep in mind that because of the assumptions we must make, this is often an impossible goal. Establishing causation with sufficient evidence is not an all or nothing event, however. Think of it as a dial turning between association and causation, where the former represents the default position. The more assumptions you convincingly satisfy, the more the dial may be allowed to turn clockwise towards causation rather than just association in explaining the exposure -&gt; outcome relationship.</p>
+<p>Now, I’m not going to go through all of the <a href="https://www.stats.ox.ac.uk/~evans/APTS/causassmp.html">assumptions</a> necessary for causal inference in detail. But I will mention the first, and arguably the most important. That is the assumption of <strong>No Unobserved Confounding</strong>. In other words, we need to know that we have identified and accounted for <strong>all</strong> possible covariates that might distort our exposure -&gt; outcome relationship of interest. Only then, can we start to assert with a little more confidence that “effects” are indeed just that, allowing us to use language that is less neutral and more concordant with a causal process.</p>
+<p>And this is where a DAG can be extremely helpful.</p>
+</section>
+<section id="the-basics" class="level2" data-number="3">
+<h2 data-number="3" class="anchored" data-anchor-id="the-basics"><span class="header-section-number">3</span> The Basics</h2>
+<section id="what-are-directed-acyclic-graphs" class="level3" data-number="3.1">
+<h3 data-number="3.1" class="anchored" data-anchor-id="what-are-directed-acyclic-graphs"><span class="header-section-number">3.1</span> What are Directed Acyclic Graphs?</h3>
+<p>A Directed Acyclic Graph (DAG) is a visual map used to represent the assumed causal relationships between variables, and to identify confounding. They are relatively recent development in the field of causal inference, based on formal logic and machine learning research from the 1990’s. In the modern era, DAGs are critical in much observational research and I think it is now safe to say that you won’t see your manuscript accepted to a reputable journal if you plan to conduct an explicit causal analysis, without one.</p>
+<p>The following is an example DAG taken from a <a href="https://pubmed.ncbi.nlm.nih.gov/36251191/">recent paper</a> visualising all theoretical variable pathways in the proposed relationship between various chronic lung diseases and lung cancer.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/example_dag.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
+</figure>
+</div>
+<p>This is a fairly complex DAG, so don’t be put off by it. Indeed, while this figure is visually arresting, at their core every DAG contains only two basic structures:</p>
+<ol type="1">
+<li>The variables in the postulated data-generating process (DGP), each represented by a “node” on the diagram, and:</li>
+<li>The causal relationships (or pathways) in the postulated DGP, each represented by an arrow from the cause variable to the caused variable (i.e.&nbsp;effect).</li>
+</ol>
+<p>Thus, a DAG is:</p>
+<ul>
+<li><p>Directed: arrows indicate causal direction between two variables,</p></li>
+<li><p>Acyclic: arrows can never form a closed/feedback loop (e.g., A→B→C→A). This reflects the reality that a cause must precede its effect in time; you cannot be your own ancestor.</p></li>
+<li><p>Graphical: variables are nodes, relationships are paths.</p></li>
+</ul>
+<p>With this knowledge and the context of the above example then, one could make statements such as:</p>
+<ul>
+<li><p>“Lung disease ‘causes’ lung cancer”, or:</p></li>
+<li><p>“Age ‘causes’ lung disease”, or:</p></li>
+<li><p>“Smoking ‘causes’ lung cancer”.</p></li>
+</ul>
+<p>Some such statements we may not know with certainty to be true, but this is ok. In fact, an arrow in a DAG is almost always a <strong>hypothesised assumption</strong> rather than a proven fact. One of the most powerful features of a DAG is that it functions as a “honesty check” in that it forces you to move your private mental model into a public, visual space where others can critique it.</p>
+</section>
+<section id="the-building-block-paths-of-a-dag" class="level3" data-number="3.2">
+<h3 data-number="3.2" class="anchored" data-anchor-id="the-building-block-paths-of-a-dag"><span class="header-section-number">3.2</span> The Building Block Paths of a DAG</h3>
+<p>Just as there are only two structural components to a DAG, there are only three types of <em>paths</em> (i.e.&nbsp;sequence of arrows) that you need to think about. Once you have a handle on these you are well on your way to not only being able to interpret a DAG, but construct one of your own. The building block paths are:</p>
+<ol type="1">
+<li><p>Chains:</p>
+<ul>
+<li>A → B → C</li>
+</ul></li>
+<li><p>Forks:</p>
+<ul>
+<li>A ← B → C</li>
+</ul></li>
+<li><p>Inverted Forks (Colliders):</p>
+<ul>
+<li>A → B ← C</li>
+</ul></li>
+</ol>
+<p>Let’s visualise each of these with some <code>R</code> code and the <code>ggdag</code> and <code>daggity</code> packages.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">library</span>(ggdag)</span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="fu">library</span>(dagitty)</span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-4"><a href="#cb1-4"></a><span class="fu">library</span>(ggrepel)</span>
+<span id="cb1-5"><a href="#cb1-5"></a><span class="fu">library</span>(kableExtra)</span>
+<span id="cb1-6"><a href="#cb1-6"></a></span>
+<span id="cb1-7"><a href="#cb1-7"></a><span class="co"># Define node coordinates</span></span>
+<span id="cb1-8"><a href="#cb1-8"></a>dag_coords <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tribble</span>(</span>
+<span id="cb1-9"><a href="#cb1-9"></a>  <span class="sc">~</span>name, <span class="sc">~</span>x,  <span class="sc">~</span>y,</span>
+<span id="cb1-10"><a href="#cb1-10"></a>  <span class="st">"C"</span>,    <span class="dv">0</span>,   <span class="dv">1</span>,    <span class="co"># Confounder/Collider/Mediator at top</span></span>
+<span id="cb1-11"><a href="#cb1-11"></a>  <span class="st">"E"</span>,   <span class="sc">-</span><span class="dv">1</span>,   <span class="dv">0</span>,    <span class="co"># Exposure at bottom left</span></span>
+<span id="cb1-12"><a href="#cb1-12"></a>  <span class="st">"O"</span>,    <span class="dv">1</span>,   <span class="dv">0</span>     <span class="co"># Outcome at bottom right</span></span>
+<span id="cb1-13"><a href="#cb1-13"></a>)</span>
+<span id="cb1-14"><a href="#cb1-14"></a></span>
+<span id="cb1-15"><a href="#cb1-15"></a><span class="co"># Encode DAGs for each path type</span></span>
+<span id="cb1-16"><a href="#cb1-16"></a>Chain <span class="ot">&lt;-</span> <span class="fu">dagify</span>(</span>
+<span id="cb1-17"><a href="#cb1-17"></a>  C <span class="sc">~</span> E,</span>
+<span id="cb1-18"><a href="#cb1-18"></a>  O <span class="sc">~</span> C,</span>
+<span id="cb1-19"><a href="#cb1-19"></a>  <span class="at">coords =</span> dag_coords,</span>
+<span id="cb1-20"><a href="#cb1-20"></a>  <span class="at">exposure =</span> <span class="st">"E"</span>,</span>
+<span id="cb1-21"><a href="#cb1-21"></a>  <span class="at">outcome =</span> <span class="st">"O"</span>)</span>
+<span id="cb1-22"><a href="#cb1-22"></a></span>
+<span id="cb1-23"><a href="#cb1-23"></a>Fork <span class="ot">&lt;-</span> <span class="fu">dagify</span>(</span>
+<span id="cb1-24"><a href="#cb1-24"></a>  E <span class="sc">~</span> C,</span>
+<span id="cb1-25"><a href="#cb1-25"></a>  O <span class="sc">~</span> C,</span>
+<span id="cb1-26"><a href="#cb1-26"></a>  <span class="at">coords =</span> dag_coords,</span>
+<span id="cb1-27"><a href="#cb1-27"></a>  <span class="at">exposure =</span> <span class="st">"E"</span>,</span>
+<span id="cb1-28"><a href="#cb1-28"></a>  <span class="at">outcome =</span> <span class="st">"O"</span>)</span>
+<span id="cb1-29"><a href="#cb1-29"></a></span>
+<span id="cb1-30"><a href="#cb1-30"></a>Collider <span class="ot">&lt;-</span> <span class="fu">dagify</span>(</span>
+<span id="cb1-31"><a href="#cb1-31"></a>  C <span class="sc">~</span> E,</span>
+<span id="cb1-32"><a href="#cb1-32"></a>  C <span class="sc">~</span> O,</span>
+<span id="cb1-33"><a href="#cb1-33"></a>  <span class="at">coords =</span> dag_coords,</span>
+<span id="cb1-34"><a href="#cb1-34"></a>  <span class="at">exposure =</span> <span class="st">"E"</span>,</span>
+<span id="cb1-35"><a href="#cb1-35"></a>  <span class="at">outcome =</span> <span class="st">"O"</span>)</span>
+<span id="cb1-36"><a href="#cb1-36"></a></span>
+<span id="cb1-37"><a href="#cb1-37"></a><span class="co"># Merge plots</span></span>
+<span id="cb1-38"><a href="#cb1-38"></a>dag_flows <span class="ot">&lt;-</span> <span class="fu">map</span>(<span class="fu">list</span>(<span class="at">Chain =</span> Chain, <span class="at">Fork =</span> Fork, <span class="at">Collider =</span> Collider), tidy_dagitty) <span class="sc">|&gt;</span></span>
+<span id="cb1-39"><a href="#cb1-39"></a>  <span class="fu">map</span>(<span class="st">"data"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb1-40"><a href="#cb1-40"></a>  <span class="fu">list_rbind</span>(<span class="at">names_to =</span> <span class="st">"dag"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb1-41"><a href="#cb1-41"></a>  <span class="fu">mutate</span>(<span class="at">dag =</span> <span class="fu">factor</span>(dag, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"Chain"</span>, <span class="st">"Fork"</span>, <span class="st">"Collider"</span>)))</span>
+<span id="cb1-42"><a href="#cb1-42"></a></span>
+<span id="cb1-43"><a href="#cb1-43"></a><span class="co"># Add labels based on dag type and node name</span></span>
+<span id="cb1-44"><a href="#cb1-44"></a>dag_flows <span class="ot">&lt;-</span> dag_flows <span class="sc">|&gt;</span></span>
+<span id="cb1-45"><a href="#cb1-45"></a>  <span class="fu">mutate</span>(<span class="at">label =</span> <span class="fu">case_when</span>(</span>
+<span id="cb1-46"><a href="#cb1-46"></a>    dag <span class="sc">==</span> <span class="st">"Chain"</span> <span class="sc">&amp;</span> name <span class="sc">==</span> <span class="st">"C"</span> <span class="sc">~</span> <span class="st">"Mediator"</span>,</span>
+<span id="cb1-47"><a href="#cb1-47"></a>    dag <span class="sc">==</span> <span class="st">"Fork"</span> <span class="sc">&amp;</span> name <span class="sc">==</span> <span class="st">"C"</span> <span class="sc">&amp;</span> xend <span class="sc">==</span> <span class="sc">-</span><span class="dv">1</span> <span class="sc">~</span> <span class="st">"Confounder"</span>, <span class="co"># specify xend to stop 2 confounder labels</span></span>
+<span id="cb1-48"><a href="#cb1-48"></a>    dag <span class="sc">==</span> <span class="st">"Collider"</span> <span class="sc">&amp;</span> name <span class="sc">==</span> <span class="st">"C"</span> <span class="sc">~</span> <span class="st">"Collider"</span>,</span>
+<span id="cb1-49"><a href="#cb1-49"></a>    name <span class="sc">==</span> <span class="st">"E"</span> <span class="sc">~</span> <span class="st">"Exposure"</span>,</span>
+<span id="cb1-50"><a href="#cb1-50"></a>    name <span class="sc">==</span> <span class="st">"O"</span> <span class="sc">~</span> <span class="st">"Outcome"</span>,</span>
+<span id="cb1-51"><a href="#cb1-51"></a>    <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">""</span></span>
+<span id="cb1-52"><a href="#cb1-52"></a>  ))</span>
+<span id="cb1-53"><a href="#cb1-53"></a></span>
+<span id="cb1-54"><a href="#cb1-54"></a><span class="co"># Plot</span></span>
+<span id="cb1-55"><a href="#cb1-55"></a><span class="fu">set.seed</span>(<span class="dv">131</span>) <span class="co"># Set and check label positions don't obscure arrowheads</span></span>
+<span id="cb1-56"><a href="#cb1-56"></a>dag_flows <span class="sc">|&gt;</span></span>
+<span id="cb1-57"><a href="#cb1-57"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y, <span class="at">xend =</span> xend, <span class="at">yend =</span> yend)) <span class="sc">+</span></span>
+<span id="cb1-58"><a href="#cb1-58"></a>  <span class="fu">geom_dag_edges</span>(<span class="at">edge_width =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb1-59"><a href="#cb1-59"></a>  <span class="fu">geom_dag_point</span>() <span class="sc">+</span></span>
+<span id="cb1-60"><a href="#cb1-60"></a>  <span class="fu">geom_label_repel</span>(<span class="fu">aes</span>(<span class="at">label =</span> label),</span>
+<span id="cb1-61"><a href="#cb1-61"></a>                 <span class="at">size =</span> <span class="fl">3.5</span>,</span>
+<span id="cb1-62"><a href="#cb1-62"></a>                 <span class="at">box.padding =</span> <span class="fl">0.5</span>,</span>
+<span id="cb1-63"><a href="#cb1-63"></a>                 <span class="at">point.padding =</span> <span class="fl">0.5</span>,</span>
+<span id="cb1-64"><a href="#cb1-64"></a>                 <span class="at">fill =</span> <span class="st">"white"</span>,</span>
+<span id="cb1-65"><a href="#cb1-65"></a>                 <span class="at">label.padding =</span> <span class="fu">unit</span>(<span class="fl">0.25</span>, <span class="st">"lines"</span>),</span>
+<span id="cb1-66"><a href="#cb1-66"></a>                 <span class="at">label.size =</span> <span class="fl">0.25</span>) <span class="sc">+</span></span>
+<span id="cb1-67"><a href="#cb1-67"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>dag) <span class="sc">+</span></span>
+<span id="cb1-68"><a href="#cb1-68"></a>  <span class="fu">expand_plot</span>(</span>
+<span id="cb1-69"><a href="#cb1-69"></a>    <span class="at">expand_x =</span> <span class="fu">expansion</span>(<span class="fu">c</span>(<span class="fl">0.2</span>, <span class="fl">0.2</span>)),</span>
+<span id="cb1-70"><a href="#cb1-70"></a>    <span class="at">expand_y =</span> <span class="fu">expansion</span>(<span class="fu">c</span>(<span class="fl">0.2</span>, <span class="fl">0.2</span>))</span>
+<span id="cb1-71"><a href="#cb1-71"></a>  ) <span class="sc">+</span></span>
+<span id="cb1-72"><a href="#cb1-72"></a>  <span class="fu">theme_dag</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid figure-img" style="width:80.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>As you can see there are some fundamental similarities and differences in each path type. The exposure and outcome are common to all - it’s the <em>junction</em> variable that sits between these that determine the path behaviour (i.e.&nbsp;whether a causal effect is transmitted and in what direction). Let’s briefly discuss these variables as understanding their influence on a path is fundamental to understanding a DAG.</p>
+<p>A <strong>confounder</strong> is a variable that causally affects both the exposure and the outcome. Because it creates a non-causal association between exposure and outcome, failing to adjust for a confounder leads to biased effect estimates. For example, when studying the effect of coffee consumption on heart disease, smoking is a confounder: smokers tend to drink more coffee, and smoking independently increases heart disease risk. Adjusting for smoking blocks this path and helps isolate the causal effect of coffee.</p>
+<p>In contrast, a <strong>mediator</strong> lies on the causal pathway from exposure to outcome and represents part of the mechanism by which the exposure exerts its effect. Mediators are not sources of bias; they are part of the effect itself. Adjusting for a mediator therefore changes the scientific question by removing indirect effects. For instance, in a study of physical activity and cardiovascular mortality, blood pressure is a mediator: physical activity lowers blood pressure, which in turn reduces mortality risk. If you adjust for blood pressure, you no longer estimate the total effect of physical activity, but only the effect that does not operate through blood pressure.</p>
+<p>A <strong>collider</strong> is a variable that is caused by two (or more) other variables. Unlike confounders, colliders do not create bias unless you condition (i.e.&nbsp;adjust) for them - at which point they induce a spurious association between their causes. For example, suppose you study the relationship between genetic risk and occupational exposure among hospital patients, where hospital admission is influenced by both genetics and exposure. Hospital admission is a collider: restricting the analysis to hospitalised patients (i.e.&nbsp;conditioning on the collider) creates an artificial association between genetic risk and exposure that does not exist in the general population.</p>
+<p>OK, that’s all a bit to take in - what are the practical takeaways you might ask. Let’s imagine you are looking at the DAG you have just created trying to decide which variables you should adjust for in your regression model. You want to estimate the causal effect of the exposure on your outcome of interest. There are three basic rules to follow:</p>
+<ul>
+<li><p>DO adjust for confounders (common causes of exposure and outcome)</p></li>
+<li><p>DO NOT adjust for colliders (common eﬀects of exposure and outcome)</p></li>
+<li><p>DO NOT adjust for mediators (variables on the causal pathway)*</p></li>
+</ul>
+<p>(* In a mediation analysis, you DO adjust for the mediator to estimate the direct eﬀect of the exposure on the outcome adjusted for the mediator).</p>
+<p>We will put this into practice with an example shortly, but before we do, it’s important to first introduce a couple more DAG-related concepts.</p>
+</section>
+<section id="backdoor-frontdoor-open-and-closed-paths" class="level3" data-number="3.3">
+<h3 data-number="3.3" class="anchored" data-anchor-id="backdoor-frontdoor-open-and-closed-paths"><span class="header-section-number">3.3</span> Backdoor, Frontdoor, Open and Closed Paths</h3>
+<p>We’ve already established that paths describe the routes by which causation can flow between an exposure and an outcome. But now let’s flesh that idea out in a little more detail. A <strong>backdoor path</strong> is any path that connects exposure to outcome and begins with an arrow <strong>into</strong> the exposure (for example, Exposure ← Confounder → Outcome). These paths represent <strong>non-causal</strong> sources of association - typically confounding - and, if left open, they bias causal effect estimates. A <strong>frontdoor</strong> path, by contrast, starts with an arrow <strong>out</strong> of the exposure (Exposure → … → Outcome) and represents the <strong>causal</strong> effect you are trying to estimate.</p>
+<blockquote class="blockquote">
+<p>The fundamental goal when interpreting a DAG is therefore to <strong>block all backdoor paths</strong> while leaving <strong>frontdoor paths intact</strong>.</p>
+</blockquote>
+<p>Paths can also be <strong>open</strong> or <strong>closed</strong>. Whether a path is open or closed determines whether it transmits causation. A path is open by default unless it is blocked by conditioning on a non-collider (such as a confounder) or by the presence of a collider that is not conditioned on. In other words, if you have a collider in your path, <strong>that path is already closed</strong> and there is nothing further you need to do. In this case, adjusting for the collider will re-open the path. Above I gave you three rules to follow for whether to adjust for a junction variable or not - let me now explain why:</p>
+<blockquote class="blockquote">
+<p>Conditioning on a confounder <strong>closes a backdoor path and removes bias</strong>;</p>
+</blockquote>
+<blockquote class="blockquote">
+<p>Conditioning on a mediator closes part of a frontdoor path and changes the estimand;</p>
+</blockquote>
+<blockquote class="blockquote">
+<p>Conditioning on a collider <strong>opens a path that was previously closed and induces bias</strong>.</p>
+</blockquote>
+<p><strong>Interpreting a DAG means systematically listing all backdoor paths between exposure and outcome, identifying which variables close those paths without opening new ones, and using that minimal set for adjustment</strong>. It’s in this way that DAGs provide a clear, causal logic for deciding what to adjust for and what to avoid, independent of statistical significance or model fit.</p>
+<p>Let’s now illustrate all of these concepts with a simulated example of a research question and its associated DAG.</p>
+</section>
+</section>
+<section id="a-realistic-epidemiologic-example" class="level2" data-number="4">
+<h2 data-number="4" class="anchored" data-anchor-id="a-realistic-epidemiologic-example"><span class="header-section-number">4</span> A Realistic Epidemiologic Example</h2>
+<p>The example we’re going to use today is based on actual research investigating the effect of air pollution on cardiovascular disease - the question we are asking is: “What is the causal effect of long-term PM2.5 exposure on cardiovascular mortality?” For the sake of brevity, I am not going to discuss the background literature. While I haven’t drawn on any particular piece of research in creating this example, if you are interested in reading more about the topic, <a href="https://www.sciencedirect.com/science/article/pii/S2772487523000508">this</a> would be a good place to start.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>PM2.5 refers to particulate matter in air that is less than 2.5 μm or less in diameter. The reason that small particulate matter is significant is that it can be inhaled into the lungs and lead to adverse health effects.</p>
+</div>
+</div>
+<p>We’ve spent a bit of time thinking about this research question in terms of all potential variables that might be involved in the relationship between PM2.5 exposure, its causal risk effect for cardiovascular mortality, and their interplay with each other. In the end we’ve come up with the following list of variables, which thankfully, we also have data available for:</p>
+<ul>
+<li><p><code>PM25</code>: air pollution exposure</p></li>
+<li><p><code>Mortality</code>: cardiovascular death</p></li>
+<li><p><code>Age</code></p></li>
+<li><p><code>Smoking</code></p></li>
+<li><p><code>SES</code>: socioeconomic status</p></li>
+<li><p><code>CVD</code>: pre-existing cardiovascular disease</p></li>
+<li><p><code>Healthcare</code>: healthcare utilisation</p></li>
+</ul>
+<section id="encoding-the-causal-assumptions-and-dag-visualisation" class="level3" data-number="4.1">
+<h3 data-number="4.1" class="anchored" data-anchor-id="encoding-the-causal-assumptions-and-dag-visualisation"><span class="header-section-number">4.1</span> Encoding the Causal Assumptions and DAG Visualisation</h3>
+<p>Here is the resulting DAG which represents the encoding of our assumptions about the potential relationships between exposure, outcome and all other secondary variables. It may look imposing, but let’s break it down. We start out by listing all possible causations between pairs of variables - for example, we might postulate that age “causes” PM25, age “causes” mortality, SES “causes” PM25, and so on. Once we have exhausted all possible relationships we can specify the DAG as shown in the code below, whereby age “causes” PM25 is encoded in the <code>dagify()</code> function as <code>pm25 ~ age</code>, using the identical syntax to what we write when specifying a regression model. Plotting the DAG then becomes a trivial exercise.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="co"># Encode DAG</span></span>
+<span id="cb2-2"><a href="#cb2-2"></a>airpollution_dag <span class="ot">&lt;-</span> <span class="fu">dagify</span>(</span>
+<span id="cb2-3"><a href="#cb2-3"></a>  pm25 <span class="sc">~</span> age,</span>
+<span id="cb2-4"><a href="#cb2-4"></a>  mortality <span class="sc">~</span> age,</span>
+<span id="cb2-5"><a href="#cb2-5"></a>  pm25 <span class="sc">~</span> ses,</span>
+<span id="cb2-6"><a href="#cb2-6"></a>  smoking <span class="sc">~</span> ses, </span>
+<span id="cb2-7"><a href="#cb2-7"></a>  healthcare <span class="sc">~</span> ses,</span>
+<span id="cb2-8"><a href="#cb2-8"></a>  cvd <span class="sc">~</span> smoking,</span>
+<span id="cb2-9"><a href="#cb2-9"></a>  mortality <span class="sc">~</span> smoking,</span>
+<span id="cb2-10"><a href="#cb2-10"></a>  cvd <span class="sc">~</span> pm25,</span>
+<span id="cb2-11"><a href="#cb2-11"></a>  mortality <span class="sc">~</span> cvd,</span>
+<span id="cb2-12"><a href="#cb2-12"></a>  healthcare <span class="sc">~</span> cvd,</span>
+<span id="cb2-13"><a href="#cb2-13"></a>  <span class="at">labels =</span> <span class="fu">c</span>(</span>
+<span id="cb2-14"><a href="#cb2-14"></a>    <span class="at">pm25 =</span> <span class="st">"PM25"</span>,</span>
+<span id="cb2-15"><a href="#cb2-15"></a>    <span class="at">mortality =</span> <span class="st">"Mortality"</span>,</span>
+<span id="cb2-16"><a href="#cb2-16"></a>    <span class="at">age =</span> <span class="st">"Age"</span>,</span>
+<span id="cb2-17"><a href="#cb2-17"></a>    <span class="at">ses =</span> <span class="st">"SES"</span>,</span>
+<span id="cb2-18"><a href="#cb2-18"></a>    <span class="at">smoking =</span> <span class="st">"Smoking"</span>,</span>
+<span id="cb2-19"><a href="#cb2-19"></a>    <span class="at">healthcare =</span> <span class="st">"Healthcare"</span>,</span>
+<span id="cb2-20"><a href="#cb2-20"></a>    <span class="at">cvd =</span> <span class="st">"CVD"</span>),</span>
+<span id="cb2-21"><a href="#cb2-21"></a>  <span class="co">#coords = dag_coords,</span></span>
+<span id="cb2-22"><a href="#cb2-22"></a>  <span class="at">exposure =</span> <span class="st">"pm25"</span>,</span>
+<span id="cb2-23"><a href="#cb2-23"></a>  <span class="at">outcome =</span> <span class="st">"mortality"</span>)</span>
+<span id="cb2-24"><a href="#cb2-24"></a></span>
+<span id="cb2-25"><a href="#cb2-25"></a><span class="co"># Plot DAG</span></span>
+<span id="cb2-26"><a href="#cb2-26"></a><span class="fu">set.seed</span>(<span class="dv">137</span>)</span>
+<span id="cb2-27"><a href="#cb2-27"></a>airpollution_dag <span class="sc">|&gt;</span> </span>
+<span id="cb2-28"><a href="#cb2-28"></a>  <span class="fu">ggdag</span>(<span class="at">text =</span> <span class="cn">FALSE</span>, <span class="at">use_labels =</span> <span class="st">"label"</span>, <span class="at">stylized =</span> <span class="cn">TRUE</span>) <span class="sc">+</span></span>
+<span id="cb2-29"><a href="#cb2-29"></a>  <span class="fu">theme_dag</span>() <span class="sc">+</span></span>
+<span id="cb2-30"><a href="#cb2-30"></a>  <span class="fu">expand_plot</span>(<span class="at">expand_x =</span> <span class="fu">expansion</span>(<span class="fu">c</span>(.<span class="dv">5</span>, .<span class="dv">5</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="interpreting-the-dag" class="level3" data-number="4.2">
+<h3 data-number="4.2" class="anchored" data-anchor-id="interpreting-the-dag"><span class="header-section-number">4.2</span> Interpreting the DAG</h3>
+<p>We then want to interpret the DAG so we can make some logical attempt to justify what variables to include, exclude, adjust and not adjust for in our regression model. To do this, at least initially, it is helpful to enumerate all possible paths contained in the DAG that exist between the exposure (PM25) and the outcome (mortality).</p>
+<p>There are two ways to do this - the easy way and the hard way. The hard way involves manually tracing out every path based on the DAG and writing them down. For obvious reasons this is error-prone and subject to missing some of the paths, but it can be helpful as a learning exercise. The easy way is as simple as asking the <code>daggity</code> package to do it for you. In the code block below, you’ll see that I have extended this functionality by writing a function to also output “status” (path open vs closed) and “type” (frontdoor vs backdoor) information. Running this on the current DAG object generates the following table:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="co"># Function to enumerate all paths, status and type</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a>extract_dag_paths <span class="ot">&lt;-</span> <span class="cf">function</span>(dag) {</span>
+<span id="cb3-3"><a href="#cb3-3"></a>  <span class="fu">require</span>(dagitty)</span>
+<span id="cb3-4"><a href="#cb3-4"></a>  <span class="fu">require</span>(dplyr)</span>
+<span id="cb3-5"><a href="#cb3-5"></a>  <span class="fu">require</span>(purrr)</span>
+<span id="cb3-6"><a href="#cb3-6"></a>  </span>
+<span id="cb3-7"><a href="#cb3-7"></a>  <span class="co"># Get all paths between exposure and outcome</span></span>
+<span id="cb3-8"><a href="#cb3-8"></a>  all_paths <span class="ot">&lt;-</span> <span class="fu">paths</span>(dag)</span>
+<span id="cb3-9"><a href="#cb3-9"></a>  </span>
+<span id="cb3-10"><a href="#cb3-10"></a>  <span class="co"># Create dataframe</span></span>
+<span id="cb3-11"><a href="#cb3-11"></a>  path_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb3-12"><a href="#cb3-12"></a>    <span class="at">path =</span> all_paths<span class="sc">$</span>paths,</span>
+<span id="cb3-13"><a href="#cb3-13"></a>    <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span></span>
+<span id="cb3-14"><a href="#cb3-14"></a>  )</span>
+<span id="cb3-15"><a href="#cb3-15"></a>  </span>
+<span id="cb3-16"><a href="#cb3-16"></a>  <span class="co"># Add open/closed status</span></span>
+<span id="cb3-17"><a href="#cb3-17"></a>  path_df<span class="sc">$</span>status <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(all_paths<span class="sc">$</span>open, <span class="st">"open"</span>, <span class="st">"closed"</span>)</span>
+<span id="cb3-18"><a href="#cb3-18"></a>  </span>
+<span id="cb3-19"><a href="#cb3-19"></a>  <span class="co"># Determine path type</span></span>
+<span id="cb3-20"><a href="#cb3-20"></a>  path_df<span class="sc">$</span>type <span class="ot">&lt;-</span> <span class="fu">map</span>(path_df<span class="sc">$</span>path, <span class="cf">function</span>(p) {</span>
+<span id="cb3-21"><a href="#cb3-21"></a>    <span class="co"># Check if path contains any &lt;- arrows (backdoor indicator)</span></span>
+<span id="cb3-22"><a href="#cb3-22"></a>    <span class="cf">if</span> (<span class="fu">grepl</span>(<span class="st">"&lt;-"</span>, p)) {</span>
+<span id="cb3-23"><a href="#cb3-23"></a>      <span class="fu">return</span>(<span class="st">"backdoor"</span>)</span>
+<span id="cb3-24"><a href="#cb3-24"></a>    } <span class="cf">else</span> {</span>
+<span id="cb3-25"><a href="#cb3-25"></a>      <span class="co"># All arrows point forward</span></span>
+<span id="cb3-26"><a href="#cb3-26"></a>      <span class="fu">return</span>(<span class="st">"frontdoor"</span>)</span>
+<span id="cb3-27"><a href="#cb3-27"></a>    }</span>
+<span id="cb3-28"><a href="#cb3-28"></a>  })</span>
+<span id="cb3-29"><a href="#cb3-29"></a>  </span>
+<span id="cb3-30"><a href="#cb3-30"></a>  <span class="co"># Reorder columns for clarity</span></span>
+<span id="cb3-31"><a href="#cb3-31"></a>  path_df <span class="ot">&lt;-</span> path_df <span class="sc">|&gt;</span> </span>
+<span id="cb3-32"><a href="#cb3-32"></a>    <span class="fu">arrange</span>(<span class="fu">desc</span>(type), <span class="fu">desc</span>(status)) <span class="sc">|&gt;</span> </span>
+<span id="cb3-33"><a href="#cb3-33"></a>    <span class="fu">mutate</span>(<span class="at">id =</span> <span class="fu">row_number</span>()) <span class="sc">|&gt;</span> </span>
+<span id="cb3-34"><a href="#cb3-34"></a>    <span class="fu">select</span>(id, path, status, type) </span>
+<span id="cb3-35"><a href="#cb3-35"></a></span>
+<span id="cb3-36"><a href="#cb3-36"></a>  </span>
+<span id="cb3-37"><a href="#cb3-37"></a>  <span class="fu">return</span>(path_df)</span>
+<span id="cb3-38"><a href="#cb3-38"></a>}</span>
+<span id="cb3-39"><a href="#cb3-39"></a></span>
+<span id="cb3-40"><a href="#cb3-40"></a><span class="co"># Print</span></span>
+<span id="cb3-41"><a href="#cb3-41"></a>path_summary <span class="ot">&lt;-</span> <span class="fu">extract_dag_paths</span>(airpollution_dag)</span>
+<span id="cb3-42"><a href="#cb3-42"></a><span class="fu">kable</span>(path_summary)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<colgroup>
+<col style="width: 3%">
+<col style="width: 74%">
+<col style="width: 9%">
+<col style="width: 12%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: right;">id</th>
+<th style="text-align: left;">path</th>
+<th style="text-align: left;">status</th>
+<th style="text-align: left;">type</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">pm25 -&gt; cvd -&gt; mortality</td>
+<td style="text-align: left;">open</td>
+<td style="text-align: left;">frontdoor</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">pm25 &lt;- age -&gt; mortality</td>
+<td style="text-align: left;">open</td>
+<td style="text-align: left;">backdoor</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">3</td>
+<td style="text-align: left;">pm25 &lt;- ses -&gt; smoking -&gt; cvd -&gt; mortality</td>
+<td style="text-align: left;">open</td>
+<td style="text-align: left;">backdoor</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">4</td>
+<td style="text-align: left;">pm25 &lt;- ses -&gt; smoking -&gt; mortality</td>
+<td style="text-align: left;">open</td>
+<td style="text-align: left;">backdoor</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">5</td>
+<td style="text-align: left;">pm25 -&gt; cvd -&gt; healthcare &lt;- ses -&gt; smoking -&gt; mortality</td>
+<td style="text-align: left;">closed</td>
+<td style="text-align: left;">backdoor</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">6</td>
+<td style="text-align: left;">pm25 -&gt; cvd &lt;- smoking -&gt; mortality</td>
+<td style="text-align: left;">closed</td>
+<td style="text-align: left;">backdoor</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">7</td>
+<td style="text-align: left;">pm25 &lt;- ses -&gt; healthcare &lt;- cvd -&gt; mortality</td>
+<td style="text-align: left;">closed</td>
+<td style="text-align: left;">backdoor</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">8</td>
+<td style="text-align: left;">pm25 &lt;- ses -&gt; healthcare &lt;- cvd &lt;- smoking -&gt; mortality</td>
+<td style="text-align: left;">closed</td>
+<td style="text-align: left;">backdoor</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><br></p>
+<p>This tells us that we have <code>8</code> paths at play between the exposure and the outcome. It also tells us straight off the bat that we don’t need to worry about <code>4</code> of these - the ones that are “closed” (<code>id</code>’s <code>5</code>-<code>8</code>). The reason these are already closed is because a collider is present in each - <code>Healthcare</code> in paths <code>5</code>, <code>7</code> and <code>8</code>, and <code>CVD</code> in path <code>6</code>. This leaves us with <code>4</code> open paths - and we can visualise these quite easily with the <code>ggdag_paths()</code> function in the following way:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="fu">set.seed</span>(<span class="dv">137</span>)</span>
+<span id="cb4-2"><a href="#cb4-2"></a>airpollution_dag <span class="sc">|&gt;</span> </span>
+<span id="cb4-3"><a href="#cb4-3"></a>  <span class="fu">ggdag_paths</span>(<span class="at">text =</span> <span class="cn">FALSE</span>, <span class="at">use_labels =</span> <span class="st">"label"</span>, <span class="at">stylized =</span> <span class="cn">TRUE</span>) <span class="sc">+</span></span>
+<span id="cb4-4"><a href="#cb4-4"></a>  <span class="fu">expand_plot</span>(<span class="at">expand_x =</span> <span class="fu">expansion</span>(<span class="fu">c</span>(.<span class="dv">5</span>, .<span class="dv">5</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="identifying-the-minimally-sufficient-adjustment-set" class="level3" data-number="4.3">
+<h3 data-number="4.3" class="anchored" data-anchor-id="identifying-the-minimally-sufficient-adjustment-set"><span class="header-section-number">4.3</span> Identifying the Minimally Sufficient Adjustment Set</h3>
+<p>Of these <code>4</code> open paths, the first is a frontdoor path (and thus our main path of interest in determining the causal effect), and the remainder are backdoor paths. We therefore need to find a way to close paths <code>2</code> - <code>4</code>, and the easiest way to do that is to condition on a confounder. Looking at those paths a natural choice would be to adjust for <code>Age</code> (path <code>2</code>) and <code>SES</code> (paths <code>3</code> and <code>4</code>) as these are confounders. Handily, there’s an algorithmic way to check this as well - by using the <code>ggdag_adjustment_set()</code> function as follows:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="fu">set.seed</span>(<span class="dv">137</span>)</span>
+<span id="cb5-2"><a href="#cb5-2"></a>airpollution_dag <span class="sc">|&gt;</span> </span>
+<span id="cb5-3"><a href="#cb5-3"></a>  <span class="fu">ggdag_adjustment_set</span>(<span class="at">text =</span> <span class="cn">FALSE</span>, <span class="at">use_labels =</span> <span class="st">"label"</span>, <span class="at">shadow =</span> <span class="cn">TRUE</span>, <span class="at">stylized =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb5-4"><a href="#cb5-4"></a>    <span class="at">exposure =</span> <span class="st">"pm25"</span>,</span>
+<span id="cb5-5"><a href="#cb5-5"></a>    <span class="at">outcome  =</span> <span class="st">"mortality"</span>) <span class="sc">+</span></span>
+<span id="cb5-6"><a href="#cb5-6"></a>  <span class="fu">theme_dag</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>So what does this tell us? Indeed {<code>Age</code>, <code>SES</code>} is one potential adjustment set, but there is also another - {<code>Age</code>, <code>Smoking</code>}. Which should we choose? Well, this is is a case of <code>daggity</code> telling us what <em>can</em> work, but we should use our own causal reasoning to decide what <em>should</em> work more appropriately. From <code>dagitty</code>’s point of view: “Given the assumptions encoded in this DAG, either of these sets is sufficient to identify the causal effect.” But that doesn’t mean that each set is equally defensible scientifically.</p>
+<p>The first set blocks all backdoor paths without conditioning on anything downstream of exposure. This is the cleanest and most interpretable adjustment set, and it corresponds to the total causal effect one sets out to estimate. In contrast, the second set includes a variable (<code>Smoking</code>) that is a descendant of <code>SES</code>). This set works only because conditioning on <code>Smoking</code> incidentally blocks the same backdoor path that <code>SES</code> also blocks - so while the second set is formally sufficient, it is causally inferior.</p>
+<p>When <code>dagitty</code> gives you multiple valid sets, you can apply this hierarchy to hopefully make a more reasoned decision:</p>
+<ul>
+<li><p>Prefer pre-exposure variables over post-exposure or downstream variables</p></li>
+<li><p>Prefer true common causes over descendants of common causes</p></li>
+<li><p>Avoid mediators and their descendants if estimating total effects</p></li>
+<li><p>Avoid colliders or “selection” variables even if they appear in valid sets</p></li>
+<li><p>Choose the smallest, simplest set that aligns with the scientific question</p></li>
+<li><p>Under these principles, {<code>Age</code>, <code>SES</code>} clearly dominates any alternative.</p></li>
+</ul>
+</section>
+</section>
+<section id="some-final-thoughts" class="level2" data-number="5">
+<h2 data-number="5" class="anchored" data-anchor-id="some-final-thoughts"><span class="header-section-number">5</span> Some Final Thoughts</h2>
+<section id="why-not-adjust-for-everything" class="level3" data-number="5.1">
+<h3 data-number="5.1" class="anchored" data-anchor-id="why-not-adjust-for-everything"><span class="header-section-number">5.1</span> Why Not Adjust for Everything?</h3>
+<p>As you can tell, there’s a lot of work in justifying your causal model. While it may be tempting to adopt a “kitchen sink” approach by adjusting for every available variable to avoid model misspecification, this strategy often backfires. First, over-adjusting leads to statistical inefficiency; by consuming precious degrees of freedom, you dilute the model’s power and risk overfitting, especially in smaller datasets or when variables are highly correlated. Second, and more critically, blindly adding covariates can introduce bias rather than remove it. If you inadvertently adjust for a collider you can backdoor paths and induce bias as I previously mentioned. Ultimately, a model packed with irrelevant or harmful variables obscures the true relationship and can lead to fundamentally flawed causal conclusions.</p>
+</section>
+<section id="what-dags-dont-do" class="level3" data-number="5.2">
+<h3 data-number="5.2" class="anchored" data-anchor-id="what-dags-dont-do"><span class="header-section-number">5.2</span> What DAGs Don’t Do</h3>
+<p>While DAGs are indispensable for mapping causal structures, they are not a panacea for the inherent risks of observational research. Most importantly, a DAG is only as good as the assumptions it visualises; if your graph is missing a crucial arrow or node, it cannot magically guarantee causal identification or alert you to the presence of unmeasured confounding that might still be biasing your results. Furthermore, a DAG is a qualitative tool that guides model selection, but it does not replace the need for rigorous sensitivity analyses to test how robust your findings are to potential “hidden” biases or alternative structures. Ultimately, a DAG is not a machine that produces a “correct” answer, but rather a logical framework that ensures your statistical modeling choices - specifically which variables you choose to include or exclude - are strictly coherent with the specific causal question you are attempting to answer.</p>
+</section>
+<section id="should-you-include-a-dag-in-your-next-paper" class="level3" data-number="5.3">
+<h3 data-number="5.3" class="anchored" data-anchor-id="should-you-include-a-dag-in-your-next-paper"><span class="header-section-number">5.3</span> Should You Include a DAG in Your Next Paper?</h3>
+<p>Maybe the answer to this question should be yes.</p>
+<p>I don’t think we’re at the stage where journals are <em>requiring</em> DAGs be supplied as part of a submission, but it is becoming increasingly common for reviewers/editors to ask for one in review if they aren’t convinced a specified model is correct. When a reviewer asks, “Why didn’t you control for Variable X?”, being able to point to a DAG and say, “Variable X is a collider (or mediator) according to current domain knowledge, and adjusting for it would introduce bias,” is a much stronger rebuttal than simply stating it wasn’t available in the data.</p>
+<p>Even when not required, DAGs:</p>
+<ul>
+<li><p>justify confounder selection,</p></li>
+<li><p>expose inappropriate adjustment,</p></li>
+<li><p>clarify estimands,</p></li>
+<li><p>and reduce reviewer disagreement.</p></li>
+</ul>
+<p>It is not a stretch to say that a single DAG can replace pages of methodological explanation.</p>
+</section>
+<section id="really-the-end" class="level3" data-number="5.4">
+<h3 data-number="5.4" class="anchored" data-anchor-id="really-the-end"><span class="header-section-number">5.4</span> Really, The End!</h3>
+<p>If you are doing observational research and making causal claims, you already have a DAG in your head. Writing it down and then visualising it - using tools like <code>dagitty</code> and <code>ggdag</code> - makes those assumptions visible, testable, and discussable. It could be argued that in modern epidemiology and biostatistics, DAGs are not an optional extra. They are part of responsible study design.</p>
+<p>I hope you didn’t find this post too heavy going. See you next month!</p>
 
 
 <!-- -->
 
+</section>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -779,13 +1258,397 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script>
 <input type="hidden" id="giscus-base-theme" value="light">
 <input type="hidden" id="giscus-alt-theme" value="dark"><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
-<div class="sourceCode" id="cb1" data-shortcodes="false"><pre class="sourceCode numberSource markdown number-lines code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1"></a><span class="co">---</span></span>
-<span id="cb1-2"><a href="#cb1-2"></a><span class="an">title:</span><span class="co"> "A Gentle Introduction to Directed Acyclic Graphs (DAG's)"</span></span>
-<span id="cb1-3"><a href="#cb1-3"></a><span class="an">date:</span><span class="co"> 2026-02-27</span></span>
-<span id="cb1-4"><a href="#cb1-4"></a><span class="an">categories:</span><span class="co"> [code, concept, modelling]</span></span>
-<span id="cb1-5"><a href="#cb1-5"></a><span class="an">image:</span><span class="co"> ""</span></span>
-<span id="cb1-6"><a href="#cb1-6"></a><span class="an">description:</span><span class="co"> "What they are and one way to draw them"</span></span>
-<span id="cb1-7"><a href="#cb1-7"></a><span class="co">---</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb6" data-shortcodes="false"><pre class="sourceCode numberSource markdown number-lines code-with-copy"><code class="sourceCode markdown"><span id="cb6-1"><a href="#cb6-1"></a><span class="co">---</span></span>
+<span id="cb6-2"><a href="#cb6-2"></a><span class="an">title:</span><span class="co"> "A Gentle Introduction to Directed Acyclic Graphs (DAGs)"</span></span>
+<span id="cb6-3"><a href="#cb6-3"></a><span class="an">date:</span><span class="co"> 2026-02-27</span></span>
+<span id="cb6-4"><a href="#cb6-4"></a><span class="an">categories:</span><span class="co"> [code, concept, modelling]</span></span>
+<span id="cb6-5"><a href="#cb6-5"></a><span class="an">image:</span><span class="co"> "images/working_dag.png"</span></span>
+<span id="cb6-6"><a href="#cb6-6"></a><span class="an">description:</span><span class="co"> "Don't be a DAG, draw one instead."</span></span>
+<span id="cb6-7"><a href="#cb6-7"></a><span class="co">---</span></span>
+<span id="cb6-8"><a href="#cb6-8"></a></span>
+<span id="cb6-9"><a href="#cb6-9"></a><span class="fu">## Introduction</span></span>
+<span id="cb6-10"><a href="#cb6-10"></a></span>
+<span id="cb6-11"><a href="#cb6-11"></a>A good part of the research that we do in the unit is observational in nature. Rather than the highly controlled environments of laboratory-based experimental designs and randomised clinical trials, observational research is really the "Wild West" cousin, where both its virtue and vice is in the fact that we gain knowledge by observing the "chaos" of the natural world. Consequently, observational research lives and dies by assumptions. We assume certain variables cause others, assume some relationships matter and others don’t, and assume that statistical adjustment corresponds to causal control. Directed acyclic graphs (DAGs) force these assumptions out into the open.</span>
+<span id="cb6-12"><a href="#cb6-12"></a></span>
+<span id="cb6-13"><a href="#cb6-13"></a>In this post, we’ll move beyond theory and show how to construct, visualise, and interrogate DAGs in <span class="in">`R`</span> using the <span class="in">`ggdag`</span> and <span class="in">`daggity`</span> packages. Along the way, we’ll revisit why DAGs are essential for observational research and how they clarify the roles of confounders, mediators, and colliders.</span>
+<span id="cb6-14"><a href="#cb6-14"></a></span>
+<span id="cb6-15"><a href="#cb6-15"></a><span class="fu">## Association vs Causation</span></span>
+<span id="cb6-16"><a href="#cb6-16"></a></span>
+<span id="cb6-17"><a href="#cb6-17"></a>Before diving into DAGs, let's briefly explore the idea that we often have unrealistic expectations for the intent of our work. In my early research career I was pulled up at least once by a journal reviewer (hopefully I never made the same mistake again) for describing my results as an "effect", without the use of quotation marks in the manuscript at the time. I received a relatively lengthy screed in review chastising me that use of the term in that context implied causation between the exposure and outcome, and all I could really report was an association. The reviewer had a point and so I now never write "effect" without the quotation marks, hopefully implying my usage of the word as a colloquial proxy for association or correlation.</span>
+<span id="cb6-18"><a href="#cb6-18"></a></span>
+<span id="cb6-19"><a href="#cb6-19"></a>Part of the problem is that it's hard to disabuse ourselves of what we're taught in statistics classes. When we specify something like the following regression model:</span>
+<span id="cb6-20"><a href="#cb6-20"></a></span>
+<span id="cb6-21"><a href="#cb6-21"></a><span class="in">`lm(outcome ~ exposure + covariates, data = df)`</span></span>
+<span id="cb6-22"><a href="#cb6-22"></a></span>
+<span id="cb6-23"><a href="#cb6-23"></a>we are implicitly making causal claims about: which variables precede exposure, which variables influence outcome, and which associations we want to block or preserve. But we need to stop thinking like that.</span>
+<span id="cb6-24"><a href="#cb6-24"></a></span>
+<span id="cb6-25"><a href="#cb6-25"></a>While the ultimate goal of most observational research is to inform interventions by identifying "cause and effect", the vast majority of published analyses remain strictly association studies due to the inherent limitations of non-experimental data. Although our ingrained motivations as scientists want us to argue that one thing leads to another (i.e. the exposure causes the outcome), it is important to keep in mind that because of the assumptions we must make, this is often an impossible goal. Establishing causation with sufficient evidence is not an all or nothing event, however. Think of it as a dial turning between association and causation, where the former represents the default position. The more assumptions you convincingly satisfy, the more the dial may be allowed to turn clockwise towards causation rather than just association in explaining the exposure -<span class="sc">\&gt;</span> outcome relationship.</span>
+<span id="cb6-26"><a href="#cb6-26"></a></span>
+<span id="cb6-27"><a href="#cb6-27"></a>Now, I'm not going to go through all of the <span class="co">[</span><span class="ot">assumptions</span><span class="co">](https://www.stats.ox.ac.uk/~evans/APTS/causassmp.html)</span> necessary for causal inference in detail. But I will mention the first, and arguably the most important. That is the assumption of **No Unobserved Confounding**. In other words, we need to know that we have identified and accounted for **all** possible covariates that might distort our exposure -<span class="sc">\&gt;</span> outcome relationship of interest. Only then, can we start to assert with a little more confidence that "effects" are indeed just that, allowing us to use language that is less neutral and more concordant with a causal process.</span>
+<span id="cb6-28"><a href="#cb6-28"></a></span>
+<span id="cb6-29"><a href="#cb6-29"></a>And this is where a DAG can be extremely helpful.</span>
+<span id="cb6-30"><a href="#cb6-30"></a></span>
+<span id="cb6-31"><a href="#cb6-31"></a><span class="fu">## The Basics</span></span>
+<span id="cb6-32"><a href="#cb6-32"></a></span>
+<span id="cb6-33"><a href="#cb6-33"></a><span class="fu">### What are Directed Acyclic Graphs?</span></span>
+<span id="cb6-34"><a href="#cb6-34"></a></span>
+<span id="cb6-35"><a href="#cb6-35"></a>A Directed Acyclic Graph (DAG) is a visual map used to represent the assumed causal relationships between variables, and to identify confounding. They are relatively recent development in the field of causal inference, based on formal logic and machine learning research from the 1990's. In the modern era, DAGs are critical in much observational research and I think it is now safe to say that you won't see your manuscript accepted to a reputable journal if you plan to conduct an explicit causal analysis, without one.</span>
+<span id="cb6-36"><a href="#cb6-36"></a></span>
+<span id="cb6-37"><a href="#cb6-37"></a>The following is an example DAG taken from a <span class="co">[</span><span class="ot">recent paper</span><span class="co">](https://pubmed.ncbi.nlm.nih.gov/36251191/)</span> visualising all theoretical variable pathways in the proposed relationship between various chronic lung diseases and lung cancer.</span>
+<span id="cb6-38"><a href="#cb6-38"></a></span>
+<span id="cb6-39"><a href="#cb6-39"></a><span class="al">![](images/example_dag.png)</span>{fig-align="center"}</span>
+<span id="cb6-40"><a href="#cb6-40"></a></span>
+<span id="cb6-41"><a href="#cb6-41"></a>This is a fairly complex DAG, so don't be put off by it. Indeed, while this figure is visually arresting, at their core every DAG contains only two basic structures:</span>
+<span id="cb6-42"><a href="#cb6-42"></a></span>
+<span id="cb6-43"><a href="#cb6-43"></a><span class="ss">1.  </span>The variables in the postulated data-generating process (DGP), each represented by a "node" on the diagram, and:</span>
+<span id="cb6-44"><a href="#cb6-44"></a><span class="ss">2.  </span>The causal relationships (or pathways) in the postulated DGP, each represented by an arrow from the cause variable to the caused variable (i.e. effect).</span>
+<span id="cb6-45"><a href="#cb6-45"></a></span>
+<span id="cb6-46"><a href="#cb6-46"></a>Thus, a DAG is:</span>
+<span id="cb6-47"><a href="#cb6-47"></a></span>
+<span id="cb6-48"><a href="#cb6-48"></a><span class="ss">-   </span>Directed: arrows indicate causal direction between two variables,</span>
+<span id="cb6-49"><a href="#cb6-49"></a></span>
+<span id="cb6-50"><a href="#cb6-50"></a><span class="ss">-   </span>Acyclic: arrows can never form a closed/feedback loop (e.g., A→B→C→A). This reflects the reality that a cause must precede its effect in time; you cannot be your own ancestor.</span>
+<span id="cb6-51"><a href="#cb6-51"></a></span>
+<span id="cb6-52"><a href="#cb6-52"></a><span class="ss">-   </span>Graphical: variables are nodes, relationships are paths.</span>
+<span id="cb6-53"><a href="#cb6-53"></a></span>
+<span id="cb6-54"><a href="#cb6-54"></a>With this knowledge and the context of the above example then, one could make statements such as:</span>
+<span id="cb6-55"><a href="#cb6-55"></a></span>
+<span id="cb6-56"><a href="#cb6-56"></a><span class="ss">-   </span>"Lung disease 'causes' lung cancer", or:</span>
+<span id="cb6-57"><a href="#cb6-57"></a></span>
+<span id="cb6-58"><a href="#cb6-58"></a><span class="ss">-   </span>"Age 'causes' lung disease", or:</span>
+<span id="cb6-59"><a href="#cb6-59"></a></span>
+<span id="cb6-60"><a href="#cb6-60"></a><span class="ss">-   </span>"Smoking 'causes' lung cancer".</span>
+<span id="cb6-61"><a href="#cb6-61"></a></span>
+<span id="cb6-62"><a href="#cb6-62"></a>Some such statements we may not know with certainty to be true, but this is ok. In fact, an arrow in a DAG is almost always a **hypothesised assumption** rather than a proven fact. One of the most powerful features of a DAG is that it functions as a "honesty check" in that it forces you to move your private mental model into a public, visual space where others can critique it.</span>
+<span id="cb6-63"><a href="#cb6-63"></a></span>
+<span id="cb6-64"><a href="#cb6-64"></a><span class="fu">### The Building Block Paths of a DAG</span></span>
+<span id="cb6-65"><a href="#cb6-65"></a></span>
+<span id="cb6-66"><a href="#cb6-66"></a>Just as there are only two structural components to a DAG, there are only three types of *paths* (i.e. sequence of arrows) that you need to think about. Once you have a handle on these you are well on your way to not only being able to interpret a DAG, but construct one of your own. The building block paths are:</span>
+<span id="cb6-67"><a href="#cb6-67"></a></span>
+<span id="cb6-68"><a href="#cb6-68"></a><span class="ss">1.  </span>Chains:</span>
+<span id="cb6-69"><a href="#cb6-69"></a></span>
+<span id="cb6-70"><a href="#cb6-70"></a><span class="ss">    -   </span>A → B → C</span>
+<span id="cb6-71"><a href="#cb6-71"></a></span>
+<span id="cb6-72"><a href="#cb6-72"></a><span class="ss">2.  </span>Forks:</span>
+<span id="cb6-73"><a href="#cb6-73"></a></span>
+<span id="cb6-74"><a href="#cb6-74"></a><span class="ss">    -   </span>A ← B → C</span>
+<span id="cb6-75"><a href="#cb6-75"></a></span>
+<span id="cb6-76"><a href="#cb6-76"></a><span class="ss">3.  </span>Inverted Forks (Colliders):</span>
+<span id="cb6-77"><a href="#cb6-77"></a></span>
+<span id="cb6-78"><a href="#cb6-78"></a><span class="ss">    -   </span>A → B ← C</span>
+<span id="cb6-79"><a href="#cb6-79"></a></span>
+<span id="cb6-80"><a href="#cb6-80"></a>Let's visualise each of these with some <span class="in">`R`</span> code and the <span class="in">`ggdag`</span> and <span class="in">`daggity`</span> packages.</span>
+<span id="cb6-81"><a href="#cb6-81"></a></span>
+<span id="cb6-82"><a href="#cb6-82"></a><span class="in">```{r setup, include=FALSE}</span></span>
+<span id="cb6-83"><a href="#cb6-83"></a><span class="in">knitr::opts_chunk$set(</span></span>
+<span id="cb6-84"><a href="#cb6-84"></a><span class="in">  echo = TRUE,</span></span>
+<span id="cb6-85"><a href="#cb6-85"></a><span class="in">  message = FALSE,</span></span>
+<span id="cb6-86"><a href="#cb6-86"></a><span class="in">  warning = FALSE</span></span>
+<span id="cb6-87"><a href="#cb6-87"></a><span class="in">)</span></span>
+<span id="cb6-88"><a href="#cb6-88"></a></span>
+<span id="cb6-89"><a href="#cb6-89"></a><span class="in">```</span></span>
+<span id="cb6-90"><a href="#cb6-90"></a></span>
+<span id="cb6-91"><a href="#cb6-91"></a><span class="in">```{r, fig.width=8, fig.height=3, out.width="80%"}</span></span>
+<span id="cb6-92"><a href="#cb6-92"></a><span class="in">library(ggdag)</span></span>
+<span id="cb6-93"><a href="#cb6-93"></a><span class="in">library(dagitty)</span></span>
+<span id="cb6-94"><a href="#cb6-94"></a><span class="in">library(tidyverse)</span></span>
+<span id="cb6-95"><a href="#cb6-95"></a><span class="in">library(ggrepel)</span></span>
+<span id="cb6-96"><a href="#cb6-96"></a><span class="in">library(kableExtra)</span></span>
+<span id="cb6-97"><a href="#cb6-97"></a></span>
+<span id="cb6-98"><a href="#cb6-98"></a><span class="in"># Define node coordinates</span></span>
+<span id="cb6-99"><a href="#cb6-99"></a><span class="in">dag_coords &lt;- tibble::tribble(</span></span>
+<span id="cb6-100"><a href="#cb6-100"></a><span class="in">  ~name, ~x,  ~y,</span></span>
+<span id="cb6-101"><a href="#cb6-101"></a><span class="in">  "C",    0,   1,    # Confounder/Collider/Mediator at top</span></span>
+<span id="cb6-102"><a href="#cb6-102"></a><span class="in">  "E",   -1,   0,    # Exposure at bottom left</span></span>
+<span id="cb6-103"><a href="#cb6-103"></a><span class="in">  "O",    1,   0     # Outcome at bottom right</span></span>
+<span id="cb6-104"><a href="#cb6-104"></a><span class="in">)</span></span>
+<span id="cb6-105"><a href="#cb6-105"></a></span>
+<span id="cb6-106"><a href="#cb6-106"></a><span class="in"># Encode DAGs for each path type</span></span>
+<span id="cb6-107"><a href="#cb6-107"></a><span class="in">Chain &lt;- dagify(</span></span>
+<span id="cb6-108"><a href="#cb6-108"></a><span class="in">  C ~ E,</span></span>
+<span id="cb6-109"><a href="#cb6-109"></a><span class="in">  O ~ C,</span></span>
+<span id="cb6-110"><a href="#cb6-110"></a><span class="in">  coords = dag_coords,</span></span>
+<span id="cb6-111"><a href="#cb6-111"></a><span class="in">  exposure = "E",</span></span>
+<span id="cb6-112"><a href="#cb6-112"></a><span class="in">  outcome = "O")</span></span>
+<span id="cb6-113"><a href="#cb6-113"></a></span>
+<span id="cb6-114"><a href="#cb6-114"></a><span class="in">Fork &lt;- dagify(</span></span>
+<span id="cb6-115"><a href="#cb6-115"></a><span class="in">  E ~ C,</span></span>
+<span id="cb6-116"><a href="#cb6-116"></a><span class="in">  O ~ C,</span></span>
+<span id="cb6-117"><a href="#cb6-117"></a><span class="in">  coords = dag_coords,</span></span>
+<span id="cb6-118"><a href="#cb6-118"></a><span class="in">  exposure = "E",</span></span>
+<span id="cb6-119"><a href="#cb6-119"></a><span class="in">  outcome = "O")</span></span>
+<span id="cb6-120"><a href="#cb6-120"></a></span>
+<span id="cb6-121"><a href="#cb6-121"></a><span class="in">Collider &lt;- dagify(</span></span>
+<span id="cb6-122"><a href="#cb6-122"></a><span class="in">  C ~ E,</span></span>
+<span id="cb6-123"><a href="#cb6-123"></a><span class="in">  C ~ O,</span></span>
+<span id="cb6-124"><a href="#cb6-124"></a><span class="in">  coords = dag_coords,</span></span>
+<span id="cb6-125"><a href="#cb6-125"></a><span class="in">  exposure = "E",</span></span>
+<span id="cb6-126"><a href="#cb6-126"></a><span class="in">  outcome = "O")</span></span>
+<span id="cb6-127"><a href="#cb6-127"></a></span>
+<span id="cb6-128"><a href="#cb6-128"></a><span class="in"># Merge plots</span></span>
+<span id="cb6-129"><a href="#cb6-129"></a><span class="in">dag_flows &lt;- map(list(Chain = Chain, Fork = Fork, Collider = Collider), tidy_dagitty) |&gt;</span></span>
+<span id="cb6-130"><a href="#cb6-130"></a><span class="in">  map("data") |&gt;</span></span>
+<span id="cb6-131"><a href="#cb6-131"></a><span class="in">  list_rbind(names_to = "dag") |&gt;</span></span>
+<span id="cb6-132"><a href="#cb6-132"></a><span class="in">  mutate(dag = factor(dag, levels = c("Chain", "Fork", "Collider")))</span></span>
+<span id="cb6-133"><a href="#cb6-133"></a></span>
+<span id="cb6-134"><a href="#cb6-134"></a><span class="in"># Add labels based on dag type and node name</span></span>
+<span id="cb6-135"><a href="#cb6-135"></a><span class="in">dag_flows &lt;- dag_flows |&gt;</span></span>
+<span id="cb6-136"><a href="#cb6-136"></a><span class="in">  mutate(label = case_when(</span></span>
+<span id="cb6-137"><a href="#cb6-137"></a><span class="in">    dag == "Chain" &amp; name == "C" ~ "Mediator",</span></span>
+<span id="cb6-138"><a href="#cb6-138"></a><span class="in">    dag == "Fork" &amp; name == "C" &amp; xend == -1 ~ "Confounder", # specify xend to stop 2 confounder labels</span></span>
+<span id="cb6-139"><a href="#cb6-139"></a><span class="in">    dag == "Collider" &amp; name == "C" ~ "Collider",</span></span>
+<span id="cb6-140"><a href="#cb6-140"></a><span class="in">    name == "E" ~ "Exposure",</span></span>
+<span id="cb6-141"><a href="#cb6-141"></a><span class="in">    name == "O" ~ "Outcome",</span></span>
+<span id="cb6-142"><a href="#cb6-142"></a><span class="in">    TRUE ~ ""</span></span>
+<span id="cb6-143"><a href="#cb6-143"></a><span class="in">  ))</span></span>
+<span id="cb6-144"><a href="#cb6-144"></a></span>
+<span id="cb6-145"><a href="#cb6-145"></a><span class="in"># Plot</span></span>
+<span id="cb6-146"><a href="#cb6-146"></a><span class="in">set.seed(131) # Set and check label positions don't obscure arrowheads</span></span>
+<span id="cb6-147"><a href="#cb6-147"></a><span class="in">dag_flows |&gt;</span></span>
+<span id="cb6-148"><a href="#cb6-148"></a><span class="in">  ggplot(aes(x = x, y = y, xend = xend, yend = yend)) +</span></span>
+<span id="cb6-149"><a href="#cb6-149"></a><span class="in">  geom_dag_edges(edge_width = 1) +</span></span>
+<span id="cb6-150"><a href="#cb6-150"></a><span class="in">  geom_dag_point() +</span></span>
+<span id="cb6-151"><a href="#cb6-151"></a><span class="in">  geom_label_repel(aes(label = label),</span></span>
+<span id="cb6-152"><a href="#cb6-152"></a><span class="in">                 size = 3.5,</span></span>
+<span id="cb6-153"><a href="#cb6-153"></a><span class="in">                 box.padding = 0.5,</span></span>
+<span id="cb6-154"><a href="#cb6-154"></a><span class="in">                 point.padding = 0.5,</span></span>
+<span id="cb6-155"><a href="#cb6-155"></a><span class="in">                 fill = "white",</span></span>
+<span id="cb6-156"><a href="#cb6-156"></a><span class="in">                 label.padding = unit(0.25, "lines"),</span></span>
+<span id="cb6-157"><a href="#cb6-157"></a><span class="in">                 label.size = 0.25) +</span></span>
+<span id="cb6-158"><a href="#cb6-158"></a><span class="in">  facet_wrap(~dag) +</span></span>
+<span id="cb6-159"><a href="#cb6-159"></a><span class="in">  expand_plot(</span></span>
+<span id="cb6-160"><a href="#cb6-160"></a><span class="in">    expand_x = expansion(c(0.2, 0.2)),</span></span>
+<span id="cb6-161"><a href="#cb6-161"></a><span class="in">    expand_y = expansion(c(0.2, 0.2))</span></span>
+<span id="cb6-162"><a href="#cb6-162"></a><span class="in">  ) +</span></span>
+<span id="cb6-163"><a href="#cb6-163"></a><span class="in">  theme_dag()</span></span>
+<span id="cb6-164"><a href="#cb6-164"></a><span class="in">```</span></span>
+<span id="cb6-165"><a href="#cb6-165"></a></span>
+<span id="cb6-166"><a href="#cb6-166"></a>As you can see there are some fundamental similarities and differences in each path type. The exposure and outcome are common to all - it's the *junction* variable that sits between these that determine the path behaviour (i.e. whether a causal effect is transmitted and in what direction). Let's briefly discuss these variables as understanding their influence on a path is fundamental to understanding a DAG.</span>
+<span id="cb6-167"><a href="#cb6-167"></a></span>
+<span id="cb6-168"><a href="#cb6-168"></a>A **confounder** is a variable that causally affects both the exposure and the outcome. Because it creates a non-causal association between exposure and outcome, failing to adjust for a confounder leads to biased effect estimates. For example, when studying the effect of coffee consumption on heart disease, smoking is a confounder: smokers tend to drink more coffee, and smoking independently increases heart disease risk. Adjusting for smoking blocks this path and helps isolate the causal effect of coffee.</span>
+<span id="cb6-169"><a href="#cb6-169"></a></span>
+<span id="cb6-170"><a href="#cb6-170"></a>In contrast, a **mediator** lies on the causal pathway from exposure to outcome and represents part of the mechanism by which the exposure exerts its effect. Mediators are not sources of bias; they are part of the effect itself. Adjusting for a mediator therefore changes the scientific question by removing indirect effects. For instance, in a study of physical activity and cardiovascular mortality, blood pressure is a mediator: physical activity lowers blood pressure, which in turn reduces mortality risk. If you adjust for blood pressure, you no longer estimate the total effect of physical activity, but only the effect that does not operate through blood pressure.</span>
+<span id="cb6-171"><a href="#cb6-171"></a></span>
+<span id="cb6-172"><a href="#cb6-172"></a>A **collider** is a variable that is caused by two (or more) other variables. Unlike confounders, colliders do not create bias unless you condition (i.e. adjust) for them - at which point they induce a spurious association between their causes. For example, suppose you study the relationship between genetic risk and occupational exposure among hospital patients, where hospital admission is influenced by both genetics and exposure. Hospital admission is a collider: restricting the analysis to hospitalised patients (i.e. conditioning on the collider) creates an artificial association between genetic risk and exposure that does not exist in the general population.</span>
+<span id="cb6-173"><a href="#cb6-173"></a></span>
+<span id="cb6-174"><a href="#cb6-174"></a>OK, that's all a bit to take in - what are the practical takeaways you might ask. Let's imagine you are looking at the DAG you have just created trying to decide which variables you should adjust for in your regression model. You want to estimate the causal effect of the exposure on your outcome of interest. There are three basic rules to follow:</span>
+<span id="cb6-175"><a href="#cb6-175"></a></span>
+<span id="cb6-176"><a href="#cb6-176"></a><span class="ss">-   </span>DO adjust for confounders (common causes of exposure and outcome)</span>
+<span id="cb6-177"><a href="#cb6-177"></a></span>
+<span id="cb6-178"><a href="#cb6-178"></a><span class="ss">-   </span>DO NOT adjust for colliders (common eﬀects of exposure and outcome)</span>
+<span id="cb6-179"><a href="#cb6-179"></a></span>
+<span id="cb6-180"><a href="#cb6-180"></a><span class="ss">-   </span>DO NOT adjust for mediators (variables on the causal pathway)<span class="sc">\*</span></span>
+<span id="cb6-181"><a href="#cb6-181"></a></span>
+<span id="cb6-182"><a href="#cb6-182"></a>(<span class="sc">\*</span> In a mediation analysis, you DO adjust for the mediator to estimate the direct eﬀect of the exposure on the outcome adjusted for the mediator).</span>
+<span id="cb6-183"><a href="#cb6-183"></a></span>
+<span id="cb6-184"><a href="#cb6-184"></a>We will put this into practice with an example shortly, but before we do, it's important to first introduce a couple more DAG-related concepts.</span>
+<span id="cb6-185"><a href="#cb6-185"></a></span>
+<span id="cb6-186"><a href="#cb6-186"></a><span class="fu">### Backdoor, Frontdoor, Open and Closed Paths</span></span>
+<span id="cb6-187"><a href="#cb6-187"></a></span>
+<span id="cb6-188"><a href="#cb6-188"></a>We've already established that paths describe the routes by which causation can flow between an exposure and an outcome. But now let's flesh that idea out in a little more detail. A **backdoor path** is any path that connects exposure to outcome and begins with an arrow **into** the exposure (for example, Exposure ← Confounder → Outcome). These paths represent **non-causal** sources of association - typically confounding - and, if left open, they bias causal effect estimates. A **frontdoor** path, by contrast, starts with an arrow **out** of the exposure (Exposure → … → Outcome) and represents the **causal** effect you are trying to estimate.</span>
+<span id="cb6-189"><a href="#cb6-189"></a></span>
+<span id="cb6-190"><a href="#cb6-190"></a><span class="at">&gt; The fundamental goal when interpreting a DAG is therefore to **block all backdoor paths** while leaving **frontdoor paths intact**.</span></span>
+<span id="cb6-191"><a href="#cb6-191"></a></span>
+<span id="cb6-192"><a href="#cb6-192"></a>Paths can also be **open** or **closed**. Whether a path is open or closed determines whether it transmits causation. A path is open by default unless it is blocked by conditioning on a non-collider (such as a confounder) or by the presence of a collider that is not conditioned on. In other words, if you have a collider in your path, **that path is already closed** and there is nothing further you need to do. In this case, adjusting for the collider will re-open the path. Above I gave you three rules to follow for whether to adjust for a junction variable or not - let me now explain why:</span>
+<span id="cb6-193"><a href="#cb6-193"></a></span>
+<span id="cb6-194"><a href="#cb6-194"></a><span class="at">&gt; Conditioning on a confounder **closes a backdoor path and removes bias**;</span></span>
+<span id="cb6-195"><a href="#cb6-195"></a></span>
+<span id="cb6-196"><a href="#cb6-196"></a><span class="at">&gt; Conditioning on a mediator closes part of a frontdoor path and changes the estimand;</span></span>
+<span id="cb6-197"><a href="#cb6-197"></a></span>
+<span id="cb6-198"><a href="#cb6-198"></a><span class="at">&gt; Conditioning on a collider **opens a path that was previously closed and induces bias**.</span></span>
+<span id="cb6-199"><a href="#cb6-199"></a></span>
+<span id="cb6-200"><a href="#cb6-200"></a>**Interpreting a DAG means systematically listing all backdoor paths between exposure and outcome, identifying which variables close those paths without opening new ones, and using that minimal set for adjustment**. It's in this way that DAGs provide a clear, causal logic for deciding what to adjust for and what to avoid, independent of statistical significance or model fit.</span>
+<span id="cb6-201"><a href="#cb6-201"></a></span>
+<span id="cb6-202"><a href="#cb6-202"></a>Let's now illustrate all of these concepts with a simulated example of a research question and its associated DAG.</span>
+<span id="cb6-203"><a href="#cb6-203"></a></span>
+<span id="cb6-204"><a href="#cb6-204"></a><span class="fu">## A Realistic Epidemiologic Example</span></span>
+<span id="cb6-205"><a href="#cb6-205"></a></span>
+<span id="cb6-206"><a href="#cb6-206"></a>The example we're going to use today is based on actual research investigating the effect of air pollution on cardiovascular disease - the question we are asking is: "What is the causal effect of long-term PM2.5 exposure on cardiovascular mortality?" For the sake of brevity, I am not going to discuss the background literature. While I haven't drawn on any particular piece of research in creating this example, if you are interested in reading more about the topic, <span class="co">[</span><span class="ot">this</span><span class="co">](https://www.sciencedirect.com/science/article/pii/S2772487523000508)</span> would be a good place to start. </span>
+<span id="cb6-207"><a href="#cb6-207"></a></span>
+<span id="cb6-208"><a href="#cb6-208"></a>::: callout-note</span>
+<span id="cb6-209"><a href="#cb6-209"></a>PM2.5 refers to particulate matter in air that is less than 2.5 μm or less in diameter. The reason that small particulate matter is significant is that it can be inhaled into the lungs and lead to adverse health effects.</span>
+<span id="cb6-210"><a href="#cb6-210"></a>:::</span>
+<span id="cb6-211"><a href="#cb6-211"></a></span>
+<span id="cb6-212"><a href="#cb6-212"></a>We've spent a bit of time thinking about this research question in terms of all potential variables that might be involved in the relationship between PM2.5 exposure, its causal risk effect for cardiovascular mortality, and their interplay with each other. In the end we've come up with the following list of variables, which thankfully, we also have data available for:</span>
+<span id="cb6-213"><a href="#cb6-213"></a></span>
+<span id="cb6-214"><a href="#cb6-214"></a><span class="ss">- </span><span class="in">`PM25`</span>: air pollution exposure</span>
+<span id="cb6-215"><a href="#cb6-215"></a></span>
+<span id="cb6-216"><a href="#cb6-216"></a><span class="ss">- </span><span class="in">`Mortality`</span>: cardiovascular death</span>
+<span id="cb6-217"><a href="#cb6-217"></a></span>
+<span id="cb6-218"><a href="#cb6-218"></a><span class="ss">- </span><span class="in">`Age`</span></span>
+<span id="cb6-219"><a href="#cb6-219"></a></span>
+<span id="cb6-220"><a href="#cb6-220"></a><span class="ss">- </span><span class="in">`Smoking`</span></span>
+<span id="cb6-221"><a href="#cb6-221"></a></span>
+<span id="cb6-222"><a href="#cb6-222"></a><span class="ss">- </span><span class="in">`SES`</span>: socioeconomic status</span>
+<span id="cb6-223"><a href="#cb6-223"></a></span>
+<span id="cb6-224"><a href="#cb6-224"></a><span class="ss">- </span><span class="in">`CVD`</span>: pre-existing cardiovascular disease</span>
+<span id="cb6-225"><a href="#cb6-225"></a></span>
+<span id="cb6-226"><a href="#cb6-226"></a><span class="ss">- </span><span class="in">`Healthcare`</span>: healthcare utilisation</span>
+<span id="cb6-227"><a href="#cb6-227"></a></span>
+<span id="cb6-228"><a href="#cb6-228"></a><span class="fu">### Encoding the Causal Assumptions and DAG Visualisation</span></span>
+<span id="cb6-229"><a href="#cb6-229"></a></span>
+<span id="cb6-230"><a href="#cb6-230"></a>Here is the resulting DAG which represents the encoding of our assumptions about the potential relationships between exposure, outcome and all other secondary variables. It may look imposing, but let's break it down. We start out by listing all possible causations between pairs of variables - for example, we might postulate that age "causes" PM25, age "causes" mortality, SES "causes" PM25, and so on. Once we have exhausted all possible relationships we can specify the DAG as shown in the code below, whereby age "causes" PM25 is encoded in the <span class="in">`dagify()`</span> function as <span class="in">`pm25 ~ age`</span>, using the identical syntax to what we write when specifying a regression model. Plotting the DAG then becomes a trivial exercise.</span>
+<span id="cb6-231"><a href="#cb6-231"></a></span>
+<span id="cb6-232"><a href="#cb6-232"></a><span class="in">```{r, fig.width=10, fig.height=8, out.width="100%"}</span></span>
+<span id="cb6-233"><a href="#cb6-233"></a><span class="in"># Encode DAG</span></span>
+<span id="cb6-234"><a href="#cb6-234"></a><span class="in">airpollution_dag &lt;- dagify(</span></span>
+<span id="cb6-235"><a href="#cb6-235"></a><span class="in">  pm25 ~ age,</span></span>
+<span id="cb6-236"><a href="#cb6-236"></a><span class="in">  mortality ~ age,</span></span>
+<span id="cb6-237"><a href="#cb6-237"></a><span class="in">  pm25 ~ ses,</span></span>
+<span id="cb6-238"><a href="#cb6-238"></a><span class="in">  smoking ~ ses, </span></span>
+<span id="cb6-239"><a href="#cb6-239"></a><span class="in">  healthcare ~ ses,</span></span>
+<span id="cb6-240"><a href="#cb6-240"></a><span class="in">  cvd ~ smoking,</span></span>
+<span id="cb6-241"><a href="#cb6-241"></a><span class="in">  mortality ~ smoking,</span></span>
+<span id="cb6-242"><a href="#cb6-242"></a><span class="in">  cvd ~ pm25,</span></span>
+<span id="cb6-243"><a href="#cb6-243"></a><span class="in">  mortality ~ cvd,</span></span>
+<span id="cb6-244"><a href="#cb6-244"></a><span class="in">  healthcare ~ cvd,</span></span>
+<span id="cb6-245"><a href="#cb6-245"></a><span class="in">  labels = c(</span></span>
+<span id="cb6-246"><a href="#cb6-246"></a><span class="in">    pm25 = "PM25",</span></span>
+<span id="cb6-247"><a href="#cb6-247"></a><span class="in">    mortality = "Mortality",</span></span>
+<span id="cb6-248"><a href="#cb6-248"></a><span class="in">    age = "Age",</span></span>
+<span id="cb6-249"><a href="#cb6-249"></a><span class="in">    ses = "SES",</span></span>
+<span id="cb6-250"><a href="#cb6-250"></a><span class="in">    smoking = "Smoking",</span></span>
+<span id="cb6-251"><a href="#cb6-251"></a><span class="in">    healthcare = "Healthcare",</span></span>
+<span id="cb6-252"><a href="#cb6-252"></a><span class="in">    cvd = "CVD"),</span></span>
+<span id="cb6-253"><a href="#cb6-253"></a><span class="in">  #coords = dag_coords,</span></span>
+<span id="cb6-254"><a href="#cb6-254"></a><span class="in">  exposure = "pm25",</span></span>
+<span id="cb6-255"><a href="#cb6-255"></a><span class="in">  outcome = "mortality")</span></span>
+<span id="cb6-256"><a href="#cb6-256"></a></span>
+<span id="cb6-257"><a href="#cb6-257"></a><span class="in"># Plot DAG</span></span>
+<span id="cb6-258"><a href="#cb6-258"></a><span class="in">set.seed(137)</span></span>
+<span id="cb6-259"><a href="#cb6-259"></a><span class="in">airpollution_dag |&gt; </span></span>
+<span id="cb6-260"><a href="#cb6-260"></a><span class="in">  ggdag(text = FALSE, use_labels = "label", stylized = TRUE) +</span></span>
+<span id="cb6-261"><a href="#cb6-261"></a><span class="in">  theme_dag() +</span></span>
+<span id="cb6-262"><a href="#cb6-262"></a><span class="in">  expand_plot(expand_x = expansion(c(.5, .5)))</span></span>
+<span id="cb6-263"><a href="#cb6-263"></a><span class="in">```</span></span>
+<span id="cb6-264"><a href="#cb6-264"></a></span>
+<span id="cb6-265"><a href="#cb6-265"></a><span class="fu">### Interpreting the DAG</span></span>
+<span id="cb6-266"><a href="#cb6-266"></a></span>
+<span id="cb6-267"><a href="#cb6-267"></a>We then want to interpret the DAG so we can make some logical attempt to justify what variables to include, exclude, adjust and not adjust for in our regression model. To do this, at least initially, it is helpful to enumerate all possible paths contained in the DAG that exist between the exposure (PM25) and the outcome (mortality).</span>
+<span id="cb6-268"><a href="#cb6-268"></a></span>
+<span id="cb6-269"><a href="#cb6-269"></a>There are two ways to do this - the easy way and the hard way. The hard way involves manually tracing out every path based on the DAG and writing them down. For obvious reasons this is error-prone and subject to missing some of the paths, but it can be helpful as a learning exercise. The easy way is as simple as asking the <span class="in">`daggity`</span> package to do it for you. In the code block below, you'll see that I have extended this functionality by writing a function to also output "status" (path open vs closed) and "type" (frontdoor vs backdoor) information. Running this on the current DAG object generates the following table:</span>
+<span id="cb6-270"><a href="#cb6-270"></a></span>
+<span id="cb6-273"><a href="#cb6-273"></a><span class="in">```{r}</span></span>
+<span id="cb6-274"><a href="#cb6-274"></a><span class="co"># Function to enumerate all paths, status and type</span></span>
+<span id="cb6-275"><a href="#cb6-275"></a>extract_dag_paths <span class="ot">&lt;-</span> <span class="cf">function</span>(dag) {</span>
+<span id="cb6-276"><a href="#cb6-276"></a>  <span class="fu">require</span>(dagitty)</span>
+<span id="cb6-277"><a href="#cb6-277"></a>  <span class="fu">require</span>(dplyr)</span>
+<span id="cb6-278"><a href="#cb6-278"></a>  <span class="fu">require</span>(purrr)</span>
+<span id="cb6-279"><a href="#cb6-279"></a>  </span>
+<span id="cb6-280"><a href="#cb6-280"></a>  <span class="co"># Get all paths between exposure and outcome</span></span>
+<span id="cb6-281"><a href="#cb6-281"></a>  all_paths <span class="ot">&lt;-</span> <span class="fu">paths</span>(dag)</span>
+<span id="cb6-282"><a href="#cb6-282"></a>  </span>
+<span id="cb6-283"><a href="#cb6-283"></a>  <span class="co"># Create dataframe</span></span>
+<span id="cb6-284"><a href="#cb6-284"></a>  path_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb6-285"><a href="#cb6-285"></a>    <span class="at">path =</span> all_paths<span class="sc">$</span>paths,</span>
+<span id="cb6-286"><a href="#cb6-286"></a>    <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span></span>
+<span id="cb6-287"><a href="#cb6-287"></a>  )</span>
+<span id="cb6-288"><a href="#cb6-288"></a>  </span>
+<span id="cb6-289"><a href="#cb6-289"></a>  <span class="co"># Add open/closed status</span></span>
+<span id="cb6-290"><a href="#cb6-290"></a>  path_df<span class="sc">$</span>status <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(all_paths<span class="sc">$</span>open, <span class="st">"open"</span>, <span class="st">"closed"</span>)</span>
+<span id="cb6-291"><a href="#cb6-291"></a>  </span>
+<span id="cb6-292"><a href="#cb6-292"></a>  <span class="co"># Determine path type</span></span>
+<span id="cb6-293"><a href="#cb6-293"></a>  path_df<span class="sc">$</span>type <span class="ot">&lt;-</span> <span class="fu">map</span>(path_df<span class="sc">$</span>path, <span class="cf">function</span>(p) {</span>
+<span id="cb6-294"><a href="#cb6-294"></a>    <span class="co"># Check if path contains any &lt;- arrows (backdoor indicator)</span></span>
+<span id="cb6-295"><a href="#cb6-295"></a>    <span class="cf">if</span> (<span class="fu">grepl</span>(<span class="st">"&lt;-"</span>, p)) {</span>
+<span id="cb6-296"><a href="#cb6-296"></a>      <span class="fu">return</span>(<span class="st">"backdoor"</span>)</span>
+<span id="cb6-297"><a href="#cb6-297"></a>    } <span class="cf">else</span> {</span>
+<span id="cb6-298"><a href="#cb6-298"></a>      <span class="co"># All arrows point forward</span></span>
+<span id="cb6-299"><a href="#cb6-299"></a>      <span class="fu">return</span>(<span class="st">"frontdoor"</span>)</span>
+<span id="cb6-300"><a href="#cb6-300"></a>    }</span>
+<span id="cb6-301"><a href="#cb6-301"></a>  })</span>
+<span id="cb6-302"><a href="#cb6-302"></a>  </span>
+<span id="cb6-303"><a href="#cb6-303"></a>  <span class="co"># Reorder columns for clarity</span></span>
+<span id="cb6-304"><a href="#cb6-304"></a>  path_df <span class="ot">&lt;-</span> path_df <span class="sc">|&gt;</span> </span>
+<span id="cb6-305"><a href="#cb6-305"></a>    <span class="fu">arrange</span>(<span class="fu">desc</span>(type), <span class="fu">desc</span>(status)) <span class="sc">|&gt;</span> </span>
+<span id="cb6-306"><a href="#cb6-306"></a>    <span class="fu">mutate</span>(<span class="at">id =</span> <span class="fu">row_number</span>()) <span class="sc">|&gt;</span> </span>
+<span id="cb6-307"><a href="#cb6-307"></a>    <span class="fu">select</span>(id, path, status, type) </span>
+<span id="cb6-308"><a href="#cb6-308"></a></span>
+<span id="cb6-309"><a href="#cb6-309"></a>  </span>
+<span id="cb6-310"><a href="#cb6-310"></a>  <span class="fu">return</span>(path_df)</span>
+<span id="cb6-311"><a href="#cb6-311"></a>}</span>
+<span id="cb6-312"><a href="#cb6-312"></a></span>
+<span id="cb6-313"><a href="#cb6-313"></a><span class="co"># Print</span></span>
+<span id="cb6-314"><a href="#cb6-314"></a>path_summary <span class="ot">&lt;-</span> <span class="fu">extract_dag_paths</span>(airpollution_dag)</span>
+<span id="cb6-315"><a href="#cb6-315"></a><span class="fu">kable</span>(path_summary)</span>
+<span id="cb6-316"><a href="#cb6-316"></a><span class="in">```</span></span>
+<span id="cb6-317"><a href="#cb6-317"></a></span>
+<span id="cb6-318"><a href="#cb6-318"></a>&lt;br&gt;</span>
+<span id="cb6-319"><a href="#cb6-319"></a></span>
+<span id="cb6-320"><a href="#cb6-320"></a>This tells us that we have <span class="in">`8`</span> paths at play between the exposure and the outcome. It also tells us straight off the bat that we don't need to worry about <span class="in">`4`</span> of these - the ones that are "closed" (<span class="in">`id`</span>'s <span class="in">`5`</span>-<span class="in">`8`</span>). The reason these are already closed is because a collider is present in each - <span class="in">`Healthcare`</span> in paths <span class="in">`5`</span>, <span class="in">`7`</span> and <span class="in">`8`</span>, and <span class="in">`CVD`</span> in path <span class="in">`6`</span>. This leaves us with <span class="in">`4`</span> open paths - and we can visualise these quite easily with the <span class="in">`ggdag_paths()`</span> function in the following way:</span>
+<span id="cb6-321"><a href="#cb6-321"></a></span>
+<span id="cb6-322"><a href="#cb6-322"></a><span class="in">```{r, fig.width=12, fig.height=10, out.width="100%"}</span></span>
+<span id="cb6-323"><a href="#cb6-323"></a><span class="in">set.seed(137)</span></span>
+<span id="cb6-324"><a href="#cb6-324"></a><span class="in">airpollution_dag |&gt; </span></span>
+<span id="cb6-325"><a href="#cb6-325"></a><span class="in">  ggdag_paths(text = FALSE, use_labels = "label", stylized = TRUE) +</span></span>
+<span id="cb6-326"><a href="#cb6-326"></a><span class="in">  expand_plot(expand_x = expansion(c(.5, .5)))</span></span>
+<span id="cb6-327"><a href="#cb6-327"></a><span class="in">```</span></span>
+<span id="cb6-328"><a href="#cb6-328"></a></span>
+<span id="cb6-329"><a href="#cb6-329"></a><span class="fu">### Identifying the Minimally Sufficient Adjustment Set</span></span>
+<span id="cb6-330"><a href="#cb6-330"></a></span>
+<span id="cb6-331"><a href="#cb6-331"></a>Of these <span class="in">`4`</span> open paths, the first is a frontdoor path (and thus our main path of interest in determining the causal effect), and the remainder are backdoor paths. We therefore need to find a way to close paths <span class="in">`2`</span> - <span class="in">`4`</span>, and the easiest way to do that is to condition on a confounder. Looking at those paths a natural choice would be to adjust for <span class="in">`Age`</span> (path <span class="in">`2`</span>) and <span class="in">`SES`</span> (paths <span class="in">`3`</span> and <span class="in">`4`</span>) as these are confounders. Handily, there's an algorithmic way to check this as well - by using the <span class="in">`ggdag_adjustment_set()`</span> function as follows:</span>
+<span id="cb6-332"><a href="#cb6-332"></a></span>
+<span id="cb6-333"><a href="#cb6-333"></a><span class="in">```{r, fig.width=12, fig.height=10, out.width="100%"}</span></span>
+<span id="cb6-334"><a href="#cb6-334"></a><span class="in">set.seed(137)</span></span>
+<span id="cb6-335"><a href="#cb6-335"></a><span class="in">airpollution_dag |&gt; </span></span>
+<span id="cb6-336"><a href="#cb6-336"></a><span class="in">  ggdag_adjustment_set(text = FALSE, use_labels = "label", shadow = TRUE, stylized = TRUE,</span></span>
+<span id="cb6-337"><a href="#cb6-337"></a><span class="in">    exposure = "pm25",</span></span>
+<span id="cb6-338"><a href="#cb6-338"></a><span class="in">    outcome  = "mortality") +</span></span>
+<span id="cb6-339"><a href="#cb6-339"></a><span class="in">  theme_dag()</span></span>
+<span id="cb6-340"><a href="#cb6-340"></a><span class="in">```</span></span>
+<span id="cb6-341"><a href="#cb6-341"></a></span>
+<span id="cb6-342"><a href="#cb6-342"></a>So what does this tell us? Indeed {<span class="in">`Age`</span>, <span class="in">`SES`</span>} is one potential adjustment set, but there is also another - {<span class="in">`Age`</span>, <span class="in">`Smoking`</span>}. Which should we choose? Well, this is is a case of <span class="in">`daggity`</span> telling us what *can* work, but we should use our own causal reasoning to decide what *should* work more appropriately. From <span class="in">`dagitty`</span>'s point of view: "Given the assumptions encoded in this DAG, either of these sets is sufficient to identify the causal effect." But that doesn't mean that each set is equally defensible scientifically.</span>
+<span id="cb6-343"><a href="#cb6-343"></a></span>
+<span id="cb6-344"><a href="#cb6-344"></a>The first set blocks all backdoor paths without conditioning on anything downstream of exposure. This is the cleanest and most interpretable adjustment set, and it corresponds to the total causal effect one sets out to estimate. In contrast, the second set includes a variable (<span class="in">`Smoking`</span>) that is a descendant of <span class="in">`SES`</span>). This set works only because conditioning on <span class="in">`Smoking`</span> incidentally blocks the same backdoor path that <span class="in">`SES`</span> also blocks - so while the second set is formally sufficient, it is causally inferior.</span>
+<span id="cb6-345"><a href="#cb6-345"></a></span>
+<span id="cb6-346"><a href="#cb6-346"></a>When <span class="in">`dagitty`</span> gives you multiple valid sets, you can apply this hierarchy to hopefully make a more reasoned decision:</span>
+<span id="cb6-347"><a href="#cb6-347"></a></span>
+<span id="cb6-348"><a href="#cb6-348"></a><span class="ss">- </span>Prefer pre-exposure variables over post-exposure or downstream variables</span>
+<span id="cb6-349"><a href="#cb6-349"></a></span>
+<span id="cb6-350"><a href="#cb6-350"></a><span class="ss">- </span>Prefer true common causes over descendants of common causes</span>
+<span id="cb6-351"><a href="#cb6-351"></a></span>
+<span id="cb6-352"><a href="#cb6-352"></a><span class="ss">- </span>Avoid mediators and their descendants if estimating total effects</span>
+<span id="cb6-353"><a href="#cb6-353"></a></span>
+<span id="cb6-354"><a href="#cb6-354"></a><span class="ss">- </span>Avoid colliders or "selection" variables even if they appear in valid sets</span>
+<span id="cb6-355"><a href="#cb6-355"></a></span>
+<span id="cb6-356"><a href="#cb6-356"></a><span class="ss">- </span>Choose the smallest, simplest set that aligns with the scientific question</span>
+<span id="cb6-357"><a href="#cb6-357"></a></span>
+<span id="cb6-358"><a href="#cb6-358"></a><span class="ss">- </span>Under these principles, {<span class="in">`Age`</span>, <span class="in">`SES`</span>} clearly dominates any alternative.</span>
+<span id="cb6-359"><a href="#cb6-359"></a></span>
+<span id="cb6-360"><a href="#cb6-360"></a><span class="fu">## Some Final Thoughts</span></span>
+<span id="cb6-361"><a href="#cb6-361"></a></span>
+<span id="cb6-362"><a href="#cb6-362"></a><span class="fu">### Why Not Adjust for Everything?</span></span>
+<span id="cb6-363"><a href="#cb6-363"></a></span>
+<span id="cb6-364"><a href="#cb6-364"></a>As you can tell, there's a lot of work in justifying your causal model. While it may be tempting to adopt a "kitchen sink" approach by adjusting for every available variable to avoid model misspecification, this strategy often backfires. First, over-adjusting leads to statistical inefficiency; by consuming precious degrees of freedom, you dilute the model's power and risk overfitting, especially in smaller datasets or when variables are highly correlated. Second, and more critically, blindly adding covariates can introduce bias rather than remove it. If you inadvertently adjust for a collider you can backdoor paths and induce bias as I previously mentioned. Ultimately, a model packed with irrelevant or harmful variables obscures the true relationship and can lead to fundamentally flawed causal conclusions.</span>
+<span id="cb6-365"><a href="#cb6-365"></a></span>
+<span id="cb6-366"><a href="#cb6-366"></a><span class="fu">### What DAGs Don't Do</span></span>
+<span id="cb6-367"><a href="#cb6-367"></a></span>
+<span id="cb6-368"><a href="#cb6-368"></a>While DAGs are indispensable for mapping causal structures, they are not a panacea for the inherent risks of observational research. Most importantly, a DAG is only as good as the assumptions it visualises; if your graph is missing a crucial arrow or node, it cannot magically guarantee causal identification or alert you to the presence of unmeasured confounding that might still be biasing your results. Furthermore, a DAG is a qualitative tool that guides model selection, but it does not replace the need for rigorous sensitivity analyses to test how robust your findings are to potential "hidden" biases or alternative structures. Ultimately, a DAG is not a machine that produces a "correct" answer, but rather a logical framework that ensures your statistical modeling choices - specifically which variables you choose to include or exclude - are strictly coherent with the specific causal question you are attempting to answer.</span>
+<span id="cb6-369"><a href="#cb6-369"></a></span>
+<span id="cb6-370"><a href="#cb6-370"></a><span class="fu">### Should You Include a DAG in Your Next Paper?</span></span>
+<span id="cb6-371"><a href="#cb6-371"></a></span>
+<span id="cb6-372"><a href="#cb6-372"></a>Maybe the answer to this question should be yes.</span>
+<span id="cb6-373"><a href="#cb6-373"></a></span>
+<span id="cb6-374"><a href="#cb6-374"></a>I don't think we're at the stage where journals are *requiring* DAGs be supplied as part of a submission, but it is becoming increasingly common for reviewers/editors to ask for one in review if they aren't convinced a specified model is correct. When a reviewer asks, "Why didn't you control for Variable X?", being able to point to a DAG and say, "Variable X is a collider (or mediator) according to current domain knowledge, and adjusting for it would introduce bias," is a much stronger rebuttal than simply stating it wasn't available in the data.</span>
+<span id="cb6-375"><a href="#cb6-375"></a></span>
+<span id="cb6-376"><a href="#cb6-376"></a>Even when not required, DAGs:</span>
+<span id="cb6-377"><a href="#cb6-377"></a></span>
+<span id="cb6-378"><a href="#cb6-378"></a><span class="ss">- </span>justify confounder selection,</span>
+<span id="cb6-379"><a href="#cb6-379"></a></span>
+<span id="cb6-380"><a href="#cb6-380"></a><span class="ss">- </span>expose inappropriate adjustment,</span>
+<span id="cb6-381"><a href="#cb6-381"></a></span>
+<span id="cb6-382"><a href="#cb6-382"></a><span class="ss">- </span>clarify estimands,</span>
+<span id="cb6-383"><a href="#cb6-383"></a></span>
+<span id="cb6-384"><a href="#cb6-384"></a><span class="ss">- </span>and reduce reviewer disagreement.</span>
+<span id="cb6-385"><a href="#cb6-385"></a></span>
+<span id="cb6-386"><a href="#cb6-386"></a>It is not a stretch to say that a single DAG can replace pages of methodological explanation.</span>
+<span id="cb6-387"><a href="#cb6-387"></a></span>
+<span id="cb6-388"><a href="#cb6-388"></a><span class="fu">### Really, The End!</span></span>
+<span id="cb6-389"><a href="#cb6-389"></a></span>
+<span id="cb6-390"><a href="#cb6-390"></a>If you are doing observational research and making causal claims, you already have a DAG in your head. Writing it down and then visualising it - using tools like <span class="in">`dagitty`</span> and <span class="in">`ggdag`</span> - makes those assumptions visible, testable, and discussable. It could be argued that in modern epidemiology and biostatistics, DAGs are not an optional extra. They are part of responsible study design.</span>
+<span id="cb6-391"><a href="#cb6-391"></a></span>
+<span id="cb6-392"><a href="#cb6-392"></a>I hope you didn't find this post too heavy going. See you next month!</span>
+</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
 

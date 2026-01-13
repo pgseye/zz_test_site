@@ -1,7 +1,390 @@
 ---
-title: "A Gentle Introduction to Directed Acyclic Graphs (DAG's)"
+title: "A Gentle Introduction to Directed Acyclic Graphs (DAGs)"
 date: 2026-02-27
 categories: [code, concept, modelling]
-image: ""
-description: "What they are and one way to draw them"
+image: "images/working_dag.png"
+description: "Don't be a DAG, draw one instead."
 ---
+
+## Introduction
+
+A good part of the research that we do in the unit is observational in nature. Rather than the highly controlled environments of laboratory-based experimental designs and randomised clinical trials, observational research is really the "Wild West" cousin, where both its virtue and vice is in the fact that we gain knowledge by observing the "chaos" of the natural world. Consequently, observational research lives and dies by assumptions. We assume certain variables cause others, assume some relationships matter and others don’t, and assume that statistical adjustment corresponds to causal control. Directed acyclic graphs (DAGs) force these assumptions out into the open.
+
+In this post, we’ll move beyond theory and show how to construct, visualise, and interrogate DAGs in `R` using the `ggdag` and `daggity` packages. Along the way, we’ll revisit why DAGs are essential for observational research and how they clarify the roles of confounders, mediators, and colliders.
+
+## Association vs Causation
+
+Before diving into DAGs, let's briefly explore the idea that we often have unrealistic expectations for the intent of our work. In my early research career I was pulled up at least once by a journal reviewer (hopefully I never made the same mistake again) for describing my results as an "effect", without the use of quotation marks in the manuscript at the time. I received a relatively lengthy screed in review chastising me that use of the term in that context implied causation between the exposure and outcome, and all I could really report was an association. The reviewer had a point and so I now never write "effect" without the quotation marks, hopefully implying my usage of the word as a colloquial proxy for association or correlation.
+
+Part of the problem is that it's hard to disabuse ourselves of what we're taught in statistics classes. When we specify something like the following regression model:
+
+`lm(outcome ~ exposure + covariates, data = df)`
+
+we are implicitly making causal claims about: which variables precede exposure, which variables influence outcome, and which associations we want to block or preserve. But we need to stop thinking like that.
+
+While the ultimate goal of most observational research is to inform interventions by identifying "cause and effect", the vast majority of published analyses remain strictly association studies due to the inherent limitations of non-experimental data. Although our ingrained motivations as scientists want us to argue that one thing leads to another (i.e. the exposure causes the outcome), it is important to keep in mind that because of the assumptions we must make, this is often an impossible goal. Establishing causation with sufficient evidence is not an all or nothing event, however. Think of it as a dial turning between association and causation, where the former represents the default position. The more assumptions you convincingly satisfy, the more the dial may be allowed to turn clockwise towards causation rather than just association in explaining the exposure -\> outcome relationship.
+
+Now, I'm not going to go through all of the [assumptions](https://www.stats.ox.ac.uk/~evans/APTS/causassmp.html) necessary for causal inference in detail. But I will mention the first, and arguably the most important. That is the assumption of **No Unobserved Confounding**. In other words, we need to know that we have identified and accounted for **all** possible covariates that might distort our exposure -\> outcome relationship of interest. Only then, can we start to assert with a little more confidence that "effects" are indeed just that, allowing us to use language that is less neutral and more concordant with a causal process.
+
+And this is where a DAG can be extremely helpful.
+
+## The Basics
+
+### What are Directed Acyclic Graphs?
+
+A Directed Acyclic Graph (DAG) is a visual map used to represent the assumed causal relationships between variables, and to identify confounding. They are relatively recent development in the field of causal inference, based on formal logic and machine learning research from the 1990's. In the modern era, DAGs are critical in much observational research and I think it is now safe to say that you won't see your manuscript accepted to a reputable journal if you plan to conduct an explicit causal analysis, without one.
+
+The following is an example DAG taken from a [recent paper](https://pubmed.ncbi.nlm.nih.gov/36251191/) visualising all theoretical variable pathways in the proposed relationship between various chronic lung diseases and lung cancer.
+
+![](images/example_dag.png){fig-align="center"}
+
+This is a fairly complex DAG, so don't be put off by it. Indeed, while this figure is visually arresting, at their core every DAG contains only two basic structures:
+
+1.  The variables in the postulated data-generating process (DGP), each represented by a "node" on the diagram, and:
+2.  The causal relationships (or pathways) in the postulated DGP, each represented by an arrow from the cause variable to the caused variable (i.e. effect).
+
+Thus, a DAG is:
+
+-   Directed: arrows indicate causal direction between two variables,
+
+-   Acyclic: arrows can never form a closed/feedback loop (e.g., A→B→C→A). This reflects the reality that a cause must precede its effect in time; you cannot be your own ancestor.
+
+-   Graphical: variables are nodes, relationships are paths.
+
+With this knowledge and the context of the above example then, one could make statements such as:
+
+-   "Lung disease 'causes' lung cancer", or:
+
+-   "Age 'causes' lung disease", or:
+
+-   "Smoking 'causes' lung cancer".
+
+Some such statements we may not know with certainty to be true, but this is ok. In fact, an arrow in a DAG is almost always a **hypothesised assumption** rather than a proven fact. One of the most powerful features of a DAG is that it functions as a "honesty check" in that it forces you to move your private mental model into a public, visual space where others can critique it.
+
+### The Building Block Paths of a DAG
+
+Just as there are only two structural components to a DAG, there are only three types of *paths* (i.e. sequence of arrows) that you need to think about. Once you have a handle on these you are well on your way to not only being able to interpret a DAG, but construct one of your own. The building block paths are:
+
+1.  Chains:
+
+    -   A → B → C
+
+2.  Forks:
+
+    -   A ← B → C
+
+3.  Inverted Forks (Colliders):
+
+    -   A → B ← C
+
+Let's visualise each of these with some `R` code and the `ggdag` and `daggity` packages.
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  message = FALSE,
+  warning = FALSE
+)
+
+```
+
+```{r, fig.width=8, fig.height=3, out.width="80%"}
+library(ggdag)
+library(dagitty)
+library(tidyverse)
+library(ggrepel)
+library(kableExtra)
+
+# Define node coordinates
+dag_coords <- tibble::tribble(
+  ~name, ~x,  ~y,
+  "C",    0,   1,    # Confounder/Collider/Mediator at top
+  "E",   -1,   0,    # Exposure at bottom left
+  "O",    1,   0     # Outcome at bottom right
+)
+
+# Encode DAGs for each path type
+Chain <- dagify(
+  C ~ E,
+  O ~ C,
+  coords = dag_coords,
+  exposure = "E",
+  outcome = "O")
+
+Fork <- dagify(
+  E ~ C,
+  O ~ C,
+  coords = dag_coords,
+  exposure = "E",
+  outcome = "O")
+
+Collider <- dagify(
+  C ~ E,
+  C ~ O,
+  coords = dag_coords,
+  exposure = "E",
+  outcome = "O")
+
+# Merge plots
+dag_flows <- map(list(Chain = Chain, Fork = Fork, Collider = Collider), tidy_dagitty) |>
+  map("data") |>
+  list_rbind(names_to = "dag") |>
+  mutate(dag = factor(dag, levels = c("Chain", "Fork", "Collider")))
+
+# Add labels based on dag type and node name
+dag_flows <- dag_flows |>
+  mutate(label = case_when(
+    dag == "Chain" & name == "C" ~ "Mediator",
+    dag == "Fork" & name == "C" & xend == -1 ~ "Confounder", # specify xend to stop 2 confounder labels
+    dag == "Collider" & name == "C" ~ "Collider",
+    name == "E" ~ "Exposure",
+    name == "O" ~ "Outcome",
+    TRUE ~ ""
+  ))
+
+# Plot
+set.seed(131) # Set and check label positions don't obscure arrowheads
+dag_flows |>
+  ggplot(aes(x = x, y = y, xend = xend, yend = yend)) +
+  geom_dag_edges(edge_width = 1) +
+  geom_dag_point() +
+  geom_label_repel(aes(label = label),
+                 size = 3.5,
+                 box.padding = 0.5,
+                 point.padding = 0.5,
+                 fill = "white",
+                 label.padding = unit(0.25, "lines"),
+                 label.size = 0.25) +
+  facet_wrap(~dag) +
+  expand_plot(
+    expand_x = expansion(c(0.2, 0.2)),
+    expand_y = expansion(c(0.2, 0.2))
+  ) +
+  theme_dag()
+```
+
+As you can see there are some fundamental similarities and differences in each path type. The exposure and outcome are common to all - it's the *junction* variable that sits between these that determine the path behaviour (i.e. whether a causal effect is transmitted and in what direction). Let's briefly discuss these variables as understanding their influence on a path is fundamental to understanding a DAG.
+
+A **confounder** is a variable that causally affects both the exposure and the outcome. Because it creates a non-causal association between exposure and outcome, failing to adjust for a confounder leads to biased effect estimates. For example, when studying the effect of coffee consumption on heart disease, smoking is a confounder: smokers tend to drink more coffee, and smoking independently increases heart disease risk. Adjusting for smoking blocks this path and helps isolate the causal effect of coffee.
+
+In contrast, a **mediator** lies on the causal pathway from exposure to outcome and represents part of the mechanism by which the exposure exerts its effect. Mediators are not sources of bias; they are part of the effect itself. Adjusting for a mediator therefore changes the scientific question by removing indirect effects. For instance, in a study of physical activity and cardiovascular mortality, blood pressure is a mediator: physical activity lowers blood pressure, which in turn reduces mortality risk. If you adjust for blood pressure, you no longer estimate the total effect of physical activity, but only the effect that does not operate through blood pressure.
+
+A **collider** is a variable that is caused by two (or more) other variables. Unlike confounders, colliders do not create bias unless you condition (i.e. adjust) for them - at which point they induce a spurious association between their causes. For example, suppose you study the relationship between genetic risk and occupational exposure among hospital patients, where hospital admission is influenced by both genetics and exposure. Hospital admission is a collider: restricting the analysis to hospitalised patients (i.e. conditioning on the collider) creates an artificial association between genetic risk and exposure that does not exist in the general population.
+
+OK, that's all a bit to take in - what are the practical takeaways you might ask. Let's imagine you are looking at the DAG you have just created trying to decide which variables you should adjust for in your regression model. You want to estimate the causal effect of the exposure on your outcome of interest. There are three basic rules to follow:
+
+-   DO adjust for confounders (common causes of exposure and outcome)
+
+-   DO NOT adjust for colliders (common eﬀects of exposure and outcome)
+
+-   DO NOT adjust for mediators (variables on the causal pathway)\*
+
+(\* In a mediation analysis, you DO adjust for the mediator to estimate the direct eﬀect of the exposure on the outcome adjusted for the mediator).
+
+We will put this into practice with an example shortly, but before we do, it's important to first introduce a couple more DAG-related concepts.
+
+### Backdoor, Frontdoor, Open and Closed Paths
+
+We've already established that paths describe the routes by which causation can flow between an exposure and an outcome. But now let's flesh that idea out in a little more detail. A **backdoor path** is any path that connects exposure to outcome and begins with an arrow **into** the exposure (for example, Exposure ← Confounder → Outcome). These paths represent **non-causal** sources of association - typically confounding - and, if left open, they bias causal effect estimates. A **frontdoor** path, by contrast, starts with an arrow **out** of the exposure (Exposure → … → Outcome) and represents the **causal** effect you are trying to estimate.
+
+> The fundamental goal when interpreting a DAG is therefore to **block all backdoor paths** while leaving **frontdoor paths intact**.
+
+Paths can also be **open** or **closed**. Whether a path is open or closed determines whether it transmits causation. A path is open by default unless it is blocked by conditioning on a non-collider (such as a confounder) or by the presence of a collider that is not conditioned on. In other words, if you have a collider in your path, **that path is already closed** and there is nothing further you need to do. In this case, adjusting for the collider will re-open the path. Above I gave you three rules to follow for whether to adjust for a junction variable or not - let me now explain why:
+
+> Conditioning on a confounder **closes a backdoor path and removes bias**;
+
+> Conditioning on a mediator closes part of a frontdoor path and changes the estimand;
+
+> Conditioning on a collider **opens a path that was previously closed and induces bias**.
+
+**Interpreting a DAG means systematically listing all backdoor paths between exposure and outcome, identifying which variables close those paths without opening new ones, and using that minimal set for adjustment**. It's in this way that DAGs provide a clear, causal logic for deciding what to adjust for and what to avoid, independent of statistical significance or model fit.
+
+Let's now illustrate all of these concepts with a simulated example of a research question and its associated DAG.
+
+## A Realistic Epidemiologic Example
+
+The example we're going to use today is based on actual research investigating the effect of air pollution on cardiovascular disease - the question we are asking is: "What is the causal effect of long-term PM2.5 exposure on cardiovascular mortality?" For the sake of brevity, I am not going to discuss the background literature. While I haven't drawn on any particular piece of research in creating this example, if you are interested in reading more about the topic, [this](https://www.sciencedirect.com/science/article/pii/S2772487523000508) would be a good place to start. 
+
+::: callout-note
+PM2.5 refers to particulate matter in air that is less than 2.5 μm or less in diameter. The reason that small particulate matter is significant is that it can be inhaled into the lungs and lead to adverse health effects.
+:::
+
+We've spent a bit of time thinking about this research question in terms of all potential variables that might be involved in the relationship between PM2.5 exposure, its causal risk effect for cardiovascular mortality, and their interplay with each other. In the end we've come up with the following list of variables, which thankfully, we also have data available for:
+
+- `PM25`: air pollution exposure
+
+- `Mortality`: cardiovascular death
+
+- `Age`
+
+- `Smoking`
+
+- `SES`: socioeconomic status
+
+- `CVD`: pre-existing cardiovascular disease
+
+- `Healthcare`: healthcare utilisation
+
+### Encoding the Causal Assumptions and DAG Visualisation
+
+Here is the resulting DAG which represents the encoding of our assumptions about the potential relationships between exposure, outcome and all other secondary variables. It may look imposing, but let's break it down. We start out by listing all possible causations between pairs of variables - for example, we might postulate that age "causes" PM25, age "causes" mortality, SES "causes" PM25, and so on. Once we have exhausted all possible relationships we can specify the DAG as shown in the code below, whereby age "causes" PM25 is encoded in the `dagify()` function as `pm25 ~ age`, using the identical syntax to what we write when specifying a regression model. Plotting the DAG then becomes a trivial exercise.
+
+```{r, fig.width=10, fig.height=8, out.width="100%"}
+# Encode DAG
+airpollution_dag <- dagify(
+  pm25 ~ age,
+  mortality ~ age,
+  pm25 ~ ses,
+  smoking ~ ses, 
+  healthcare ~ ses,
+  cvd ~ smoking,
+  mortality ~ smoking,
+  cvd ~ pm25,
+  mortality ~ cvd,
+  healthcare ~ cvd,
+  labels = c(
+    pm25 = "PM25",
+    mortality = "Mortality",
+    age = "Age",
+    ses = "SES",
+    smoking = "Smoking",
+    healthcare = "Healthcare",
+    cvd = "CVD"),
+  #coords = dag_coords,
+  exposure = "pm25",
+  outcome = "mortality")
+
+# Plot DAG
+set.seed(137)
+airpollution_dag |> 
+  ggdag(text = FALSE, use_labels = "label", stylized = TRUE) +
+  theme_dag() +
+  expand_plot(expand_x = expansion(c(.5, .5)))
+```
+
+### Interpreting the DAG
+
+We then want to interpret the DAG so we can make some logical attempt to justify what variables to include, exclude, adjust and not adjust for in our regression model. To do this, at least initially, it is helpful to enumerate all possible paths contained in the DAG that exist between the exposure (PM25) and the outcome (mortality).
+
+There are two ways to do this - the easy way and the hard way. The hard way involves manually tracing out every path based on the DAG and writing them down. For obvious reasons this is error-prone and subject to missing some of the paths, but it can be helpful as a learning exercise. The easy way is as simple as asking the `daggity` package to do it for you. In the code block below, you'll see that I have extended this functionality by writing a function to also output "status" (path open vs closed) and "type" (frontdoor vs backdoor) information. Running this on the current DAG object generates the following table:
+
+```{r}
+# Function to enumerate all paths, status and type
+extract_dag_paths <- function(dag) {
+  require(dagitty)
+  require(dplyr)
+  require(purrr)
+  
+  # Get all paths between exposure and outcome
+  all_paths <- paths(dag)
+  
+  # Create dataframe
+  path_df <- data.frame(
+    path = all_paths$paths,
+    stringsAsFactors = FALSE
+  )
+  
+  # Add open/closed status
+  path_df$status <- ifelse(all_paths$open, "open", "closed")
+  
+  # Determine path type
+  path_df$type <- map(path_df$path, function(p) {
+    # Check if path contains any <- arrows (backdoor indicator)
+    if (grepl("<-", p)) {
+      return("backdoor")
+    } else {
+      # All arrows point forward
+      return("frontdoor")
+    }
+  })
+  
+  # Reorder columns for clarity
+  path_df <- path_df |> 
+    arrange(desc(type), desc(status)) |> 
+    mutate(id = row_number()) |> 
+    select(id, path, status, type) 
+
+  
+  return(path_df)
+}
+
+# Print
+path_summary <- extract_dag_paths(airpollution_dag)
+kable(path_summary)
+```
+
+<br>
+
+This tells us that we have `8` paths at play between the exposure and the outcome. It also tells us straight off the bat that we don't need to worry about `4` of these - the ones that are "closed" (`id`'s `5`-`8`). The reason these are already closed is because a collider is present in each - `Healthcare` in paths `5`, `7` and `8`, and `CVD` in path `6`. This leaves us with `4` open paths - and we can visualise these quite easily with the `ggdag_paths()` function in the following way:
+
+```{r, fig.width=12, fig.height=10, out.width="100%"}
+set.seed(137)
+airpollution_dag |> 
+  ggdag_paths(text = FALSE, use_labels = "label", stylized = TRUE) +
+  expand_plot(expand_x = expansion(c(.5, .5)))
+```
+
+### Identifying the Minimally Sufficient Adjustment Set
+
+Of these `4` open paths, the first is a frontdoor path (and thus our main path of interest in determining the causal effect), and the remainder are backdoor paths. We therefore need to find a way to close paths `2` - `4`, and the easiest way to do that is to condition on a confounder. Looking at those paths a natural choice would be to adjust for `Age` (path `2`) and `SES` (paths `3` and `4`) as these are confounders. Handily, there's an algorithmic way to check this as well - by using the `ggdag_adjustment_set()` function as follows:
+
+```{r, fig.width=12, fig.height=10, out.width="100%"}
+set.seed(137)
+airpollution_dag |> 
+  ggdag_adjustment_set(text = FALSE, use_labels = "label", shadow = TRUE, stylized = TRUE,
+    exposure = "pm25",
+    outcome  = "mortality") +
+  theme_dag()
+```
+
+So what does this tell us? Indeed {`Age`, `SES`} is one potential adjustment set, but there is also another - {`Age`, `Smoking`}. Which should we choose? Well, this is is a case of `daggity` telling us what *can* work, but we should use our own causal reasoning to decide what *should* work more appropriately. From `dagitty`'s point of view: "Given the assumptions encoded in this DAG, either of these sets is sufficient to identify the causal effect." But that doesn't mean that each set is equally defensible scientifically.
+
+The first set blocks all backdoor paths without conditioning on anything downstream of exposure. This is the cleanest and most interpretable adjustment set, and it corresponds to the total causal effect one sets out to estimate. In contrast, the second set includes a variable (`Smoking`) that is a descendant of `SES`). This set works only because conditioning on `Smoking` incidentally blocks the same backdoor path that `SES` also blocks - so while the second set is formally sufficient, it is causally inferior.
+
+When `dagitty` gives you multiple valid sets, you can apply this hierarchy to hopefully make a more reasoned decision:
+
+- Prefer pre-exposure variables over post-exposure or downstream variables
+
+- Prefer true common causes over descendants of common causes
+
+- Avoid mediators and their descendants if estimating total effects
+
+- Avoid colliders or "selection" variables even if they appear in valid sets
+
+- Choose the smallest, simplest set that aligns with the scientific question
+
+- Under these principles, {`Age`, `SES`} clearly dominates any alternative.
+
+## Some Final Thoughts
+
+### Why Not Adjust for Everything?
+
+As you can tell, there's a lot of work in justifying your causal model. While it may be tempting to adopt a "kitchen sink" approach by adjusting for every available variable to avoid model misspecification, this strategy often backfires. First, over-adjusting leads to statistical inefficiency; by consuming precious degrees of freedom, you dilute the model's power and risk overfitting, especially in smaller datasets or when variables are highly correlated. Second, and more critically, blindly adding covariates can introduce bias rather than remove it. If you inadvertently adjust for a collider you can backdoor paths and induce bias as I previously mentioned. Ultimately, a model packed with irrelevant or harmful variables obscures the true relationship and can lead to fundamentally flawed causal conclusions.
+
+### What DAGs Don't Do
+
+While DAGs are indispensable for mapping causal structures, they are not a panacea for the inherent risks of observational research. Most importantly, a DAG is only as good as the assumptions it visualises; if your graph is missing a crucial arrow or node, it cannot magically guarantee causal identification or alert you to the presence of unmeasured confounding that might still be biasing your results. Furthermore, a DAG is a qualitative tool that guides model selection, but it does not replace the need for rigorous sensitivity analyses to test how robust your findings are to potential "hidden" biases or alternative structures. Ultimately, a DAG is not a machine that produces a "correct" answer, but rather a logical framework that ensures your statistical modeling choices - specifically which variables you choose to include or exclude - are strictly coherent with the specific causal question you are attempting to answer.
+
+### Should You Include a DAG in Your Next Paper?
+
+Maybe the answer to this question should be yes.
+
+I don't think we're at the stage where journals are *requiring* DAGs be supplied as part of a submission, but it is becoming increasingly common for reviewers/editors to ask for one in review if they aren't convinced a specified model is correct. When a reviewer asks, "Why didn't you control for Variable X?", being able to point to a DAG and say, "Variable X is a collider (or mediator) according to current domain knowledge, and adjusting for it would introduce bias," is a much stronger rebuttal than simply stating it wasn't available in the data.
+
+Even when not required, DAGs:
+
+- justify confounder selection,
+
+- expose inappropriate adjustment,
+
+- clarify estimands,
+
+- and reduce reviewer disagreement.
+
+It is not a stretch to say that a single DAG can replace pages of methodological explanation.
+
+### Really, The End!
+
+If you are doing observational research and making causal claims, you already have a DAG in your head. Writing it down and then visualising it - using tools like `dagitty` and `ggdag` - makes those assumptions visible, testable, and discussable. It could be argued that in modern epidemiology and biostatistics, DAGs are not an optional extra. They are part of responsible study design.
+
+I hope you didn't find this post too heavy going. See you next month!
