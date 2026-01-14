@@ -3,7 +3,7 @@ title: "Multiple Comparisons"
 date: 2026-03-27
 categories: [concept]
 image: "images/multiple.png"
-description: "To adjust, or not to adjust - that is the question."
+description: "To adjust, or not to adjust? - that is the question."
 ---
 
 ## Introduction
@@ -92,7 +92,7 @@ Problems arise when families are defined too broadly or too mechanically. Treati
 
 At this point I'm going to introduce an [editorial](https://www.annalsthoracicsurgery.org/article/S0003-4975(15)01873-1/pdf) by a well-regarded biostatistician who does a lot of statistical research work in the area of RCT's.
 
-::: {.callout-note}
+::: callout-note
 Althouse, A. D. (2016). Adjust for Multiple Comparisons? It’s Not That Simple. Ann Thorac Surg, 101(5), 1644-1645. (if anything happens to the link)
 :::
 
@@ -100,7 +100,7 @@ I think this paper is extremely useful when it comes to defending decisions rela
 
 > "Choosing the number of tests that must be adjusted for is itself a spurious decision".
 
-And then to support this statement points out the potential absurdity of adjusting without thinking: 
+And then to support this statement points out the potential absurdity of adjusting without thinking:
 
 > Suppose an investigator publishes the first paper for a study, with additional substudies and ancillary studies to follow that will use the same dataset. Would the investigator be required update the “old” papers with“updated” p values and signicance decisions as further analyses are done on thesame study data?"
 
@@ -108,7 +108,7 @@ and:
 
 > "If one stipulates that the researcher need not consider the above, but still must adjust for the multiple comparisons done within a single paper, that begs researchers to slice data into as many single-hypothesis papers as possible to avoid criticism and increase their chances of a “significant” finding in any individual paper."
 
-These are valid criticisms against blindly following a set of statistical rules without scientific judgement to guide the decision making process. 
+These are valid criticisms against blindly following a set of statistical rules without scientific judgement to guide the decision making process.
 
 ------------------------------------------------------------------------
 
@@ -176,7 +176,7 @@ Let me summarise everything we've talked about today in just a few points:
 4.  Not all analyses require adjustment - and some are harmed by it.
 5.  Thoughtful justification beats automatic correction every time.
 
-If you can clearly explain *why* you did (or did not) adjust for multiple testing, you are already ahead of the curve. Don't ever let Reviewer # 2 have the upper hand again.
+If you can clearly explain *why* you did (or did not) adjust for multiple testing, you are already ahead of the curve. Don't ever let Reviewer \# 2 have the upper hand again.
 
 ------------------------------------------------------------------------
 
@@ -191,5 +191,3 @@ I don't normally include references but I thought for this topic a few might be 
 -   Hochberg, Y., & Tamhane, A. C. (1987). *Multiple Comparison Procedures*. Wiley.
 
 ------------------------------------------------------------------------
-
-
